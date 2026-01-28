@@ -1,6 +1,10 @@
 @config "../tailwind.config.js";
 @import "tailwindcss";
 
+body {
+  font-family: sans-serif;
+}
+
 /* Material Symbols */
 .material-symbols-outlined {
   font-variation-settings:
@@ -8,6 +12,7 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+    font-size: 20px;
 }
 
 .material-symbols-outlined.fill {

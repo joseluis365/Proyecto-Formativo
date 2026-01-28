@@ -103,8 +103,7 @@ export default function Plantilla() {
                         <section>
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Historial de Citas
                                 Médicas</h3>
-                            <div
-                                className="rounded-lg border border-neutral-gray-border/30 dark:border-gray-700 overflow-hidden shadow-sm">
+                            <div className="rounded-lg border border-neutral-gray-border/30 dark:border-gray-700 overflow-hidden shadow-sm">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-sm text-left">
                                         <thead className="bg-primary-green/10 dark:bg-primary-green/20">
@@ -202,7 +201,6 @@ export default function Plantilla() {
                                 </div>
                             </div>
                         </section>
-                        
                         <section>
                             <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Remisiones Médicas</h3>
                             <div

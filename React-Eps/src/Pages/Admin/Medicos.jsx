@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLayout } from "../../LayoutContext";
 import DoctorTable from "../../components/Users/DoctorsTable";
 import PrincipalText from "../../components/Users/PrincipalText";
-import AddButton from "../../components/UI/AddButton";
+import Button from "../../components/UI/Button";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
 
@@ -30,7 +30,7 @@ export default function Medicos() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
           <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
             <PrincipalText icon="stethoscope" text="Médicos Registrados" number="25" />
-            <AddButton icon="add" text="Agregar Medico" />
+            <Button icon="add" text="Agregar Medico" />
           </div>
           <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
             <Input placeholder="Buscar médico" icon="search"/>

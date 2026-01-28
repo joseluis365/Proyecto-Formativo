@@ -61,3 +61,72 @@ export const Background = [
         items: ["Salbutamol (inhalador) de uso ocasional."]
     }
 ]
+
+export const FamilyBackground = [
+    {
+        label: "Madre",
+        items: ["Hipertencion Arterial controlada",
+            "Astigmatismo"
+        ]
+    },
+    {
+        label: "Padre",
+        items: ["Diabetes Tipo 2"]
+    },
+    {
+        label: "Hermanos",
+        items: ["Sin antecedentes relevantes"]
+    }
+]
+
+export const SocialBackground = [
+    {
+        label: "Tabaquismo",
+        items: ["No fumador"]
+    },
+    {
+        label: "Alcoholismo",
+        items: ["No alcoholista"]
+    }
+]
+
+
+export const citas = [
+    {
+        date: "2022-01-01",
+        doctor: "Dr. Juan Perez",
+        result: "Todo bien"
+    },
+    {
+        date: "2022-01-02",
+        doctor: "Dr. Maria Rodriguez",
+        result: "Todo mal"
+    }
+]
+
+export const ordenes = [
+    {
+        date: "2022-01-01",
+        medicine: "Paracetamol",
+        status: "Despachada"
+    },
+    {
+        date: "2022-01-02",
+        medicine: "Ibuprofeno",
+        status: "Enviada"
+    }
+]
+
+export const remisiones = [
+    {
+        date: "2022-01-01",
+        type: "Remision",
+        status: "ATENDIDA"
+    },
+    {
+        date: "2022-01-02",
+        type: "Remision",
+        status: "ATENDIDA"
+    }
+]
+

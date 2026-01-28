@@ -1,13 +1,12 @@
 export default function DataTable({columns, data}) {
     return (
         <table className="w-full text-sm text-left text-neutral-gray-text dark:text-gray-400">
-            <thead
-                className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800/60">
+            <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-primary-green/10 dark:bg-primary-green/20">
                 <tr>
                     {columns.map((col) => (
                         <th key={col.key}
                             scope="col"
-                            className={`px-6 py-4 font-semibold ${
+                            className={`px-6 py-4 font-semibold text-primary-green dark:text-primary-green/90 ${
                             col.align === 'center' ? 'text-center' : ''
                             }`}
                         >
@@ -20,7 +19,7 @@ export default function DataTable({columns, data}) {
                 {data.map((row, i) => (
                     <tr
                         key={i}
-                        className="bg-white dark:bg-gray-900/50 border-b dark:border-gray-800"
+                        className="bg-white dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 odd:bg-white even:bg-gray-50"
                     >
                         {columns.map((col) => (
                             <td

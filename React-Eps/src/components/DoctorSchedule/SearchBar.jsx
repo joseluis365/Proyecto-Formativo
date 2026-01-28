@@ -1,4 +1,4 @@
-import AddButton from "../UI/AddButton";
+import Button from "../UI/Button";
 import Filter from "../UI/Filter";
 import SecondButton from "../UI/SecondButton";
 
@@ -20,7 +20,7 @@ export default function SearchBar() {
                     <Filter options={["Atendida", "Pendiente", "Cancelada"]} placeholder="Todos los estados" />
                 </div>
                 <SecondButton icon="search" text="Buscar" />
-                <AddButton icon="refresh" text="Actualizar" />
+                <Button icon="refresh" text="Actualizar" />
                 
             </div>
         </div>
