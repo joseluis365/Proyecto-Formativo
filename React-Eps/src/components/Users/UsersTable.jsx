@@ -1,6 +1,12 @@
 import DataTable from "../UI/DataTable";
+import EditUserModal from "../Modals/UserModal/EditUserModal";
+import { useState } from "react";
 
-export default function UsersTable({ users }) {
+export default function UsersTable({ users, fetchUsers }) {
+  const [editingUserId, setEditingUserId] = useState(null);
+  const closeEdit = () => {
+    setEditingUserId(null);
+  };
   const columns = [
     {
       key: "name",
@@ -12,9 +18,9 @@ export default function UsersTable({ users }) {
       ),
     },
     {
-      key: "document",
+      key: "id",
       header: "Documento",
-      render: (u) => u.document,
+      render: (u) => u.id,
     },
     {
       key: "email",
@@ -42,21 +48,34 @@ export default function UsersTable({ users }) {
       align: "center",
       render: (u) => (
         <div className="flex items-center justify-center gap-2">
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">edit</span>
-          </button>
-
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <button onClick={() => setEditingUserId(u.id)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+              
+              <span className="material-symbols-outlined text-base">edit</span>
+            </button>
+          <button className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <span className="material-symbols-outlined text-base">delete</span>
           </button>
 
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+          <button className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <span className="material-symbols-outlined text-base">refresh</span>
           </button>
         </div>
       ),
     },
   ];
+  
 
-  return <DataTable columns={columns} data={users} />;
+
+  return (
+    <>
+    <DataTable columns={columns} data={users} />
+    {editingUserId && (
+  <EditUserModal
+    userId={editingUserId}
+    onClose={closeEdit}
+    onSuccess={fetchUsers}
+  />
+)}
+    </>
+  );
 }
