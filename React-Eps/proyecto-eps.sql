@@ -53,7 +53,7 @@ CREATE TABLE usuario (
     registro_profesional VARCHAR(50),
     id_empresa INTEGER,
     id_tipo_usu INTEGER,
-    estado_id INTEGER,
+    id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -80,7 +80,7 @@ CREATE TABLE empresa (
 CREATE TABLE licencia (
     id_licencia INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('mensual','anual','perpetua')),
-    estado_id INTEGER NOT NULL,
+    id_estado INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -91,8 +91,9 @@ CREATE TABLE empresa_licencia (
     id_licencia INTEGER NOT NULL,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NOT NULL,
-    estado VARCHAR(20) DEFAULT 'activa'
-        CHECK (estado IN ('activa','expirada','cancelada'))
+    id_estado INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =========================
@@ -108,7 +109,7 @@ CREATE TABLE cita (
     hora_fin TIME NOT NULL,
     motivo VARCHAR(300),
     tipo_cita_id INTEGER,
-    estado_id INTEGER,
+    id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -186,7 +187,7 @@ CREATE TABLE medicamento (
     stock_disponible INTEGER,
     precio_unitario NUMERIC(11,2),
     id_categoria INTEGER,
-    estado_id INTEGER,
+    id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -217,7 +218,7 @@ CREATE TABLE orden_medicamento (
     id_detalle_cita INTEGER NOT NULL,
     id_farmacia INTEGER NOT NULL,
     fecha_vencimiento DATE NOT NULL,
-    estado_id INTEGER,
+    id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -231,7 +232,7 @@ CREATE TABLE remision (
     id_examen INTEGER,
     id_prioridad INTEGER,
     notas TEXT NOT NULL,
-    estado_id INTEGER,
+    id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -245,7 +246,7 @@ CREATE TABLE solicitud_cita (
     id_especialidad INTEGER,
     fecha_preferida DATE,
     motivo TEXT,
-    estado_id INTEGER NOT NULL,
+    id_estado INTEGER NOT NULL,
     id_cita INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -257,14 +258,14 @@ CREATE TABLE solicitud_cita (
 
 ALTER TABLE usuario
     ADD FOREIGN KEY (id_tipo_usu) REFERENCES tipo_usuario(id_tipo_usu),
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
     ADD FOREIGN KEY (id_empresa) REFERENCES empresa(id_empresa);
 
 ALTER TABLE cita
     ADD FOREIGN KEY (doc_paciente) REFERENCES usuario(documento),
     ADD FOREIGN KEY (doc_medico) REFERENCES usuario(documento),
     ADD FOREIGN KEY (tipo_cita_id) REFERENCES tipo_cita(id_tipo_cita),
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado);
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
 
 ALTER TABLE historial_clinico
     ADD FOREIGN KEY (id_paciente) REFERENCES usuario(documento);
@@ -275,7 +276,7 @@ ALTER TABLE historial_detalle
 
 ALTER TABLE medicamento
     ADD FOREIGN KEY (id_categoria) REFERENCES categoria_medicamento(id_categoria),
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado);
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
 
 ALTER TABLE movimiento_inventario
     ADD FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento),
@@ -283,18 +284,18 @@ ALTER TABLE movimiento_inventario
 
 ALTER TABLE orden_medicamento
     ADD FOREIGN KEY (id_farmacia) REFERENCES farmacia(id_farmacia) ON DELETE CASCADE,
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
     ADD FOREIGN KEY (id_detalle_cita) REFERENCES historial_detalle(id_detalle);
 
 ALTER TABLE remision
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
     ADD FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad),
     ADD FOREIGN KEY (id_prioridad) REFERENCES prioridad(id_prioridad),
     ADD FOREIGN KEY (id_detalle_cita) REFERENCES historial_detalle(id_detalle);
 
 ALTER TABLE solicitud_cita
     ADD FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad),
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
     ADD FOREIGN KEY (id_cita) REFERENCES cita(id_cita);
 
 ALTER TABLE empresa
@@ -303,8 +304,9 @@ ALTER TABLE empresa
 ALTER TABLE empresa_licencia
     ADD FOREIGN KEY (id_empresa) REFERENCES empresa(id_empresa),
     ADD FOREIGN KEY (id_licencia) REFERENCES licencia(id_licencia);
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
 
 ALTER TABLE licencia
-    ADD FOREIGN KEY (estado_id) REFERENCES estado(id_estado);
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
 
 COMMIT;
