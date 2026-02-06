@@ -1,6 +1,6 @@
 export default function IconInput({label, icon, placeholder, type, id, name}) {
     return (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5 pb-3">
                 <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor={id}>{label}</label>
                 <div className="relative">
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{icon}</span>

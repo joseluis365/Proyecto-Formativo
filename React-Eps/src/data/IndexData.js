@@ -1,4 +1,4 @@
-import tablet from "../assets/tablet.png";
+import tablet from "../assets/telemedicina.jpg";
 import emergency from "../assets/ambulancia.png";
 import calendar from "../assets/calendario.png";
 import pharmacy from "../assets/medicamento.png";

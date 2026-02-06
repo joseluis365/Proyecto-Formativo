@@ -24,7 +24,7 @@ export default function BarChartCitas({ data }) {
             <XAxis dataKey="dia" />
             
             <Tooltip />
-            <Bar dataKey="total" fill="#4ADE80" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="total" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
         )}

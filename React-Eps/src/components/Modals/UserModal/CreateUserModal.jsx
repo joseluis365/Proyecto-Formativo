@@ -5,49 +5,64 @@ import ModalHeader from "../ModalHeader";
 import ModalBody from "../ModalBody";
 import ModalFooter from "../ModalFooter";
 import UserForm from "../../Users/UserForm";
-import { editUserFormConfig } from "../../../UserFormConfig";
+import { createUserFormConfig } from "../../../UserFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
 
 
-export default function EditUserModal({
+export default function CreateUserModal({
   onClose,
-  userId,
   onSuccess,
 }) {
   const toast = useToast();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const initialUser = {
+    name: "",
+    email: "",
+    id: "",
+    status: "ACTIVO",
+    id_rol: 1,
+  };
 
 
-  useEffect(() => {
-  if (!userId) return;
-
-  api.get(`/personal/${userId}`).then((res) => {
-    setUser(res.data);
-    setLoading(false);
-  });
-}, [userId]);
-
-  const handleUpdate = async (data) => {
+  const handleCreate = async (data) => {
   try {
     setSaving(true);
-    await api.put(`/personal/${userId}`, data);
-    toast.success("Usuario actualizado correctamente");
+    setErrors({});
+    const payload = {
+      id_rol: 1,
+      ...data,
+    };
+    await api.post(`/personal`, payload);
+    toast.success("Usuario creado correctamente");
     setSuccess(true);
     setTimeout(() => {
       onSuccess?.();
       onClose();
     }, 1200);
   } catch (error) {
-  console.error("Error 422:", error.response?.data);
+  if (error.response?.status === 422) {
+    setErrors(
+      Object.fromEntries(
+        Object.entries(error.response.data.errors).map(
+          ([key, value]) => [key, value[0]]
+        )
+      )
+    );
+  }
+
   toast.error("No se pudo guardar");
-  } finally {
+}
+ finally {
     setSaving(false);
   }
 };
+
+
   return (
       <motion.div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
@@ -65,7 +80,7 @@ export default function EditUserModal({
           onClick={(e) => e.stopPropagation()}
         >
     <BaseModal>
-        <ModalHeader icon="person" title="EDITAR USUARIO" onClose={onClose} />
+        <ModalHeader icon="person" title="CREAR USUARIO" onClose={onClose} />
         <ModalBody>
   <AnimatePresence>
     {success && (
@@ -89,11 +104,12 @@ export default function EditUserModal({
       <p>Cargando...</p>
     ) : (
       <UserForm
-        initialValues={user}
-        fields={editUserFormConfig[user.id_rol]}
-        onSubmit={handleUpdate}
+        initialValues={initialUser}
+        fields={createUserFormConfig[1]}
+        onSubmit={handleCreate}
         disabled={saving}
         loading={saving}
+        errors={errors}
       />
     )
   )}

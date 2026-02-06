@@ -1,7 +1,7 @@
 export default function PrincipalText({icon, text, number}) {
     return (
         <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-12 rounded-lg bg-primary-green/10 text-primary-green">
+            <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary">
                 <span className="material-symbols-outlined text-3xl">{icon}</span>
             </div>
             <div>

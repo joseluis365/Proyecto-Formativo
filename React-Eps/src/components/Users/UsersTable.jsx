@@ -1,6 +1,7 @@
 import DataTable from "../UI/DataTable";
 import EditUserModal from "../Modals/UserModal/EditUserModal";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 
 export default function UsersTable({ users, fetchUsers }) {
   const [editingUserId, setEditingUserId] = useState(null);
@@ -68,14 +69,16 @@ export default function UsersTable({ users, fetchUsers }) {
 
   return (
     <>
-    <DataTable columns={columns} data={users} />
-    {editingUserId && (
-  <EditUserModal
-    userId={editingUserId}
-    onClose={closeEdit}
-    onSuccess={fetchUsers}
-  />
-)}
+      <DataTable columns={columns} data={users} />
+      <AnimatePresence>
+      {editingUserId && (
+        <EditUserModal
+          userId={editingUserId}
+          onClose={closeEdit}
+          onSuccess={fetchUsers}
+        />
+      )}
+      </AnimatePresence>
     </>
   );
 }

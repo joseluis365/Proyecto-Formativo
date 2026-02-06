@@ -15,11 +15,22 @@ import Login from "./Pages/Inicio/Login"
 import ConfirmEmail from "./Pages/Inicio/ConfirmEmail"
 import VerifyCode from "./Pages/Inicio/VerifyCode"
 import ResetPassword from "./Pages/Inicio/ResetPassword"
-
+import SuperAdminLogin from "./Pages/SuperAdmin/SuperAdminLogin"
+import SuperAdminVerify from "./Pages/SuperAdmin/SuperAdminVerify"
+import SuperAdminDashboard from "./Pages/SuperAdmin/SuperAdminDashboard"
+import SuperAdminLayout from "./layouts/SuperAdminLayout"
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/SuperAdmin-Login" element={<SuperAdminLogin />} />
+      <Route path="/SuperAdmin-Verify" element={<SuperAdminVerify />} />
+      
+      <Route element={<SuperAdminLayout />}>
+        <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
+      </Route>
+
+
       <Route element={<IndexLayout />}>
         <Route path="/" element={<Index />} />
         <Route path="/Contactenos" element={<Contactenos />} />

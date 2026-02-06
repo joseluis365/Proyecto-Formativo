@@ -1,5 +1,4 @@
-import doctor from "../../assets/medico.png";
-
+import clinica from "../../assets/clinica.jpg";
 import Section from "../../components/Index/Section";
 import SecondSection from "../../components/Index/SecondSection";
 import ThirdSection from "../../components/Index/ThirdSection";
@@ -10,7 +9,7 @@ export default function Index() {
     
     return (
         <>
-            <Section image={doctor} title={SectionData.title} subtitle={SectionData.subtitle} description={SectionData.description}/>
+            <Section image={clinica} title={SectionData.title} subtitle={SectionData.subtitle} description={SectionData.description}/>
             <SecondSection reasons={reasons}/> 
             <ThirdSection services={services}/>
             <FourthSection data={data}/>
