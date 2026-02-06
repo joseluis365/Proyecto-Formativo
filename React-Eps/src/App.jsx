@@ -6,12 +6,33 @@ import Medicos from "./Pages/Admin/Medicos"
 import Pacientes from "./Pages/Admin/Pacientes"
 import AgendaMedico from "./Pages/Admin/AgendaMedico"
 import InfoPaciente from "./Pages/Admin/InfoPaciente"
+import IndexLayout from "./layouts/IndexLayout"
+import Index from "./Pages/Inicio/Index"
+import Contactenos from "./Pages/Inicio/Contactenos"
+import SobreNosotros from "./Pages/Inicio/SobreNosotros"
+import LoginLayout from "./layouts/LoginLayout"
+import Login from "./Pages/Inicio/Login"
+import ConfirmEmail from "./Pages/Inicio/ConfirmEmail"
+import VerifyCode from "./Pages/Inicio/VerifyCode"
+import ResetPassword from "./Pages/Inicio/ResetPassword"
+
 
 export default function App() {
   return (
     <Routes>
+      <Route element={<IndexLayout />}>
+        <Route path="/" element={<Index />} />
+        <Route path="/Contactenos" element={<Contactenos />} />
+        <Route path="/SobreNosotros" element={<SobreNosotros />} />
+      </Route>
+      <Route element={<LoginLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/confirm-email" element={<ConfirmEmail />} />
+        <Route path="/code-verification" element={<VerifyCode />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Route>
       <Route element={<DashboardLayout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/usuarios/personal" element={<Usuarios />} />
         <Route path="/usuarios/medicos" element={<Medicos />} />
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
