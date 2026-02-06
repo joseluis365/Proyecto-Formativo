@@ -35,8 +35,8 @@ CREATE TABLE tipo_cita (
     tipo VARCHAR(50)
 );
 
-CREATE TABLE tipo_usuario (
-    id_tipo_usu INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+CREATE TABLE rol (
+    id_rol INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     tipo_usu VARCHAR(50)
 );
 
@@ -45,10 +45,25 @@ CREATE TABLE superadmin (
     nombre VARCHAR(50),
     usuario VARCHAR(50) UNIQUE,
     contrasena VARCHAR(500) NOT NULL,
-    id_estado INTEGER,
+    id_rol INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE ciudad (
+    codigo_postal INTEGER PRIMARY KEY,
+    nombre VARCHAR(50),
+    id_departamento INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+
+CREATE TABLE departamento (
+    id_departamento INTEGER PRIMARY KEY,
+    nombre VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
 
 -- =========================
 -- USUARIO
@@ -67,7 +82,7 @@ CREATE TABLE usuario (
     contrasena VARCHAR(500) NOT NULL,
     registro_profesional VARCHAR(50),
     id_empresa INTEGER,
-    id_tipo_usu INTEGER,
+    id_rol INTEGER,
     id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,10 +97,12 @@ CREATE TABLE empresa (
     nombre VARCHAR(150) NOT NULL,
     email_contacto VARCHAR(100),
     telefono VARCHAR(30),
+    direccion VARCHAR(100),
     documento_representante INTEGER UNIQUE,
     nombre_representante VARCHAR(70),
     telefono_representante VARCHAR(30),
     email_representante VARCHAR(100) UNIQUE,
+    id_ciudad INTEGER,
     id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -97,7 +114,7 @@ CREATE TABLE empresa (
 
 CREATE TABLE tipo_licencia (
     id_tipo_licencia INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('mensual','anual','perpetua')),
+    tipo VARCHAR(50) NOT NULL,
     descripcion VARCHAR(200) NOT NULL,
     duracion_meses INTEGER NOT NULL CHECK (duracion_meses > 0),
     precio NUMERIC(12,2) NOT NULL CHECK (precio > 0),
@@ -302,10 +319,13 @@ CREATE TABLE solicitud_cita (
 -- =========================
 
 ALTER TABLE superadmin
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol);
+
+ALTER TABLE ciudad
+    ADD FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento);
 
 ALTER TABLE usuario
-    ADD FOREIGN KEY (id_tipo_usu) REFERENCES tipo_usuario(id_tipo_usu),
+    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
     ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
     ADD FOREIGN KEY (id_empresa) REFERENCES empresa(id_empresa);
 
@@ -355,11 +375,12 @@ ALTER TABLE solicitud_cita
     ADD FOREIGN KEY (id_cita) REFERENCES cita(id_cita);
 
 ALTER TABLE empresa
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
+    add FOREIGN KEY (id_ciudad) REFERENCES ciudad(codigo_postal);
 
 ALTER TABLE empresa_licencia
     ADD FOREIGN KEY (nit) REFERENCES empresa(nit),
-    ADD FOREIGN KEY (id_tipo_licencia) REFERENCES tipo_licencia(id_tipo_licencia);
+    ADD FOREIGN KEY (id_tipo_licencia) REFERENCES tipo_licencia(id_tipo_licencia),  
     ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
 
 ALTER TABLE tipo_licencia
