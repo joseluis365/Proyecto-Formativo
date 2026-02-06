@@ -81,7 +81,7 @@ CREATE TABLE usuario (
     grupo_sanguineo VARCHAR(3) NOT NULL,
     contrasena VARCHAR(500) NOT NULL,
     registro_profesional VARCHAR(50),
-    id_empresa INTEGER,
+    nit VARCHAR(20),
     id_rol INTEGER,
     id_estado INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -327,7 +327,7 @@ ALTER TABLE ciudad
 ALTER TABLE usuario
     ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
     ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    ADD FOREIGN KEY (id_empresa) REFERENCES empresa(id_empresa);
+    ADD FOREIGN KEY (nit) REFERENCES empresa(nit);
 
 ALTER TABLE cita
     ADD FOREIGN KEY (doc_paciente) REFERENCES usuario(documento),
