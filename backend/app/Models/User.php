@@ -11,13 +11,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // 👇 Tabla real
     protected $table = 'usuario';
 
-    // 👇 Clave primaria real
     protected $primaryKey = 'documento';
     public $incrementing = false;
-    protected $keyType = 'int';
+    protected $keyType = 'string'; // 🔑 recomendado
 
     protected $fillable = [
         'documento',
@@ -31,7 +29,7 @@ class User extends Authenticatable
         'grupo_sanguineo',
         'contrasena',
         'registro_profesional',
-        'id_empresa',
+        'nit',
         'id_rol',
         'id_estado',
     ];
@@ -39,4 +37,12 @@ class User extends Authenticatable
     protected $hidden = [
         'contrasena',
     ];
+
+    /**
+     * 🔐 Le dice a Laravel qué campo usar como password
+     */
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
 }
