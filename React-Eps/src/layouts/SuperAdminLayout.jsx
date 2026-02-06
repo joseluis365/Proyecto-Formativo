@@ -1,7 +1,11 @@
+import SuperAdminHeader from "./Layout-Components/SuperAdminHeader";
+import { Outlet } from "react-router-dom";
+
 export default function SuperAdminLayout() {
     return (
-        <div>
-            <h1>SuperAdminLayout</h1>
+        <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+            <SuperAdminHeader/>
+            <Outlet/>
         </div>
     )
 }
