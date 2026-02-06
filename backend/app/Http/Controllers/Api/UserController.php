@@ -9,34 +9,56 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // Listar usuarios
+    // 🔹 LISTAR USUARIOS
     public function index()
     {
         return response()->json(User::all(), 200);
     }
 
-    // Crear usuario
+    // 🔹 CREAR USUARIO
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'documento' => 'required|integer|unique:usuario,documento',
+            'nombre' => 'required|string|max:50',
+            'apellido' => 'required|string|max:50',
+            'email' => 'required|email|unique:usuario,email',
+            'telefono' => 'nullable|string|max:30',
+            'direccion' => 'nullable|string|max:150',
+            'sexo' => 'required|in:Masculino,Femenino',
+            'fecha_nacimiento' => 'required|date',
+            'grupo_sanguineo' => 'required|string|max:3',
+            'contrasena' => 'required|min:6',
+            'registro_profesional' => 'nullable|string|max:50',
+            'id_empresa' => 'nullable|integer',
+            'id_rol' => 'required|integer',
+            'id_estado' => 'required|integer',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'documento' => $request->documento,
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'telefono' => $request->telefono,
+            'direccion' => $request->direccion,
+            'sexo' => $request->sexo,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'grupo_sanguineo' => $request->grupo_sanguineo,
+            'contrasena' => Hash::make($request->contrasena),
+            'registro_profesional' => $request->registro_profesional,
+            'id_empresa' => $request->id_empresa,
+            'id_rol' => $request->id_rol,
+            'id_estado' => $request->id_estado,
         ]);
 
         return response()->json($user, 201);
     }
 
-    // Mostrar un usuario
-    public function show($id)
+    // 🔹 MOSTRAR USUARIO POR DOCUMENTO
+    public function show($documento)
     {
-        $user = User::find($id);
+        $user = User::find($documento);
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
@@ -45,26 +67,26 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    // Actualizar usuario
-    public function update(Request $request, $id)
+    // 🔹 ACTUALIZAR USUARIO
+    public function update(Request $request, $documento)
     {
-        $user = User::find($id);
+        $user = User::find($documento);
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
         $request->validate([
-            'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . $id,
-            'password' => 'nullable|min:6',
+            'email' => 'email|unique:usuario,email,' . $documento . ',documento',
+            'sexo' => 'in:Masculino,Femenino',
+            'fecha_nacimiento' => 'date',
+            'contrasena' => 'nullable|min:6',
         ]);
 
-        $user->name = $request->name ?? $user->name;
-        $user->email = $request->email ?? $user->email;
+        $user->fill($request->except('contrasena'));
 
-        if ($request->password) {
-            $user->password = Hash::make($request->password);
+        if ($request->contrasena) {
+            $user->contrasena = Hash::make($request->contrasena);
         }
 
         $user->save();
@@ -72,10 +94,10 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    // Eliminar usuario
-    public function destroy($id)
+    // 🔹 ELIMINAR USUARIO
+    public function destroy($documento)
     {
-        $user = User::find($id);
+        $user = User::find($documento);
 
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
@@ -83,6 +105,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json(['message' => 'Usuario eliminado'], 200);
+        return response()->json(['message' => 'Usuario eliminado correctamente'], 200);
     }
 }

@@ -11,14 +11,32 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // 👇 Tabla real
+    protected $table = 'usuario';
+
+    // 👇 Clave primaria real
+    protected $primaryKey = 'documento';
+    public $incrementing = false;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'name',
+        'documento',
+        'nombre',
+        'apellido',
         'email',
-        'password',
+        'telefono',
+        'direccion',
+        'sexo',
+        'fecha_nacimiento',
+        'grupo_sanguineo',
+        'contrasena',
+        'registro_profesional',
+        'id_empresa',
+        'id_rol',
+        'id_estado',
     ];
 
     protected $hidden = [
-        'password',
-        'remember_token',
+        'contrasena',
     ];
 }
