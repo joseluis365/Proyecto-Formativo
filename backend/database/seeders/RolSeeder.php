@@ -3,16 +3,16 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Rol;
 
 class RolSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        DB::table('rol')->insert([
-            ['tipo_usu' => 'Administrador'],
-            ['tipo_usu' => 'Médico'],
-            ['tipo_usu' => 'Paciente'],
+        Rol::insert([
+            ['tipo_usu' => 'ADMIN'],
+            ['tipo_usu' => 'MEDICO'],
+            ['tipo_usu' => 'PACIENTE'],
         ]);
     }
 }

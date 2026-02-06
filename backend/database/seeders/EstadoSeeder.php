@@ -3,21 +3,16 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Estado;
 
 class EstadoSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        DB::table('estado')->insert([
-            [
-                'nombre_estado' => 'Activo',
-                'descripcion' => 'Registro activo',
-            ],
-            [
-                'nombre_estado' => 'Inactivo',
-                'descripcion' => 'Registro inactivo',
-            ],
+        Estado::insert([
+            ['nombre_estado' => 'ACTIVA', 'descripcion' => 'Estado activo'],
+            ['nombre_estado' => 'INACTIVA', 'descripcion' => 'Estado inactivo'],
+            ['nombre_estado' => 'EXPIRADA', 'descripcion' => 'Licencia expirada'],
         ]);
     }
 }

@@ -8,16 +8,14 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->call([
             EstadoSeeder::class,
             RolSeeder::class,
-            EmpresaSeeder::class,
-            UsuarioSeeder::class,
+            TipoLicenciaSeeder::class,
+            EmpresaLicenciaSeeder::class,
         ]);
     }
 }
