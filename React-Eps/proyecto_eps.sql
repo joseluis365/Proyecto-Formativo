@@ -44,6 +44,7 @@ CREATE TABLE superadmin (
     documento INTEGER PRIMARY KEY,
     nombre VARCHAR(50),
     usuario VARCHAR(50) UNIQUE,
+    email VARCHAR(100) UNIQUE,
     contrasena VARCHAR(500) NOT NULL,
     id_rol INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

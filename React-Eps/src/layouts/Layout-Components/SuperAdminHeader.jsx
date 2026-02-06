@@ -12,13 +12,13 @@ export default function SuperAdminHeader() {
     const closeMenu = () => setOpen(false);
     const navLinkStyles = ({ isActive }) => 
     isActive 
-        ? "text-blue-600 font-bold" 
-        : "text-slate-600 hover:text-blue-500 transition-colors";
+        ? "text-blue-600 font-bold dark:text-blue-400" 
+        : "text-slate-600 hover:text-blue-500 transition-colors dark:text-white dark:hover:text-blue-400";
 
     return (
         <>
             {/* HEADER */}
-            <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/90 backdrop-blur-md px-6 md:px-10 lg:px-40 py-2.5 flex items-center">
+            <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/70 backdrop-blur-md px-6 md:px-10 lg:px-40 py-2.5 flex items-center">
 
                 {/* MENU DESKTOP */}
                 <div className="hidden md:flex flex-1 justify-between gap-8 items-center">
@@ -31,19 +31,25 @@ export default function SuperAdminHeader() {
                         <NavLink className={navLinkStyles} to="/Licencias">Licencias</NavLink>
                         <NavLink className={navLinkStyles} to="/Historial">Historial</NavLink>
                     </nav>
-
+                    <div className="flex items-center" >
+                        <div className="flex items-center gap-2 mr-2 dark:text-white">
+                            <p>SuperAdmin</p>
+                        </div>
+                        
+                    
                     <Link to="/login">
                         <button
                             type="button"
                             className="w-10 h-10 flex items-center justify-center rounded-full 
                             bg-primary text-white hover:bg-primary/90 
-                            transition"
+                            transition cursor-pointer"
                         >
                             <span className="material-symbols-outlined text-3xl">
                                 person
                             </span>
                         </button>
                     </Link>
+                    </div>
                 </div>
 
                 {/* BOTÓN HAMBURGUESA */}
