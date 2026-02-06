@@ -38,3 +38,29 @@ export const superAdminVerify = {
         },
     ],
 };
+
+export const superAdminCompanies = {
+    fields: [
+        {
+            id: 1,
+            nombre: "Colsubsidio",
+            email: "juan@gmail.co",
+            expiresAt: "2026-12-31",
+            id_estado: 1,
+        },
+        {
+            id: 2,
+            nombre: "Sanitas",
+            email: "juan@gmail.co",
+            expiresAt: "2026-12-31",
+            id_estado: 2,
+        },
+        {
+            id: 3,
+            nombre: "Sura",
+            email: "juan@gmail.co",
+            expiresAt: "2026-12-31",
+            id_estado: 1,
+        },
+    ],
+};

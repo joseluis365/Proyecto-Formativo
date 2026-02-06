@@ -19,6 +19,7 @@ import SuperAdminLogin from "./Pages/SuperAdmin/SuperAdminLogin"
 import SuperAdminVerify from "./Pages/SuperAdmin/SuperAdminVerify"
 import SuperAdminDashboard from "./Pages/SuperAdmin/SuperAdminDashboard"
 import SuperAdminLayout from "./layouts/SuperAdminLayout"
+import SuperAdminEmpresas from "./Pages/SuperAdmin/SuperAdminEmpresas"
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
       
       <Route element={<SuperAdminLayout />}>
         <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
+        <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
       </Route>
 
 

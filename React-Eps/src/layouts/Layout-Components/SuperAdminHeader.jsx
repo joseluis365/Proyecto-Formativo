@@ -27,9 +27,9 @@ export default function SuperAdminHeader() {
                     </div>
                     <nav className="flex items-center gap-6 mx-auto">
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Dashboard">Inicio</NavLink>
-                        <NavLink className={navLinkStyles} to="/Empresas">Empresas</NavLink>
-                        <NavLink className={navLinkStyles} to="/Licencias">Licencias</NavLink>
-                        <NavLink className={navLinkStyles} to="/Historial">Historial</NavLink>
+                        <NavLink className={navLinkStyles} to="/SuperAdmin-Empresas">Empresas</NavLink>
+                        <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Licencias</NavLink>
+                        <NavLink className={navLinkStyles} to="/SuperAdmin-Historial">Historial</NavLink>
                     </nav>
                     <div className="flex items-center" >
                         <div className="flex items-center gap-2 mr-2 dark:text-white">
@@ -89,9 +89,9 @@ export default function SuperAdminHeader() {
                     {/* LINKS */}
                     <nav className="flex flex-col gap-4 text-sm font-semibold">
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Dashboard">Inicio</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Empresas">Empresas</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Licencias">Licencias</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Historial">Historial</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Empresas">Empresas</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Licencias">Licencias</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Historial">Historial</NavLink>
                     </nav>
 
                     {/* CTA */}
