@@ -4,22 +4,32 @@ export default function CompanyCard({
   expiresAt,
   status,
 }) {
-  const statusStyles =
-    status === "active"
-      ? "bg-green-100 text-green-700"
-      : "bg-red-100 text-red-700";
+  const LICENSE_STATUS = {
+  1: {
+    text: "Licencia activa",
+    classes: "bg-green-100 text-green-700",
+  },
+  2: {
+    text: "Por vencer",
+    classes: "bg-yellow-100 text-yellow-700",
+  },
+  0: {
+    text: "Licencia expirada",
+    classes: "bg-red-100 text-red-700",
+  },
+};
 
-  const statusText =
-    status === "active" ? "Licencia activa" : "Licencia expirada";
+
+  const statusData = LICENSE_STATUS[status];
 
   return (
     <div className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
       
       {/* Estado */}
       <span
-        className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full ${statusStyles}`}
+        className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full ${statusData.classes}`}
       >
-        {statusText}
+        {statusData.text}
       </span>
 
       {/* Header */}
