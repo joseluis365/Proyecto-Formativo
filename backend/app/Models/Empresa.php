@@ -3,17 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Usuario;
-use App\Models\EmpresaLicencia;
-use App\Models\Estado;
+use Carbon\Carbon;
 
 class Empresa extends Model
 {
-    use HasFactory;
-
     protected $table = 'empresa';
-
     protected $primaryKey = 'nit';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -32,31 +26,25 @@ class Empresa extends Model
         'id_estado',
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
-    public function usuarios()
-    {
-        return $this->hasMany(Usuario::class, 'nit', 'nit');
-    }
-
+    // 🔗 Relación con licencias
     public function licencias()
     {
         return $this->hasMany(EmpresaLicencia::class, 'nit', 'nit');
     }
 
-    public function licenciaActiva()
+    // ✅ Licencia vigente
+    public function licenciaVigente()
     {
-        return $this->hasOne(EmpresaLicencia::class, 'nit', 'nit')
+        return $this->licencias()
+            ->where('fecha_inicio', '<=', Carbon::today())
+            ->where('fecha_fin', '>=', Carbon::today())
             ->whereHas('estado', function ($q) {
-                $q->where('nombre_estado', 'ACTIVA');
+                $q->where('nombre_estado', 'Activo');
             })
-            ->whereDate('fecha_inicio', '<=', now())
-            ->whereDate('fecha_fin', '>=', now());
+            ->first();
     }
 
+    // 🔗 Estado de la empresa
     public function estado()
     {
         return $this->belongsTo(Estado::class, 'id_estado', 'id_estado');

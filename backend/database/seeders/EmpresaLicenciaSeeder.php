@@ -3,29 +3,23 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Empresa;
 use App\Models\EmpresaLicencia;
-use App\Models\TipoLicencia;
-use App\Models\Estado;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class EmpresaLicenciaSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        $empresa = Empresa::first();
-        if (!$empresa) return;
-
-        $tipoLicencia = TipoLicencia::where('tipo', 'Demo')->first();
-        $estadoActiva = Estado::where('nombre_estado', 'ACTIVA')->first();
-
-        EmpresaLicencia::create([
-            'id_empresa_licencia' => strtoupper(Str::random(10)),
-            'nit' => $empresa->nit,
-            'id_tipo_licencia' => $tipoLicencia->id_tipo_licencia,
-            'fecha_inicio' => now(),
-            'fecha_fin' => now()->addMonth(),
-            'id_estado' => $estadoActiva->id_estado,
-        ]);
+        EmpresaLicencia::updateOrCreate(
+            [
+                'nit' => '900123456',
+            ],
+            [
+                'id_tipo_licencia' => 1,
+                'fecha_inicio' => Carbon::now()->subDays(1),
+                'fecha_fin' => Carbon::now()->addMonths(6),
+                'id_estado' => 1, // Activo
+            ]
+        );
     }
 }

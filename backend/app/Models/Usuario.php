@@ -3,25 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Empresa;
+
+// 👇 IMPORTS CORRECTOS (SOLO ARRIBA)
 use App\Models\Rol;
 use App\Models\Estado;
+use App\Models\Empresa;
 
-class Usuario extends Authenticatable
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory;
+    use HasApiTokens, Notifiable;
 
     protected $table = 'usuario';
-
     protected $primaryKey = 'documento';
     public $incrementing = false;
     protected $keyType = 'int';
-
-    protected $hidden = [
-        'contrasena',
-    ];
 
     protected $fillable = [
         'documento',
@@ -34,32 +31,16 @@ class Usuario extends Authenticatable
         'fecha_nacimiento',
         'grupo_sanguineo',
         'contrasena',
-        'registro_profesional',
         'nit',
         'id_rol',
         'id_estado',
     ];
 
-    protected $casts = [
-        'fecha_nacimiento' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+    protected $hidden = [
+        'contrasena',
     ];
 
-    /**
-     * Laravel usará "contrasena" como password
-     */
-    public function getAuthPassword()
-    {
-        return $this->contrasena;
-    }
-
-    // Relaciones
-    public function empresa()
-    {
-        return $this->belongsTo(Empresa::class, 'nit', 'nit');
-    }
-
+    // 👇 RELACIONES (NO traits)
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
@@ -68,5 +49,10 @@ class Usuario extends Authenticatable
     public function estado()
     {
         return $this->belongsTo(Estado::class, 'id_estado', 'id_estado');
+    }
+
+    public function empresa()
+    {
+        return $this->belongsTo(Empresa::class, 'nit', 'nit');
     }
 }
