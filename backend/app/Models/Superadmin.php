@@ -2,38 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\Rol;
+use Illuminate\Database\Eloquent\Model;
 
-class Superadmin extends Authenticatable
+class Superadmin extends Model
 {
-    use HasApiTokens, HasFactory;
-
     protected $table = 'superadmin';
-
     protected $primaryKey = 'documento';
     public $incrementing = false;
     protected $keyType = 'int';
-
-    protected $hidden = ['contrasena'];
 
     protected $fillable = [
         'documento',
         'nombre',
         'usuario',
+        'email',
         'contrasena',
-        'id_rol',
+        'id_rol'
     ];
-
-    public function getAuthPassword()
-    {
-        return $this->contrasena;
-    }
-
-    public function rol()
-    {
-        return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');
-    }
 }
