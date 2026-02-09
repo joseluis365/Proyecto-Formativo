@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#13ecb6",
+        primary: "#135bec",
         "background-light": "#f6f8f8",
         "background-dark": "#10221d",
         "primary-green": "#2D8A6E",
@@ -18,9 +18,10 @@ export default {
         "soft-red": "#EF4444",
         "soft-blue": "#3B82F6",
         "soft-orange": "#F97316",
+        "sky-blue": "#0ea5e9",
       },
       fontFamily: {
-        display: ["Inter", "sans-serif"],
+        display: ["Manrope", "sans-serif"],
       },
     },
   },
