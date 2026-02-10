@@ -8,18 +8,15 @@ use Carbon\Carbon;
 
 class EmpresaLicenciaSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        EmpresaLicencia::updateOrCreate(
-            [
-                'nit' => '900123456',
-            ],
-            [
-                'id_tipo_licencia' => 1,
-                'fecha_inicio' => Carbon::now()->subDays(1),
-                'fecha_fin' => Carbon::now()->addMonths(6),
-                'id_estado' => 1, // Activo
-            ]
-        );
+        EmpresaLicencia::create([
+            'id_empresa_licencia' => 'LIC-000001',
+            'nit' => '900123456',
+            'id_tipo_licencia' => 1,
+            'fecha_inicio' => Carbon::now()->toDateString(),
+            'fecha_fin' => Carbon::now()->addMonths(6)->toDateString(),
+            'id_estado' => 1,
+        ]);
     }
 }

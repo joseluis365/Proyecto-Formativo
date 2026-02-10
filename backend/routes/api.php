@@ -1,18 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\SuperadminAuthController;
+use App\Http\Controllers\Api\SuperadminAuthController;
 
 // ==============================
-// 🔓 LOGIN USUARIO NORMAL
+// 🔐 SUPERADMIN
 // ==============================
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/superadmin/login', [SuperadminAuthController::class, 'login']);
+Route::post('/superadmin/verificar-codigo', [SuperadminAuthController::class, 'verificarCodigo']);
 
-// ==============================
-// 🔐 SUPERADMIN (2FA SIN TOKEN)
-// ==============================
-Route::prefix('superadmin')->group(function () {
-    Route::post('/login', [SuperadminAuthController::class, 'login']);
-    Route::post('/verificar-codigo', [SuperadminAuthController::class, 'verificarCodigo']);
-});
+

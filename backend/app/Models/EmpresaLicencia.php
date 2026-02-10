@@ -8,21 +8,18 @@ class EmpresaLicencia extends Model
 {
     protected $table = 'empresa_licencia';
 
+    protected $primaryKey = 'id_empresa_licencia';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'id_empresa_licencia',
         'nit',
         'id_tipo_licencia',
         'fecha_inicio',
         'fecha_fin',
         'id_estado',
     ];
-
-    public function empresa()
-    {
-        return $this->belongsTo(Empresa::class, 'nit', 'nit');
-    }
-
-    public function estado()
-    {
-        return $this->belongsTo(Estado::class, 'id_estado', 'id_estado');
-    }
 }
