@@ -4,6 +4,9 @@ import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
 import CompaniesSection from "../../components/SuperAdmin/CompaniesSection";
+import { AnimatePresence, motion } from "framer-motion";
+import CreateEmpresaModal from "../../components/Modals/EmpresaModal/CreateEmpresaModal";
+import AssignLicenciaModal from "../../components/Modals/LicenciaModal/AsignarLicenciaModal";
 
 export default function SuperAdminEmpresas() {
   // 🔹 Estados
@@ -15,6 +18,9 @@ export default function SuperAdminEmpresas() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [assigningLicense, setAssigningLicense] = useState(null); // NIT or full company object map
+  const [licencias, setLicencias] = useState([]);
+
 
   // 🔹 Opciones del filtro
   const statusOptions = [
@@ -68,6 +74,35 @@ export default function SuperAdminEmpresas() {
     fetchCompanies();
   }, [debouncedSearch, status]);
 
+  // 🔹 Cargar licencias al montar
+  useEffect(() => {
+    const fetchLicencias = async () => {
+      try {
+        const res = await api.get('/licencias');
+        // Ajustar según estructura de respuesta
+        setLicencias(res.data.data || res.data);
+      } catch (err) {
+        console.error("Error al cargar licencias:", err);
+      }
+    };
+    fetchLicencias();
+  }, []);
+
+  const handleAssignLicense = (company) => {
+    setAssigningLicense(company.nit);
+  };
+
+  const handleRenewLicense = (company) => {
+    // Reutilizamos el mismo modal para renovar? Si.
+    setAssigningLicense(company.nit);
+  };
+
+  const handleLicenseSuccess = () => {
+    fetchCompanies();
+    setAssigningLicense(null);
+  };
+
+
   const totalCompanies = companies.length;
 
   return (
@@ -105,21 +140,72 @@ export default function SuperAdminEmpresas() {
       </div>
 
       {/* CONTENIDO */}
-      {loading && isInitialLoad ? (
-        <div className="flex justify-center py-10">
-          <p>Cargando empresas...</p>
-        </div>
-      ) : error ? (
-        <div className="text-center py-6 text-red-500">
-          {error}
-        </div>
-      ) : companies.length === 0 ? (
-        <div className="text-center py-6 text-gray-500">
-          No se encontraron empresas
-        </div>
-      ) : (
-        <CompaniesSection companies={companies} />
-      )}
+      <AnimatePresence mode="wait">
+        {loading && isInitialLoad && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex justify-center py-10"
+          >
+            <p>Cargando empresas...</p>
+          </motion.div>
+        )}
+
+        {!loading && error && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-6 text-red-500"
+          >
+            {error}
+          </motion.div>
+        )}
+
+        {!loading && !error && companies.length === 0 && (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-6 text-gray-500"
+          >
+            No se encontraron empresas
+          </motion.div>
+        )}
+
+        {!error && companies.length > 0 && (
+          <motion.div
+            key="data"
+            animate={{ opacity: loading ? 0.6 : 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <CompaniesSection
+              companies={companies}
+              onAssignLicense={handleAssignLicense}
+              onRenew={handleRenewLicense}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {creating && (
+          <CreateEmpresaModal
+            onClose={() => setCreating(false)}
+            onSuccess={fetchCompanies}
+          />
+        )}
+        {assigningLicense && (
+          <AssignLicenciaModal
+            empresaNit={assigningLicense}
+            licencias={licencias}
+            onClose={() => setAssigningLicense(null)}
+            onSuccess={handleLicenseSuccess}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
