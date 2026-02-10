@@ -5,7 +5,7 @@ export const superAdminLogin = {
         {
             name: "email",
             label: "Correo electrónico",
-            icon: "email",
+            icon: "",
             type: "email",
             placeholder: "correo@ejemplo.com",
             autoComplete: "username",
@@ -14,7 +14,7 @@ export const superAdminLogin = {
         {
             name: "password",
             label: "Contraseña",
-            icon: "lock",
+            icon: "",
             type: "password",
             placeholder: "••••••••",
             autoComplete: "current-password",
