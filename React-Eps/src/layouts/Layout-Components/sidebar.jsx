@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Nav */}
           <nav className="mt-6 grow">
             <div className="flex flex-col gap-2">
-              <SidebarItem to="/" icon="home" label="Inicio" onClick={onClose}/>
+              <SidebarItem to="/dashboard" icon="home" label="Inicio" onClick={onClose}/>
               <SidebarDropdown icon="group" label="Usuarios" basePath="/usuarios">
                 <SidebarSubItem to="/usuarios/personal" label="Personal" />
                 <SidebarSubItem to="/usuarios/medicos" label="Medicos" />

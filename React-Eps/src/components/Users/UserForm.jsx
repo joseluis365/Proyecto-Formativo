@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import BlueButton from "../UI/BlueButton";
 
 export default function UserForm({
   initialValues = {},
   fields = [],
   onSubmit,
+  loading,
+  errors = {},
 }) {
-  const [form, setForm] = React.useState(initialValues);
+  const [form, setForm] = useState(initialValues);
+  const [initialized, setInitialized] = useState(false);
 
-  React.useEffect(() => {
+useEffect(() => {
+  if (!initialized) {
     setForm(initialValues);
-  }, [initialValues]);
+    setInitialized(true);
+  }
+}, [initialValues, initialized]);
 
   const handleChange = (name, value) => {
     setForm((prev) => ({
@@ -27,6 +34,7 @@ export default function UserForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       {fields.map((field) => {
         const value = form[field.name] ?? "";
+        const error = errors[field.name];
 
         return (
           <div key={field.name} className="space-y-1">
@@ -42,7 +50,9 @@ export default function UserForm({
                 onChange={(e) =>
                   handleChange(field.name, e.target.value)
                 }
-                className="border rounded px-3 py-2 w-full"
+                className={`border rounded px-3 py-2 w-full
+                ${errors[field.name] ? "border-red-500" : "border-gray-300"}
+              `}
               >
                 {!value && (
                   <option value="">Seleccionar</option>
@@ -63,19 +73,19 @@ export default function UserForm({
                   handleChange(field.name, e.target.value)
                 }
                 placeholder={field.label}
-                className="border rounded px-3 py-2 w-full"
+                className={`border rounded px-3 py-2 w-full ${
+                  errors[field.name] ? "border-red-500" : ""
+                }`}
               />
+            )}
+            {errors[field.name] && (
+              <p className="text-red-500 text-sm transition-all">{errors[field.name]}</p>
             )}
           </div>
         );
       })}
 
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Guardar
-      </button>
+      <BlueButton text="Guardar" icon="save" type="submit" loading={loading} />
     </form>
   );
 }

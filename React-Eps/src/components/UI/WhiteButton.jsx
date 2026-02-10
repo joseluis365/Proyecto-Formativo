@@ -1,8 +1,7 @@
-export default function WhiteButton({icon,text}) {
+export default function WhiteButton({text}) {
     return (
-        <button className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 border border-primary-green text-primary-green font-semibold py-2.5 px-5 rounded-lg shadow-sm hover:bg-primary-green/5 dark:hover:bg-primary-green/10 transition-colors duration-200">
-            <span className="material-symbols-outlined">{icon}</span>
-            {text}  
+        <button className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-6 py-3 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+            {text}
         </button>
     )
 }

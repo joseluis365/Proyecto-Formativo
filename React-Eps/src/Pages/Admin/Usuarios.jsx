@@ -3,9 +3,11 @@ import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
 import UsersTable from "../../components/Users/UsersTable";
 import PrincipalText from "../../components/Users/PrincipalText";
-import Button from "../../components/UI/Button";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
+import { AnimatePresence, motion } from "framer-motion";
+import TableSkeleton from "../../components/UI/TableSkeleton";
+import CreateUserModal from "../../components/Modals/UserModal/CreateUserModal";
 
 export default function Usuarios() {
   const { setTitle, setSubtitle } = useLayout();
@@ -21,6 +23,11 @@ export default function Usuarios() {
   const [id_rol, setId_rol] = useState(1);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [error, setError] = useState(null);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [creating, setCreating] = useState(false);
+
 
   // 🔹 Opciones del filtro
   const statusOptions = [
@@ -33,34 +40,43 @@ export default function Usuarios() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
 
       const res = await api.get("/personal", {
         params: {
-          search: search || undefined,
+          search: debouncedSearch || undefined,
           id_rol,
           status: status || undefined,
         },
       });
 
       setUsers(res.data.data);
-    } catch (error) {
-      console.error("Error cargando usuarios:", error);
+    } catch (err) {
+      console.error("Error cargando usuarios:", err);
+      setError("No se pudieron cargar los usuarios"); // ❌ error controlado
+      setUsers([]);
     } finally {
       setLoading(false);
+      setIsInitialLoad(false);
     }
   };
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [search]);
+
 
   // 🔹 Ejecutar cuando cambian filtros
   useEffect(() => {
     fetchUsers();
-  }, [search, id_rol, status]);
+  }, [debouncedSearch, id_rol, status]);
 
   const totalUsers = users.length;
-
-  if (loading) {
-    return <p>Cargando usuarios...</p>;
-  }
-
+  
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl">
       {/* HEADER */}
@@ -70,7 +86,10 @@ export default function Usuarios() {
           text="Personal Registrado"
           number={totalUsers}
         />
-        <Button icon="add" text="Agregar Personal" />
+        <button onClick={() => setCreating(true)} className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
+              Agregar Personal
+              <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
+            </button>
       </div>
 
       {/* FILTROS */}
@@ -91,7 +110,66 @@ export default function Usuarios() {
       </div>
 
       {/* TABLA */}
-      <UsersTable users={users} fetchUsers={fetchUsers} />
+<AnimatePresence mode="wait">
+  {/* 🦴 SOLO PRIMERA CARGA */}
+  {loading && isInitialLoad && (
+    <motion.div
+      key="loading"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <TableSkeleton rows={6} columns={5} />
+    </motion.div>
+  )}
+
+  {/* ❌ ERROR */}
+  {!loading && error && (
+    <motion.div
+      key="error"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-center py-6 text-red-500"
+    >
+      {error}
+    </motion.div>
+  )}
+
+  {/* 📭 EMPTY */}
+  {!loading && !error && users.length === 0 && (
+    <motion.div
+      key="empty"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="text-center py-6 text-gray-500"
+    >
+      No se encontraron usuarios
+    </motion.div>
+  )}
+
+  {/* ✅ DATA */}
+  {!error && users.length > 0 && (
+    <motion.div
+      key="data"
+      animate={{ opacity: loading ? 0.6 : 1 }}
+      transition={{ duration: 0.2 }}
+    >
+      <UsersTable
+        users={users}
+        fetchUsers={fetchUsers}
+      />
+    </motion.div>
+  )}
+</AnimatePresence>
+<AnimatePresence>
+  {creating && (
+    <CreateUserModal
+      onClose={() => setCreating(false)}
+      onSuccess={fetchUsers}
+    />
+  )}
+</AnimatePresence>
     </div>
+    
   );
 }
