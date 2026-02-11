@@ -57,14 +57,14 @@ CREATE TABLE ciudad (
     id_departamento INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE TABLE departamento (
     id_departamento INTEGER PRIMARY KEY,
     nombre VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 -- =========================
 -- USUARIO

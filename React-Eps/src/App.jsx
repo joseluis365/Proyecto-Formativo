@@ -20,16 +20,23 @@ import SuperAdminVerify from "./Pages/SuperAdmin/SuperAdminVerify"
 import SuperAdminDashboard from "./Pages/SuperAdmin/SuperAdminDashboard"
 import SuperAdminLayout from "./layouts/SuperAdminLayout"
 import SuperAdminEmpresas from "./Pages/SuperAdmin/SuperAdminEmpresas"
+import SuperAdminLicencias from "./Pages/SuperAdmin/SuperAdminLicencias"
+import SuperAdminHistorial from "./Pages/SuperAdmin/SuperAdminHistorial"
+import Licencias from "./Pages/Inicio/Licencias"
+import Pago from "./Pages/Inicio/Pago"
 
 export default function App() {
   return (
     <Routes>
       <Route path="/SuperAdmin-Login" element={<SuperAdminLogin />} />
       <Route path="/SuperAdmin-Verify" element={<SuperAdminVerify />} />
-      
+      <Route path="/Pago" element={<Pago />} />
+
       <Route element={<SuperAdminLayout />}>
         <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
         <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
+        <Route path="/SuperAdmin-Licencias" element={<SuperAdminLicencias />} />
+        <Route path="/SuperAdmin-Historial" element={<SuperAdminHistorial />} />
       </Route>
 
 
@@ -37,6 +44,7 @@ export default function App() {
         <Route path="/" element={<Index />} />
         <Route path="/Contactenos" element={<Contactenos />} />
         <Route path="/SobreNosotros" element={<SobreNosotros />} />
+        <Route path="/Licencias" element={<Licencias />} />
       </Route>
       <Route element={<LoginLayout />}>
         <Route path="/login" element={<Login />} />
@@ -51,7 +59,7 @@ export default function App() {
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
         <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
         <Route path="/usuarios/medicos/agenda-medico" element={<AgendaMedico />} />
-        
+
       </Route>
     </Routes>
   )

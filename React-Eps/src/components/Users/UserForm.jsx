@@ -5,25 +5,23 @@ export default function UserForm({
   initialValues = {},
   fields = [],
   onSubmit,
+  onChange,
   loading,
   errors = {},
 }) {
   const [form, setForm] = useState(initialValues);
-  const [initialized, setInitialized] = useState(false);
 
-useEffect(() => {
-  if (!initialized) {
+  // Sincronizar con cambios externos (del padre)
+  useEffect(() => {
     setForm(initialValues);
-    setInitialized(true);
-  }
-}, [initialValues, initialized]);
+  }, [initialValues]);
 
   const handleChange = (name, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const updated = { ...form, [name]: value };
+    setForm(updated);
+    onChange?.(updated);
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -73,9 +71,8 @@ useEffect(() => {
                   handleChange(field.name, e.target.value)
                 }
                 placeholder={field.label}
-                className={`border rounded px-3 py-2 w-full ${
-                  errors[field.name] ? "border-red-500" : ""
-                }`}
+                className={`border rounded px-3 py-2 w-full ${errors[field.name] ? "border-red-500" : ""
+                  }`}
               />
             )}
             {errors[field.name] && (

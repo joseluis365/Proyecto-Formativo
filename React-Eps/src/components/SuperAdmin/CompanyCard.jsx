@@ -3,24 +3,22 @@ export default function CompanyCard({
   email,
   expiresAt,
   status,
+  onView,          
+  onAssignLicense, 
+  onRenew, 
+  onActive
 }) {
   const LICENSE_STATUS = {
-  1: {
-    text: "Licencia activa",
-    classes: "bg-green-100 text-green-700",
-  },
-  2: {
-    text: "Por vencer",
-    classes: "bg-yellow-100 text-yellow-700",
-  },
-  0: {
-    text: "Licencia expirada",
-    classes: "bg-red-100 text-red-700",
-  },
-};
+    1: { text: "Licencia activa", classes: "bg-green-100 text-green-700" },
+    4: { text: "Expira Pronto", classes: "bg-yellow-100 text-yellow-700" },
+    5: { text: "Licencia expirada", classes: "bg-red-100 text-red-700" },
+    3: { text: "Sin licencia", classes: "bg-gray-100 text-gray-700" },
+    6: { text: "Licencia Bloqueada", classes: "bg-gray-100 text-gray-700" },
+  };
 
-
-  const statusData = LICENSE_STATUS[status];
+  // Aseguramos que sea un número y que si no existe use el 3
+  const statusKey = Number(status);
+  const statusData = LICENSE_STATUS[statusKey] || LICENSE_STATUS[3];
 
   return (
     <div className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
@@ -61,25 +59,63 @@ export default function CompanyCard({
             Licencia expira
           </p>
           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {expiresAt}
+            {expiresAt || "-"}
           </p>
         </div>
       </div>
 
-      {/* Botón */}
+      {/* Botones */}
       <div className="flex gap-2">
-      <button
-        className="w-full py-2 text-sm font-semibold rounded-lg
-                   bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
-      >
-        Ver
-      </button>
-      <button
-        className="w-full py-2 text-sm font-semibold rounded-lg
-                   bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
-      >
-        Asignar licencia
-      </button>
+        {/* Ver siempre */}
+        <button
+          onClick={onView}
+          className="w-full py-2 text-sm font-semibold rounded-lg
+                     bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+        >
+          Ver
+        </button>
+
+        {/* Asignar licencia si no tiene ninguna */}
+        {(status === 3 || status === undefined) && (
+          <button
+          onClick={onAssignLicense}
+            className="w-full py-2 text-sm font-semibold rounded-lg
+                       bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+          >
+            Asignar licencia
+          </button>
+        )}
+
+        {/* Renovar si vencida */}
+        {status === 5 && (
+          <button
+            onClick={onRenew}
+            className="w-full py-2 text-sm font-semibold rounded-lg
+                       bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+          >
+            Renovar licencia
+          </button>
+        )}
+
+        {/* Opcional: por vencer solo ver o ver + renovar */}
+        {status === 4 && (
+          <button
+          onClick={onRenew}
+            className="w-full py-2 text-sm font-semibold rounded-lg
+                       bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+          >
+            Renovar licencia
+          </button>
+        )}
+        {status === 6 && (
+          <button
+            onClick={onActive}
+            className="w-full py-2 text-sm font-semibold rounded-lg
+                       bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+          >
+            Activar licencia
+          </button>
+        )}
       </div>
     </div>
   );

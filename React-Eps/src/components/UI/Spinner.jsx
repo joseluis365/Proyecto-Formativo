@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export function MotionSpinner() {
+export default function MotionSpinner() {
   return (
     <motion.div
       className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full"
