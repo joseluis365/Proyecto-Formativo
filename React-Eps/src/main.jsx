@@ -5,6 +5,7 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import "react-loading-skeleton/dist/skeleton.css";
 import { ToastProvider } from "./ToastContext";
+import LicenciasSection from './Pages/Inicio/Licencias'
 
 import SuperAdminLogin from './Pages/SuperAdmin/SuperAdminLogin'
 

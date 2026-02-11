@@ -1,11 +1,13 @@
 import BlueButton from "../UI/BlueButton";
 
 export default function LicensePlanCard({
+  id,
   duration,
   description,
   price,
   companies,
   status,
+  onUpdate
 }) {
   const STATUS_MAP = {
     1: {
@@ -18,11 +20,46 @@ export default function LicensePlanCard({
     },
   };
 
-  const statusData = STATUS_MAP[status] || STATUS_MAP.inactive;
+  const statusData = STATUS_MAP[status] || { text: "Desconocido", classes: "bg-gray-100 text-gray-500" };
+
+  const handleEdit = () => {
+    import("sweetalert2").then((Swal) => {
+      Swal.default.fire({
+        title: "Editar duración",
+        input: "number",
+        inputLabel: "Nueva duración en meses",
+        inputValue: duration,
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+        inputValidator: (value) => {
+          if (!value) {
+            return "Debes ingresar una duración";
+          }
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            const api = (await import("../../Api/axios")).default;
+            await api.put(`/licencia/${id}`, {
+              duracion_meses: result.value
+            });
+
+            Swal.default.fire("Actualizado", "La duración ha sido actualizada.", "success");
+            if (onUpdate) onUpdate();
+
+          } catch (error) {
+            console.error(error);
+            Swal.default.fire("Error", "No se pudo actualizar la duración.", "error");
+          }
+        }
+      });
+    });
+  };
 
   return (
     <div className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
-      
+
       {/* Estado */}
       <span
         className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full ${statusData.classes}`}
@@ -45,7 +82,7 @@ export default function LicensePlanCard({
       {/* Contenido */}
       <div className="space-y-1 mb-4">
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-          {duration} MESES
+          {duration}
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {description}
@@ -66,6 +103,7 @@ export default function LicensePlanCard({
       <BlueButton
         text="Editar duración"
         icon="edit"
+        onClick={handleEdit}
       />
 
       {/* Footer */}

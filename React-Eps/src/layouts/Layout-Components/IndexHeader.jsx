@@ -34,6 +34,7 @@ export default function IndexHeader() {
                         <NavLink className={navLinkStyles} to="/">Inicio</NavLink>
                         <NavLink className={navLinkStyles} to="/SobreNosotros">Sobre Nosotros</NavLink>
                         <NavLink className={navLinkStyles} to="/Contactenos">Contáctenos</NavLink>
+                        <NavLink className={navLinkStyles} to="/Licencias">Licencias</NavLink>
                     </nav>
 
                     <Link to="/login">
@@ -80,6 +81,7 @@ export default function IndexHeader() {
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/">Inicio</NavLink>
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/SobreNosotros">Sobre Nosotros</NavLink>
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/Contactenos">Contáctenos</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Licencias">Licencias</NavLink>
                     </nav>
 
                     {/* CTA */}

@@ -104,10 +104,10 @@ export default function SuperAdminLicencias() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <LicencesSection licenses={licenses} />
+            <LicencesSection licenses={licenses} onUpdate={fetchLicenses} />
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence >
 
       <AnimatePresence>
         {creating && (

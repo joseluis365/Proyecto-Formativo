@@ -30,3 +30,5 @@ export const createUserFormConfig = {
     { name: "status", label: "Estado", type: "select", options: [{ value: "ACTIVO", label: "Activo" }, { value: "INACTIVO", label: "Inactivo" }] },
   ],
 };
+
+

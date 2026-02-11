@@ -1,6 +1,6 @@
 import CompanyCard from "./CompanyCard";
 
-export default function CompaniesSection({ companies, onAssignLicense, onRenew }) {
+export default function CompaniesSection({ companies, onAssignLicense, onRenew, onView, onActive }) {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -12,7 +12,9 @@ export default function CompaniesSection({ companies, onAssignLicense, onRenew }
             expiresAt={company.expiresAt}
             status={company.id_estado}
             onAssignLicense={() => onAssignLicense(company)}
+            onView={() => onView(company)}
             onRenew={() => onRenew(company)}
+            onActive={() => onActive(company)}
           />
         ))}
       </div>

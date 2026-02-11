@@ -7,6 +7,8 @@ import CompaniesSection from "../../components/SuperAdmin/CompaniesSection";
 import { AnimatePresence, motion } from "framer-motion";
 import CreateEmpresaModal from "../../components/Modals/EmpresaModal/CreateEmpresaModal";
 import AssignLicenciaModal from "../../components/Modals/LicenciaModal/AsignarLicenciaModal";
+import CompanyDetailsModal from "../../components/Modals/EmpresaModal/CompanyDetailsModal";
+import Swal from 'sweetalert2';
 
 export default function SuperAdminEmpresas() {
   // 🔹 Estados
@@ -20,6 +22,8 @@ export default function SuperAdminEmpresas() {
   const [creating, setCreating] = useState(false);
   const [assigningLicense, setAssigningLicense] = useState(null); // NIT or full company object map
   const [licencias, setLicencias] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [viewingCompany, setViewingCompany] = useState(false);
 
 
   // 🔹 Opciones del filtro
@@ -27,6 +31,7 @@ export default function SuperAdminEmpresas() {
     { value: 1, label: "Licencia Activa" },
     { value: 2, label: "Licencia Expirada" },
     { value: 3, label: "Sin Licencia" },
+    { value: 6, label: "Licencia Bloqueada" },
   ];
 
   // 🔹 Obtener empresas
@@ -96,6 +101,51 @@ export default function SuperAdminEmpresas() {
     // Reutilizamos el mismo modal para renovar? Si.
     setAssigningLicense(company.nit);
   };
+
+  const handleRequireActive = async (company) => {
+    try {
+      const result = await Swal.fire({
+        title: '¿Activar Licencia?',
+        text: `Se activará la licencia para ${company.nombre}.`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, activar',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (result.isConfirmed) {
+        await api.post(`/empresa/${company.nit}/activar-licencia`);
+        Swal.fire(
+          'Activada!',
+          'La licencia ha sido activada correctamente.',
+          'success'
+        );
+        fetchCompanies();
+      }
+    } catch (error) {
+      console.error("Error activando licencia:", error);
+      Swal.fire(
+        'Error',
+        'Hubo un problema al activar la licencia.',
+        'error'
+      );
+    }
+  };
+
+  const handleViewCompany = async (company) => {
+    try {
+      // Obtener detalles completos incluyendo admin y licencia
+      // Usamos el endpoint show que hemos modificado
+      const res = await api.get(`/empresa/${company.nit}`);
+      setSelectedCompany(res.data);
+      setViewingCompany(true);
+    } catch (error) {
+      console.error("Error al obtener detalles:", error);
+      Swal.fire('Error', 'No se pudieron cargar los detalles de la empresa', 'error');
+    }
+  }
 
   const handleLicenseSuccess = () => {
     fetchCompanies();
@@ -185,6 +235,8 @@ export default function SuperAdminEmpresas() {
               companies={companies}
               onAssignLicense={handleAssignLicense}
               onRenew={handleRenewLicense}
+              onActive={handleRequireActive}
+              onView={(company) => handleViewCompany(company)} // Asumiendo que CompanyCard/Section pasa el objeto company
             />
           </motion.div>
         )}
@@ -203,6 +255,15 @@ export default function SuperAdminEmpresas() {
             licencias={licencias}
             onClose={() => setAssigningLicense(null)}
             onSuccess={handleLicenseSuccess}
+          />
+        )}
+        {viewingCompany && selectedCompany && (
+          <CompanyDetailsModal
+            company={selectedCompany}
+            onClose={() => {
+              setViewingCompany(false);
+              setSelectedCompany(null);
+            }}
           />
         )}
       </AnimatePresence>

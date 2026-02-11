@@ -6,12 +6,14 @@ export default function BlueButton({
   type = "button",
   loading = false,
   disabled = false,
+  ...props
 }) {
   return (
     <motion.button
       type={type}
       whileTap={{ scale: 0.96 }}
       disabled={loading || disabled}
+      {...props}
       className={`
         group
         bg-primary hover:bg-primary/90
