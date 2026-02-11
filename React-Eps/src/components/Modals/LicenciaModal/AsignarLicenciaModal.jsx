@@ -28,7 +28,6 @@ export default function AssignLicenciaModal({
   const [formData, setFormData] = useState(initialForm);
   const [duracionMeses, setDuracionMeses] = useState(null);
 
-  // 🔹 Adaptar licencias a options
   const licenciaOptions = licencias.map((l) => ({
     value: l.id,
     label: `${l.tipo} (${l.duracion})`,
@@ -43,12 +42,12 @@ export default function AssignLicenciaModal({
     return f;
   });
 
-  // 🔹 Detectar cambios del formulario
+  // Detectar cambios del formulario
   const handleFormChange = (data) => {
     let newFormData = { ...data };
     let currentDuration = duracionMeses;
 
-    // 1. Si cambió el tipo de licencia, buscar la nueva duración y precio
+    // Si cambió el tipo de licencia, buscar la nueva duración y precio
     if (data.licencia_id && String(data.licencia_id) !== String(formData.licencia_id)) {
       const licencia = licenciaOptions.find(
         (l) => String(l.value) === String(data.licencia_id)
@@ -68,11 +67,10 @@ export default function AssignLicenciaModal({
       }
     }
 
-    // 2. Si cambió la fecha de inicio
+    // Si cambió la fecha de inicio
     if (newFormData.fecha_inicio && currentDuration) {
       const startDate = dayjs(newFormData.fecha_inicio);
       if (startDate.isValid()) {
-        // Force format to string
         const end = startDate.add(parseInt(currentDuration), "month").format("YYYY-MM-DD");
         newFormData.fecha_fin = end;
       } else {
@@ -86,7 +84,6 @@ export default function AssignLicenciaModal({
   const handleSubmit = async () => {
     try {
       setSaving(true);
-      // Backend expects: nit, tipo_licencia_id, fecha_inicio
       const payload = {
         nit: empresaNit,
         id_tipo_licencia: formData.licencia_id,
@@ -136,7 +133,7 @@ export default function AssignLicenciaModal({
           errors={errors}
           loading={saving}
           onSubmit={handleSubmit}
-          onChange={handleFormChange} // 👈 clave
+          onChange={handleFormChange}
         />
       </div>
       <ModalFooter />

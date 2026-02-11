@@ -23,7 +23,7 @@ class LicenciaResource extends JsonResource
             : $this->duracion_meses . " MESES",
             'id_estado' => $this->id_estado,
         
-        // --- Campos dinámicos para la vista de Licencias ---
+
         'companies' => $this->empresa_licencias_count ?? 0,
         'popular' => (bool) $this->is_popular,
         ];

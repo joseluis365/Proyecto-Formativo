@@ -40,7 +40,6 @@ class Usuario extends Authenticatable
         'contrasena',
     ];
 
-    // 👇 RELACIONES (NO traits)
     public function rol()
     {
         return $this->belongsTo(Rol::class, 'id_rol', 'id_rol');

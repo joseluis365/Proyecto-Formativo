@@ -17,7 +17,6 @@ class Licencia extends Model
 
         public function empresaLicencias()
 {
-    // Ajusta los nombres de las llaves si son diferentes
     return $this->hasMany(EmpresaLicencia::class, 'id_tipo_licencia', 'id_tipo_licencia');
 }
 }

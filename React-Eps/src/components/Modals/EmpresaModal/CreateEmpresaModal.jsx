@@ -2,7 +2,6 @@ import { useState } from "react";
 import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
-import ModalBody from "../ModalBody";
 import ModalFooter from "../ModalFooter";
 import UserForm from "../../Users/UserForm";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
@@ -46,8 +45,6 @@ export default function CreateEmpresaModal({
                 ...data,
             };
             await api.post(`/empresa`, payload);
-
-            // Éxito con Swal
             import("sweetalert2").then((Swal) => {
                 Swal.default.fire({
                     icon: 'success',
@@ -64,7 +61,6 @@ export default function CreateEmpresaModal({
         } catch (error) {
             console.error(error);
             if (error.response?.status === 422) {
-                // Errores de validación - Se muestran en el formulario (inline)
                 setErrors(
                     Object.fromEntries(
                         Object.entries(error.response.data.errors).map(
@@ -73,7 +69,6 @@ export default function CreateEmpresaModal({
                     )
                 );
             } else {
-                // Errores generales (servidor, red)
                 import("sweetalert2").then((Swal) => {
                     Swal.default.fire({
                         icon: 'error',
@@ -82,7 +77,6 @@ export default function CreateEmpresaModal({
                     });
                 });
             }
-            // NO limpiamos form data aquí para que el usuario no pierda lo escrito
         }
         finally {
             setSaving(false);

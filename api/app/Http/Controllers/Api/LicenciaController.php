@@ -18,15 +18,11 @@ class LicenciaController extends Controller
      */
     public function index(Request $request)
     {
-    // 1. Obtenemos las licencias con su conteo
     $licencias = Licencia::withCount('empresaLicencias')->get();
 
-    // 2. Encontramos el conteo máximo
     $maxCount = $licencias->max('empresa_licencias_count');
 
-    // 3. Marcamos manualmente cuál es popular en la colección
     $licencias->each(function ($licencia) use ($maxCount) {
-        // Creamos una propiedad dinámica en el modelo
         $licencia->is_popular = ($maxCount > 0 && $licencia->empresa_licencias_count === $maxCount);
     });
 
@@ -47,7 +43,6 @@ class LicenciaController extends Controller
         );
     }
 
-    // 📌 CREAR
     public function store(StoreLicenciaRequest $request)
     {
     $licencia = Licencia::create($request->validated());
@@ -60,7 +55,6 @@ class LicenciaController extends Controller
 
     public function pendientes()
     {
-    // Obtenemos las licencias en estado 6 (Pendiente) con los datos de la empresa
     $pendientes = EmpresaLicencia::where('id_estado', 6)
         ->with('empresa') 
         ->get();
@@ -73,10 +67,8 @@ class LicenciaController extends Controller
         return DB::transaction(function () use ($id) {
         $licencia = EmpresaLicencia::findOrFail($id);
 
-        // 1. Activar la licencia
         $licencia->update(['id_estado' => 1]);
 
-        // 2. Activar la empresa vinculada
         $empresa = Empresa::where('nit', $licencia->nit)->first();
         if ($empresa) {
             $empresa->update(['id_estado' => 1]);
@@ -86,7 +78,6 @@ class LicenciaController extends Controller
         });
     }
 
-    // 📌 ACTUALIZAR
     public function update(Request $request, $id)
     {
         $licencia = Licencia::findOrFail($id);
@@ -107,7 +98,6 @@ class LicenciaController extends Controller
         ]);
     }
 
-    // 📌 ELIMINAR
     public function destroy($id)
     {
         Licencia::findOrFail($id)->delete();

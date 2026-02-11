@@ -14,9 +14,9 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'unique:users,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
+            'documento' => ['required', 'numeric', 'unique:usuario,documento'],
+            'nombre' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:usuario,email'],
             'password' => ['required', 'string', 'min:8'],
             'status' => ['required', 'in:ACTIVO,INACTIVO'],
             'id_rol' => ['required', 'exists:rol,id_rol'],
@@ -27,8 +27,8 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'id.required' => 'El documento es obligatorio',
-            'id.unique' => 'Este documento ya está registrado',
+            'documento.required' => 'El documento es obligatorio',
+            'documento.unique' => 'Este documento ya está registrado',
             'email.unique' => 'Este correo ya existe',
             'password.required' => 'La contraseña es obligatoria',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres',

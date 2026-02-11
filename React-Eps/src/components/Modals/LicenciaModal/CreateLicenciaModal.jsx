@@ -3,7 +3,6 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalBody from "../ModalBody";
-import ModalFooter from "../ModalFooter";
 import UserForm from "../../Users/UserForm";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
@@ -33,7 +32,6 @@ export default function CreateLicenciaModal({
         try {
             setSaving(true);
             setErrors({});
-            // Ensure numeric values are numbers if needed, but API might handle strings
             const payload = {
                 ...data,
             };
@@ -114,10 +112,6 @@ export default function CreateLicenciaModal({
                             )
                         )}
                     </ModalBody>
-
-                    <ModalFooter>
-
-                    </ModalFooter>
                 </BaseModal>
             </motion.div>
         </motion.div>

@@ -38,7 +38,7 @@ class Empresa extends Model
     public function adminUser()
     {
         return $this->hasOne(Usuario::class, 'nit', 'nit')
-            ->where('id_rol', 2) // Asumiendo que 2 es el rol de Admin de Empresa
-            ->latest(); // En caso de que haya varios, traer el más reciente
+            ->where('id_rol', 2) 
+            ->latest(); 
     }
 }

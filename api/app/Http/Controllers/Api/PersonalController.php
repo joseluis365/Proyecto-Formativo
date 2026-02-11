@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
 
 class PersonalController extends Controller
@@ -14,7 +14,7 @@ class PersonalController extends Controller
      */
     public function index(Request $request)
 {
-    $query = User::query();
+    $query = Usuario::query();
 
     // Filtro por rol
     if ($request->filled('id_rol')) {
@@ -55,14 +55,14 @@ class PersonalController extends Controller
     public function show($id)
     {
         return response()->json(
-            User::findOrFail($id)
+            Usuario::findOrFail($id)
         );
     }
 
     // 📌 CREAR
     public function store(StoreUserRequest $request)
     {
-    $user = User::create($request->validated());
+    $user = Usuario::create($request->validated());
 
     return response()->json([
         'message' => 'Usuario creado correctamente',
@@ -70,16 +70,15 @@ class PersonalController extends Controller
     ], 201);
 }
 
-    // 📌 ACTUALIZAR
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = Usuario::findOrFail($id);
 
         $data = $request->validate([
-            'id' => 'required|integer|unique:users,id,' . $id,
-            'name'   => 'required|string|max:255',
-            'email'  => 'required|email|unique:users,email,' . $id,
-            'status' => 'required|in:ACTIVO,INACTIVO',
+            'documento' => 'required|integer|unique:usuario,documento,' . $id,
+            'nombre'   => 'required|string|max:255',
+            'email'  => 'required|email|unique:usuario,email,' . $id,
+            'id_estado' => 'required|in:1,2',
             'id_rol' => 'required|integer',
         ]);
 
@@ -94,7 +93,7 @@ class PersonalController extends Controller
     // 📌 ELIMINAR
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        Usuario::findOrFail($id)->delete();
 
         return response()->json([
             'message' => 'Usuario eliminado'

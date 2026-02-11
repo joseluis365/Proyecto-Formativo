@@ -1,26 +1,14 @@
 <?php
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CitaController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\LicenciaController;
 use App\Http\Controllers\Api\EmpresaLicenciaController;
 use App\Http\Controllers\Api\RegistroEmpresaController;
-use App\Http\Controllers\Api\AuthController; // Import Controller
+use App\Http\Controllers\Api\AuthController; 
 
 Route::post('/login', [AuthController::class, 'login']);
-
-
-
-Route::controller(ProductController::class)->group(function () {
-    Route::get('/products', 'index');
-    Route::get('/product/{id}', 'show');
-    Route::post('/product', 'store');
-    Route::put('/product/{id}', 'update');
-    Route::delete('/product/{id}', 'destroy');
-});
 
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
@@ -57,7 +45,7 @@ Route::controller(LicenciaController::class)->group(function () {
 });
 
 Route::controller(EmpresaLicenciaController::class)->group(function () {
-    Route::get('/empresa-licencias', 'index'); // Historial
+    Route::get('/empresa-licencias', 'index');
     Route::post('/empresa-licencia', 'store');
     Route::post('/empresa/{nit}/activar-licencia', 'activate');
 });

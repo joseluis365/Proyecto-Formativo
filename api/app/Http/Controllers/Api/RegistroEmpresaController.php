@@ -14,7 +14,7 @@ class RegistroEmpresaController extends Controller
 {
     public function store(Request $request)
     {
-        // 1. Validamos todo lo que viene del formulario
+        // Validamos todo lo que viene del formulario
         $request->validate([
             'nit' => 'required|unique:empresa,nit',
             'nombre' => 'required|string',
@@ -36,7 +36,7 @@ class RegistroEmpresaController extends Controller
         try {
             return DB::transaction(function () use ($request) {
                 
-                // PASO 1: Crear la Empresa
+                // Crear la Empresa
                 $empresa = Empresa::create([
                     'nit' => $request->nit,
                     'nombre' => $request->nombre,
@@ -48,17 +48,17 @@ class RegistroEmpresaController extends Controller
                     'telefono_representante' => $request->telefono_representante,
                     'ciudad' => $request->ciudad,
                     'direccion' => $request->direccion,
-                    'id_estado' => 1, // Estado inicial (ej: registrado sin activar)
+                    'id_estado' => 1,
                 ]);
 
-                // PASO 2: Crear el Usuario Administrador vinculado a ese NIT
+                // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
                     'documento' => $request->admin_documento,
                     'nombre' => $request->admin_name,
                     'email' => $request->admin_email,
                     'contrasena' => Hash::make($request->admin_password),
-                    'nit' => $empresa->nit, // Relación por NIT
-                    'id_rol' => 2, // Rol de Admin de Empresa
+                    'nit' => $empresa->nit, 
+                    'id_rol' => 2, 
                     'id_estado' => 1,
                 ]);
 
@@ -66,15 +66,14 @@ class RegistroEmpresaController extends Controller
                 $letras = strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 6));
                 $customId = $numeros . $letras;
 
-                // PASO 3: Vincular la Licencia (con estado Pendiente)
+                // Vincular la Licencia (con estado Pendiente)
                 EmpresaLicencia::create([
                     'id_empresa_licencia' => $customId,
                     'nit' => $empresa->nit,
                     'id_tipo_licencia' => $request->id_tipo_licencia,
                     'fecha_inicio' => now(),
                     'fecha_fin' => now()->addMonths($request->duracion_meses),
-                    'id_estado' => 6, // ESTADO 6: Pendiente de pago/activación
-                    'referencia_pago' => 'REF-' . strtoupper(bin2hex(random_bytes(4)))
+                    'id_estado' => 6, 
                 ]);
 
                 return response()->json([

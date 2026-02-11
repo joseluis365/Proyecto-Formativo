@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 export default function HistoryDetailsModal({ history, onClose }) {
-    const { empresa, tipo_licencia, fecha_inicio, fecha_fin, id_estado, created_at } = history;
+    const { empresa, admin_user, tipo_licencia, fecha_inicio, fecha_fin, id_estado, created_at } = history;
 
     const STATUS_MAP = {
         1: { text: "Activa", classes: "bg-green-100 text-green-700" },
@@ -11,6 +11,7 @@ export default function HistoryDetailsModal({ history, onClose }) {
         5: { text: "Vencida", classes: "bg-orange-100 text-orange-700" },
         6: { text: "Pendiente", classes: "bg-blue-100 text-blue-700" },
     };
+    console.log(history);
 
     const statusInfo = STATUS_MAP[id_estado] || { text: "Desconocido", classes: "bg-gray-100 text-gray-500" };
 
@@ -53,6 +54,48 @@ export default function HistoryDetailsModal({ history, onClose }) {
                         </span>
                     </div>
 
+
+                    <div className="space-y-6">
+
+                    {/* 🔹 Tipo de Licencia arriba */}
+                    <div className="space-y-1">
+                        <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+                        Empresa
+                        </label>
+                    </div>
+
+                    {/* 🔹 Información en dos columnas abajo */}
+                    <div className="grid grid-cols-2 gap-6">
+
+                        <div className="space-y-1">
+                            <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+                                Representante Legal
+                            </label>
+                            <p className="text-gray-800 dark:text-white font-semibold">
+                                {empresa?.nombre_representante}
+                            </p>
+                            <p className="text-gray-800 dark:text-white font-semibold">
+                                {empresa?.email_representante}
+                            </p>
+                            <p className="text-gray-800 dark:text-white font-semibold">
+                                {empresa?.telefono_representante}
+                            </p>
+                        </div>
+
+                        <div className="space-y-1">
+                            <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">
+                                Admin del sistema
+                            </label>
+                            <p className="text-gray-800 dark:text-white font-semibold">
+                                {empresa?.admin_user?.nombre}
+                            </p>
+                            <p className="text-gray-800 dark:text-white font-semibold">
+                                {empresa?.admin_user?.email}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
                     {/* Details Grid */}
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-1">

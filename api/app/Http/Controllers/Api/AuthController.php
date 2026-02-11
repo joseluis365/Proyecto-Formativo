@@ -26,7 +26,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // 🔹 VALIDACIÓN DE LICENCIA
+        //VALIDACIÓN DE LICENCIA
         // Verificar si el usuario pertenece a una empresa (tiene NIT)
         if ($user->nit) {
             $empresa = Empresa::with('licenciaActual')->find($user->nit);
@@ -40,7 +40,7 @@ class AuthController extends Controller
                     ], 403);
                 }
 
-                if ($licencia->id_estado != 1) { // 1 = Activa
+                if ($licencia->id_estado != 1) {
                     $estadoTexto = match ($licencia->id_estado) {
                         2 => 'Inactiva',
                         3 => 'Sin Licencia',
@@ -57,7 +57,7 @@ class AuthController extends Controller
             }
         }
 
-        // Si pasa todas las validaciones, generar token
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -70,7 +70,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Revocar token actual
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([

@@ -16,7 +16,6 @@ class EmpresaController extends Controller
     public function index(Request $request)
 {
     \Illuminate\Support\Facades\Artisan::call('app:check-licenses');
-    // Eager loading de la última licencia para evitar el problema N+1
     $query = Empresa::with(['licenciaActual']);
 
     // Búsqueda
@@ -29,16 +28,12 @@ class EmpresaController extends Controller
     }
 
     // Filtro por estado
-    // Nota: Como el estado es calculado en el Resource, el filtro 
-    // debe usar whereHas para buscar en la tabla de licencias.
     if ($request->filled('id_estado')) {
         $estado = $request->id_estado;
         if ($estado == 3) {
             $query->whereDoesntHave('licencias');
         } else {
             $query->whereHas('licenciaActual', function ($q) use ($estado) {
-                // Aquí podrías aplicar la misma lógica de fechas si quieres 
-                // que el filtro sea 100% exacto, pero por ahora filtramos por el id_estado de la DB
                 $q->where('id_estado', $estado);
             });
         }
@@ -62,32 +57,27 @@ class EmpresaController extends Controller
         );
     }
 
-    // 📌 CREAR
     public function store(StoreEmpresaRequest $request)
     {
         $data = $request->validated();
         
-        // Default estado SIN LICENCIA (3)
         if (!isset($data['id_estado'])) {
             $data['id_estado'] = 3;
         }
 
         try {
             return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
-                // 1. Crear Empresa
                 $empresaData = collect($data)->except(['admin_nombre', 'admin_documento', 'admin_email', 'admin_password'])->toArray();
                 $empresa = Empresa::create($empresaData);
 
-                // 2. Crear Usuario Admin asociado
                 $usuario = \App\Models\Usuario::create([
-                    'documento' => $data['admin_documento'], // Clave primaria correcta
+                    'documento' => $data['admin_documento'],
                     'nombre' => $data['admin_nombre'],
                     'email' => $data['admin_email'],
                     'contrasena' => \Illuminate\Support\Facades\Hash::make($data['admin_password']),
-                    'id_rol' => 2, // 2 = Admin Empresa
-                    'id_estado' => 1, // Activo
+                    'id_rol' => 2,
+                    'id_estado' => 1,
                     'nit' => $empresa->nit,
-                    'telefono' => $empresa->telefono_representante, 
                     'direccion' => $empresa->direccion,
                     'is_active' => true 
                 ]);

@@ -20,13 +20,13 @@ export default function SuperAdminEmpresas() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [assigningLicense, setAssigningLicense] = useState(null); // NIT or full company object map
+  const [assigningLicense, setAssigningLicense] = useState(null); 
   const [licencias, setLicencias] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [viewingCompany, setViewingCompany] = useState(false);
 
 
-  // 🔹 Opciones del filtro
+  // Opciones del filtro
   const statusOptions = [
     { value: 1, label: "Licencia Activa" },
     { value: 2, label: "Licencia Expirada" },
@@ -34,7 +34,7 @@ export default function SuperAdminEmpresas() {
     { value: 6, label: "Licencia Bloqueada" },
   ];
 
-  // 🔹 Obtener empresas
+  // Obtener empresas
   const fetchCompanies = async () => {
     try {
       setLoading(true);
@@ -43,15 +43,13 @@ export default function SuperAdminEmpresas() {
       const res = await api.get("/empresas", {
         params: {
           search: debouncedSearch || undefined,
-          id_estado: status || undefined, // Backend usa 'id_estado'
+          id_estado: status || undefined, 
         },
       });
-
-      // Mapeamos los datos para que coincidan con lo que espera CompaniesSection
       const formattedData = res.data.data.map(company => ({
         ...company,
-        email: company.email_contacto, // Mapeo de email_contacto a email
-        expiresAt: company.expiresAt || "Sin fecha de expiración", // Manejo de fecha vacía
+        email: company.email_contacto,
+        expiresAt: company.expiresAt || "Sin fecha de expiración",
       }));
 
       setCompanies(formattedData);
@@ -65,7 +63,6 @@ export default function SuperAdminEmpresas() {
     }
   };
 
-  // 🔹 Debounce para búsqueda
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -74,17 +71,16 @@ export default function SuperAdminEmpresas() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // 🔹 Ejecutar cuando cambian filtros
+  // Ejecutar cuando cambian filtros
   useEffect(() => {
     fetchCompanies();
   }, [debouncedSearch, status]);
 
-  // 🔹 Cargar licencias al montar
+  // Cargar licencias al montar
   useEffect(() => {
     const fetchLicencias = async () => {
       try {
         const res = await api.get('/licencias');
-        // Ajustar según estructura de respuesta
         setLicencias(res.data.data || res.data);
       } catch (err) {
         console.error("Error al cargar licencias:", err);
@@ -98,7 +94,6 @@ export default function SuperAdminEmpresas() {
   };
 
   const handleRenewLicense = (company) => {
-    // Reutilizamos el mismo modal para renovar? Si.
     setAssigningLicense(company.nit);
   };
 
@@ -136,8 +131,6 @@ export default function SuperAdminEmpresas() {
 
   const handleViewCompany = async (company) => {
     try {
-      // Obtener detalles completos incluyendo admin y licencia
-      // Usamos el endpoint show que hemos modificado
       const res = await api.get(`/empresa/${company.nit}`);
       setSelectedCompany(res.data);
       setViewingCompany(true);
@@ -236,7 +229,7 @@ export default function SuperAdminEmpresas() {
               onAssignLicense={handleAssignLicense}
               onRenew={handleRenewLicense}
               onActive={handleRequireActive}
-              onView={(company) => handleViewCompany(company)} // Asumiendo que CompanyCard/Section pasa el objeto company
+              onView={(company) => handleViewCompany(company)}
             />
           </motion.div>
         )}
