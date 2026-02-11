@@ -10,6 +10,14 @@ use App\Http\Controllers\Api\AuthController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
+// Rutas Superadmin
+Route::post('/superadmin/login', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'login']);
+Route::post('/superadmin/verificar-codigo', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'verificarCodigo']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/superadmin/logout', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'logout']);
+    Route::get('/superadmin/check-session', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'checkSession']);
+});
+
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
     Route::get('/cita/{id}', 'show');

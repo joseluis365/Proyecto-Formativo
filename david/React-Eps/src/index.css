@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #135bec;
+  --color-background-light: #f6f8f8;
+  --color-background-dark: #10221d;
+  --color-primary-green: #2D8A6E;
+  --color-accent-teal: #40919E;
+  --color-neutral-gray-text: #6B7280;
+  --color-neutral-gray-border: #D1D5DB;
+  --color-soft-red: #EF4444;
+  --color-soft-blue: #3B82F6;
+  --color-soft-orange: #F97316;
+  --color-sky-blue: #0ea5e9;
+
+  --font-display: Inter, sans-serif;
+}
+
+/* Force dark mode to be class-based to prevent system preference from triggering it unwantedly */
+@variant dark (&:where(.dark, .dark *));
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+  font-size: 20px;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
+.text-3xl {
+    @apply text-3xl;
+}
+
+@layer components {
+  .input-tight {
+    @apply block w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm placeholder:text-slate-400
+    focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white;
+  }
+}
+
+@layer utilities {
+  .section-tight {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-tight {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-tight {
+      padding-top: 3.5rem;
+      padding-bottom: 3.5rem;
+    }
+  }
+
+  .card-compact {
+    padding: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .card-compact {
+      padding: 1.5rem;
+    }
+  }
+}

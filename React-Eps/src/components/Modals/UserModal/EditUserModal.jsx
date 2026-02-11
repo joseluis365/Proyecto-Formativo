@@ -57,7 +57,7 @@ export default function EditUserModal({
   return (
     <BaseModal>
       <ModalHeader icon="person" title="EDITAR USUARIO" onClose={onClose} />
-      <div className="p-6">
+      <div className="p-6 flex-1 overflow-y-auto">
         {loading ? (
           <p>Cargando...</p>
         ) : (

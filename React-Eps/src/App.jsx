@@ -25,6 +25,8 @@ import SuperAdminHistorial from "./Pages/SuperAdmin/SuperAdminHistorial"
 import Licencias from "./Pages/Inicio/Licencias"
 import Pago from "./Pages/Inicio/Pago"
 
+import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
+
 export default function App() {
   return (
     <Routes>
@@ -32,11 +34,14 @@ export default function App() {
       <Route path="/SuperAdmin-Verify" element={<SuperAdminVerify />} />
       <Route path="/Pago" element={<Pago />} />
 
-      <Route element={<SuperAdminLayout />}>
-        <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
-        <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
-        <Route path="/SuperAdmin-Licencias" element={<SuperAdminLicencias />} />
-        <Route path="/SuperAdmin-Historial" element={<SuperAdminHistorial />} />
+      {/* Rutas Protegidas SuperAdmin */}
+      <Route element={<SuperAdminRoute />}>
+        <Route element={<SuperAdminLayout />}>
+          <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
+          <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
+          <Route path="/SuperAdmin-Licencias" element={<SuperAdminLicencias />} />
+          <Route path="/SuperAdmin-Historial" element={<SuperAdminHistorial />} />
+        </Route>
       </Route>
 
 

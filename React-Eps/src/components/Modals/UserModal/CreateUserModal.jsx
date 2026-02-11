@@ -71,7 +71,7 @@ export default function CreateUserModal({
   return (
     <BaseModal>
       <ModalHeader icon="person" title="CREAR USUARIO" onClose={onClose} />
-      <div className="p-6">
+      <div className="p-6 flex-1 overflow-y-auto">
         {loading ? (
           <p>Cargando...</p>
         ) : (

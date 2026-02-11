@@ -1,7 +1,7 @@
 import IconInput from "./IconInput";
 
 
-export default function Formbuilder({ onSubmit, config, children, errors = {} }) {
+export default function Formbuilder({ onSubmit, config, children, errors = {}, onChange }) {
     return (
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
             {config.fields.map((field) => (
@@ -14,7 +14,9 @@ export default function Formbuilder({ onSubmit, config, children, errors = {} })
                     name={field.name}
                     required={field.required}
                     error={errors[field.name]}
-                    autoComplete={field.autoComplete} />
+                    autoComplete={field.autoComplete}
+                    onChange={onChange ? (e) => onChange(field.name, e.target.value) : undefined}
+                />
             ))}
             {children}
         </form>
