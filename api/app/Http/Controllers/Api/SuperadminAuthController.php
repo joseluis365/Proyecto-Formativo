@@ -114,4 +114,89 @@ class SuperadminAuthController extends Controller
             'user' => $request->user()
         ]);
     }
+
+    /**
+     * Paso 1: Enviar código de recuperación
+     */
+    public function sendRecoveryCode(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $superadmin = Superadmin::where('email', $request->email)->first();
+
+        if (!$superadmin) {
+            return response()->json(['message' => 'Correo no encontrado'], 404);
+        }
+
+        $code = random_int(100000, 999999);
+
+        // Guardar código de recuperación por 10 minutos
+        Cache::put('superadmin_recovery_' . $request->email, $code, now()->addMinutes(10));
+
+        try {
+            Mail::raw(
+                "Tu código de recuperación es: {$code}. Válido por 10 minutos.",
+                function ($message) use ($superadmin) {
+                    $message->to($superadmin->email)
+                            ->subject('Recuperación de Contraseña - EPS');
+                }
+            );
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error enviando correo'], 500);
+        }
+
+        return response()->json(['message' => 'Código enviado']);
+    }
+
+    /**
+     * Paso 2: Verificar código de recuperación
+     */
+    public function verifyRecoveryCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|numeric'
+        ]);
+
+        $cachedCode = Cache::get('superadmin_recovery_' . $request->email);
+
+        if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
+            return response()->json(['message' => 'Código inválido o expirado'], 400);
+        }
+
+        return response()->json(['message' => 'Código correcto']);
+    }
+
+    /**
+     * Paso 3: Restablecer contraseña
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|numeric',
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+
+        // Verificar código nuevamente por seguridad
+        $cachedCode = Cache::get('superadmin_recovery_' . $request->email);
+
+        if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
+            return response()->json(['message' => 'Sesión expirada o código inválido'], 400);
+        }
+
+        $superadmin = Superadmin::where('email', $request->email)->first();
+
+        if (!$superadmin) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        $superadmin->contrasena = Hash::make($request->password);
+        $superadmin->save();
+
+        // Eliminar código usado
+        Cache::forget('superadmin_recovery_' . $request->email);
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente']);
+    }
 }

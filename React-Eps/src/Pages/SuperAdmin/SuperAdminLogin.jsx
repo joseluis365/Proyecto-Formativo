@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminLogin } from "../../data/SuperAdminForms"; // Ensure this exists or I need to create it/mock it
@@ -113,6 +113,12 @@ export default function SuperAdminLogin() {
             disabled={loading}
           />
         </Formbuilder>
+
+        <div className="mt-4 text-center">
+          <Link to="/SuperAdmin-ForgotPassword" className="text-blue-600 hover:underline text-sm font-semibold">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
 
         {/* Info */}
         <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 flex items-start gap-3">

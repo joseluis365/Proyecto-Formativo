@@ -39,6 +39,60 @@ export const superAdminVerify = {
     ],
 };
 
+
+export const superAdminForgotPassword = {
+    buttonText: "Enviar código",
+    buttonIcon: "send",
+    fields: [
+        {
+            name: "email",
+            label: "Correo electrónico registrado",
+            icon: "email",
+            type: "email",
+            placeholder: "correo@ejemplo.com",
+            required: true,
+        },
+    ],
+};
+
+export const superAdminRecoveryCode = {
+    buttonText: "Verificar código",
+    buttonIcon: "check_circle",
+    fields: [
+        {
+            name: "code",
+            label: "Código de recuperación",
+            icon: "lock",
+            type: "text",
+            placeholder: "123456",
+            required: true,
+        },
+    ],
+};
+
+export const superAdminResetPassword = {
+    buttonText: "Restablecer contraseña",
+    buttonIcon: "save",
+    fields: [
+        {
+            name: "password",
+            label: "Nueva contraseña",
+            icon: "lock",
+            type: "password",
+            placeholder: "Mínimo 8 caracteres",
+            required: true,
+        },
+        {
+            name: "password_confirmation",
+            label: "Confirmar contraseña",
+            icon: "lock_reset",
+            type: "password",
+            placeholder: "Repite la contraseña",
+            required: true,
+        },
+    ],
+};
+
 export const superAdminCompanies = {
     fields: [
         {

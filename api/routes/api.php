@@ -18,6 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/superadmin/check-session', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'checkSession']);
 });
 
+Route::post('/superadmin/forgot-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'sendRecoveryCode']);
+Route::post('/superadmin/verify-recovery-code', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'verifyRecoveryCode']);
+Route::post('/superadmin/reset-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'resetPassword']);
+
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
     Route::get('/cita/{id}', 'show');

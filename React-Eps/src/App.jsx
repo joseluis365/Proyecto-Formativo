@@ -25,6 +25,10 @@ import SuperAdminHistorial from "./Pages/SuperAdmin/SuperAdminHistorial"
 import Licencias from "./Pages/Inicio/Licencias"
 import Pago from "./Pages/Inicio/Pago"
 
+import SuperAdminForgotPassword from "./Pages/SuperAdmin/SuperAdminForgotPassword"
+import SuperAdminRecoveryCode from "./Pages/SuperAdmin/SuperAdminRecoveryCode"
+import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
+
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
 
 export default function App() {
@@ -32,6 +36,9 @@ export default function App() {
     <Routes>
       <Route path="/SuperAdmin-Login" element={<SuperAdminLogin />} />
       <Route path="/SuperAdmin-Verify" element={<SuperAdminVerify />} />
+      <Route path="/SuperAdmin-ForgotPassword" element={<SuperAdminForgotPassword />} />
+      <Route path="/SuperAdmin-RecoveryCode" element={<SuperAdminRecoveryCode />} />
+      <Route path="/SuperAdmin-ResetPassword" element={<SuperAdminResetPassword />} />
       <Route path="/Pago" element={<Pago />} />
 
       {/* Rutas Protegidas SuperAdmin */}
