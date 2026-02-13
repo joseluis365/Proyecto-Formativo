@@ -7,6 +7,7 @@ import UserForm from "../../Users/UserForm";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
+import Swal from 'sweetalert2';
 
 
 export default function CreateLicenciaModal({
@@ -36,12 +37,20 @@ export default function CreateLicenciaModal({
                 ...data,
             };
             await api.post(`/licencia`, payload);
-            toast.success("Licencia creada correctamente");
-            setSuccess(true);
-            setTimeout(() => {
-                onSuccess?.();
-                onClose();
-            }, 1200);
+
+  // 2. Disparas la alerta de SweetAlert2
+  await Swal.fire({
+    icon: 'success',
+    title: 'Licencia Creada',
+    text: 'La licencia ha sido creada correctamente.',
+    showConfirmButton: false,
+    timer: 1500
+  });
+
+  // 3. Estas acciones ocurren SOLO después de que el usuario cierra la alerta
+  setSuccess(true);
+  onSuccess?.();
+  onClose();
         } catch (error) {
             if (error.response?.status === 422) {
                 setErrors(

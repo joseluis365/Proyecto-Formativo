@@ -2,19 +2,19 @@ import React, { useEffect, useState } from "react";
 import BlueButton from "../UI/BlueButton";
 
 export default function UserForm({
-  initialValues = {},
+  values = {},
   fields = [],
   onSubmit,
   onChange,
   loading,
   errors = {},
 }) {
-  const [form, setForm] = useState(initialValues);
+  const [form, setForm] = useState(values);
 
   // Sincronizar con cambios externos (del padre)
   useEffect(() => {
-    setForm(initialValues);
-  }, [initialValues]);
+  setForm(values);
+}, [values]);
 
   const handleChange = (name, value) => {
     const updated = { ...form, [name]: value };
@@ -30,11 +30,13 @@ export default function UserForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {fields.map((field) => {
         const value = form[field.name] ?? "";
         const error = errors[field.name];
 
         return (
+                            
           <div key={field.name} className="space-y-1">
             {/* Label */}
             <label className="text-sm font-medium text-gray-700">
@@ -53,7 +55,7 @@ export default function UserForm({
               `}
               >
                 {!value && (
-                  <option value="">Seleccionar</option>
+                  <option value="default-empty">Seleccionar</option>
                 )}
 
                 {field.options?.map((opt) => (
@@ -71,7 +73,7 @@ export default function UserForm({
                   handleChange(field.name, e.target.value)
                 }
                 placeholder={field.label}
-                className={`border rounded px-3 py-2 w-full ${errors[field.name] ? "border-red-500" : ""
+                className={`border border-gray-300 rounded px-3 py-2 w-full ${errors[field.name] ? "border-red-500" : ""
                   }`}
               />
             )}
@@ -81,8 +83,10 @@ export default function UserForm({
           </div>
         );
       })}
-
+      </div>
+      <div className="flex justify-end">
       <BlueButton text="Guardar" icon="save" type="submit" loading={loading} />
+      </div>
     </form>
   );
 }

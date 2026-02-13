@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
-import { superAdminLogin } from "../../data/SuperAdminForms"; // Ensure this exists or I need to create it/mock it
+import { superAdminLogin } from "../../data/SuperAdminForms";
+import Swal from 'sweetalert2';
 
-// Temporary mock if data file doesn't exist, checking imports later
-// Assuming superAdminLogin export exists in ../../data/SuperAdminForms based on previous file reading
 
 export default function SuperAdminLogin() {
   const navigate = useNavigate();
@@ -75,7 +74,13 @@ export default function SuperAdminLogin() {
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "Credenciales inválidas");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Credenciales inválidas',
+          showConfirmButton: false,
+          timer: 1000,
+        });
         setLoading(false); // 🔓 Libera si falla
         return;
       }

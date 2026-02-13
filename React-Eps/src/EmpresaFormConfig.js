@@ -4,6 +4,7 @@ export const createEmpresaFormConfig = {
     { name: "nombre", label: "Nombre", type: "text" },
     { name: "email_contacto", label: "Correo Contacto", type: "email" },
     { name: "telefono", label: "Telefono", type: "number" },
+    { name: "ciudad", label: "Ciudad", type: "text" },
     { name: "direccion", label: "Direccion", type: "text" },
     { name: "documento_representante", label: "Documento Representante", type: "number" },
     { name: "nombre_representante", label: "Nombre Representante", type: "text" },

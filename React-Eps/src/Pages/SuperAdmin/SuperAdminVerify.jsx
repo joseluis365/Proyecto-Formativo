@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
+import Swal from 'sweetalert2';
 import { superAdminVerify } from "../../data/SuperAdminForms";
 
 export default function SuperAdminVerify() {
@@ -55,7 +56,13 @@ export default function SuperAdminVerify() {
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "Código incorrecto o expirado");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Código incorrecto o expirado',
+          showConfirmButton: false,
+          timer: 1000,
+        });
         return;
       }
 
@@ -68,9 +75,23 @@ export default function SuperAdminVerify() {
         }
       }
 
+      Swal.fire({
+        icon: 'success',
+        title: 'Verificado',
+        text: 'Código verificado correctamente',
+        showConfirmButton: false,
+        timer: 1000,
+      });
+
       navigate("/SuperAdmin-Dashboard");
     } catch (error) {
-      alert("Error de conexión con el servidor");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error de conexión con el servidor',
+        showConfirmButton: false,
+        timer: 1000,
+      });
     }
   };
 

@@ -87,7 +87,7 @@ export default function CreateEmpresaModal({
                     <p>Cargando...</p>
                 ) : (
                     <UserForm
-                        initialValues={initialEmpresa}
+                        values={initialEmpresa}
                         fields={createEmpresaFormConfig[1]}
                         onSubmit={handleCreate}
                         disabled={saving}

@@ -51,6 +51,7 @@ export default function SuperAdminEmpresas() {
         email: company.email_contacto,
         expiresAt: company.expiresAt || "Sin fecha de expiración",
       }));
+      
 
       setCompanies(formattedData);
     } catch (err) {

@@ -26,13 +26,14 @@ export default function CompanyDetailsModal({ company, onClose }) {
             case 3: return "Sin Licencia";
             case 4: return "Por vencer";
             case 5: return "Vencida";
-            case 6: return "Pendiente de pago";
+            case 6: return "Bloqueada";
             default: return "Desconocido";
         }
     };
 
     const licencia = company.licencia_actual;
     const admin = company.admin_user;
+    console.log(company);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">

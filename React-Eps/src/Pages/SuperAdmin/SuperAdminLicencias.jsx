@@ -66,7 +66,6 @@ export default function SuperAdminLicencias() {
       </div>
 
       {/* CONTENIDO */}
-      {/* CONTENIDO */}
       <AnimatePresence mode="wait">
         {loading ? (
           <motion.div

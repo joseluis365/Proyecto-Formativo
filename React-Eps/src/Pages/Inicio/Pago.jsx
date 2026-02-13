@@ -3,11 +3,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../Api/axios";
 import { useToast } from "../../ToastContext";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
+import { createEmpresaFormConfig } from '../../EmpresaFormConfig';
 
 export default function Pago() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+  const [errors, setErrors] = useState({});
   
   // Recibimos el plan desde la navegación, si no existe redirigimos
   const plan = location.state?.plan || null;
@@ -21,22 +24,16 @@ export default function Pago() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
 
+  // 1. Extraer el array de la configuración
+  const fields = createEmpresaFormConfig[1];
+
+  // 2. Filtrar los campos para las dos secciones
+  const camposEmpresa = fields.filter(f => !f.name.startsWith('admin_'));
+  const camposAdmin = fields.filter(f => f.name.startsWith('admin_'));
+
   // Estados del formulario
   const [formData, setFormData] = useState({
-    nit: "",
-    nombre: "",
-    email_contacto: "",
-    telefono: "",
-    direccion: "",
-    documento_representante: "",
-    nombre_representante: "",
-    email_representante: "",
-    telefono_representante: "",
-    ciudad: "",
-    admin_documento: "",
-    admin_name: "",
-    admin_email: "",
-    admin_password: "",
+    ...Object.fromEntries(fields.map(f => [f.name, ""]))
   });
 
   // Cálculos dinámicos
@@ -45,29 +42,83 @@ export default function Pago() {
   const total = Math.round(subtotal + iva);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const { name, value } = e.target;
+  
+  // Actualizar el valor del formulario
+  setFormData({ ...formData, [name]: value });
+
+  // Si existe un error para este campo, eliminarlo
+  if (errors[name]) {
+    const newErrors = { ...errors };
+    delete newErrors[name];
+    setErrors(newErrors);
+  }
+};
 
   const handlePagar = async () => {
-    if (!plan) return alert("No hay plan seleccionado");
-    setLoading(true);
-    try {
-      const payload = {
-        ...formData,
-        id_tipo_licencia: plan.id,
-        duracion_meses: plan.duracion_meses,
-      };
+  if (!plan) return Swal.fire({
+    icon: "error",
+    title: "Error",
+    text: "No hay plan seleccionado",
+    showConfirmButton: false,
+    timer: 1100,
+    timerProgressBar: true,
+  });
+  
+  setLoading(true);
+  setErrors({}); // Limpiar errores antes de intentar
 
-      const response = await api.post("/registrar-empresa-licencia", payload);
+  try {
+    const payload = {
+      ...formData,
+      id_tipo_licencia: plan.id,
+      duracion_meses: plan.duracion_meses,
+      id_estado: 3,
+    };
 
-      toast.success("Registro exitoso. Espera la activación del administrador.");
-      navigate("/");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Error en el proceso");
-    } finally {
-      setLoading(false);
+    await api.post("/registrar-empresa-licencia", payload);
+    
+    Swal.fire({
+      icon: "success",
+      title: "Registro exitoso",
+      text: "Se ha registrado la empresa con exito, espera activación del Administrador",
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+    });
+    navigate("/");
+  } catch (error) {
+    console.error("Error en el registro:", error.response);
+
+    if (error.response?.status === 422) {
+      // Convertimos el objeto de arrays de Laravel a un objeto de strings
+      const backendErrors = error.response.data.errors;
+      const formattedErrors = {};
+      
+      Object.keys(backendErrors).forEach((key) => {
+        formattedErrors[key] = backendErrors[key][0]; // Tomamos el primer mensaje
+      });
+
+      setErrors(formattedErrors);
+      toast.error("Revisa los campos marcados en rojo");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Error inesperado",
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+      });
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const ErrorMsg = ({ name }) => (
+    errors[name] ? <p className="text-red-500 text-xs mt-1">{errors[name]}</p> : null
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -121,25 +172,51 @@ export default function Pago() {
           <h2 className="text-xl font-semibold text-gray-900">Registro y Pago</h2>
 
           <div className="space-y-4">
-            <h3 className="text-base font-medium text-gray-800">Información de la Empresa</h3>
-            <input name="nit" onChange={handleChange} type="text" placeholder="NIT de la empresa" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="nombre" onChange={handleChange} type="text" placeholder="Nombre de la empresa" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="email_contacto" onChange={handleChange} type="email" placeholder="email de la empresa" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="telefono" onChange={handleChange} type="number" placeholder="Telefono de la Empresa" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="direccion" onChange={handleChange} type="text" placeholder="Dirección de la empresa" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="documento_representante" onChange={handleChange} type="text" placeholder="Documento del representante legal" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="nombre_representante" onChange={handleChange} type="text" placeholder="Nombre del representante" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="telefono_representante" onChange={handleChange} type="text" placeholder="Telefono del representante" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="email_representante" onChange={handleChange} type="email" placeholder="Email del representante" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="ciudad" onChange={handleChange} type="text" placeholder="Ciudad" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+            <h3 className="text-base font-medium text-gray-800 border-b pb-2">Información de la Empresa</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {camposEmpresa.map((field) => (
+                <div key={field.name} className="flex flex-col">
+                  <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
+                  <input
+                    name={field.name}
+                    type={field.type}
+                    value={formData[field.name] || ""}
+                    onChange={handleChange}
+                    placeholder={field.label}
+                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${
+                      errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
+                    }`}
+                  />
+                  {errors[field.name] && (
+                    <span className="text-red-500 text-xs mt-1">{errors[field.name]}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-base font-medium text-gray-800">Cuenta Administrador</h3>
-            <input name="admin_documento" onChange={handleChange} type="text" placeholder="Documento del administrador" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="admin_name" onChange={handleChange} type="text" placeholder="Nombre del administrador" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="admin_email" onChange={handleChange} type="email" placeholder="Email corporativo" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-            <input name="admin_password" onChange={handleChange} type="password" placeholder="Contraseña" className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+            <h3 className="text-base font-medium text-gray-800 border-b pb-2">Cuenta Administrador</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {camposAdmin.map((field) => (
+                <div key={field.name} className="flex flex-col">
+                  <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
+                  <input
+                    name={field.name}
+                    type={field.type}
+                    value={formData[field.name] || ""}
+                    onChange={handleChange}
+                    placeholder={field.label}
+                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${
+                      errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
+                    }`}
+                  />
+                  {errors[field.name] && (
+                    <span className="text-red-500 text-xs mt-1">{errors[field.name]}</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-4">
