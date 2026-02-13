@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\LicenciaController;
 use App\Http\Controllers\Api\EmpresaLicenciaController;
 use App\Http\Controllers\Api\RegistroEmpresaController;
 use App\Http\Controllers\Api\AuthController; 
+use App\Models\Activity;
+use App\Http\Controllers\Api\LicenciaChartController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -21,6 +23,24 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/superadmin/forgot-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'sendRecoveryCode']);
 Route::post('/superadmin/verify-recovery-code', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'verifyRecoveryCode']);
 Route::post('/superadmin/reset-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'resetPassword']);
+
+Route::get('/recent-activity/{channelName}', function ($channel) {
+    return Activity::where('channel_name', $channel)
+        ->latest() // Ordenar por los más nuevos
+        ->take(5)             // Solo traer 5
+        ->get()
+        ->map(function($activity) {
+            return [
+                'id' => $activity->id,
+                'title' => $activity->title,
+                'type' => $activity->type,
+                'icon' => $activity->icon,
+                'time' => $activity->created_at->diffForHumans(),
+            ];
+        });
+});
+
+Route::get('/licenses/chart-data', [LicenciaChartController::class, 'getMonthlyStats']);
 
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
@@ -57,7 +77,7 @@ Route::controller(LicenciaController::class)->group(function () {
 });
 
 Route::controller(EmpresaLicenciaController::class)->group(function () {
-    Route::get('/empresa-licencias', 'index');
+    Route::get('/empresa-licencias', 'index');  
     Route::post('/empresa-licencia', 'store');
     Route::post('/empresa/{nit}/activar-licencia', 'activate');
 });
