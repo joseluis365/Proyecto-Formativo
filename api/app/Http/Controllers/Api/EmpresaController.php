@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Empresa;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Http\Resources\EmpresaResource;
+use App\Events\SystemActivityEvent;
 
 class EmpresaController extends Controller
 {
@@ -81,6 +82,13 @@ class EmpresaController extends Controller
                     'direccion' => $empresa->direccion,
                     'is_active' => true 
                 ]);
+
+                event(new SystemActivityEvent(
+                    "Nueva empresa registrada: " . $empresa->nombre, // Título
+                    'red',                                   // Tipo (Color rojo)
+                    'store',                                       // Icono
+                    'superadmin-feed'
+                ));
 
                 return response()->json([
                     'message' => 'Empresa y administrador creados correctamente',

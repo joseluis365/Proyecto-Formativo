@@ -1,28 +1,28 @@
 const FEED_STYLES = {
-  user: {
+  blue: {
     bg: "bg-blue-500/10",
     text: "text-blue-600",
   },
-  event: {
+  orange: {
     bg: "bg-orange-500/10",
     text: "text-orange-600",
   },
-  pharmacy: {
+  red: {
     bg: "bg-red-500/10",
     text: "text-red-600",
   },
-  system: {
+  teal: {
     bg: "bg-teal-500/10",
     text: "text-teal-600",
   },
-  admin: {
+  purple: {
     bg: "bg-purple-500/10",
     text: "text-purple-600",
   },
 };
 
 export default function FeedItem({ icon, title, time, type }) {
-  const styles = FEED_STYLES[type] || FEED_STYLES.admin;
+  const styles = FEED_STYLES[type] || FEED_STYLES.purple;
 
   return (
     <div className="flex gap-4">

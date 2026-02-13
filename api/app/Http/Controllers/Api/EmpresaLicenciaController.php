@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\EmpresaLicencia;
 use App\Models\Licencia;
 use App\Models\Empresa;
+use App\Events\SystemActivityEvent;
 
 class EmpresaLicenciaController extends Controller
 {
@@ -23,6 +24,10 @@ class EmpresaLicenciaController extends Controller
             ->get();
 
         return response()->json($historial);
+    }
+
+    public function getTipos() {
+    return response()->json(Licencia::all());
     }
 
     /**
@@ -58,6 +63,13 @@ class EmpresaLicenciaController extends Controller
         $empresa->id_estado = 1;
         $empresa->save();
 
+        event(new SystemActivityEvent(
+            "Nueva licencia registrada: " . $customId, // Título
+            'blue',                                   // Tipo (Color rojo)
+            'store',                                       // Icono
+            'superadmin-feed'
+        ));
+
         return response()->json([
             'data' => $licencia
         ], 201);
@@ -82,6 +94,13 @@ class EmpresaLicenciaController extends Controller
         $empresa = Empresa::findOrFail($nit);
         $empresa->id_estado = 1;
         $empresa->save();
+
+        event(new SystemActivityEvent(
+            "Licencia activada: " . $licencia->id_empresa_licencia, // Título
+            'blue',                                   // Tipo (Color rojo)
+            'store',                                       // Icono
+            'superadmin-feed'
+        ));
 
         return response()->json([
             'message' => 'Licencia activada correctamente',

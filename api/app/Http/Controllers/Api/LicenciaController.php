@@ -10,6 +10,7 @@ use App\Http\Resources\LicenciaResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmpresaLicencia;
 use App\Models\Empresa;
+use App\Events\SystemActivityEvent;
 
 class LicenciaController extends Controller
 {
@@ -47,6 +48,13 @@ class LicenciaController extends Controller
     {
     $licencia = Licencia::create($request->validated());
 
+    event(new SystemActivityEvent(
+                "Licencia creada: " . $licencia->tipo, 
+                'teal',                                   
+                'add',                                       
+                'superadmin-feed'
+            ));
+
     return response()->json([
         'message' => 'Licencia creado correctamente',
         'data' => $licencia
@@ -72,6 +80,13 @@ class LicenciaController extends Controller
         $empresa = Empresa::where('nit', $licencia->nit)->first();
         if ($empresa) {
             $empresa->update(['id_estado' => 1]);
+
+            event(new SystemActivityEvent(
+                        "Licencia activada: " . $licencia->id_empresa_licencia, 
+                        'blue',                                   
+                        'store',                                       
+                        'superadmin-feed'
+                    ));
         }
 
         return response()->json(['message' => 'Licencia y empresa activadas con éxito.']);
@@ -92,6 +107,13 @@ class LicenciaController extends Controller
 
         $licencia->update($data);
 
+        event(new SystemActivityEvent(
+                    "Licencia actualizada: " . $licencia->tipo,
+                    'blue',                                 
+                    'store',                                      
+                    'superadmin-feed'
+                ));
+
         return response()->json([
             'message' => 'Licencia actualizada correctamente',
             'licencia' => $licencia
@@ -100,7 +122,15 @@ class LicenciaController extends Controller
 
     public function destroy($id)
     {
-        Licencia::findOrFail($id)->delete();
+        $licencia = Licencia::findOrFail($id);
+        $licencia->delete();
+
+        event(new SystemActivityEvent(
+                    "Licencia eliminada: " . $licencia->tipo, 
+                    'red',                                   
+                    'delete',                                 
+                    'superadmin-feed'
+                ));
 
         return response()->json([
             'message' => 'Licencia eliminada'

@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Empresa;
 use App\Models\Usuario;
 use App\Models\EmpresaLicencia;
+use App\Http\Requests\StoreEmpresaRequest;
+use App\Events\SystemActivityEvent;
 
 class RegistroEmpresaController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreEmpresaRequest $request)
     {
         // Validamos todo lo que viene del formulario
         $request->validate([
@@ -26,7 +28,8 @@ class RegistroEmpresaController extends Controller
             'email_representante' => 'required|email|unique:usuario,email',
             'telefono_representante' => 'required|string',
             'ciudad' => 'required|string',
-            'admin_name' => 'required|string',
+            'admin_nombre' => 'required|string',
+            'admin_documento' => 'required|string',
             'admin_email' => 'required|email|unique:usuario,email',
             'admin_password' => 'required|min:8',
             'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
@@ -50,6 +53,13 @@ class RegistroEmpresaController extends Controller
                     'direccion' => $request->direccion,
                     'id_estado' => 1,
                 ]);
+
+                event(new SystemActivityEvent(
+                    "Nueva empresa registrada: " . $empresa->nombre, // Título
+                    'red',                                   // Tipo (Color rojo)
+                    'store',                                       // Icono
+                    'superadmin-feed'
+                ));
 
                 // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
@@ -75,6 +85,17 @@ class RegistroEmpresaController extends Controller
                     'fecha_fin' => now()->addMonths($request->duracion_meses),
                     'id_estado' => 6, 
                 ]);
+
+                event(new SystemActivityEvent(
+                    "Nueva licencia registrada: " . $customId, // Título
+                    'blue',                                   // Tipo (Color rojo)
+                    'store',                                       // Icono
+                    'superadmin-feed'
+                ));
+
+                
+
+                
 
                 return response()->json([
                     'status' => 'success',
