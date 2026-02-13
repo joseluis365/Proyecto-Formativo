@@ -36,6 +36,11 @@ export default function Usuarios() {
     { value: "INACTIVO", label: "Inactivos" },
   ];
 
+  const handleDownload = () => {
+    // Abrir en una pestaña nueva o usar window.location
+    window.open('http://localhost:8000/api/descargar-reporte', '_blank');
+};
+
   // 🔹 FUNCIÓN CENTRAL (la que faltaba)
   const fetchUsers = async () => {
     try {
@@ -107,6 +112,10 @@ export default function Usuarios() {
           options={statusOptions}
           placeholder="Filtrar por estado"
         />
+        <button onClick={handleDownload} className="bg-green-600 hover:bg-green-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-600/20">
+          <span className="material-symbols-outlined">download</span>
+          Descargar PDF
+        </button>
       </div>
 
       {/* TABLA */}

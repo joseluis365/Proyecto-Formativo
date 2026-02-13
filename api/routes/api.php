@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RegistroEmpresaController;
 use App\Http\Controllers\Api\AuthController; 
 use App\Models\Activity;
 use App\Http\Controllers\Api\LicenciaChartController;
+use App\Http\Controllers\Api\ReporteController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -41,6 +42,8 @@ Route::get('/recent-activity/{channelName}', function ($channel) {
 });
 
 Route::get('/licenses/chart-data', [LicenciaChartController::class, 'getMonthlyStats']);
+
+Route::get('/descargar-reporte', [ReporteController::class, 'generarPdf']);
 
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
