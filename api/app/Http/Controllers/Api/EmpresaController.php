@@ -216,4 +216,81 @@ class EmpresaController extends Controller
             'message' => 'Empresa eliminada'
         ]);
     }
+    // 📌 DASHBOARD STATS
+    public function getDashboardStats()
+    {
+        // 1. Licencias Activas (id_estado = 1)
+        $activeNow = \App\Models\EmpresaLicencia::where('id_estado', 1)->count();
+        $activeLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 1)
+            ->whereDate('fecha_inicio', '<', \Carbon\Carbon::now()->subMonth())
+            ->count();
+        
+        $activeChange = $this->calculatePercentageChange($activeNow, $activeLastMonth);
+
+        // 2. Expiran Pronto (id_estado = 4)
+        $expiringNow = \App\Models\EmpresaLicencia::where('id_estado', 4)->count();
+        $expiringLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 4)
+            ->whereDate('created_at', '<', \Carbon\Carbon::now()->subMonth()) // Aproximación
+            ->count();
+        
+        $expiringChange = $this->calculatePercentageChange($expiringNow, $expiringLastMonth);
+
+        // 3. Expiradas (id_estado = 5)
+        $expiredNow = \App\Models\EmpresaLicencia::where('id_estado', 5)->count();
+        $expiredLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 5)
+            ->whereDate('fecha_fin', '<', \Carbon\Carbon::now()->subMonth())
+            ->count();
+
+        $expiredChange = $this->calculatePercentageChange($expiredNow, $expiredLastMonth);
+
+        // 4. Total Empresas
+        $totalNow = Empresa::count();
+        $totalLastMonth = Empresa::whereDate('created_at', '<', \Carbon\Carbon::now()->subMonth())->count();
+
+        $totalChange = $this->calculatePercentageChange($totalNow, $totalLastMonth);
+
+        return response()->json([
+            [
+                "title" => "Licencias Activas",
+                "value" => (string)$activeNow,
+                "change" => $activeChange,
+                "type" => $this->getChangeType($activeChange)
+            ],
+            [
+                "title" => "Expiran pronto",
+                "value" => (string)$expiringNow,
+                "change" => $expiringChange,
+                "type" => "warning" 
+            ],
+            [
+                "title" => "Expiradas",
+                "value" => (string)$expiredNow,
+                "change" => $expiredChange,
+                "type" => "negative"
+            ],
+            [
+                "title" => "Total Empresas",
+                "value" => (string)$totalNow,
+                "change" => $totalChange,
+                "type" => "warning"
+            ]
+        ]);
+    }
+
+    private function calculatePercentageChange($current, $previous)
+    {
+        if ($previous == 0) {
+            return $current > 0 ? "+100%" : "0%";
+        }
+        $diff = $current - $previous;
+        $percentage = ($diff / $previous) * 100;
+        return ($percentage > 0 ? "+" : "") . round($percentage, 1) . "% vs mes anterior";
+    }
+
+    private function getChangeType($changeString)
+    {
+        if (str_contains($changeString, '+')) return 'positive';
+        if (str_contains($changeString, '-')) return 'negative';
+        return 'warning';
+    }
 }

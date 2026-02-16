@@ -52,6 +52,8 @@ class StoreEmpresaRequest extends FormRequest
             'admin_nombre.required' => 'El nombre del administrador es obligatorio',
             'admin_documento.required' => 'El documento del administrador es obligatorio',
             'admin_email.required' => 'El correo del administrador es obligatorio',
+            'admin_email.unique' => 'Este correo ya existe',
+            'admin_email.email' => 'El correo debe ser un correo valido',
             'admin_password.required' => 'La contraseña del administrador es obligatoria',
             'admin_password.min' => 'La contraseña del administrador debe tener al menos 8 caracteres',
             'nombre.required' => 'El nombre es obligatorio',

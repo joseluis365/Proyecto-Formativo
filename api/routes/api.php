@@ -47,6 +47,7 @@ Route::get('/descargar-reporte', [ReporteController::class, 'generarPdf']);
 Route::get('/empresas/pdf', [EmpresaController::class, 'exportPdf']);
 Route::get('/empresa/{id}/pdf', [EmpresaController::class, 'exportCompanyPdf']);
 Route::get('/licencias/historial/pdf', [EmpresaLicenciaController::class, 'exportHistoryPdf']);
+Route::get('/superadmin/dashboard-stats', [EmpresaController::class, 'getDashboardStats']);
 
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');
