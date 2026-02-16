@@ -23,6 +23,9 @@ class EmpresaResource extends JsonResource
         $fechaExpiracion = $licencia->fecha_fin;
 
         $estadoCalculado = $licencia->id_estado;
+        $tipoLicencia = $licencia->tipoLicencia ? $licencia->tipoLicencia->tipo : 'Desconocido';
+    } else {
+        $tipoLicencia = 'Sin Licencia';
     }
 
         return [
@@ -33,6 +36,7 @@ class EmpresaResource extends JsonResource
             'direccion' => $this->direccion,
             'id_estado' => $estadoCalculado,
             'expiresAt' => $fechaExpiracion,
+            'licenseType' => $tipoLicencia,
         ];
     }
 }

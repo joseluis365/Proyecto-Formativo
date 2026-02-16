@@ -9,12 +9,10 @@ use App\Models\EmpresaLicencia;
 use App\Models\Licencia;
 use App\Models\Empresa;
 use App\Events\SystemActivityEvent;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpresaLicenciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
@@ -38,13 +36,9 @@ class EmpresaLicenciaController extends Controller
         $data = $request->validate([
             'nit' => 'required|exists:empresa,nit',
             'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
-            'fecha_inicio' => 'required|date',
         ]);
 
         $tipoLicencia = Licencia::findOrFail($data['id_tipo_licencia']);
-
-        $fechaInicio = Carbon::parse($data['fecha_inicio']);
-        $fechaFin = $fechaInicio->copy()->addMonths($tipoLicencia->duracion_meses);
 
         $numeros = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         $letras = strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 6));
@@ -54,9 +48,9 @@ class EmpresaLicenciaController extends Controller
             'id_empresa_licencia' => $customId,
             'nit' => $data['nit'],
             'id_tipo_licencia' => $tipoLicencia->id_tipo_licencia,
-            'fecha_inicio' => $fechaInicio,
-            'fecha_fin' => $fechaFin,
-            'id_estado' => 1,
+            'fecha_inicio' => null,
+            'fecha_fin' => null,
+            'id_estado' => 6,
         ]);
         
         $empresa = Empresa::findOrFail($data['nit']);
@@ -88,6 +82,17 @@ class EmpresaLicenciaController extends Controller
             ], 404);
         }
 
+        // Cargar el tipo de licencia para obtener la duración
+        $licencia->load('tipoLicencia');
+        
+        $fechaInicio = Carbon::now()->timezone('America/Bogota');
+        // Asumiendo que tipoLicencia siempre existe si la llave foránea está bien
+        $duracion = $licencia->tipoLicencia ? $licencia->tipoLicencia->duracion_meses : 0; 
+        $fechaFin = $fechaInicio->copy()->addMonths($duracion);
+
+        $licencia->fecha_inicio = $fechaInicio;
+        $licencia->fecha_fin = $fechaFin;
+
         $licencia->id_estado = 1;
         $licencia->save();
 
@@ -106,5 +111,17 @@ class EmpresaLicenciaController extends Controller
             'message' => 'Licencia activada correctamente',
             'data' => $licencia
         ]);
+    }
+
+    public function exportHistoryPdf()
+    {
+        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
+            $query->where('id_rol', 2);
+        }])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $pdf = Pdf::loadView('pdf.historial_licencias', compact('historial'));
+        return $pdf->download('historial_licencias.pdf');
     }
 }

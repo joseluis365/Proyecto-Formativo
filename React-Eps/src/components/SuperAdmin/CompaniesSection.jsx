@@ -9,7 +9,7 @@ export default function CompaniesSection({ companies, onAssignLicense, onRenew, 
             key={company.nit || index}
             company={company.nombre}
             email={company.email}
-            expiresAt={company.expiresAt}
+            licenseType={company.licenseType}
             status={company.id_estado}
             onAssignLicense={() => onAssignLicense(company)}
             onView={() => onView(company)}

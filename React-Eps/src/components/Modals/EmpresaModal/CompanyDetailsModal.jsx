@@ -45,6 +45,31 @@ export default function CompanyDetailsModal({ company, onClose }) {
         setSelectedEmpresa(null);
     };
 
+    const handleDownloadPdf = async () => {
+        try {
+            const token = sessionStorage.getItem("token");
+            const response = await fetch(`http://localhost:8000/api/empresa/${company.nit}/pdf`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error("Error al descargar el PDF");
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `detalle_empresa_${company.nit}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+            // You might want to show a toast/alert here
+        }
+    };
+
     if (!company) return null;
 
     // Helpers para mostrar info segura
@@ -181,13 +206,13 @@ export default function CompanyDetailsModal({ company, onClose }) {
                                         <div>
                                             <span className="text-xs text-gray-500 block">Inicio</span>
                                             <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                {licencia.fecha_inicio ? new Date(licencia.fecha_inicio).toLocaleDateString() : 'N/A'}
+                                                {licencia.fecha_inicio ? new Date(licencia.fecha_inicio).toISOString().split('T')[0] : 'N/A'}
                                             </span>
                                         </div>
                                         <div>
                                             <span className="text-xs text-gray-500 block">Fin</span>
                                             <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                {licencia.fecha_fin ? new Date(licencia.fecha_fin).toLocaleDateString() : 'N/A'}
+                                                {licencia.fecha_fin ? new Date(licencia.fecha_fin).toISOString().split('T')[0] : 'N/A'}
                                             </span>
                                         </div>
                                     </div>
@@ -235,13 +260,21 @@ export default function CompanyDetailsModal({ company, onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-gray-200 gap-10 dark:border-gray-800 flex justify-end">
+                <div className="p-6 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+                    <button
+                        onClick={handleDownloadPdf}
+                        className="mr-5 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium cursor-pointer flex items-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-lg">download</span>
+                        Descargar PDF
+                    </button>
                     <button
                         onClick={() => handleEditClick(company)}
-                        className="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium cursor-pointer"
+                        className="mr-3 px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium cursor-pointer"
                     >
                         Editar
                     </button>
+
                     <button
                         onClick={onClose}
                         className="px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors font-medium cursor-pointer"

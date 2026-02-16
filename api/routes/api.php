@@ -44,6 +44,9 @@ Route::get('/recent-activity/{channelName}', function ($channel) {
 Route::get('/licenses/chart-data', [LicenciaChartController::class, 'getMonthlyStats']);
 
 Route::get('/descargar-reporte', [ReporteController::class, 'generarPdf']);
+Route::get('/empresas/pdf', [EmpresaController::class, 'exportPdf']);
+Route::get('/empresa/{id}/pdf', [EmpresaController::class, 'exportCompanyPdf']);
+Route::get('/licencias/historial/pdf', [EmpresaLicenciaController::class, 'exportHistoryPdf']);
 
 Route::controller(CitaController::class)->group(function () {
     Route::get('/citas', 'index');

@@ -20,7 +20,7 @@ export default function SuperAdminEmpresas() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [assigningLicense, setAssigningLicense] = useState(null); 
+  const [assigningLicense, setAssigningLicense] = useState(null);
   const [licencias, setLicencias] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [viewingCompany, setViewingCompany] = useState(false);
@@ -43,15 +43,16 @@ export default function SuperAdminEmpresas() {
       const res = await api.get("/empresas", {
         params: {
           search: debouncedSearch || undefined,
-          id_estado: status || undefined, 
+          id_estado: status || undefined,
         },
       });
       const formattedData = res.data.data.map(company => ({
         ...company,
         email: company.email_contacto,
         expiresAt: company.expiresAt || "Sin fecha de expiración",
+        licenseType: company.licenseType || "Sin Licencia",
       }));
-      
+
 
       setCompanies(formattedData);
     } catch (err) {
@@ -151,6 +152,39 @@ export default function SuperAdminEmpresas() {
 
   console.log(companies);
 
+  const exportarPDF = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:8000/api/empresas/pdf",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al generar el PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "informe_empresas_eps.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error("Error exportando PDF:", error);
+      Swal.fire("Error", "No se pudo generar el PDF", "error");
+    }
+  };
+  console.log(companies);
+
   return (
     <>
       <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
@@ -159,13 +193,23 @@ export default function SuperAdminEmpresas() {
           text="Empresas Registradas"
           number={totalCompanies}
         />
-        <button
-          onClick={() => setCreating(true)}
-          className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20"
-        >
-          Agregar Empresa
-          <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={exportarPDF}
+            className="bg-red-600 hover:bg-red-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all shadow-lg flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined">download</span>
+            Exportar PDF
+          </button>
+
+          <button
+            onClick={() => setCreating(true)}
+            className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20"
+          >
+            Agregar Empresa
+            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
+          </button>
+        </div>
       </div>
 
       {/* FILTROS */}

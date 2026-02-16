@@ -37,7 +37,7 @@ export default function Licencias() {
         {/* Título */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900">
-            Planes y Licencias
+            Planes
           </h2>
           <p className="text-gray-600 mt-2">
             Elige el plan que mejor se adapte a tu empresa

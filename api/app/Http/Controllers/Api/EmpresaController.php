@@ -8,6 +8,7 @@ use App\Models\Empresa;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Http\Resources\EmpresaResource;
 use App\Events\SystemActivityEvent;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpresaController extends Controller
 {
@@ -17,7 +18,7 @@ class EmpresaController extends Controller
     public function index(Request $request)
 {
     \Illuminate\Support\Facades\Artisan::call('app:check-licenses');
-    $query = Empresa::with(['licenciaActual']);
+    $query = Empresa::with(['licenciaActual.tipoLicencia']);
 
     // Búsqueda
     if ($request->filled('search')) {
@@ -101,6 +102,26 @@ class EmpresaController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    // 📌 EXPORTAR PDF (NUEVO MÉTODO)
+    public function exportPdf()
+    {
+        $empresas = Empresa::all();
+
+        $pdf = Pdf::loadView('pdf.empresas', compact('empresas'));
+
+        return $pdf->download('empresas.pdf');
+    }
+
+    public function exportCompanyPdf($id)
+    {
+        $empresa = Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'licencias.tipoLicencia' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
+        
+        $pdf = Pdf::loadView('pdf.empresa_detalle', compact('empresa'));
+        return $pdf->download('detalle_empresa_' . $empresa->nit . '.pdf');
     }
 
     // 📌 ACTUALIZAR

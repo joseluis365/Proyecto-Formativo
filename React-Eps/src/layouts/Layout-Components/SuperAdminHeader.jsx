@@ -30,7 +30,7 @@ export default function SuperAdminHeader() {
                     <nav className="flex items-center gap-6 mx-auto">
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Dashboard">Inicio</NavLink>
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Empresas">Empresas</NavLink>
-                        <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Licencias</NavLink>
+                        <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Planes</NavLink>
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Historial">Historial</NavLink>
                     </nav>
                     <div className="flex items-center" >
@@ -86,11 +86,11 @@ export default function SuperAdminHeader() {
                     </nav>
 
                     {/* CTA */}
-                    <Link to="/login" onClick={closeMenu} className="mt-auto">
+                    
                         <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
-                            Iniciar Sesión
+                            Cerrar Sesión
                         </button>
-                    </Link>
+                    
                 </div>
             </aside>
         </>

@@ -64,7 +64,7 @@ class RegistroEmpresaController extends Controller
                 // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
                     'documento' => $request->admin_documento,
-                    'nombre' => $request->admin_name,
+                    'nombre' => $request->admin_nombre,
                     'email' => $request->admin_email,
                     'contrasena' => Hash::make($request->admin_password),
                     'nit' => $empresa->nit, 
@@ -81,8 +81,8 @@ class RegistroEmpresaController extends Controller
                     'id_empresa_licencia' => $customId,
                     'nit' => $empresa->nit,
                     'id_tipo_licencia' => $request->id_tipo_licencia,
-                    'fecha_inicio' => now(),
-                    'fecha_fin' => now()->addMonths($request->duracion_meses),
+                    'fecha_inicio' => null,
+                    'fecha_fin' => null,
                     'id_estado' => 6, 
                 ]);
 
