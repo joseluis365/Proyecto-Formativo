@@ -1,6 +1,8 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+import LogoutButton from "../../components/UI/LogoutButton";
+
 export default function SuperAdminHeader() {
     const [open, setOpen] = useState(false);
 
@@ -37,18 +39,7 @@ export default function SuperAdminHeader() {
                         </div>
                         
                     
-                    <Link to="/login">
-                        <button
-                            type="button"
-                            className="w-10 h-10 flex items-center justify-center rounded-full 
-                            bg-primary text-white hover:bg-primary/90 
-                            transition cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-3xl">
-                                person
-                            </span>
-                        </button>
-                    </Link>
+                    <LogoutButton />
                     </div>
                 </div>
 

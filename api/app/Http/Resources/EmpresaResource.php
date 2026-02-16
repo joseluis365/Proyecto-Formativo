@@ -32,6 +32,7 @@ class EmpresaResource extends JsonResource
             'telefono' => $this->telefono,
             'direccion' => $this->direccion,
             'id_estado' => $estadoCalculado,
+            'expiresAt' => $fechaExpiracion,
         ];
     }
 }

@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 export default function CreateLicenciaModal({
     onClose,
-    onSuccess,
+    onSuccess, 
 }) {
     const toast = useToast();
     const [saving, setSaving] = useState(false);
@@ -61,7 +61,13 @@ export default function CreateLicenciaModal({
                     )
                 );
             } else {
-                toast.error("Error al crear la licencia");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error inesperado al crear la licencia.',
+                    showConfirmButton: false,
+                    timer: 1100
+                });
             }
         }
         finally {

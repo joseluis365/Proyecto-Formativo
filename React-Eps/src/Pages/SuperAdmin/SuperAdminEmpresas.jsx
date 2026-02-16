@@ -149,6 +149,8 @@ export default function SuperAdminEmpresas() {
 
   const totalCompanies = companies.length;
 
+  console.log(companies);
+
   return (
     <>
       <div className="flex flex-wrap justify-between items-center gap-4 mb-8">

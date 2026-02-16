@@ -5,18 +5,24 @@ import { useNavigate } from "react-router-dom";
 export default function Licencias() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // 2. Efecto para cargar los datos al montar el componente
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await api.get("/licencias"); // Tu ruta de Laravel
+        const response = await api.get("/licencias", {
+          params: {
+            id_estado: 1,
+          }
+        }); // Tu ruta de Laravel
         
         // Laravel Resource devuelve los datos dentro de una propiedad 'data'
         setPlans(response.data.data);
       } catch (error) {
-        console.error("Error al cargar licencias:", error);
+        setError("No se pudieron cargar las licencias");
+        setPlans([]);
       } finally {
         setLoading(false);
       }

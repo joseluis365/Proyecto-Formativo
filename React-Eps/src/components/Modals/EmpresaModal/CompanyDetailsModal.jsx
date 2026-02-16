@@ -1,19 +1,49 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import EditEmpresaModal from "./EditEmpresaModal";
 
 export default function CompanyDetailsModal({ company, onClose }) {
     const modalRef = useRef(null);
 
-    // Cierra el modal si se hace clic fuera
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [onClose]);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEmpresa, setSelectedEmpresa] = useState(null);
+
+    const handleEditClick = (company) => {
+        console.log("Editing company:", company);
+        const mappedData = {
+            // Explicitly map properties to ensure they exist for the form
+            nit: company.nit || "",
+            nombre: company.nombre || "",
+            email_contacto: company.email_contacto || "",
+            telefono: company.telefono || "",
+            ciudad: company.ciudad || "",
+            direccion: company.direccion || "",
+            id_estado: company.id_estado || 1, // Default or pass 1 if missing
+
+            // Representante
+            documento_representante: company.documento_representante || "",
+            nombre_representante: company.nombre_representante || "",
+            telefono_representante: company.telefono_representante || "",
+            email_representante: company.email_representante || "",
+
+            // Admin data
+            admin_nombre: company?.admin_user?.nombre || "",
+            admin_documento: company?.admin_user?.documento || "",
+            admin_email: company?.admin_user?.email || "",
+
+            admin_password: "",
+            admin_password_confirmation: "",
+        };
+        console.log("Mapped data for form:", mappedData);
+        setSelectedEmpresa(mappedData);
+        setIsEditModalOpen(true);
+    };
+
+    // Función para cerrar y limpiar
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedEmpresa(null);
+    };
 
     if (!company) return null;
 
@@ -33,7 +63,6 @@ export default function CompanyDetailsModal({ company, onClose }) {
 
     const licencia = company.licencia_actual;
     const admin = company.admin_user;
-    console.log(company);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -206,7 +235,13 @@ export default function CompanyDetailsModal({ company, onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-gray-200 dark:border-gray-800 flex justify-end">
+                <div className="p-6 border-t border-gray-200 gap-10 dark:border-gray-800 flex justify-end">
+                    <button
+                        onClick={() => handleEditClick(company)}
+                        className="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium cursor-pointer"
+                    >
+                        Editar
+                    </button>
                     <button
                         onClick={onClose}
                         className="px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors font-medium cursor-pointer"
@@ -215,6 +250,16 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     </button>
                 </div>
             </motion.div>
+            {isEditModalOpen && (
+                <EditEmpresaModal
+                    empresaData={selectedEmpresa}
+                    onClose={handleCloseModal}
+                    onSuccess={() => {
+                        handleCloseModal();
+                        onClose();
+                    }}
+                />
+            )}
         </div>
     );
 }

@@ -1,7 +1,10 @@
 import BlueButton from "../UI/BlueButton";
+import { useState } from "react";
+import EditLicenciaModal from "../Modals/LicenciaModal/EditLicenciaModal";
 
 export default function LicensePlanCard({
   id,
+  tipo,
   duration,
   description,
   price,
@@ -9,6 +12,10 @@ export default function LicensePlanCard({
   status,
   onUpdate
 }) {
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+
   const STATUS_MAP = {
     1: {
       text: "Activa",
@@ -23,39 +30,41 @@ export default function LicensePlanCard({
   const statusData = STATUS_MAP[status] || { text: "Desconocido", classes: "bg-gray-100 text-gray-500" };
 
   const handleEdit = () => {
-    import("sweetalert2").then((Swal) => {
-      Swal.default.fire({
-        title: "Editar duración",
-        input: "number",
-        inputLabel: "Nueva duración en meses",
-        inputValue: duration,
-        showCancelButton: true,
-        confirmButtonText: "Guardar",
-        cancelButtonText: "Cancelar",
-        inputValidator: (value) => {
-          if (!value) {
-            return "Debes ingresar una duración";
-          }
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const api = (await import("../../Api/axios")).default;
-            await api.put(`/licencia/${id}`, {
-              duracion_meses: result.value
-            });
-
-            Swal.default.fire("Actualizado", "La duración ha sido actualizada.", "success");
-            if (onUpdate) onUpdate();
-
-          } catch (error) {
-            console.error(error);
-            Swal.default.fire("Error", "No se pudo actualizar la duración.", "error");
-          }
-        }
-      });
-    });
+    const parseCurrencyToNumber = (currencyString) => {
+    if (!currencyString) return 0;
+    
+    // 1. Eliminar "COP" y cualquier espacio
+    // 2. Eliminar los puntos de miles (separadores de miles en ES-CO)
+    const cleanNumber = currencyString
+      .replace(/COP/g, "")
+      .replace(/\./g, "")
+      .replace(/\s/g, "")
+      .trim();
+      
+    return Number(cleanNumber);
   };
+
+    const mappedData = {
+      id: id,
+      tipo: tipo,
+      duracion_meses: duration, // Mapea según lo que espere tu formulario
+      descripcion: description,
+      precio: parseCurrencyToNumber(price),
+      id_estado: status
+    };
+    setSelectedPlan(mappedData);
+    setIsEditModalOpen(true);
+  };
+  console.log(selectedPlan);
+
+  // 3. Función para cerrar el modal
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedPlan(null);
+  };
+  
+
+
 
   return (
     <div className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
@@ -68,7 +77,7 @@ export default function LicensePlanCard({
       </span>
 
       {/* Icono */}
-      <div className="mb-4">
+      <div className="mb-4 flex items-center gap-2">
         <div
           className="w-12 h-12 rounded-lg flex items-center justify-center
                      border-2 border-primary text-primary"
@@ -76,13 +85,15 @@ export default function LicensePlanCard({
           <span className="material-symbols-outlined text-2xl">
             calendar_month
           </span>
+
         </div>
+        <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{tipo}</p>
       </div>
 
       {/* Contenido */}
       <div className="space-y-1 mb-4">
         <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-          {duration}
+          {duration} Meses
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {description}
@@ -101,15 +112,30 @@ export default function LicensePlanCard({
 
       {/* Botón */}
       <BlueButton
-        text="Editar duración"
+        text="Editar"
         icon="edit"
         onClick={handleEdit}
       />
 
       {/* Footer */}
       <p className="mt-3 text-xs text-gray-500 dark:text-gray-400 text-center">
-        Utilizada por {companies} empresas
+        {companies === 0 || companies === undefined || companies === null
+          ? "Sin empresas asignadas"
+          : companies === 1
+            ? "Utilizada por 1 empresa"
+            : `Utilizada por ${companies} empresas`}
       </p>
+
+      {isEditModalOpen && (
+        <EditLicenciaModal
+          licenciaData={selectedPlan}
+          onClose={handleCloseModal}
+          onSuccess={() => {
+            handleCloseModal();
+            onUpdate?.(); // Refresca la lista de planes en el componente padre
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -106,12 +106,26 @@ class EmpresaController extends Controller
     // 📌 ACTUALIZAR
     public function update(Request $request, $id)
     {
-        $user = Empresa::findOrFail($id);
+        $empresa = Empresa::findOrFail($id);
 
-        $data = $request->validate([
-            'nit' => 'required|integer|unique:users,id,' . $id,
+        $adminIdx = \App\Models\Usuario::where('nit', $empresa->nit)
+                        ->where('id_rol', 2)
+                        ->first();
+
+        // Prepare validation rules with Rule objects
+        // We use the $id (which is the checked NIT) to ignore
+        $rules = [
+            'nit' => [
+                'required', 
+                'integer', 
+                \Illuminate\Validation\Rule::unique('empresa', 'nit')->ignore($empresa->nit, 'nit')
+            ],
             'nombre'   => 'required|string|max:255',
-            'email_contacto'  => 'required|email|unique:users,email,' . $id,
+            'email_contacto'  => [
+                'required', 
+                'email', 
+                \Illuminate\Validation\Rule::unique('empresa', 'email_contacto')->ignore($empresa->nit, 'nit')
+            ],
             'telefono' => 'required|integer',
             'direccion' => 'required|string',
             'documento_representante' => 'required|integer',
@@ -119,14 +133,57 @@ class EmpresaController extends Controller
             'telefono_representante' => 'required|integer',
             'email_representante' => 'required|email',
             'id_estado' => 'required|integer',
-        ]);
+            
+            // Optional admin validation
+            'admin_nombre' => 'nullable|string|max:255',
+            'admin_password' => 'nullable|min:6',
+        ];
 
-        $user->update($data);
+        // Conditional validation for admin email uniqueness if it changes
+        // Use the admin user's document/id to ignore self
+        if ($adminIdx) {
+            $rules['admin_email'] = [
+                'nullable',
+                'email',
+                // Check uniqueness in 'usuario' table (assuming table name is 'usuario' or 'users' -> model says 'usuario')
+                // and ignore the current admin user's document
+                \Illuminate\Validation\Rule::unique('usuario', 'email')->ignore($adminIdx->documento, 'documento')
+            ];
+        } else {
+             $rules['admin_email'] = 'nullable|email|unique:usuario,email';
+        }
 
-        return response()->json([
-            'message' => 'Empresa actualizada correctamente',
-            'user' => $user
-        ]);
+        $data = $request->validate($rules);
+
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($empresa, $adminIdx, $data, $request) {
+            
+            // 1. Update Company
+            // Filter out admin keys from $data before updating company, as $data contains everything from validate
+            $empresaData = collect($data)->except(['admin_nombre', 'admin_email', 'admin_password'])->toArray();
+            $empresa->update($empresaData);
+
+            // 2. Update Admin User if exists
+            if ($adminIdx) {
+                // Prepare admin update data
+                $adminUpdateCalls = [];
+                if ($request->filled('admin_nombre')) $adminUpdateCalls['nombre'] = $request->admin_nombre;
+                if ($request->filled('admin_documento')) $adminUpdateCalls['documento'] = $request->admin_documento; // Only if we want to allow updating document? Not in validation above.
+                if ($request->filled('admin_email')) $adminUpdateCalls['email'] = $request->admin_email;
+                if ($request->filled('admin_password')) {
+                    $adminUpdateCalls['contrasena'] = \Illuminate\Support\Facades\Hash::make($request->admin_password);
+                }
+
+                if (!empty($adminUpdateCalls)) {
+                    $adminIdx->update($adminUpdateCalls);
+                }
+            }
+            $empresa->refresh();
+
+            return response()->json([
+                'message' => 'Empresa actualizada correctamente',
+                'data' => $empresa->load('adminUser')
+            ]);
+        });
     }
 
     // 📌 ELIMINAR

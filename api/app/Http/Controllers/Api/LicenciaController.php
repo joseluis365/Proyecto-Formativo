@@ -19,10 +19,23 @@ class LicenciaController extends Controller
      */
     public function index(Request $request)
     {
-    $licencias = Licencia::withCount('empresaLicencias')->get();
+    $query = Licencia::withCount('empresaLicencias');
+
+    if ($request->has('id_estado')) {
+        $estado = $request->id_estado;
+        
+        if (is_array($estado)) {
+            $query->whereIn('id_estado', $estado);
+        } elseif (str_contains($estado, ',')) {
+            $query->whereIn('id_estado', explode(',', $estado));
+        } else {
+            $query->where('id_estado', $estado);
+        }
+    }
+
+    $licencias = $query->get();
 
     $maxCount = $licencias->max('empresa_licencias_count');
-
     $licencias->each(function ($licencia) use ($maxCount) {
         $licencia->is_popular = ($maxCount > 0 && $licencia->empresa_licencias_count === $maxCount);
     });
@@ -33,10 +46,6 @@ class LicenciaController extends Controller
     ]);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function show($id)
     {
         return response()->json(
