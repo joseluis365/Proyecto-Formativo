@@ -9,11 +9,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreateUserModal from "../../components/Modals/UserModal/CreateUserModal";
 
-export default function Usuarios() {
+const statusOptions = [
+    { value: "", label: "Todos" },
+    { value: 1, label: "Activos" },
+    { value: 2, label: "Inactivos" },
+  ];
+
+export default function Personal() {
   const { setTitle, setSubtitle } = useLayout();
 
   useEffect(() => {
-    setTitle("Usuarios");
+    setTitle("Personal");
     setSubtitle("Gestión del Personal Administrativo");
   }, []);
 
@@ -30,16 +36,8 @@ export default function Usuarios() {
 
 
   // 🔹 Opciones del filtro
-  const statusOptions = [
-    { value: "", label: "Todos" },
-    { value: "ACTIVO", label: "Activos" },
-    { value: "INACTIVO", label: "Inactivos" },
-  ];
+  
 
-  const handleDownload = () => {
-    // Abrir en una pestaña nueva o usar window.location
-    window.open('http://localhost:8000/api/descargar-reporte', '_blank');
-};
 
   // 🔹 FUNCIÓN CENTRAL (la que faltaba)
   const fetchUsers = async () => {
@@ -50,7 +48,7 @@ export default function Usuarios() {
       const res = await api.get("/personal", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol,
+          id_rol: 3,
           status: status || undefined,
         },
       });
@@ -112,10 +110,7 @@ export default function Usuarios() {
           options={statusOptions}
           placeholder="Filtrar por estado"
         />
-        <button onClick={handleDownload} className="bg-green-600 hover:bg-green-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-600/20">
-          <span className="material-symbols-outlined">download</span>
-          Descargar PDF
-        </button>
+        
       </div>
 
       {/* TABLA */}

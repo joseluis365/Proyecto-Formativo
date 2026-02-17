@@ -23,7 +23,7 @@ class PersonalController extends Controller
      
      
     if ($request->filled('status')) {
-        $query->where('status', $request->status);
+        $query->where('id_estado', $request->status);
     }
 
     // Búsqueda
@@ -62,22 +62,31 @@ class PersonalController extends Controller
     // 📌 CREAR
     public function store(StoreUserRequest $request)
     {
-    $user = Usuario::create($request->validated());
+        $data = $request->validated();
+        $data['contrasena'] = \Illuminate\Support\Facades\Hash::make($data['contrasena']);
 
-    return response()->json([
-        'message' => 'Usuario creado correctamente',
-        'data' => $user
-    ], 201);
-}
+
+        
+        $user = Usuario::create($data);
+
+        return response()->json([
+            'message' => 'Usuario creado correctamente',
+            'data' => $user
+        ], 201);
+    }
 
     public function update(Request $request, $id)
     {
         $user = Usuario::findOrFail($id);
 
         $data = $request->validate([
-            'documento' => 'required|integer|unique:usuario,documento,' . $id,
+            'documento' => 'required|integer|regex:/^\d{1,10}$/|unique:usuario,documento,' . $id . ',documento',
             'nombre'   => 'required|string|max:255',
-            'email'  => 'required|email|unique:usuario,email,' . $id,
+            'apellido' => 'required|string|max:255',
+            'email'  => 'required|email|unique:usuario,email,' . $id . ',documento',
+            'telefono' => 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,telefono,' . $id . ',documento',
+            'direccion' => 'required|string|max:255',
+            'fecha_nacimiento' => 'required|date',
             'id_estado' => 'required|in:1,2',
             'id_rol' => 'required|integer',
         ]);

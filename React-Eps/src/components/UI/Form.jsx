@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BlueButton from "../UI/BlueButton";
 
-export default function UserForm({
+export default function Form({
   values = {},
   fields = [],
   onSubmit,
@@ -15,7 +15,10 @@ export default function UserForm({
 
   // Sincronizar con cambios externos (del padre)
   useEffect(() => {
-  setForm(values);
+  // Solo actualiza si los valores son realmente diferentes (evita el bucle)
+  if (JSON.stringify(values) !== JSON.stringify(form)) {
+    setForm(values);
+  }
 }, [values]);
 
   const handleChange = (name, value) => {
@@ -31,7 +34,7 @@ export default function UserForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {fields.map((field) => {
         const value = form[field.name] ?? "";
@@ -41,13 +44,15 @@ export default function UserForm({
                             
           <div key={field.name} className="space-y-1">
             {/* Label */}
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700" htmlFor={field.name}>
               {field.label}
             </label>
 
             {/* SELECT */}
             {field.type === "select" ? (
               <select
+                id={field.name}
+                name={field.name}
                 readOnly={field.readOnly}
                 value={value}
                 onChange={(e) =>
@@ -70,7 +75,10 @@ export default function UserForm({
             ) : (
               /* INPUT */
               <input
+                id={field.name}
+                name={field.name}
                 readOnly={field.readOnly}
+                disabled={field.disabled}
                 type={field.type}
                 value={value}
                 onChange={(e) =>

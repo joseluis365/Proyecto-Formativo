@@ -1,12 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
-import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createUserFormConfig } from "../../../UserFormConfig";
-import { AnimatePresence, motion } from "framer-motion";
 import Swal from 'sweetalert2';
+
+const initialUser = {
+  documento: "",
+  nombre: "",
+  apellido: "",
+  email: "",
+  telefono: "",
+  direccion: "",
+  fecha_nacimiento: "",
+  id_estado: 1,
+  contrasena: "",
+  id_rol: 3,
+};
 
 export default function CreateUserModal({
   onClose,
@@ -16,13 +27,7 @@ export default function CreateUserModal({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const initialUser = {
-    name: "",
-    email: "",
-    id: "",
-    status: "ACTIVO",
-    id_rol: 1,
-  };
+
 
 
   const handleCreate = async (data) => {
@@ -30,8 +35,16 @@ export default function CreateUserModal({
       setSaving(true);
       setErrors({});
       const payload = {
-        id_rol: 1,
-        ...data,
+        id_rol: 3,
+        documento: data.documento,
+        nombre: data.nombre,
+        apellido: data.apellido,
+        email: data.email,
+        telefono: data.telefono,
+        direccion: data.direccion,
+        fecha_nacimiento: data.fecha_nacimiento,
+        contrasena: data.contrasena,
+        id_estado: data.id_estado,
       };
       await api.post(`/personal`, payload);
 
@@ -70,14 +83,14 @@ export default function CreateUserModal({
 
   return (
     <BaseModal>
-      <ModalHeader icon="person" title="CREAR USUARIO" onClose={onClose} />
+      <ModalHeader icon="person" title="CREAR USUARIO ADMINISTRATIVO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
         {loading ? (
           <p>Cargando...</p>
         ) : (
-          <UserForm
-            initialValues={initialUser}
-            fields={createUserFormConfig[1]}
+          <Form
+            values={initialUser}
+            fields={createUserFormConfig[3]}
             onSubmit={handleCreate}
             disabled={saving}
             loading={saving}
@@ -85,7 +98,7 @@ export default function CreateUserModal({
           />
         )}
       </div>
-      
+
     </BaseModal>
   );
 }

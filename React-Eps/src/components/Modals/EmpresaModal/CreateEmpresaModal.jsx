@@ -3,7 +3,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
 
 
@@ -86,7 +86,7 @@ export default function CreateEmpresaModal({
                 {loading ? (
                     <p>Cargando...</p>
                 ) : (
-                    <UserForm
+                    <Form
                         values={initialEmpresa}
                         fields={createEmpresaFormConfig[1]}
                         onSubmit={handleCreate}

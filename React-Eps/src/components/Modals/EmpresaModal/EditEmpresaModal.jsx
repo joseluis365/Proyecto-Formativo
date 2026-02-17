@@ -3,7 +3,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
 
 
@@ -27,7 +27,7 @@ export default function EditEmpresaModal({
 
             // 1. Limpieza estricta de datos
             const payload = { ...data };
-            
+
             // Si el password está vacío, no lo enviamos para no sobrescribir con vacío
             if (!payload.admin_password || payload.admin_password.trim() === "") {
                 delete payload.admin_password;
@@ -37,7 +37,7 @@ export default function EditEmpresaModal({
             console.log("Enviando actualización para NIT:", empresaData.nit);
 
             // 2. Petición API
-            const response = await api.put(`/empresa/${empresaData.nit}`, payload);
+            const response = await api.put(`/ empresa / ${ empresaData.nit } `, payload);
 
             // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;
@@ -51,7 +51,7 @@ export default function EditEmpresaModal({
 
             // IMPORTANTE: Aquí llamamos a la prop que recibimos
             if (typeof onSuccess === 'function') {
-                onSuccess(); 
+                onSuccess();
             }
             onClose();
 
@@ -82,7 +82,7 @@ export default function EditEmpresaModal({
         <BaseModal>
             <ModalHeader icon="edit" title="EDITAR EMPRESA" onClose={onClose} />
             <div className="p-6 flex-1 overflow-y-auto">
-                <UserForm
+                <Form
                     values={values}
                     fields={createEmpresaFormConfig[2]}
                     onSubmit={handleUpdate}

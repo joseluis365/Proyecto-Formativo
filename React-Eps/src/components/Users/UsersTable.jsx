@@ -14,14 +14,14 @@ export default function UsersTable({ users, fetchUsers }) {
       header: "Nombre",
       render: (u) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {u.name}
+          {u.nombre + " " + u.apellido}
         </span>
       ),
     },
     {
       key: "id",
       header: "Documento",
-      render: (u) => u.id,
+      render: (u) => u.documento,
     },
     {
       key: "email",
@@ -34,12 +34,12 @@ export default function UsersTable({ users, fetchUsers }) {
       render: (u) => (
         <span
           className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
-            u.status === "ACTIVO"
+            u.id_estado === 1
               ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
               : "bg-red-100 text-red-800"
           }`}
         >
-          {u.status}
+          {u.id_estado === 1 ? "Activo" : "Inactivo"}
         </span>
       ),
     },
@@ -49,7 +49,7 @@ export default function UsersTable({ users, fetchUsers }) {
       align: "center",
       render: (u) => (
         <div className="flex items-center justify-center gap-2">
-            <button onClick={() => setEditingUserId(u.id)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <button onClick={() => setEditingUserId(u.documento)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
               
               <span className="material-symbols-outlined text-base">edit</span>
             </button>

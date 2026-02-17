@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import DashboardLayout from "./layouts/AdminLayout"
-import Usuarios from "./Pages/Admin/Usuarios"
+import Personal from "./Pages/Admin/Personal"
 import Dashboard from "./Pages/Admin/Dashboard"
 import Medicos from "./Pages/Admin/Medicos"
 import Pacientes from "./Pages/Admin/Pacientes"
@@ -66,7 +66,7 @@ export default function App() {
       </Route>
       <Route element={<DashboardLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/usuarios/personal" element={<Usuarios />} />
+        <Route path="/usuarios/personal" element={<Personal />} />
         <Route path="/usuarios/medicos" element={<Medicos />} />
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
         <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />

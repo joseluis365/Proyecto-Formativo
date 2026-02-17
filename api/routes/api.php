@@ -19,6 +19,13 @@ Route::post('/superadmin/verificar-codigo', [\App\Http\Controllers\Api\Superadmi
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/superadmin/logout', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'logout']);
     Route::get('/superadmin/check-session', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'checkSession']);
+    Route::controller(PersonalController::class)->group(function () {
+        Route::get('/personal', 'index');
+        Route::get('/personal/{id}', 'show');
+        Route::post('/personal', 'store');
+        Route::put('/personal/{id}', 'update');
+        Route::delete('/personal/{id}', 'destroy');
+    });
 });
 
 Route::post('/superadmin/forgot-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'sendRecoveryCode']);
@@ -57,13 +64,7 @@ Route::controller(CitaController::class)->group(function () {
     Route::delete('/cita/{id}', 'destroy');
 });
 
-Route::controller(PersonalController::class)->group(function () {
-    Route::get('/personal', 'index');
-    Route::get('/personal/{id}', 'show');
-    Route::post('/personal', 'store');
-    Route::put('/personal/{id}', 'update');
-    Route::delete('/personal/{id}', 'destroy');
-});
+
 
 Route::controller(EmpresaController::class)->group(function () {
     Route::get('/empresas', 'index');
