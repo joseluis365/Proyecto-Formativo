@@ -32,19 +32,29 @@ class PersonalController extends Controller
 
         $query->where(function ($q) use ($search) {
 
-            // 👉 ID (numérico)
             if (is_numeric($search)) {
-                $q->where('id', (int) $search);
+                $q->where('documento', (int) $search);
+            } else {
+                $q->where('nombre', 'like', "%{$search}%")
+                ->orWhere('apellido', 'like', "%{$search}%");
             }
-
-            // 👉 Nombre (texto)
-            $q->orWhere('name', 'like', "%{$search}%");
         });
+
     }
 
+    $usuarios = $query->paginate(10);
+
+    $totalPorRol = Usuario::where('id_rol', $request->id_rol)->count();
+
+
     return response()->json([
-        'total' => $query->count(),
-        'data' => $query->get()
+        'total' => $usuarios->total(),
+        'totalPorRol' => $totalPorRol,
+        'data' => $usuarios->items(),
+        'current_page' => $usuarios->currentPage(),
+        'last_page' => $usuarios->lastPage(),
+        'per_page' => $usuarios->perPage()
+
     ]);
 }
 
@@ -95,6 +105,22 @@ class PersonalController extends Controller
 
         return response()->json([
             'message' => 'Usuario actualizado correctamente',
+            'user' => $user
+        ]);
+    }
+
+    public function updateEstado(Request $request, $id)
+    {
+        $user = Usuario::findOrFail($id);
+
+        $data = $request->validate([
+            'id_estado' => 'required|in:1,2',
+        ]);
+
+        $user->update($data);
+
+        return response()->json([
+            'message' => 'Estado del usuario actualizado correctamente',
             'user' => $user
         ]);
     }
