@@ -1,8 +1,8 @@
 BEGIN;
 
--- =========================
+-- =====================================================
 -- TABLAS BÁSICAS
--- =========================
+-- =====================================================
 
 CREATE TABLE categoria_medicamento (
     id_categoria INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -40,13 +40,13 @@ CREATE TABLE rol (
     tipo_usu VARCHAR(50)
 );
 
-CREATE TABLE superadmin (
-    documento INTEGER PRIMARY KEY,
+-- =====================================================
+-- UBICACIÓN
+-- =====================================================
+
+CREATE TABLE departamento (
+    id_departamento INTEGER PRIMARY KEY,
     nombre VARCHAR(50),
-    usuario VARCHAR(50) UNIQUE,
-    email VARCHAR(100) UNIQUE,
-    contrasena VARCHAR(500) NOT NULL,
-    id_rol INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -59,16 +59,54 @@ CREATE TABLE ciudad (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE departamento (
-    id_departamento INTEGER PRIMARY KEY,
+ALTER TABLE ciudad
+    ADD FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento);
+
+-- =====================================================
+-- SUPERADMIN (NO MODIFICADO)
+-- =====================================================
+
+CREATE TABLE superadmin (
+    documento INTEGER PRIMARY KEY,
     nombre VARCHAR(50),
+    usuario VARCHAR(50) UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    contrasena VARCHAR(500) NOT NULL,
+    id_rol INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
+ALTER TABLE superadmin
+    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol);
+
+-- =====================================================
+-- EMPRESA
+-- =====================================================
+
+CREATE TABLE empresa (
+    nit VARCHAR(20) PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    email_contacto VARCHAR(100),
+    telefono VARCHAR(30),
+    direccion VARCHAR(100),
+    documento_representante INTEGER UNIQUE,
+    nombre_representante VARCHAR(70),
+    telefono_representante VARCHAR(30),
+    email_representante VARCHAR(100) UNIQUE,
+    id_ciudad INTEGER,
+    id_estado INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE empresa
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(codigo_postal);
+
+-- =====================================================
 -- USUARIO
--- =========================
+-- =====================================================
 
 CREATE TABLE usuario (
     documento INTEGER PRIMARY KEY,
@@ -89,29 +127,14 @@ CREATE TABLE usuario (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
--- EMPRESA
--- =========================
+ALTER TABLE usuario
+    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
+    ADD FOREIGN KEY (nit) REFERENCES empresa(nit);
 
-CREATE TABLE empresa (
-    nit VARCHAR(20) PRIMARY KEY,
-    nombre VARCHAR(150) NOT NULL,
-    email_contacto VARCHAR(100),
-    telefono VARCHAR(30),
-    direccion VARCHAR(100),
-    documento_representante INTEGER UNIQUE,
-    nombre_representante VARCHAR(70),
-    telefono_representante VARCHAR(30),
-    email_representante VARCHAR(100) UNIQUE,
-    id_ciudad INTEGER,
-    id_estado INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =========================
--- LICENCIA
--- =========================
+-- =====================================================
+-- LICENCIAMIENTO
+-- =====================================================
 
 CREATE TABLE tipo_licencia (
     id_tipo_licencia INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -135,9 +158,17 @@ CREATE TABLE empresa_licencia (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
+ALTER TABLE tipo_licencia
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+
+ALTER TABLE empresa_licencia
+    ADD FOREIGN KEY (nit) REFERENCES empresa(nit),
+    ADD FOREIGN KEY (id_tipo_licencia) REFERENCES tipo_licencia(id_tipo_licencia),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+
+-- =====================================================
 -- CITA
--- =========================
+-- =====================================================
 
 CREATE TABLE cita (
     id_cita INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -155,9 +186,15 @@ CREATE TABLE cita (
 
 CREATE INDEX idx_cita_fecha ON cita(fecha);
 
--- =========================
--- TRIGGER: NO EDITAR CITAS PASADAS
--- =========================
+ALTER TABLE cita
+    ADD FOREIGN KEY (doc_paciente) REFERENCES usuario(documento),
+    ADD FOREIGN KEY (doc_medico) REFERENCES usuario(documento),
+    ADD FOREIGN KEY (tipo_cita_id) REFERENCES tipo_cita(id_tipo_cita),
+    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+
+-- =====================================================
+-- TRIGGER CITAS
+-- =====================================================
 
 CREATE OR REPLACE FUNCTION prevent_past_cita_edit()
 RETURNS TRIGGER AS $$
@@ -174,11 +211,9 @@ BEFORE UPDATE ON cita
 FOR EACH ROW
 EXECUTE FUNCTION prevent_past_cita_edit();
 
-
-
--- =========================
+-- =====================================================
 -- HISTORIAL CLÍNICO
--- =========================
+-- =====================================================
 
 CREATE TABLE historial_clinico (
     id_historial INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -201,141 +236,6 @@ CREATE TABLE historial_detalle (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =========================
--- FARMACIA / MEDICAMENTO
--- =========================
-
-CREATE TABLE farmacia (
-    nit VARCHAR(20) PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    direccion VARCHAR(150),
-    telefono VARCHAR(30),
-    email VARCHAR(100),
-    nombre_contacto VARCHAR(100),
-    horario_apertura TIME,
-    horario_cierre TIME,
-    abierto_24h BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE medicamento (
-    id_medicamento INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR(150),
-    presentacion VARCHAR(100),
-    descripcion TEXT,
-    stock_disponible INTEGER,
-    precio_unitario NUMERIC(11,2),
-    id_categoria INTEGER,
-    id_estado INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE detalle_medicamento (
-    id_detalle_medicamento INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_orden INTEGER NOT NULL,
-    id_medicamento INTEGER NOT NULL,
-    dosis VARCHAR(100) NOT NULL,
-    frecuencia VARCHAR(100) NOT NULL,
-    duracion VARCHAR(100) NOT NULL,
-    observaciones TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =========================
--- INVENTARIO
--- =========================
-
-CREATE TABLE movimiento_inventario (
-    id_movimiento INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_medicamento INTEGER,
-    tipo_movimiento VARCHAR(20)
-        CHECK (tipo_movimiento IN ('Ingreso','Salida','Reserva')),
-    cantidad INTEGER,
-    fecha DATE,
-    documento INTEGER,
-    motivo VARCHAR(200),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =========================
--- ÓRDENES / REMISIONES
--- =========================
-
-CREATE TABLE orden_medicamento (
-    id_orden INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_detalle_cita INTEGER NOT NULL,
-    nit_farmacia VARCHAR(20) NOT NULL,
-    fecha_vencimiento DATE NOT NULL,
-    id_estado INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE remision (
-    id_remision INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_detalle_cita INTEGER NOT NULL,
-    tipo_remision VARCHAR(10)
-        CHECK (tipo_remision IN ('cita','examen')),
-    id_especialidad INTEGER,
-    id_examen INTEGER,
-    id_prioridad INTEGER,
-    notas TEXT NOT NULL,
-    id_estado INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE examen (
-    id_examen INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    id_categoria_examen INTEGER,
-    requiere_ayuno BOOLEAN,
-    descripcion TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
--- =========================
--- SOLICITUD CITA
--- =========================
-
-CREATE TABLE solicitud_cita (
-    id_solicitud INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    id_especialidad INTEGER,
-    fecha_preferida DATE,
-    motivo TEXT,
-    id_estado INTEGER NOT NULL,
-    id_cita INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =========================
--- FOREIGN KEYS
--- =========================
-
-ALTER TABLE superadmin
-    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol);
-
-ALTER TABLE ciudad
-    ADD FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento);
-
-ALTER TABLE usuario
-    ADD FOREIGN KEY (id_rol) REFERENCES rol(id_rol),
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    ADD FOREIGN KEY (nit) REFERENCES empresa(nit);
-
-ALTER TABLE cita
-    ADD FOREIGN KEY (doc_paciente) REFERENCES usuario(documento),
-    ADD FOREIGN KEY (doc_medico) REFERENCES usuario(documento),
-    ADD FOREIGN KEY (tipo_cita_id) REFERENCES tipo_cita(id_tipo_cita),
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
-
 ALTER TABLE historial_clinico
     ADD FOREIGN KEY (id_paciente) REFERENCES usuario(documento);
 
@@ -343,48 +243,76 @@ ALTER TABLE historial_detalle
     ADD FOREIGN KEY (id_historial) REFERENCES historial_clinico(id_historial),
     ADD FOREIGN KEY (id_cita) REFERENCES cita(id_cita);
 
-ALTER TABLE medicamento
-    ADD FOREIGN KEY (id_categoria) REFERENCES categoria_medicamento(id_categoria),
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+-- =====================================================
+-- LARAVEL CORE
+-- =====================================================
 
-ALTER TABLE detalle_medicamento
-    ADD FOREIGN KEY (id_orden) REFERENCES orden_medicamento(id_orden),
-    ADD FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento);
+CREATE TABLE migrations (
+    id SERIAL PRIMARY KEY,
+    migration VARCHAR(255) NOT NULL,
+    batch INTEGER NOT NULL
+);
 
-ALTER TABLE examen
-    ADD FOREIGN KEY (id_categoria_examen) REFERENCES categoria_examen(id_categoria_examen);
+CREATE TABLE failed_jobs (
+    id BIGSERIAL PRIMARY KEY,
+    uuid VARCHAR(255) NOT NULL UNIQUE,
+    connection TEXT NOT NULL,
+    queue TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    exception TEXT NOT NULL,
+    failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE movimiento_inventario
-    ADD FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento),
-    ADD FOREIGN KEY (documento) REFERENCES usuario(documento);
+CREATE TABLE cache (
+    key VARCHAR(255) PRIMARY KEY,
+    value TEXT NOT NULL,
+    expiration INTEGER NOT NULL
+);
 
-ALTER TABLE orden_medicamento
-    ADD FOREIGN KEY (nit_farmacia) REFERENCES farmacia(nit) ON DELETE CASCADE,
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    ADD FOREIGN KEY (id_detalle_cita) REFERENCES historial_detalle(id_detalle);
+CREATE TABLE cache_locks (
+    key VARCHAR(255) PRIMARY KEY,
+    owner VARCHAR(255) NOT NULL,
+    expiration INTEGER NOT NULL
+);
 
-ALTER TABLE remision
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    ADD FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad),
-    ADD FOREIGN KEY (id_prioridad) REFERENCES prioridad(id_prioridad),
-    ADD FOREIGN KEY (id_detalle_cita) REFERENCES historial_detalle(id_detalle),
-    ADD FOREIGN KEY (id_examen) REFERENCES examen(id_examen);
+CREATE TABLE sessions (
+    id VARCHAR(255) PRIMARY KEY,
+    user_id BIGINT,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    payload TEXT NOT NULL,
+    last_activity INTEGER NOT NULL
+);
 
-ALTER TABLE solicitud_cita
-    ADD FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad),
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    ADD FOREIGN KEY (id_cita) REFERENCES cita(id_cita);
+CREATE TABLE personal_access_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    tokenable_type VARCHAR(255) NOT NULL,
+    tokenable_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    abilities TEXT,
+    last_used_at TIMESTAMP NULL,
+    expires_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE empresa
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado),
-    add FOREIGN KEY (id_ciudad) REFERENCES ciudad(codigo_postal);
+CREATE INDEX personal_access_tokens_tokenable_index
+ON personal_access_tokens (tokenable_type, tokenable_id);
 
-ALTER TABLE empresa_licencia
-    ADD FOREIGN KEY (nit) REFERENCES empresa(nit),
-    ADD FOREIGN KEY (id_tipo_licencia) REFERENCES tipo_licencia(id_tipo_licencia),  
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+CREATE TABLE activities (
+    id BIGSERIAL PRIMARY KEY,
+    descripcion TEXT NOT NULL,
+    tipo VARCHAR(100),
+    modulo VARCHAR(100),
+    usuario_documento INTEGER,
+    empresa_nit VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE tipo_licencia
-    ADD FOREIGN KEY (id_estado) REFERENCES estado(id_estado);
+ALTER TABLE activities
+    ADD FOREIGN KEY (usuario_documento) REFERENCES usuario(documento),
+    ADD FOREIGN KEY (empresa_nit) REFERENCES empresa(nit);
 
 COMMIT;

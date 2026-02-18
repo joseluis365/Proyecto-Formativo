@@ -39,7 +39,7 @@ const { data, mesActual, mesAnterior, loading } = chartConfig;
           </p>
           
           <div className="w-full h-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
           <XAxis dataKey="name" />
