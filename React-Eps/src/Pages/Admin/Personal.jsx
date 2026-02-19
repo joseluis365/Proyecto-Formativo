@@ -38,17 +38,13 @@ export default function Personal() {
   const [lastPage, setLastPage] = useState(1);
 
 
-  // 🔹 Opciones del filtro
-
-
-
   // 🔹 FUNCIÓN CENTRAL (la que faltaba)
   const fetchUsers = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const res = await api.get("/personal", {
+      const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
           id_rol: 3,
@@ -105,7 +101,7 @@ export default function Personal() {
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
         <Input
-          placeholder="Buscar usuario"
+          placeholder="Buscar nombre o documento"
           icon="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

@@ -8,35 +8,6 @@ import api from "../../Api/axios";
 export default function PersonalTable({ users, fetchUsers }) {
   const [editingUserId, setEditingUserId] = useState(null);
 
-  const handleDelete = async (userId) => {
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Este usuario será eliminado permanentemente",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await api.delete(`/personal/${userId}`);
-        Swal.fire({
-          title: "Eliminado",
-          text: "El usuario ha sido eliminado.",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-        fetchUsers(); // refresca la tabla
-      } catch (error) {
-        Swal.fire("Error", "No se pudo eliminar el usuario.", "error");
-      }
-    }
-  };
-
   // Cambiar estado (activo/inactivo)
   const handleToggleStatus = async (user) => {
     const nuevoEstado = user.id_estado === 1 ? 2 : 1;
@@ -51,7 +22,7 @@ export default function PersonalTable({ users, fetchUsers }) {
 
     if (result.isConfirmed) {
       try {
-        await api.put(`/personal/${user.documento}/estado`, {
+        await api.put(`/usuario/${user.documento}/estado`, {
           id_estado: nuevoEstado,
         });
         Swal.fire({
@@ -114,10 +85,6 @@ export default function PersonalTable({ users, fetchUsers }) {
           <button onClick={() => setEditingUserId(u.documento)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
 
             <span className="material-symbols-outlined text-base">edit</span>
-          </button>
-          <button onClick={() => handleDelete(u.documento)}
-            className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">delete</span>
           </button>
 
           <button onClick={() => handleToggleStatus(u)}
