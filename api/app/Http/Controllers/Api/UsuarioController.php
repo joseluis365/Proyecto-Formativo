@@ -6,57 +6,56 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar usuarios con filtros y paginación
      */
     public function index(Request $request)
-{
-    $query = Usuario::with('especialidad');
+    {
+        $query = Usuario::with('especialidad');
 
-    // Filtro por rol
-    if ($request->filled('id_rol')) {
-        $query->where('id_rol', $request->id_rol);
+        // 🔎 Filtro por rol
+        if ($request->filled('id_rol')) {
+            $query->where('id_rol', $request->id_rol);
+        }
+
+        // 🔎 Filtro por estado
+        if ($request->filled('status')) {
+            $query->where('id_estado', $request->status);
+        }
+
+        // 🔎 Búsqueda
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('documento', 'ilike', "%{$search}%")
+                  ->orWhere('nombre', 'ilike', "%{$search}%")
+                  ->orWhere('apellido', 'ilike', "%{$search}%");
+            });
+        }
+
+        $usuarios = $query->paginate(10);
+
+        $totalPorRol = $request->filled('id_rol')
+            ? Usuario::where('id_rol', $request->id_rol)->count()
+            : Usuario::count();
+
+        return response()->json([
+            'total' => $usuarios->total(),
+            'totalPorRol' => $totalPorRol,
+            'data' => $usuarios->items(),
+            'current_page' => $usuarios->currentPage(),
+            'last_page' => $usuarios->lastPage(),
+            'per_page' => $usuarios->perPage()
+        ]);
     }
-     
-     
-    if ($request->filled('status')) {
-        $query->where('id_estado', $request->status);
-    }
-
-    // Búsqueda
-    if ($request->filled('search')) {
-    $search = trim((string) $request->search);
-
-    $query->where(function ($q) use ($search) {
-        $q->where('documento', 'ilike', "%{$search}%")
-          ->orWhere('nombre', 'ilike', "%{$search}%")
-          ->orWhere('apellido', 'ilike', "%{$search}%");
-    });
-}
-
-
-    $usuarios = $query->paginate(10);
-
-    $totalPorRol = Usuario::where('id_rol', $request->id_rol)->count();
-
-
-    return response()->json([
-        'total' => $usuarios->total(),
-        'totalPorRol' => $totalPorRol,
-        'data' => $usuarios->items(),
-        'current_page' => $usuarios->currentPage(),
-        'last_page' => $usuarios->lastPage(),
-        'per_page' => $usuarios->perPage()
-
-    ]);
-}
-
 
     /**
-     * Store a newly created resource in storage.
+     * Mostrar usuario específico
      */
     public function show($id)
     {
@@ -65,14 +64,13 @@ class UsuarioController extends Controller
         );
     }
 
-    // 📌 CREAR
+    /**
+     * Crear usuario
+     */
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
-        $data['contrasena'] = \Illuminate\Support\Facades\Hash::make($data['contrasena']);
 
-
-        
         $user = Usuario::create($data);
 
         return response()->json([
@@ -81,11 +79,14 @@ class UsuarioController extends Controller
         ], 201);
     }
 
+    /**
+     * Actualizar usuario
+     */
     public function update(Request $request, $id)
     {
         $user = Usuario::findOrFail($id);
 
-        $rules =[
+        $rules = [
             'documento' => 'required|integer|regex:/^\d{1,10}$/|unique:usuario,documento,' . $id . ',documento',
             'nombre'   => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
@@ -93,23 +94,31 @@ class UsuarioController extends Controller
             'telefono' => 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,telefono,' . $id . ',documento',
             'direccion' => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
-            'id_estado' => 'required|in:1,2',
-            'id_rol' => 'required|integer',
+            'id_estado' => 'required|exists:estado,id_estado',
+            'id_rol' => 'required|exists:rol,id_rol',
         ];
 
         switch ((int) $request->id_rol) {
-        case 4:
-            $rules['registro_profesional'] = 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,registro_profesional,' . $id . ',documento';
-            $rules['id_especialidad'] = 'required|integer|exists:especialidades,id_especialidad';
-            break;
 
-        case 5:
-            $rules['sexo'] = 'required|in:Masculino,Femenino';
-            $rules['grupo_sanguineo'] = 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-';
-            break;
-    }
+            // 🩺 MEDICO
+            case 2:
+                $rules['registro_profesional'] =
+                    'required|numeric|regex:/^\d{1,10}$/|unique:usuario,registro_profesional,' . $id . ',documento';
+                $rules['id_especialidad'] =
+                    'required|exists:especialidad,id_especialidad';
+                break;
+
+            // 👤 PACIENTE
+            case 4:
+                $rules['sexo'] =
+                    'required|in:Masculino,Femenino';
+                $rules['grupo_sanguineo'] =
+                    'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-';
+                break;
+        }
 
         $data = $request->validate($rules);
+
         $user->update($data);
 
         return response()->json([
@@ -118,12 +127,15 @@ class UsuarioController extends Controller
         ]);
     }
 
+    /**
+     * Cambiar estado del usuario
+     */
     public function updateEstado(Request $request, $id)
     {
         $user = Usuario::findOrFail($id);
 
         $data = $request->validate([
-            'id_estado' => 'required|in:1,2',
+            'id_estado' => 'required|exists:estado,id_estado',
         ]);
 
         $user->update($data);
@@ -134,7 +146,9 @@ class UsuarioController extends Controller
         ]);
     }
 
-    // 📌 ELIMINAR
+    /**
+     * Eliminar usuario
+     */
     public function destroy($id)
     {
         Usuario::findOrFail($id)->delete();

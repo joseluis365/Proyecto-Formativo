@@ -6,8 +6,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Hash;
 
-// 👇 IMPORTS CORRECTOS (SOLO ARRIBA)
 use App\Models\Rol;
 use App\Models\Estado;
 use App\Models\Empresa;
@@ -21,6 +21,17 @@ class Usuario extends Authenticatable
     protected $primaryKey = 'documento';
     public $incrementing = false;
     protected $keyType = 'int';
+
+    /**
+     * 🔐 IMPORTANTE:
+     * Laravel usa "password" por defecto.
+     * Nosotros usamos "contrasena".
+     * Debemos indicarle cuál es el campo real.
+     */
+    public function getAuthPassword()
+    {
+        return $this->contrasena;
+    }
 
     protected $fillable = [
         'documento',
@@ -42,7 +53,16 @@ class Usuario extends Authenticatable
 
     protected $hidden = [
         'contrasena',
+        'remember_token',
     ];
+
+    protected $casts = [
+        'fecha_nacimiento' => 'date',
+    ];
+
+    /**
+     * 🔗 RELACIONES
+     */
 
     public function rol()
     {
@@ -62,5 +82,16 @@ class Usuario extends Authenticatable
     public function especialidad()
     {
         return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
+    }
+
+    /**
+     * 🔒 Mutator automático para encriptar contraseña
+     * Evita que alguien olvide hacer Hash::make()
+     */
+    public function setContrasenaAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['contrasena'] = Hash::make($value);
+        }
     }
 }

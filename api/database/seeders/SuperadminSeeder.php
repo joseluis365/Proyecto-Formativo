@@ -20,8 +20,8 @@ class SuperadminSeeder extends Seeder
                 'documento' => '123456789',
                 'nombre' => 'Super Admin',
                 'usuario' => 'admin',
-                'email' => 'joseluis1409rodriguez@gmail.com',
-                'contrasena' => Hash::make('password123'), 
+                'email' => 'madarazeduchiha@gmail.com',
+                'contrasena' => Hash::make('admin123'), 
                 'id_rol' => 1,
             ]);
             
