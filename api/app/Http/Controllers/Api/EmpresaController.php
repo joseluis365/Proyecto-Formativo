@@ -55,7 +55,7 @@ class EmpresaController extends Controller
     public function show($id)
     {
         return response()->json(
-            Empresa::with(['licenciaActual.tipoLicencia', 'adminUser'])->findOrFail($id)
+            Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'ciudad'])->findOrFail($id)
         );
     }
 
@@ -75,12 +75,14 @@ class EmpresaController extends Controller
                 $usuario = \App\Models\Usuario::create([
                     'documento' => $data['admin_documento'],
                     'nombre' => $data['admin_nombre'],
+                    'apellido' => $data['admin_apellido'],
                     'email' => $data['admin_email'],
+                    'telefono' => $data['admin_telefono'],
+                    'direccion' => $data['admin_direccion'],
                     'contrasena' => \Illuminate\Support\Facades\Hash::make($data['admin_password']),
                     'id_rol' => 2,
                     'id_estado' => 1,
                     'nit' => $empresa->nit,
-                    'direccion' => $empresa->direccion,
                     'is_active' => true 
                 ]);
 
@@ -105,9 +107,10 @@ class EmpresaController extends Controller
     }
 
     // 📌 EXPORTAR PDF (NUEVO MÉTODO)
+
     public function exportPdf()
     {
-        $empresas = Empresa::all();
+        $empresas = Empresa::with('ciudad')->get();
 
         $pdf = Pdf::loadView('pdf.empresas', compact('empresas'));
 
@@ -116,7 +119,7 @@ class EmpresaController extends Controller
 
     public function exportCompanyPdf($id)
     {
-        $empresa = Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'licencias.tipoLicencia' => function ($query) {
+        $empresa = Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'ciudad', 'licencias.tipoLicencia' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         
@@ -138,40 +141,49 @@ class EmpresaController extends Controller
         $rules = [
             'nit' => [
                 'required', 
-                'integer', 
+                'numeric',
+                'regex:/^[1-9][0-9]{8}-[0-9]$/', 
+                'max:12',
+                'min:11',
                 \Illuminate\Validation\Rule::unique('empresa', 'nit')->ignore($empresa->nit, 'nit')
             ],
-            'nombre'   => 'required|string|max:255',
+            'nombre'   => 'required|string|min:3|max:100|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/',
             'email_contacto'  => [
                 'required', 
-                'email', 
+                'email:rfc,dns', 
+                'max:100',  
                 \Illuminate\Validation\Rule::unique('empresa', 'email_contacto')->ignore($empresa->nit, 'nit')
             ],
-            'telefono' => 'required|integer',
-            'direccion' => 'required|string',
-            'documento_representante' => 'required|integer',
-            'nombre_representante' => 'required|string',
-            'telefono_representante' => 'required|integer',
-            'email_representante' => 'required|email',
-            'id_estado' => 'required|integer',
+            'telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
+            'direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
+            'documento_representante' => 'required|numeric|min:6|max:10|regex:/^\d{1,10}$/',
+            'nombre_representante' => 'required|string|min:3|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
+            'telefono_representante' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
+            'email_representante' => 'required|email:rfc,dns|unique:empresa,email_representante|max:100',
+            'id_estado' => 'required|integer|exists:estado,id_estado',
             
             // Optional admin validation
-            'admin_nombre' => 'nullable|string|max:255',
-            'admin_password' => 'nullable|min:6',
+            'admin_nombre' => 'required|string|max:20|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
+            'admin_apellido' => 'required|string|max:20|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
+            'admin_telefono' => 'required|numeric|regex:/^\d{1,10}$/|min:10|max:10',
+            'admin_direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
+            'admin_password' => 'nullable|string|min:8|max:25|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
         ];
 
         // Conditional validation for admin email uniqueness if it changes
         // Use the admin user's document/id to ignore self
         if ($adminIdx) {
             $rules['admin_email'] = [
-                'nullable',
-                'email',
+                'required',
+                'email:rfc,dns',
+                'max:100',
+
                 // Check uniqueness in 'usuario' table (assuming table name is 'usuario' or 'users' -> model says 'usuario')
                 // and ignore the current admin user's document
                 \Illuminate\Validation\Rule::unique('usuario', 'email')->ignore($adminIdx->documento, 'documento')
             ];
         } else {
-             $rules['admin_email'] = 'nullable|email|unique:usuario,email';
+             $rules['admin_email'] = 'required|email:rfc,dns|unique:usuario,email|max:100';
         }
 
         $data = $request->validate($rules);

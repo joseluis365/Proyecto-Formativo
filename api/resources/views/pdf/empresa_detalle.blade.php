@@ -48,7 +48,7 @@
             </tr>
             <tr>
                 <td class="info-label">Ciudad:</td>
-                <td class="info-value">{{ $empresa->ciudad ?? 'No registrada' }}</td>
+                <td class="info-value">{{ $empresa->ciudad->nombre ?? 'No registrada' }}</td>
             </tr>
             <tr>
                 <td class="info-label">Teléfono:</td>

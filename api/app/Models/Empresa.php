@@ -41,4 +41,9 @@ class Empresa extends Model
             ->where('id_rol', 2) 
             ->latest(); 
     }
+
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class, 'id_ciudad', 'codigo_postal');
+    }
 }

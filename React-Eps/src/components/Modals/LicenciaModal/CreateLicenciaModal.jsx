@@ -41,8 +41,8 @@ export default function CreateLicenciaModal({
             // 2. Disparas la alerta de SweetAlert2
             await Swal.fire({
                 icon: 'success',
-                title: 'Licencia Creada',
-                text: 'La licencia ha sido creada correctamente.',
+                title: 'Plan Creado',
+                text: 'El plan ha sido creado correctamente.',
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -93,7 +93,7 @@ export default function CreateLicenciaModal({
                 onClick={(e) => e.stopPropagation()}
             >
                 <BaseModal>
-                    <ModalHeader icon="verified" title="CREAR LICENCIA" onClose={onClose} />
+                    <ModalHeader icon="verified" title="CREAR PLAN" onClose={onClose} />
                     <ModalBody>
                         <AnimatePresence>
                             {success && (
@@ -107,7 +107,7 @@ export default function CreateLicenciaModal({
                                     onClick={!saving ? onClose : undefined}
                                 >
                                     <span className="material-symbols-outlined">check_circle</span>
-                                    <span className="font-medium">Licencia creada correctamente</span>
+                                    <span className="font-medium">Plan creado correctamente</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>

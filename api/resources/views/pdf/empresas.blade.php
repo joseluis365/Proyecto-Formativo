@@ -80,7 +80,7 @@
         </div>
         <div class="info-row">
             <span class="label">Dirección:</span>
-            <span class="value">{{ $empresa->direccion }} ({{ $empresa->ciudad ?? 'N/A' }})</span>
+            <span class="value">{{ $empresa->direccion }} ({{ $empresa->ciudad->nombre ?? 'N/A' }})</span>
         </div>
 
         <div class="sections-grid">
