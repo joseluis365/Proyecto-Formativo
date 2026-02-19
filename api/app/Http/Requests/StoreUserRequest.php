@@ -21,7 +21,7 @@ class StoreUserRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'documento' => ['required', 'numeric', 'unique:usuario,documento', 'regex:/^\d{1,10}$/'],
             'nit' => ['required', 'exists:empresa,nit'],
             'nombre' => ['required', 'string', 'max:255'],
@@ -35,6 +35,20 @@ class StoreUserRequest extends FormRequest
             'id_rol' => ['required', 'exists:rol,id_rol'],
             
         ];
+
+        switch ($this->id_rol) {
+            case 4:
+                $rules['registro_profesional'] = ['required', 'unique:usuario,registro_profesional', 'string', 'regex:/^\d{1,10}$/'];
+                $rules['id_especialidad'] = ['required', 'exists:especialidades,id_especialidad'];
+                break;
+            case 5:
+                $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];
+                $rules['grupo_sanguineo'] = ['required', 'string', 'max:10', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'];
+                break;
+        }
+
+
+        return $rules;
     }
 
     public function messages(): array
@@ -64,6 +78,13 @@ class StoreUserRequest extends FormRequest
             'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres',
             'contrasena.max' => 'La contraseña debe tener como maximo 25 caracteres',
             'contrasena.regex' => 'La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial: @$!%*?&',
+            'registro_profesional.required' => 'El registro profesional es obligatorio',
+            'registro_profesional.regex' => 'El registro profesional debe ser maximo de 10 digitos',
+            'id_especialidad.required' => 'La especialidad es obligatoria',
+            'sexo.required' => 'El sexo del paciente es obligatorio',
+            'sexo.in' => 'El sexo debe ser Masculino o Femenino',
+            'grupo_sanguineo.required' => 'El grupo sanguineo es obligatorio',
+            'grupo_sanguineo.in' => 'El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-',
             'id_estado.required' => 'El estado es obligatorio',
             'id_rol.required' => 'El rol es obligatorio',
             'id_rol.exists' => 'El rol no existe',

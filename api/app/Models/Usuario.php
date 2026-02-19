@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Rol;
 use App\Models\Estado;
 use App\Models\Empresa;
+use App\Models\Especialidad;
 
 class Usuario extends Authenticatable
 {
@@ -35,6 +36,8 @@ class Usuario extends Authenticatable
         'nit',
         'id_rol',
         'id_estado',
+        'registro_profesional',
+        'id_especialidad',
     ];
 
     protected $hidden = [
@@ -54,5 +57,10 @@ class Usuario extends Authenticatable
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'nit', 'nit');
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
     }
 }
