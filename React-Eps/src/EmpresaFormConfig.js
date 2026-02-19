@@ -12,8 +12,11 @@ export const createEmpresaFormConfig = {
     { name: "email_representante", label: "Correo Representante", type: "email", readOnly: false },
 
     { name: "admin_nombre", label: "Nombre Admin", type: "text", readOnly: false },
+    { name: "admin_apellido", label: "Apellido Admin", type: "text", readOnly: false },
     { name: "admin_documento", label: "Documento Admin", type: "number", readOnly: false },
     { name: "admin_email", label: "Correo Admin", type: "email", readOnly: false },
+    { name: "admin_telefono", label: "Telefono Admin", type: "number", readOnly: false },
+    { name: "admin_direccion", label: "Direccion Admin", type: "text", readOnly: false },
     { name: "admin_password", label: "Contraseña Admin", type: "password", readOnly: false },
 
 
@@ -31,8 +34,11 @@ export const createEmpresaFormConfig = {
     { name: "email_representante", label: "Correo Representante", type: "email", readOnly: false },
 
     { name: "admin_nombre", label: "Nombre Admin", type: "text", readOnly: false },
+    { name: "admin_apellido", label: "Apellido Admin", type: "text", readOnly: false },
     { name: "admin_documento", label: "Documento Admin", type: "number", readOnly: true },
     { name: "admin_email", label: "Correo Admin", type: "email", readOnly: false },
+    { name: "admin_telefono", label: "Telefono Admin", type: "number", readOnly: false },
+    { name: "admin_direccion", label: "Direccion Admin", type: "text", readOnly: false },
     { name: "admin_password", label: "Contraseña Admin", type: "password", readOnly: true },
 
 

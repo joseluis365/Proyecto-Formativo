@@ -11,7 +11,7 @@ export default function Pago() {
   const navigate = useNavigate();
   const toast = useToast();
   const [errors, setErrors] = useState({});
-  
+
   // Recibimos el plan desde la navegación, si no existe redirigimos
   const plan = location.state?.plan || null;
 
@@ -23,6 +23,29 @@ export default function Pago() {
 
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
+
+  // Location Logic
+  const [departamentos, setDepartamentos] = useState([]);
+  const [ciudades, setCiudades] = useState([]);
+  const [selectedDepartamento, setSelectedDepartamento] = useState("");
+
+  useEffect(() => {
+    api.get('/departamentos').then(res => setDepartamentos(res.data)).catch(console.error);
+  }, []);
+
+  const handleDepartamentoChange = async (e) => {
+    const val = e.target.value;
+    setSelectedDepartamento(val);
+    setCiudades([]);
+    setFormData(prev => ({ ...prev, id_ciudad: "" }));
+
+    if (val) {
+      try {
+        const res = await api.get(`/ciudades/${val}`);
+        setCiudades(res.data);
+      } catch (e) { console.error(e); }
+    }
+  };
 
   // 1. Extraer el array de la configuración
   const fields = createEmpresaFormConfig[1];
@@ -42,79 +65,79 @@ export default function Pago() {
   const total = Math.round(subtotal + iva);
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  
-  // Actualizar el valor del formulario
-  setFormData({ ...formData, [name]: value });
+    const { name, value } = e.target;
 
-  // Si existe un error para este campo, eliminarlo
-  if (errors[name]) {
-    const newErrors = { ...errors };
-    delete newErrors[name];
-    setErrors(newErrors);
-  }
-};
+    // Actualizar el valor del formulario
+    setFormData({ ...formData, [name]: value });
+
+    // Si existe un error para este campo, eliminarlo
+    if (errors[name]) {
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
+    }
+  };
 
   const handlePagar = async () => {
-  if (!plan) return Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: "No hay plan seleccionado",
-    showConfirmButton: false,
-    timer: 1100,
-    timerProgressBar: true,
-  });
-  
-  setLoading(true);
-  setErrors({}); // Limpiar errores antes de intentar
-
-  try {
-    const payload = {
-      ...formData,
-      id_tipo_licencia: plan.id,
-      duracion_meses: plan.duracion_meses,
-      id_estado: 3,
-    };
-
-    await api.post("/registrar-empresa-licencia", payload);
-    
-    Swal.fire({
-      icon: "success",
-      title: "Registro exitoso",
-      text: "Se ha registrado la empresa con exito, espera activación del Administrador",
+    if (!plan) return Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No hay plan seleccionado",
       showConfirmButton: false,
-      timer: 2000,
+      timer: 1100,
       timerProgressBar: true,
     });
-    navigate("/");
-  } catch (error) {
-    console.error("Error en el registro:", error.response);
 
-    if (error.response?.status === 422) {
-      // Convertimos el objeto de arrays de Laravel a un objeto de strings
-      const backendErrors = error.response.data.errors;
-      const formattedErrors = {};
-      
-      Object.keys(backendErrors).forEach((key) => {
-        formattedErrors[key] = backendErrors[key][0]; // Tomamos el primer mensaje
-      });
+    setLoading(true);
+    setErrors({}); // Limpiar errores antes de intentar
 
-      setErrors(formattedErrors);
-      toast.error("Revisa los campos marcados en rojo");
-    } else {
+    try {
+      const payload = {
+        ...formData,
+        id_tipo_licencia: plan.id,
+        duracion_meses: plan.duracion_meses,
+        id_estado: 3,
+      };
+
+      await api.post("/registrar-empresa-licencia", payload);
+
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error.response?.data?.message || "Error inesperado",
+        icon: "success",
+        title: "Registro exitoso",
+        text: "Se ha registrado la empresa con exito, espera activación del Administrador",
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,
       });
+      navigate("/");
+    } catch (error) {
+      console.error("Error en el registro:", error.response);
+
+      if (error.response?.status === 422) {
+        // Convertimos el objeto de arrays de Laravel a un objeto de strings
+        const backendErrors = error.response.data.errors;
+        const formattedErrors = {};
+
+        Object.keys(backendErrors).forEach((key) => {
+          formattedErrors[key] = backendErrors[key][0]; // Tomamos el primer mensaje
+        });
+
+        setErrors(formattedErrors);
+        toast.error("Revisa los campos marcados en rojo");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.message || "Error inesperado",
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+        });
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const ErrorMsg = ({ name }) => (
     errors[name] ? <p className="text-red-500 text-xs mt-1">{errors[name]}</p> : null
@@ -123,7 +146,7 @@ export default function Pago() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
+
         {/* COLUMNA IZQUIERDA - RESUMEN DINÁMICO */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-12">
           <h2 className="text-xl font-semibold text-gray-900">Resumen del Plan</h2>
@@ -151,18 +174,18 @@ export default function Pago() {
           <div className="text-sm text-gray-600 bg-gray-100 rounded-lg p-3">
             Activo por <strong>{plan.duracion}</strong> a partir de la aprobación.
           </div>
-          
+
           {/* Beneficios (Se mantienen estáticos por ahora) */}
           <div className="space-y-5">
             <h4 className="font-medium text-gray-900">Beneficios incluidos</h4>
             <ul className="grid grid-cols-2 gap-3 text-sm text-gray-700">
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Soporte 24/7 </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Gestión de Usuarios </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Control de Inventario </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Agenda Medica </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Asignacion de Citas </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Remisiones </li>
-               <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Reportes y Estadisticas </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Soporte 24/7 </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Gestión de Usuarios </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Control de Inventario </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Agenda Medica </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Asignacion de Citas </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Remisiones </li>
+              <li className="flex items-center gap-2"> <span className="text-blue-600">✔</span> Reportes y Estadisticas </li>
             </ul>
           </div>
         </div>
@@ -174,24 +197,67 @@ export default function Pago() {
           <div className="space-y-4">
             <h3 className="text-base font-medium text-gray-800 border-b pb-2">Información de la Empresa</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {camposEmpresa.map((field) => (
-                <div key={field.name} className="flex flex-col">
-                  <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
-                  <input
-                    name={field.name}
-                    type={field.type}
-                    value={formData[field.name] || ""}
-                    onChange={handleChange}
-                    placeholder={field.label}
-                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${
-                      errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
-                    }`}
-                  />
-                  {errors[field.name] && (
-                    <span className="text-red-500 text-xs mt-1">{errors[field.name]}</span>
-                  )}
-                </div>
-              ))}
+              {camposEmpresa.map((field) => {
+                if (field.name === 'ciudad') {
+                  return (
+                    <div key="location-group" className="contents">
+                      {/* Departamento Select */}
+                      <div className="flex flex-col">
+                        <label className="text-xs font-medium text-gray-500 mb-1">Departamento</label>
+                        <select
+                          className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                          value={selectedDepartamento}
+                          onChange={handleDepartamentoChange}
+                        >
+                          <option value="">Seleccionar</option>
+                          {departamentos.map(d => (
+                            <option key={d.codigo_DANE} value={d.codigo_DANE}>{d.nombre}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Ciudad Select */}
+                      <div className="flex flex-col">
+                        <label className="text-xs font-medium text-gray-500 mb-1">Ciudad</label>
+                        <select
+                          name="id_ciudad"
+                          className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.id_ciudad ? "border-red-500 bg-red-50" : "border-gray-200"
+                            }`}
+                          value={formData.id_ciudad || ""}
+                          onChange={handleChange}
+                          disabled={!selectedDepartamento}
+                        >
+                          <option value="">Seleccionar</option>
+                          {ciudades.map(c => (
+                            <option key={c.codigo_postal} value={c.codigo_postal}>{c.nombre}</option>
+                          ))}
+                        </select>
+                        {errors.id_ciudad && (
+                          <span className="text-red-500 text-xs mt-1">{errors.id_ciudad}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={field.name} className="flex flex-col">
+                    <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
+                    <input
+                      name={field.name}
+                      type={field.type}
+                      value={formData[field.name] || ""}
+                      onChange={handleChange}
+                      placeholder={field.label}
+                      className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
+                        }`}
+                    />
+                    {errors[field.name] && (
+                      <span className="text-red-500 text-xs mt-1">{errors[field.name]}</span>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
 
@@ -207,9 +273,8 @@ export default function Pago() {
                     value={formData[field.name] || ""}
                     onChange={handleChange}
                     placeholder={field.label}
-                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${
-                      errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
-                    }`}
+                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors[field.name] ? "border-red-500 bg-red-50" : "border-gray-200"
+                      }`}
                   />
                   {errors[field.name] && (
                     <span className="text-red-500 text-xs mt-1">{errors[field.name]}</span>
@@ -236,7 +301,7 @@ export default function Pago() {
             )}
           </div>
 
-          <button 
+          <button
             onClick={handlePagar}
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition disabled:bg-blue-300"

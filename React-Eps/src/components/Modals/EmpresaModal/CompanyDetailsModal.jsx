@@ -137,7 +137,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500 block">Ciudad</span>
-                                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(company.ciudad)}</span>
+                                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(company.ciudad?.nombre)}</span>
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500 block">Teléfono Contacto</span>
