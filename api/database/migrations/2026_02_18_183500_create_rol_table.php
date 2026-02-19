@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('categoria_medicamento', function (Blueprint $table) {
-            $table->id('id_categoria');
-            $table->string('categoria', 100)->nullable();
+        Schema::create('rol', function (Blueprint $table) {
+            $table->id('id_rol');
+            $table->string('tipo_usu', 50)->unique();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('categoria_medicamento');
+        Schema::dropIfExists('rol');
     }
 };

@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rol', function (Blueprint $table) {
-            $table->id('id_rol');
-            $table->string('tipo_usu', 50)->nullable();
+        Schema::create('estado', function (Blueprint $table) {
+            $table->id('id_estado');
+            $table->string('nombre_estado', 50)->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('rol');
+        Schema::dropIfExists('estado');
     }
 };
