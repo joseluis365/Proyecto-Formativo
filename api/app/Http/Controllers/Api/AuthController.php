@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Models\Empresa;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -16,7 +18,12 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo electrónico no es válido.',
+            'password.required' => 'La contraseña es obligatoria.',
         ]);
+            
 
         $user = Usuario::where('email', $request->email)->first();
 
@@ -75,5 +82,99 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Sesión cerrada correctamente'
         ]);
+    }
+
+    /**
+     * Paso 1: Enviar código de recuperación
+     */
+    public function sendRecoveryCode(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = Usuario::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Correo no encontrado'], 404);
+        }
+
+        $code = random_int(100000, 999999);
+
+        // Guardar código de recuperación por 10 minutos
+        Cache::put('user_recovery_' . $request->email, $code, now()->addMinutes(10));
+
+        try {
+            Mail::raw(
+                "Tu código de recuperación es: {$code}. Válido por 10 minutos.",
+                function ($message) use ($user) {
+                    $message->to($user->email)
+                            ->subject('Recuperación de Contraseña - EPS');
+                }
+            );
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error enviando correo'], 500);
+        }
+
+        return response()->json(['message' => 'Código enviado']);
+    }
+
+    /**
+     * Paso 2: Verificar código de recuperación
+     */
+    public function verifyRecoveryCode(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|numeric'
+        ]);
+
+        $cachedCode = Cache::get('user_recovery_' . $request->email);
+
+        if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
+            return response()->json(['message' => 'Código inválido o expirado'], 400);
+        }
+
+        return response()->json(['message' => 'Código correcto']);
+    }
+
+    /**
+     * Paso 3: Restablecer contraseña
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|numeric',
+            'password' => 'required|string|min:8|max:25|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo electrónico no es válido.',
+            'code.required' => 'El código es obligatorio.',
+            'code.numeric' => 'El código debe ser numérico.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.max' => 'La contraseña debe tener como maximo 25 caracteres.',
+            'password.regex' => 'La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial: @$!%*?&',
+        ]);
+
+        // Verificar código nuevamente por seguridad
+        $cachedCode = Cache::get('user_recovery_' . $request->email);
+
+        if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
+            return response()->json(['message' => 'Sesión expirada o código inválido'], 400);
+        }
+
+        $user = Usuario::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+
+        $user->contrasena = Hash::make($request->password);
+        $user->save();
+
+        // Eliminar código usado
+        Cache::forget('user_recovery_' . $request->email);
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
 }
