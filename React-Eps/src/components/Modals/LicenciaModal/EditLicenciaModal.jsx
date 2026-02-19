@@ -3,7 +3,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import Swal from "sweetalert2";
 
@@ -46,7 +46,7 @@ export default function EditLicenciaModal({
 
             // IMPORTANTE: Aquí llamamos a la prop que recibimos
             if (typeof onSuccess === 'function') {
-                onSuccess(); 
+                onSuccess();
             }
             onClose();
 
@@ -75,52 +75,52 @@ export default function EditLicenciaModal({
 
     const handleDelete = async () => {
 
-    // Confirmación visual
-    const result = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: "Esta acción no se puede deshacer y podría afectar las empresaas asociadas.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
+        // Confirmación visual
+        const result = await Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer y podría afectar las empresaas asociadas.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
 
-    if (result.isConfirmed) {
-        try {
-            setSaving(true);
-            // Petición DELETE a tu API de Laravel
-            await api.delete(`/licencia/${licenciaData.id}`);
+        if (result.isConfirmed) {
+            try {
+                setSaving(true);
+                // Petición DELETE a tu API de Laravel
+                await api.delete(`/licencia/${licenciaData.id}`);
 
-            await Swal.fire({
-                icon: 'success',
-                title: 'Eliminado',
-                text: 'La licencia ha sido eliminada correctamente.',
-                timer: 1500,
-                showConfirmButton: false
-            });
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminado',
+                    text: 'La licencia ha sido eliminada correctamente.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
 
-            onSuccess?.(); // Refrescar lista
-            onClose();     // Cerrar modal
-        } catch (error) {
-            console.error("Delete Error:", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response?.data?.message || 'No se pudo eliminar la licencia.',
-            });
-        } finally {
-            setSaving(false);
+                onSuccess?.(); // Refrescar lista
+                onClose();     // Cerrar modal
+            } catch (error) {
+                console.error("Delete Error:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || 'No se pudo eliminar la licencia.',
+                });
+            } finally {
+                setSaving(false);
+            }
         }
-    }
-};
+    };
 
     return (
         <BaseModal>
             <ModalHeader icon="edit" title="EDITAR LICENCIA" onClose={onClose} />
             <div className="p-6 flex-1 overflow-y-auto">
-                <UserForm
+                <Form
                     values={values}
                     fields={createLicenciaFormConfig[2]}
                     onSubmit={handleUpdate}

@@ -1,12 +1,11 @@
 import DataTable from "../UI/DataTable";
-import { Link } from "react-router-dom";
-import EditPacienteModal from "../Modals/UserModal/EditPacienteModal";
+import EditPersonalModal from "../Modals/UserModal/EditPersonalModal";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../Api/axios";
 
-export default function PacientesTable({ users, fetchUsers }) {
+export default function PersonalTable({ users, fetchUsers }) {
   const [editingUserId, setEditingUserId] = useState(null);
 
   // Cambiar estado (activo/inactivo)
@@ -14,12 +13,12 @@ export default function PacientesTable({ users, fetchUsers }) {
     const nuevoEstado = user.id_estado === 1 ? 2 : 1;
     const result = await Swal.fire({
       title: "¿Cambiar estado?",
-      text: `El paciente pasará a estar ${nuevoEstado === 1 ? "Activo" : "Inactivo"}`,
+      text: `El usuario pasará a estar ${nuevoEstado === 1 ? "Activo" : "Inactivo"}`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Sí, cambiar",
       cancelButtonText: "Cancelar",
-    }); 
+    });
 
     if (result.isConfirmed) {
       try {
@@ -28,7 +27,7 @@ export default function PacientesTable({ users, fetchUsers }) {
         });
         Swal.fire({
           title: "Actualizado",
-          text: "El estado del paciente ha cambiado.",
+          text: "El estado del usuario ha cambiado.",
           icon: "success",
           showConfirmButton: false,
           timer: 1000,
@@ -46,7 +45,7 @@ export default function PacientesTable({ users, fetchUsers }) {
   const columns = [
     {
       key: "name",
-      header: "Nombre Completo",
+      header: "Nombre",
       render: (u) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
           {u.nombre + " " + u.apellido}
@@ -59,18 +58,9 @@ export default function PacientesTable({ users, fetchUsers }) {
       render: (u) => u.documento,
     },
     {
-      key: "age",
-      header: "Edad",
-      render: (u) => (
-        <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {u.edad}
-        </span>
-      ),
-    },
-    {
-      key: "rh",
-      header: "Grupo Sanguineo",
-      render: (u) => u.grupo_sanguineo,
+      key: "email",
+      header: "Correo",
+      render: (u) => u.email,
     },
     {
       key: "status",
@@ -78,8 +68,8 @@ export default function PacientesTable({ users, fetchUsers }) {
       render: (u) => (
         <span
           className={`px-2.5 py-1 text-xs font-semibold rounded-full ${u.id_estado === 1
-            ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-            : "bg-red-100 text-red-800"
+              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+              : "bg-red-100 text-red-800"
             }`}
         >
           {u.id_estado === 1 ? "Activo" : "Inactivo"}
@@ -92,12 +82,10 @@ export default function PacientesTable({ users, fetchUsers }) {
       align: "center",
       render: (u) => (
         <div className="flex items-center justify-center gap-2">
-          <Link
-            to={`/usuarios/pacientes/info-paciente/${u.documento}`}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-primary font-semibold"
-          >
-          Ver info
-          </Link>
+          <button onClick={() => setEditingUserId(u.documento)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+
+            <span className="material-symbols-outlined text-base">edit</span>
+          </button>
 
           <button onClick={() => handleToggleStatus(u)}
             className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -108,12 +96,14 @@ export default function PacientesTable({ users, fetchUsers }) {
     },
   ];
 
+
+
   return (
     <>
       <DataTable columns={columns} data={users} />
       <AnimatePresence>
         {editingUserId && (
-          <EditPacienteModal
+          <EditPersonalModal
             userId={editingUserId}
             onClose={closeEdit}
             onSuccess={fetchUsers}

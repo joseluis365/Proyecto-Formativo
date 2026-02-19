@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CitaController;
-use App\Http\Controllers\Api\PersonalController;
+use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\EmpresaController;
 use App\Http\Controllers\Api\LicenciaController;
 use App\Http\Controllers\Api\EmpresaLicenciaController;
@@ -10,8 +10,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Models\Activity;
 use App\Http\Controllers\Api\LicenciaChartController;
 use App\Http\Controllers\Api\ReporteController;
+use App\Http\Controllers\Api\EspecialidadesController;
+use App\Http\Controllers\Api\LocationController;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'sendRecoveryCode']);
+Route::post('/verify-recovery-code', [AuthController::class, 'verifyRecoveryCode']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Rutas Superadmin
 Route::post('/superadmin/login', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'login']);
@@ -19,6 +24,18 @@ Route::post('/superadmin/verificar-codigo', [\App\Http\Controllers\Api\Superadmi
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/superadmin/logout', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'logout']);
     Route::get('/superadmin/check-session', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'checkSession']);
+    Route::controller(UsuarioController::class)->group(function () {
+        Route::get('/usuarios', 'index');
+        Route::get('/usuario/{id}', 'show');
+        Route::post('/usuario', 'store');
+        Route::put('/usuario/{id}', 'update');
+        Route::delete('/usuario/{id}', 'destroy');
+        Route::put('/usuario/{id}/estado', 'updateEstado');
+    });
+});
+
+Route::controller(EspecialidadesController::class)->group(function () {
+    Route::get('/especialidades', 'index');
 });
 
 Route::post('/superadmin/forgot-password', [\App\Http\Controllers\Api\SuperadminAuthController::class, 'sendRecoveryCode']);
@@ -57,13 +74,7 @@ Route::controller(CitaController::class)->group(function () {
     Route::delete('/cita/{id}', 'destroy');
 });
 
-Route::controller(PersonalController::class)->group(function () {
-    Route::get('/personal', 'index');
-    Route::get('/personal/{id}', 'show');
-    Route::post('/personal', 'store');
-    Route::put('/personal/{id}', 'update');
-    Route::delete('/personal/{id}', 'destroy');
-});
+
 
 Route::controller(EmpresaController::class)->group(function () {
     Route::get('/empresas', 'index');
@@ -91,9 +102,5 @@ Route::controller(EmpresaLicenciaController::class)->group(function () {
 
 Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
 
-
-
-
-
-
-
+Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
+Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
-import PacientesTable from "../../components/Users/PacientesTable";
+import PersonalTable from "../../components/Users/PersonalTable";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
-import CreatePacienteModal from "../../components/Modals/UserModal/CreatePacienteModal";
+import CreatePersonalModal from "../../components/Modals/UserModal/CreatePersonalModal";
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -15,12 +15,12 @@ const statusOptions = [
   { value: 2, label: "Inactivos" },
 ];
 
-export default function Pacientes() {
+export default function Personal() {
   const { setTitle, setSubtitle } = useLayout();
 
   useEffect(() => {
-    setTitle("Pacientes");
-    setSubtitle("Gestión de los Pacientes");
+    setTitle("Personal");
+    setSubtitle("Gestión del Personal Administrativo");
   }, []);
 
   // 🔹 Estados necesarios
@@ -34,9 +34,8 @@ export default function Pacientes() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [creating, setCreating] = useState(false);
   const [totalUsersByRol, setTotalUsersByRol] = useState(0);
-
-  // 🔹 Opciones del filtro
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
 
   // 🔹 FUNCIÓN CENTRAL (la que faltaba)
@@ -48,16 +47,20 @@ export default function Pacientes() {
       const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol: 5,
+          id_rol: 3,
           status: status || undefined,
+          page: currentPage, 
         },
       });
 
       setUsers(res.data.data);
       setTotalUsersByRol(res.data.totalPorRol);
+      setCurrentPage(res.data.current_page);
+      setLastPage(res.data.last_page);
+
     } catch (err) {
-      console.error("Error cargando pacientes:", err);
-      setError("No se pudieron cargar los pacientes"); // ❌ error controlado
+      console.error("Error cargando usuarios:", err);
+      setError("No se pudieron cargar los usuarios"); // ❌ error controlado
       setUsers([]);
     } finally {
       setLoading(false);
@@ -76,10 +79,9 @@ export default function Pacientes() {
 
   // 🔹 Ejecutar cuando cambian filtros
   useEffect(() => {
-    fetchUsers();
-  }, [debouncedSearch, id_rol, status]);
+    fetchUsers(currentPage);
+  }, [debouncedSearch, id_rol, status, currentPage]);
 
-  console.log(users);
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl">
@@ -87,11 +89,11 @@ export default function Pacientes() {
       <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
         <PrincipalText
           icon="badge"
-          text="Pacientes Registrados"
+          text="Personal Registrado"
           number={totalUsersByRol}
         />
         <button onClick={() => setCreating(true)} className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
-          Agregar Paciente
+          Agregar Personal
           <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
         </button>
       </div>
@@ -99,7 +101,7 @@ export default function Pacientes() {
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
         <Input
-          placeholder="Buscar paciente"
+          placeholder="Buscar nombre o documento"
           icon="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -148,7 +150,7 @@ export default function Pacientes() {
             animate={{ opacity: 1 }}
             className="text-center py-6 text-gray-500"
           >
-            No se encontraron pacientes
+            No se encontraron usuarios
           </motion.div>
         )}
 
@@ -159,16 +161,51 @@ export default function Pacientes() {
             animate={{ opacity: loading ? 0.6 : 1 }}
             transition={{ duration: 0.2 }}
           >
-            <PacientesTable
+            <PersonalTable
               users={users}
               fetchUsers={fetchUsers}
             />
+
+          <div className="flex justify-center gap-2 mt-6">
+              {/* Botón anterior */}
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+            >
+              Anterior
+            </button>
+
+            {/* Números de página */}
+            {Array.from({ length: lastPage }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded ${
+                  currentPage === i + 1
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            {/* Botón siguiente */}
+            <button
+              disabled={currentPage === lastPage}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
           </motion.div>
         )}
       </AnimatePresence>
       <AnimatePresence>
         {creating && (
-          <CreatePacienteModal
+          <CreatePersonalModal
             onClose={() => setCreating(false)}
             onSuccess={fetchUsers}
           />

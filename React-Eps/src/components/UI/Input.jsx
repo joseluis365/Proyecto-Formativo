@@ -1,6 +1,6 @@
 export default function Input({placeholder, icon, value, onChange}){
     return (
-        <div className="relative grow sm:grow-0 sm:w-72">
+        <div className="relative grow sm:grow-0 sm:w-72 w-96">
             <span
                 className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-400">
                 {icon}

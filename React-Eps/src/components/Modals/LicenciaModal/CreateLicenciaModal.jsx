@@ -3,7 +3,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalBody from "../ModalBody";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 export default function CreateLicenciaModal({
     onClose,
-    onSuccess, 
+    onSuccess,
 }) {
     const toast = useToast();
     const [saving, setSaving] = useState(false);
@@ -38,19 +38,19 @@ export default function CreateLicenciaModal({
             };
             await api.post(`/licencia`, payload);
 
-  // 2. Disparas la alerta de SweetAlert2
-  await Swal.fire({
-    icon: 'success',
-    title: 'Licencia Creada',
-    text: 'La licencia ha sido creada correctamente.',
-    showConfirmButton: false,
-    timer: 1500
-  });
+            // 2. Disparas la alerta de SweetAlert2
+            await Swal.fire({
+                icon: 'success',
+                title: 'Plan Creado',
+                text: 'El plan ha sido creado correctamente.',
+                showConfirmButton: false,
+                timer: 1500
+            });
 
-  // 3. Estas acciones ocurren SOLO después de que el usuario cierra la alerta
-  setSuccess(true);
-  onSuccess?.();
-  onClose();
+            // 3. Estas acciones ocurren SOLO después de que el usuario cierra la alerta
+            setSuccess(true);
+            onSuccess?.();
+            onClose();
         } catch (error) {
             if (error.response?.status === 422) {
                 setErrors(
@@ -93,7 +93,7 @@ export default function CreateLicenciaModal({
                 onClick={(e) => e.stopPropagation()}
             >
                 <BaseModal>
-                    <ModalHeader icon="verified" title="CREAR LICENCIA" onClose={onClose} />
+                    <ModalHeader icon="verified" title="CREAR PLAN" onClose={onClose} />
                     <ModalBody>
                         <AnimatePresence>
                             {success && (
@@ -107,7 +107,7 @@ export default function CreateLicenciaModal({
                                     onClick={!saving ? onClose : undefined}
                                 >
                                     <span className="material-symbols-outlined">check_circle</span>
-                                    <span className="font-medium">Licencia creada correctamente</span>
+                                    <span className="font-medium">Plan creado correctamente</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -116,8 +116,8 @@ export default function CreateLicenciaModal({
                             loading ? (
                                 <p>Cargando...</p>
                             ) : (
-                                <UserForm
-                                    initialValues={initialLicencia}
+                                <Form
+                                    values={initialLicencia}
                                     fields={createLicenciaFormConfig[1]}
                                     onSubmit={handleCreate}
                                     disabled={saving}

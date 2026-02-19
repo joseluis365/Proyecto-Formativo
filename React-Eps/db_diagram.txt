@@ -1,0 +1,415 @@
+Table activities {
+  id bigint [primary key]
+  title varchar
+  type varchar
+  icon varchar
+  created_at timestamp
+  updated_at timestamp
+  channel_name varchar
+}
+
+Table cache {
+  key varchar [primary key]
+  value text
+  expiration integer
+}
+
+Table cache_locks {
+  key varchar [primary key]
+  owner varchar
+  expiration integer
+}
+
+Table categoria_examen {
+  id_categoria_examen integer [primary key]
+  categoria varchar
+}
+
+Table categoria_medicamento {
+  id_categoria integer [primary key]
+  categoria varchar
+}
+
+Table cita {
+  id_cita integer [primary key]
+  doc_paciente integer
+  doc_medico integer
+  fecha date
+  hora_inicio time
+  hora_fin time
+  motivo varchar
+  tipo_cita_id integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table citas {
+  id bigint [primary key]
+  fecha date
+  hora time
+  paciente varchar
+  medico varchar
+  estado varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table ciudad {
+  codigo_postal integer [primary key]
+  nombre varchar
+  id_departamento integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table departamento {
+  codigo_DANE integer [primary key]
+  nombre varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table detalle_medicamento {
+  id_detalle_medicamento integer [primary key]
+  id_orden integer
+  id_medicamento integer
+  dosis varchar
+  frecuencia varchar
+  duracion varchar
+  observaciones text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table empresa {
+  nit varchar [primary key]
+  nombre varchar
+  email_contacto varchar
+  telefono varchar
+  direccion varchar
+  documento_representante integer
+  nombre_representante varchar
+  telefono_representante varchar
+  email_representante varchar
+  id_ciudad integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table empresa_licencia {
+  id_empresa_licencia varchar [primary key]
+  nit varchar
+  id_tipo_licencia integer
+  fecha_inicio date
+  fecha_fin date
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table especialidad {
+  id_especialidad integer [primary key]
+  especialidad varchar
+}
+
+Table especialidades {
+  id_especialidad bigint [primary key]
+  especialidad varchar
+}
+
+Table estado {
+  id_estado integer [primary key]
+  nombre_estado varchar
+}
+
+Table examen {
+  id_examen integer [primary key]
+  nombre varchar
+  id_categoria_examen integer
+  requiere_ayuno boolean
+  descripcion text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table failed_jobs {
+  id bigint [primary key]
+  uuid varchar
+  connection text
+  queue text
+  payload text
+  exception text
+  failed_at timestamp
+}
+
+Table farmacia {
+  nit varchar [primary key]
+  nombre varchar
+  direccion varchar
+  telefono varchar
+  email varchar
+  nombre_contacto varchar
+  horario_apertura time
+  horario_cierre time
+  abierto_24h boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table historial_clinico {
+  id_historial integer [primary key]
+  id_paciente integer
+  antecedentes_personales text
+  antecedentes_familiares text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table historial_detalle {
+  id_detalle integer [primary key]
+  id_historial integer
+  id_cita integer
+  diagnostico text
+  tratamiento text
+  notas_medicas text
+  observaciones text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table job_batches {
+  id varchar [primary key]
+  name varchar
+  total_jobs integer
+  pending_jobs integer
+  failed_jobs integer
+  failed_job_ids text
+  options text
+  cancelled_at integer
+  created_at integer
+  finished_at integer
+}
+
+Table jobs {
+  id bigint [primary key]
+  queue varchar
+  payload text
+  attempts smallint
+  reserved_at integer
+  available_at integer
+  created_at integer
+}
+
+Table medicamento {
+  id_medicamento integer [primary key]
+  nombre varchar
+  presentacion varchar
+  descripcion text
+  stock_disponible integer
+  precio_unitario numeric
+  id_categoria integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table migrations {
+  id integer [primary key]
+  migration varchar
+  batch integer
+}
+
+Table movimiento_inventario {
+  id_movimiento integer [primary key]
+  id_medicamento integer
+  tipo_movimiento varchar
+  cantidad integer
+  fecha date
+  documento integer
+  motivo varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table orden_medicamento {
+  id_orden integer [primary key]
+  id_detalle_cita integer
+  nit_farmacia varchar
+  fecha_vencimiento date
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table password_reset_tokens {
+  email varchar [primary key]
+  token varchar
+  created_at timestamp
+}
+
+Table personal_access_tokens {
+  id bigint [primary key]
+  tokenable_type varchar
+  tokenable_id bigint
+  name varchar
+  token varchar
+  abilities text
+  last_used_at timestamp
+  expires_at timestamp
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table prioridad {
+  id_prioridad integer [primary key]
+  prioridad varchar
+}
+
+Table products {
+  id bigint [primary key]
+  description varchar
+  price numeric
+  stock integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table remision {
+  id_remision integer [primary key]
+  id_detalle_cita integer
+  tipo_remision varchar
+  id_especialidad integer
+  id_examen integer
+  id_prioridad integer
+  notas text
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table rol {
+  id_rol integer [primary key]
+  tipo_usu varchar
+}
+
+Table sessions {
+  id varchar [primary key]
+  user_id bigint
+  ip_address varchar
+  user_agent text
+  payload text
+  last_activity integer
+}
+
+Table solicitud_cita {
+  id_solicitud integer [primary key]
+  id_especialidad integer
+  fecha_preferida date
+  motivo text
+  id_estado integer
+  id_cita integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table superadmin {
+  documento integer [primary key]
+  nombre varchar
+  usuario varchar
+  email varchar
+  contrasena varchar
+  id_rol integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table tipo_cita {
+  id_tipo_cita integer [primary key]
+  tipo varchar
+}
+
+Table tipo_licencia {
+  id_tipo_licencia integer [primary key]
+  tipo varchar
+  descripcion varchar
+  duracion_meses integer
+  precio numeric
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table users {
+  id bigint [primary key]
+  name varchar
+  email varchar
+  email_verified_at timestamp
+  password varchar
+  status varchar
+  id_rol bigint
+  remember_token varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table usuario {
+  documento bigint [primary key]
+  nombre varchar
+  apellido varchar
+  email varchar
+  telefono varchar
+  direccion varchar
+  sexo varchar
+  fecha_nacimiento date
+  grupo_sanguineo varchar
+  contrasena varchar
+  registro_profesional varchar
+  nit varchar
+  id_rol integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+  id_especialidad integer
+}
+
+// Relaciones
+Ref: cita.doc_medico > usuario.documento
+Ref: cita.doc_paciente > usuario.documento
+Ref: cita.id_estado > estado.id_estado
+Ref: cita.tipo_cita_id > tipo_cita.id_tipo_cita
+Ref: ciudad.id_departamento > departamento.codigo_DANE
+Ref: detalle_medicamento.id_medicamento > medicamento.id_medicamento
+Ref: detalle_medicamento.id_orden > orden_medicamento.id_orden
+Ref: empresa.id_ciudad > ciudad.codigo_postal
+Ref: empresa.id_estado > estado.id_estado
+Ref: empresa_licencia.id_estado > estado.id_estado
+Ref: empresa_licencia.id_tipo_licencia > tipo_licencia.id_tipo_licencia
+Ref: empresa_licencia.nit > empresa.nit
+Ref: examen.id_categoria_examen > categoria_examen.id_categoria_examen
+Ref: historial_clinico.id_paciente > usuario.documento
+Ref: historial_detalle.id_cita > cita.id_cita
+Ref: historial_detalle.id_historial > historial_clinico.id_historial
+Ref: medicamento.id_categoria > categoria_medicamento.id_categoria
+Ref: medicamento.id_estado > estado.id_estado
+Ref: movimiento_inventario.documento > usuario.documento
+Ref: movimiento_inventario.id_medicamento > medicamento.id_medicamento
+Ref: orden_medicamento.id_detalle_cita > historial_detalle.id_detalle
+Ref: orden_medicamento.id_estado > estado.id_estado
+Ref: orden_medicamento.nit_farmacia > farmacia.nit
+Ref: remision.id_detalle_cita > historial_detalle.id_detalle
+Ref: remision.id_especialidad > especialidad.id_especialidad
+Ref: remision.id_estado > estado.id_estado
+Ref: remision.id_examen > examen.id_examen
+Ref: remision.id_prioridad > prioridad.id_prioridad
+Ref: solicitud_cita.id_cita > cita.id_cita
+Ref: solicitud_cita.id_especialidad > especialidad.id_especialidad
+Ref: solicitud_cita.id_estado > estado.id_estado
+Ref: superadmin.id_rol > rol.id_rol
+Ref: tipo_licencia.id_estado > estado.id_estado
+Ref: users.id_rol > rol.id_rol
+Ref: usuario.id_especialidad > especialidad.id_especialidad
+Ref: usuario.id_estado > estado.id_estado
+Ref: usuario.id_rol > rol.id_rol
+Ref: usuario.nit > empresa.nit

@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
-import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { editUserFormConfig } from "../../../UserFormConfig";
-import { AnimatePresence, motion } from "framer-motion";
 import Swal from 'sweetalert2';
+import MotionSpinner from "../../UI/Spinner";
 
 
-export default function EditUserModal({
+export default function EditPersonalModal({
   onClose,
   userId,
   onSuccess,
@@ -22,7 +21,7 @@ export default function EditUserModal({
   useEffect(() => {
     if (!userId) return;
 
-    api.get(`/personal/${userId}`).then((res) => {
+    api.get(`/usuario/${userId}`).then((res) => {
       setUser(res.data);
       setLoading(false);
     });
@@ -31,13 +30,14 @@ export default function EditUserModal({
   const handleUpdate = async (data) => {
     try {
       setSaving(true);
-      await api.put(`/personal/${userId}`, data);
+      await api.put(`/usuario/${userId}`, data);
 
       Swal.fire({
         icon: 'success',
         title: 'Usuario Actualizado',
         text: 'La información del usuario ha sido actualizada correctamente.',
-        confirmButtonColor: '#3085d6',
+        showConfirmButton: false,
+        timer: 1100,
       }).then(() => {
         onSuccess?.();
         onClose();
@@ -54,15 +54,18 @@ export default function EditUserModal({
       setSaving(false);
     }
   };
+  console.log(user);
   return (
     <BaseModal>
       <ModalHeader icon="person" title="EDITAR USUARIO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
         {loading ? (
-          <p>Cargando...</p>
+          <div className="flex items-center justify-center h-full">
+            <MotionSpinner />
+          </div>
         ) : (
-          <UserForm
-            initialValues={user}
+          <Form
+            values={user}
             fields={editUserFormConfig[user.id_rol]}
             onSubmit={handleUpdate}
             disabled={saving}
@@ -70,7 +73,6 @@ export default function EditUserModal({
           />
         )}
       </div>
-      <ModalFooter />
     </BaseModal>
   );
 }

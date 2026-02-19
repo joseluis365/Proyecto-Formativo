@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable; 
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 // 👇 IMPORTS CORRECTOS (SOLO ARRIBA)
 use App\Models\Rol;
 use App\Models\Estado;
 use App\Models\Empresa;
+use App\Models\Especialidad;
 
 class Usuario extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuario';
     protected $primaryKey = 'documento';
@@ -34,6 +36,8 @@ class Usuario extends Authenticatable
         'nit',
         'id_rol',
         'id_estado',
+        'registro_profesional',
+        'id_especialidad',
     ];
 
     protected $hidden = [
@@ -53,5 +57,10 @@ class Usuario extends Authenticatable
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'nit', 'nit');
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
     }
 }

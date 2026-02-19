@@ -1,34 +1,73 @@
-export const editUserFormConfig = {
-  2: [
-    { name: "name", label: "Nombre", type: "text" },
-    { name: "email", label: "Correo", type: "email" },
-    { name: "status", label: "Estado", type: "select" },
-    { name: "role", label: "Rol", type: "select" },
-  ],
+export const editUserFormConfig = [
+  { name: "documento", label: "Documento", type: "number", readOnly: true },
+  { name: "nombre", label: "Nombre", type: "text", readOnly: false },
+  { name: "apellido", label: "Apellido", type: "text", readOnly: false },
+  { name: "email", label: "Correo", type: "email", readOnly: false },
+  { name: "telefono", label: "Telefono", type: "number", readOnly: false },
+  { name: "direccion", label: "Direccion", type: "text", readOnly: false },
+  { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", readOnly: false },
+  { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false },
+]
 
-  3: [
-    { name: "name", label: "Nombre", type: "text" },
-    { name: "especialidad", label: "Especialidad", type: "text" },
-    { name: "registro_medico", label: "Registro médico", type: "text" },
-    { name: "status", label: "Estado", type: "select" },
+export const roleSpecificEditConfig = {
+  4: [ // Medico
+    { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: true },
+    { name: "id_especialidad", label: "Especialidad", type: "select", readOnly: false },
   ],
-
-  1: [
-    { name: "name", label: "Nombre", type: "text" },
-    { name: "id", label: "Documento", type: "number" },
-    { name: "email", label: "Correo", type: "email" },
-    { name: "status", label: "Estado", type: "select", options: [{ value: "ACTIVO", label: "Activo" }, { value: "INACTIVO", label: "Inactivo" }] },
+  5: [ // Paciente
+    { name: "sexo", label: "Sexo", type: "select", options: [{ value: 1, label: "Masculino" }, { value: 2, label: "Femenino" }], readOnly: false },
+    { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false },
   ],
 };
 
-export const createUserFormConfig = {
-  1: [
-    { name: "id", label: "Documento", type: "number" },
-    { name: "name", label: "Nombre", type: "text" },
-    { name: "email", label: "Correo", type: "email" },
-    { name: "password", label: "Contraseña", type: "password" },
-    { name: "status", label: "Estado", type: "select", options: [{ value: "ACTIVO", label: "Activo" }, { value: "INACTIVO", label: "Inactivo" }] },
+
+
+export const createUserFormConfig = [
+  { name: "documento", label: "Documento", type: "number", readOnly: false },
+  { name: "nombre", label: "Nombre", type: "text", readOnly: false },
+  { name: "apellido", label: "Apellido", type: "text", readOnly: false },
+  { name: "email", label: "Correo", type: "email", readOnly: false },
+  { name: "telefono", label: "Telefono", type: "number", readOnly: false },
+  { name: "direccion", label: "Direccion", type: "text", readOnly: false },
+  { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", readOnly: false },
+  { name: "contrasena", label: "Contraseña", type: "password", readOnly: false },
+  { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false },
+];
+
+export const roleSpecificConfig = {
+  4: [ // Medico
+    { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: false },
+    { name: "id_especialidad", label: "Especialidad", type: "select" },
+  ],
+  5: [ // Paciente
+    { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], readOnly: false },
+    { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false },
   ],
 };
+
+export function getCreateUserFormConfig(id_rol, dynamicOptions = {}) {
+  const config = [
+    ...createUserFormConfig,
+    ...(roleSpecificConfig[id_rol] || [])
+  ];
+
+  return config.map(field => {
+    if (dynamicOptions[field.name]) {
+      return { ...field, options: dynamicOptions[field.name] };
+    }
+    return field;
+  });
+}
+
+export function getEditUserFormConfig(id_rol, dynamicOptions = {}) {
+  const config = [...editUserFormConfig, ...(roleSpecificEditConfig[id_rol] || [])];
+  return config.map(field => {
+    if (dynamicOptions[field.name]) {
+      return { ...field, options: dynamicOptions[field.name] };
+    }
+    return field;
+  });
+}
+
 
 
