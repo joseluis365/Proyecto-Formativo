@@ -52,8 +52,7 @@ Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
 Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
-    return Activity::where('channel_name', $channel)
-        ->latest()
+    return Activity::latest()
         ->take(5)
         ->get()
         ->map(function ($activity) {
@@ -66,7 +65,6 @@ Route::get('/recent-activity/{channelName}', function ($channel) {
             ];
         });
 });
-
 /*
 |--------------------------------------------------------------------------
 | 🔒 RUTAS PROTEGIDAS
