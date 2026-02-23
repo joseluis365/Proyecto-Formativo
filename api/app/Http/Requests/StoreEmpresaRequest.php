@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreEmpresaRequest extends FormRequest
 {
@@ -14,116 +15,153 @@ class StoreEmpresaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nit' => ['required', 'numeric', 'unique:empresa,nit', 'regex:/^[1-9][0-9]{8}-[0-9]$/', 'max:12', 'min:10'],
-            'nombre' => ['required', 'string', 'min:3', 'max:100', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/'],
-            'email_contacto' => ['required', 'email:rfc,dns', 'unique:empresa,email_contacto', 'max:100'],
-            'telefono' => ['required', 'numeric', 'min:10', 'max:10', 'regex:/^\d{1,10}$/'],
-            'direccion' => ['required', 'string', 'min:7', 'max:150', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/'],
-            'documento_representante' => ['required', 'numeric', 'unique:empresa,documento_representante', 'min:6', 'max:10', 'regex:/^\d{1,10}$/'],
-            'nombre_representante' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
-            'telefono_representante' => ['required', 'numeric', 'min:10', 'max:10', 'regex:/^\d{1,10}$/'],
-            'email_representante' => ['required', 'email:rfc,dns', 'unique:empresa,email_representante', 'max:100'],
+            'nit' => ['required', 'unique:empresa,nit', 'regex:/^[0-9\-]+$/', 'regex:/^[1-9][0-9]{8}-[0-9]$/', 'min:10', 'max:12'],
+            'nombre' => ['required', 'string', 'min:3', 'max:50', 'regex:/^(?!.*\s{2,})(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\.,&\/]+$/', 'unique:empresa,nombre'],
+            'email_contacto' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'unique:empresa,email_contacto', 'min:12', 'max:150'],
+            'telefono' => ['required', 'regex:/^(3\d{9}|60[1-8]\d{7})$/', 'digits:10', 'unique:empresa,telefono'],
+            'id_departamento' => ['required', 'regex:/^[1-9][0-9]*$/', 'min:2', 'max:2', 'exists:departamento,codigo_DANE'],
+            'id_ciudad' => [
+                'required',
+                'regex:/^[1-9][0-9]*$/',
+                'min:5',
+                'max:6',
+                Rule::exists('ciudad', 'codigo_postal')
+                    ->where(function ($query) {
+                        $query->where('id_departamento', $this->id_departamento);
+                    }),
+            ],
+            'direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150', 'unique:empresa,direccion'],
+            'documento_representante' => ['required', 'regex:/^[1-9][0-9]*$/', 'numeric', 'digits_between:7,10', 'unique:empresa,documento_representante'],
+            'nombre_representante' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
+            'telefono_representante' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:empresa,telefono_representante'],
+            'email_representante' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', 'unique:empresa,email_representante'],
             'id_estado' => ['required', 'exists:estado,id_estado'],
-            'admin_nombre' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
-            'admin_apellido' => ['required', 'string', 'min:3', 'max:20', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
-            'admin_documento' => ['required', 'numeric', 'unique:usuario,documento', 'min:6', 'max:10', 'regex:/^\d{1,10}$/'],
-            'admin_email' => ['required', 'email:rfc,dns', 'unique:usuario,email', 'max:100'],
-            'admin_telefono' => ['required', 'numeric', 'regex:/^\d{1,10}$/', 'unique:usuario,telefono', 'min:10', 'max:10'],
-            'admin_direccion' => ['required', 'string', 'min:7', 'max:150', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/'],
-            'admin_password' => ['required', 'string', 'min:8', 'max:25', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
-            'id_ciudad' => ['required', 'exists:ciudad,codigo_postal'],
+            'admin_primer_nombre' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
+            'admin_segundo_nombre' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
+            'admin_primer_apellido' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
+            'admin_segundo_apellido' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
+            'admin_documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:7,10', 'numeric', 'unique:usuario,documento'],
+            'admin_email' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'min:12', 'max:150', 'unique:usuario,email'],
+            'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10',  'unique:usuario,telefono'],
+            'admin_direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150'],
+            'admin_password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'max:25'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'nit.required' => 'El documento es obligatorio',
+            'nit.required' => 'El NIT es obligatorio',
             'nit.unique' => 'Esta empresa ya tiene un registro',
-            'nit.regex' => 'El NIT debe tener el formato de 9 dígitos, un guion y un dígito final (ejemplo: 900123456-7)',
-            'nit.max' => 'El NIT debe tener como maximo 12 caracteres',
-            'nit.min' => 'El NIT debe tener como minimo 11 caracteres',
+            'nit.regex' => 'El NIT debe tener 9 numeros y un guion en el formato correcto (ejemplo: 900123456-7)',
+            'nit.digits_between' => 'El NIT debe tener entre 10 y 12 caracteres',
 
             'nombre.required' => 'El nombre de la Empresa es obligatorio',
+            'nombre.unique' => 'Este nombre ya está registrado',
             'nombre.min' => 'El nombre de la empresa debe tener al menos 3 caracteres',
-            'nombre.max' => 'El nombre de la empresa no puede ser mayor a 100 caracteres',
-            'nombre.regex' => 'El nombre de la empresa debe tener solo letras y numeros',
+            'nombre.max' => 'El nombre de la empresa no puede ser mayor a 50 caracteres',
+            'nombre.regex' => 'El nombre de la empresa debe tener al menos una letra, numeros y algunos caracteres (-, ., &, /)',
 
             'email_contacto.unique' => 'Este correo ya existe',
             'email_contacto.required' => 'El correo es obligatorio',
             'email_contacto.email' => 'El correo debe ser un correo valido',
-            'email_contacto.max' => 'El correo debe tener como maximo 100 caracteres',
+            'email_contacto.min' => 'El correo debe tener al menos 12 caracteres',
+            'email_contacto.max' => 'El correo debe tener como maximo 150 caracteres',
+            'email_contacto.regex' => 'El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido.',
 
             'telefono.required' => 'El telefono es obligatorio',
-            'telefono.min' => 'El telefono debe tener al menos 10 digitos',
-            'telefono.max' => 'El telefono debe tener como maximo 10 digitos',
-            'telefono.regex' => 'El telefono debe tener solo numeros',
+            'telefono.regex' => 'El telefono debe iniciar con 3 o 60 y tener 10 digitos numericos sin espacios',
+            'telefono.digits' => 'El telefono debe tener exactamente 10 caracteres',
+            'telefono.unique' => 'Este telefono ya está registrado',
+
+            'id_departamento.required' => 'El departamento es obligatorio',
+            'id_departamento.exists' => 'El departamento seleccionado no existe',
+            'id_departamento.regex' => 'El departamento debe ser un número válido',
+            'id_departamento.min' => 'El departamento debe tener como minimo 2 caracteres',
+            'id_departamento.max' => 'El departamento debe tener como maximo 2 caracteres',
+
+            'id_ciudad.required' => 'La ciudad es obligatoria',
+            'id_ciudad.exists' => 'La ciudad seleccionada no pertenece al departamento escogido',
+            'id_ciudad.regex' => 'La ciudad debe ser un número válido',
+            'id_ciudad.min' => 'La ciudad debe tener como minimo 5 caracteres',
+            'id_ciudad.max' => 'La ciudad debe tener como maximo 6 caracteres',
 
             'direccion.required' => 'La direccion es obligatoria',
-            'direccion.min' => 'La direccion debe tener al menos 7 caracteres',
+            'direccion.unique' => 'Esta direccion ya está registrada',
+            'direccion.min' => 'La direccion debe tener al menos 8 caracteres',
             'direccion.max' => 'La direccion debe tener como maximo 150 caracteres',
             'direccion.regex' => 'La dirección debe contener letras y números, y puede incluir #, -, . o ,.',
 
-            'id_ciudad.required' => 'La ciudad es obligatoria',
-
             'documento_representante.required' => 'El documento del representante es obligatorio',
             'documento_representante.unique' => 'Este documento ya está registrado',
-            'documento_representante.min' => 'El documento debe tener al menos 6 digitos',
-            'documento_representante.max' => 'El documento debe tener como maximo 10 digitos',
-            'documento_representante.regex' => 'El documento debe tener solo numeros',
+            'documento_representante.digits_between' => 'El documento debe tener entre 7 y 10 digitos',
+            'documento_representante.regex' => 'El documento debe tener solo numeros sin espacios ni puntos',
+            'documento_representante.numeric' => 'El documento debe ser un número',
 
             'nombre_representante.required' => 'El nombre del representante es obligatorio',
             'nombre_representante.min' => 'El nombre del representante debe tener al menos 3 caracteres',
             'nombre_representante.max' => 'El nombre del representante debe tener como maximo 50 caracteres',
-            'nombre_representante.regex' => 'El nombre del representante debe tener solo letras',
+            'nombre_representante.regex' => 'El nombre del representante debe tener solo letras sin espacios dobles',
 
             'telefono_representante.required' => 'El telefono del representante es obligatorio',
-            'telefono_representante.min' => 'El telefono debe tener al menos 10 digitos',
-            'telefono_representante.max' => 'El telefono debe tener como maximo 10 digitos',
-            'telefono_representante.regex' => 'El telefono debe tener solo numeros',
+            'telefono_representante.digits' => 'El telefono debe tener exactamente 10 digitos',
+            'telefono_representante.regex' => 'El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos',
+            'telefono_representante.unique' => 'Este telefono ya está registrado',
 
             'email_representante.required' => 'El correo del representante es obligatorio',
             'email_representante.unique' => 'Este correo ya existe',
             'email_representante.email' => 'El correo debe ser un correo valido',
-            'email_representante.max' => 'El correo debe tener como maximo 100 caracteres',
+            'email_representante.min' => 'El correo debe tener al menos 12 caracteres',
+            'email_representante.max' => 'El correo debe tener como maximo 150 caracteres',
+            'email_representante.regex' => 'El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido.',
 
             'id_estado.required' => 'El estado es obligatorio',
 
-            'admin_nombre.required' => 'El nombre del administrador es obligatorio',
-            'admin_nombre.min' => 'El nombre del administrador debe tener al menos 3 caracteres',
-            'admin_nombre.max' => 'El nombre del administrador debe tener como maximo 50 caracteres',
-            'admin_nombre.regex' => 'El nombre del administrador debe tener solo letras',
+            'admin_primer_nombre.required' => 'El primer nombre del administrador es obligatorio',
+            'admin_primer_nombre.min' => 'El primer nombre del administrador debe tener al menos 3 caracteres',
+            'admin_primer_nombre.max' => 'El primer nombre del administrador debe tener como maximo 40 caracteres',
+            'admin_primer_nombre.regex' => 'El primer nombre del administrador debe tener solo letras sin esapcios',
 
-            'admin_apellido.required' => 'El apellido del administrador es obligatorio',
-            'admin_apellido.min' => 'El apellido del administrador debe tener al menos 3 caracteres',
-            'admin_apellido.max' => 'El apellido del administrador debe tener como maximo 50 caracteres',
-            'admin_apellido.regex' => 'El apellido del administrador debe tener solo letras',
+            'admin_segundo_nombre.min' => 'El segundo nombre del administrador debe tener al menos 3 caracteres',
+            'admin_segundo_nombre.max' => 'El segundo nombre del administrador debe tener como maximo 40 caracteres',
+            'admin_segundo_nombre.regex' => 'El segundo nombre del administrador debe tener solo letras sin esapcios',
+
+            'admin_primer_apellido.required' => 'El primer apellido del administrador es obligatorio',
+            'admin_primer_apellido.min' => 'El primer apellido del administrador debe tener al menos 3 caracteres',
+            'admin_primer_apellido.max' => 'El primer apellido del administrador debe tener como maximo 40 caracteres',
+            'admin_primer_apellido.regex' => 'El primer apellido del administrador debe tener solo letras sin esapcios dobles',
+
+            'admin_segundo_apellido.min' => 'El segundo apellido del administrador debe tener al menos 3 caracteres',
+            'admin_segundo_apellido.max' => 'El segundo apellido del administrador debe tener como maximo 40 caracteres',
+            'admin_segundo_apellido.regex' => 'El segundo apellido del administrador debe tener solo letras sin esapcios dobles',
 
             'admin_documento.required' => 'El documento del administrador es obligatorio',
+            'admin_documento.numeric' => 'El documento debe ser un número',
             'admin_documento.unique' => 'Este documento ya está registrado',
-            'admin_documento.min' => 'El documento debe tener al menos 6 digitos',
-            'admin_documento.max' => 'El documento debe tener como maximo 10 digitos',
-            'admin_documento.regex' => 'El documento debe tener solo numeros',
+            'admin_documento.digits_between' => 'El documento debe tener entre 7 y 10 digitos',
+            'admin_documento.regex' => 'El documento debe tener solo numeros sin espacios ni puntos',
 
             'admin_email.required' => 'El correo del administrador es obligatorio',
             'admin_email.unique' => 'Este correo ya existe',
             'admin_email.email' => 'El correo debe ser un correo valido',
+            'admin_email.min' => 'El correo debe tener al menos 12 caracteres',
+            'admin_email.max' => 'El correo debe tener como maximo 150 caracteres',
+            'admin_email.regex' => 'El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido.',
 
             'admin_telefono.required' => 'El telefono del administrador es obligatorio',
             'admin_telefono.unique' => 'Este telefono ya está registrado',
-            'admin_telefono.min' => 'El telefono debe tener al menos 10 digitos',
-            'admin_telefono.max' => 'El telefono debe tener como maximo 10 digitos',
-            'admin_telefono.regex' => 'El telefono solo debe tener numeros',
+            'admin_telefono.digits' => 'El telefono debe tener exactamente 10 digitos',
+            'admin_telefono.regex' => 'El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos',
 
             'admin_direccion.required' => 'La direccion del administrador es obligatoria',
-            'admin_direccion.min' => 'La direccion debe tener al menos 7 caracteres',
+            'admin_direccion.min' => 'La direccion debe tener al menos 8 caracteres',
             'admin_direccion.max' => 'La direccion debe tener como maximo 150 caracteres',
             'admin_direccion.regex' => 'La dirección debe contener letras y números, y puede incluir #, -, . o ,.',
 
             'admin_password.required' => 'La contraseña del administrador es obligatoria',
             'admin_password.min' => 'La contraseña del administrador debe tener al menos 8 caracteres',
             'admin_password.max' => 'La contraseña del administrador debe tener como maximo 25 caracteres',
-            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial: @$!%*?&',
+            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero, sin espacios y un caracter especial: @$!%*?&',
         ];
     }
 }

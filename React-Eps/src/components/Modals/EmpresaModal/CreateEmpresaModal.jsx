@@ -31,14 +31,16 @@ export default function CreateEmpresaModal({
         telefono_representante: "",
         email_representante: "",
         id_estado: 3,
-        admin_nombre: "",
-        admin_apellido: "",
+        admin_primer_nombre: "",
+        admin_segundo_nombre: "",
+        admin_primer_apellido: "",
+        admin_segundo_apellido: "",
         admin_documento: "",
         admin_email: "",
         admin_telefono: "",
         admin_direccion: "",
         admin_password: "",
-        id_ciudad: "", // Init empty
+        id_ciudad: "",
     };
 
     const [formData, setFormData] = useState(initialEmpresa);

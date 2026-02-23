@@ -198,34 +198,56 @@ export default function Pago() {
             <h3 className="text-base font-medium text-gray-800 border-b pb-2">Información de la Empresa</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {camposEmpresa.map((field) => {
-                if (field.name === 'ciudad') {
+                if (field.name === 'id_departamento') {
                   return (
                     <div key="location-group" className="contents">
                       {/* Departamento Select */}
                       <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-500 mb-1">Departamento</label>
+                        <label htmlFor="id_departamento" className="text-xs font-medium text-gray-500 mb-1">Departamento</label>
                         <select
-                          className="w-full rounded-lg border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                          value={selectedDepartamento}
-                          onChange={handleDepartamentoChange}
+                          className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.id_departamento ? "border-red-500 bg-red-50" : "border-gray-200"
+                            }`}
+                          name="id_departamento"
+                          id="id_departamento"
+                          value={formData.id_departamento || ""}
+                          onChange={async (e) => {
+                            handleChange(e); // 👈 guarda en formData
+                            const val = e.target.value;
+
+                            setCiudades([]);
+                            setFormData(prev => ({ ...prev, id_ciudad: "" }));
+
+                            if (val) {
+                              try {
+                                const res = await api.get(`/ciudades/${val}`);
+                                setCiudades(res.data);
+                              } catch (error) {
+                                console.error(error);
+                              }
+                            }
+                          }}
                         >
                           <option value="">Seleccionar</option>
                           {departamentos.map(d => (
                             <option key={d.codigo_DANE} value={d.codigo_DANE}>{d.nombre}</option>
                           ))}
                         </select>
+                        {errors.id_departamento && (
+                          <span className="text-red-500 text-xs mt-1">{errors.id_departamento}</span>
+                        )}
                       </div>
 
                       {/* Ciudad Select */}
                       <div className="flex flex-col">
-                        <label className="text-xs font-medium text-gray-500 mb-1">Ciudad</label>
+                        <label htmlFor="id_ciudad" className="text-xs font-medium text-gray-500 mb-1">Ciudad</label>
                         <select
+                          id="id_ciudad"
                           name="id_ciudad"
                           className={`w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all ${errors.id_ciudad ? "border-red-500 bg-red-50" : "border-gray-200"
                             }`}
                           value={formData.id_ciudad || ""}
                           onChange={handleChange}
-                          disabled={!selectedDepartamento}
+                          disabled={!formData.id_departamento}
                         >
                           <option value="">Seleccionar</option>
                           {ciudades.map(c => (
@@ -240,10 +262,15 @@ export default function Pago() {
                   );
                 }
 
+                if (field.name === 'id_ciudad') {
+                  return null;
+                }
+
                 return (
                   <div key={field.name} className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
+                    <label htmlFor={field.name} className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
                     <input
+                      id={field.name}
                       name={field.name}
                       type={field.type}
                       value={formData[field.name] || ""}
@@ -266,8 +293,9 @@ export default function Pago() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {camposAdmin.map((field) => (
                 <div key={field.name} className="flex flex-col">
-                  <label className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
+                  <label htmlFor={field.name} className="text-xs font-medium text-gray-500 mb-1">{field.label}</label>
                   <input
+                    id={field.name}
                     name={field.name}
                     type={field.type}
                     value={formData[field.name] || ""}

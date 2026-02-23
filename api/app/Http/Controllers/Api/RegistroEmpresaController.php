@@ -11,30 +11,14 @@ use App\Models\Usuario;
 use App\Models\EmpresaLicencia;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Events\SystemActivityEvent;
+use Illuminate\Validation\Rule;
 
 class RegistroEmpresaController extends Controller
 {
     public function store(StoreEmpresaRequest $request)
-    {
+    { 
         // Validamos todo lo que viene del formulario
         $request->validate([
-            'nit' => 'required|unique:empresa,nit',
-            'nombre' => 'required|string',
-            'direccion' => 'required|string',
-            'email_contacto' => 'required|email:rfc,dns|unique:usuario,email',
-            'telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
-            'documento_representante' => 'required|string',
-            'nombre_representante' => 'required|string',
-            'email_representante' => 'required|email:rfc,dns|unique:usuario,email',
-            'telefono_representante' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
-            'id_ciudad' => 'required|exists:ciudad,codigo_postal',
-            'admin_nombre' => 'required|string',
-            'admin_apellido' => 'required|string',
-            'admin_documento' => 'required|string|unique:usuario,documento',
-            'admin_email' => 'required|email:rfc,dns|unique:usuario,email',
-            'admin_telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
-            'admin_direccion' => 'required|string',
-            'admin_password' => 'required|min:8',
             'id_tipo_licencia' => 'required|exists :tipo_licencia,id_tipo_licencia',
             'duracion_meses' => 'required|integer'
         ]);
@@ -67,8 +51,10 @@ class RegistroEmpresaController extends Controller
                 // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
                     'documento' => $request->admin_documento,
-                    'nombre' => $request->admin_nombre,
-                    'apellido' => $request->admin_apellido,
+                    'primer_nombre' => $request->admin_primer_nombre,
+                    'segundo_nombre' => $request->admin_segundo_nombre,
+                    'primer_apellido' => $request->admin_primer_apellido,
+                    'segundo_apellido' => $request->admin_segundo_apellido,
                     'email' => $request->admin_email,
                     'telefono' => $request->admin_telefono,
                     'direccion' => $request->admin_direccion,

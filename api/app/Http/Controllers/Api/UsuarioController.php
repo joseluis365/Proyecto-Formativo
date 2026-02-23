@@ -32,8 +32,10 @@ class UsuarioController extends Controller
 
     $query->where(function ($q) use ($search) {
         $q->where('documento', 'ilike', "%{$search}%")
-          ->orWhere('nombre', 'ilike', "%{$search}%")
-          ->orWhere('apellido', 'ilike', "%{$search}%");
+          ->orWhere('primer_nombre', 'ilike', "%{$search}%")
+          ->orWhere('segundo_nombre', 'ilike', "%{$search}%")
+          ->orWhere('primer_apellido', 'ilike', "%{$search}%")
+          ->orWhere('segundo_apellido', 'ilike', "%{$search}%");
     });
 }
 
@@ -87,14 +89,16 @@ class UsuarioController extends Controller
 
         $rules =[
             'documento' => 'required|integer|regex:/^\d{1,10}$/|unique:usuario,documento,' . $id . ',documento',
-            'nombre'   => 'required|string|max:255',
-            'apellido' => 'required|string|max:255',
+            'primer_nombre'   => 'required|string|max:255',
+            'segundo_nombre'  => 'nullable|string|max:255',
+            'primer_apellido' => 'required|string|max:255',
+            'segundo_apellido'=> 'nullable|string|max:255',
             'email'  => 'required|email|unique:usuario,email,' . $id . ',documento',
             'telefono' => 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,telefono,' . $id . ',documento',
             'direccion' => 'required|string|max:255',
             'fecha_nacimiento' => 'required|date',
-            'id_estado' => 'required|in:1,2',
-            'id_rol' => 'required|integer',
+            'id_estado' => 'required|exists:estado,id_estado',
+            'id_rol' => 'required|exists:rol,id_rol',
         ];
 
         switch ((int) $request->id_rol) {
@@ -123,7 +127,7 @@ class UsuarioController extends Controller
         $user = Usuario::findOrFail($id);
 
         $data = $request->validate([
-            'id_estado' => 'required|in:1,2',
+            'id_estado' => 'required|exists:estado,id_estado',
         ]);
 
         $user->update($data);

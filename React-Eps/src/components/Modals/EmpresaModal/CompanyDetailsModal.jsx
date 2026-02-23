@@ -27,7 +27,10 @@ export default function CompanyDetailsModal({ company, onClose }) {
             email_representante: company.email_representante || "",
 
             // Admin data
-            admin_nombre: company?.admin_user?.nombre || "",
+            admin_primer_nombre: company?.admin_user?.primer_nombre || "",
+            admin_segundo_nombre: company?.admin_user?.segundo_nombre || "",
+            admin_primer_apellido: company?.admin_user?.primer_apellido || "",
+            admin_segundo_apellido: company?.admin_user?.segundo_apellido || "",
             admin_documento: company?.admin_user?.documento || "",
             admin_email: company?.admin_user?.email || "",
 
@@ -240,7 +243,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                                 <>
                                     <div>
                                         <span className="text-xs text-gray-500 block">Nombre</span>
-                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(admin.nombre)}</span>
+                                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(`${admin.primer_nombre} ${admin.segundo_nombre || ''} ${admin.primer_apellido} ${admin.segundo_apellido || ''}`.trim())}</span>
                                     </div>
                                     <div>
                                         <span className="text-xs text-gray-500 block">Email (Acceso)</span>

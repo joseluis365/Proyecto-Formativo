@@ -48,7 +48,7 @@ export default function PersonalTable({ users, fetchUsers }) {
       header: "Nombre",
       render: (u) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {u.nombre + " " + u.apellido}
+          {`${u.primer_nombre} ${u.segundo_nombre || ''} ${u.primer_apellido} ${u.segundo_apellido || ''}`.trim().replace(/\s+/g, ' ')}
         </span>
       ),
     },
@@ -68,8 +68,8 @@ export default function PersonalTable({ users, fetchUsers }) {
       render: (u) => (
         <span
           className={`px-2.5 py-1 text-xs font-semibold rounded-full ${u.id_estado === 1
-              ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-              : "bg-red-100 text-red-800"
+            ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+            : "bg-red-100 text-red-800"
             }`}
         >
           {u.id_estado === 1 ? "Activo" : "Inactivo"}

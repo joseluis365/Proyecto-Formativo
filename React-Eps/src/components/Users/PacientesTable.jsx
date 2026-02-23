@@ -19,7 +19,7 @@ export default function PacientesTable({ users, fetchUsers }) {
       showCancelButton: true,
       confirmButtonText: "Sí, cambiar",
       cancelButtonText: "Cancelar",
-    }); 
+    });
 
     if (result.isConfirmed) {
       try {
@@ -49,7 +49,7 @@ export default function PacientesTable({ users, fetchUsers }) {
       header: "Nombre Completo",
       render: (u) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {u.nombre + " " + u.apellido}
+          {`${u.primer_nombre} ${u.segundo_nombre || ''} ${u.primer_apellido} ${u.segundo_apellido || ''}`.trim().replace(/\s+/g, ' ')}
         </span>
       ),
     },
@@ -96,7 +96,7 @@ export default function PacientesTable({ users, fetchUsers }) {
             to={`/usuarios/pacientes/info-paciente/${u.documento}`}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-primary font-semibold"
           >
-          Ver info
+            Ver info
           </Link>
 
           <button onClick={() => handleToggleStatus(u)}

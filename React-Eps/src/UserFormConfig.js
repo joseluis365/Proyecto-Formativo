@@ -1,7 +1,9 @@
 export const editUserFormConfig = [
   { name: "documento", label: "Documento", type: "number", readOnly: true },
-  { name: "nombre", label: "Nombre", type: "text", readOnly: false },
-  { name: "apellido", label: "Apellido", type: "text", readOnly: false },
+  { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false },
+  { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false },
+  { name: "primer_apellido", label: "Primer Apellido", type: "text", readOnly: false },
+  { name: "segundo_apellido", label: "Segundo Apellido", type: "text", readOnly: false },
   { name: "email", label: "Correo", type: "email", readOnly: false },
   { name: "telefono", label: "Telefono", type: "number", readOnly: false },
   { name: "direccion", label: "Direccion", type: "text", readOnly: false },
@@ -24,8 +26,10 @@ export const roleSpecificEditConfig = {
 
 export const createUserFormConfig = [
   { name: "documento", label: "Documento", type: "number", readOnly: false },
-  { name: "nombre", label: "Nombre", type: "text", readOnly: false },
-  { name: "apellido", label: "Apellido", type: "text", readOnly: false },
+  { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false },
+  { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false },
+  { name: "primer_apellido", label: "Primer Apellido", type: "text", readOnly: false },
+  { name: "segundo_apellido", label: "Segundo Apellido", type: "text", readOnly: false },
   { name: "email", label: "Correo", type: "email", readOnly: false },
   { name: "telefono", label: "Telefono", type: "number", readOnly: false },
   { name: "direccion", label: "Direccion", type: "text", readOnly: false },
