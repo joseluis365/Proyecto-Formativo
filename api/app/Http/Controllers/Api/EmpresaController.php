@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
+use App\Models\EmpresaLicencia;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Http\Resources\EmpresaResource;
 use App\Events\SystemActivityEvent;
@@ -13,83 +14,95 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class EmpresaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * LISTAR EMPRESAS
      */
     public function index(Request $request)
-{
-    \Illuminate\Support\Facades\Artisan::call('app:check-licenses');
-    $query = Empresa::with(['licenciaActual.tipoLicencia']);
+    {
+        $query = Empresa::with(['licenciaActual.tipoLicencia']);
 
-    // Búsqueda
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('nombre', 'like', "%{$search}%")
-              ->orWhere('nit', 'like', "%{$search}%");
-        });
-    }
-
-    // Filtro por estado
-    if ($request->filled('id_estado')) {
-        $estado = $request->id_estado;
-        if ($estado == 3) {
-            $query->whereDoesntHave('licencias');
-        } else {
-            $query->whereHas('licenciaActual', function ($q) use ($estado) {
-                $q->where('id_estado', $estado);
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                  ->orWhere('nit', 'like', "%{$search}%");
             });
         }
+
+        if ($request->filled('id_estado')) {
+            $estado = $request->id_estado;
+
+            if ($estado == 3) {
+                $query->whereDoesntHave('licencias');
+            } else {
+                $query->whereHas('licenciaActual', function ($q) use ($estado) {
+                    $q->where('id_estado', $estado);
+                });
+            }
+        }
+
+        $empresas = $query->get();
+
+        return response()->json([
+            'data' => EmpresaResource::collection($empresas)
+        ]);
     }
 
-    $empresas = $query->get();
-
-    return response()->json([
-        'data' => EmpresaResource::collection($empresas)
-    ]);
-}
-
-
     /**
-     * Store a newly created resource in storage.
+     * MOSTRAR EMPRESA
      */
     public function show($id)
     {
         return response()->json(
-            Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'ciudad'])->findOrFail($id)
+            Empresa::with([
+                'licenciaActual.tipoLicencia',
+                'adminUser',
+                'ciudad'
+            ])->findOrFail($id)
         );
     }
 
+    /**
+     * CREAR EMPRESA
+     */
     public function store(StoreEmpresaRequest $request)
     {
         $data = $request->validated();
-        
+
         if (!isset($data['id_estado'])) {
             $data['id_estado'] = 3;
         }
 
         try {
-            return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
-                $empresaData = collect($data)->except(['admin_nombre', 'admin_documento', 'admin_email', 'admin_password'])->toArray();
+            return \DB::transaction(function () use ($data) {
+
+                $empresaData = collect($data)
+                    ->except([
+                        'admin_nombre',
+                        'admin_documento',
+                        'admin_email',
+                        'admin_password'
+                    ])->toArray();
+
                 $empresa = Empresa::create($empresaData);
 
-                $usuario = \App\Models\Usuario::create([
+                \App\Models\Usuario::create([
                     'documento' => $data['admin_documento'],
                     'nombre' => $data['admin_nombre'],
                     'apellido' => $data['admin_apellido'],
                     'email' => $data['admin_email'],
                     'telefono' => $data['admin_telefono'],
                     'direccion' => $data['admin_direccion'],
-                    'contrasena' => \Illuminate\Support\Facades\Hash::make($data['admin_password']),
+                    'contrasena' => \Hash::make($data['admin_password']),
                     'id_rol' => 2,
                     'id_estado' => 1,
                     'nit' => $empresa->nit,
-                    'is_active' => true 
+                    'is_active' => true
                 ]);
 
                 event(new SystemActivityEvent(
-                    "Nueva empresa registrada: " . $empresa->nombre, // Título
-                    'red',                                   // Tipo (Color rojo)
-                    'store',                                       // Icono
+                    "Nueva empresa registrada: " . $empresa->nombre,
+                    'red',
+                    'store',
                     'superadmin-feed'
                 ));
 
@@ -98,6 +111,7 @@ class EmpresaController extends Controller
                     'data' => $empresa
                 ], 201);
             });
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al crear la empresa',
@@ -106,120 +120,35 @@ class EmpresaController extends Controller
         }
     }
 
-    // 📌 EXPORTAR PDF (NUEVO MÉTODO)
-
+    /**
+     * EXPORTAR PDF GENERAL
+     */
     public function exportPdf()
     {
         $empresas = Empresa::with('ciudad')->get();
-
         $pdf = Pdf::loadView('pdf.empresas', compact('empresas'));
-
         return $pdf->download('empresas.pdf');
     }
 
+    /**
+     * EXPORTAR PDF DETALLE
+     */
     public function exportCompanyPdf($id)
     {
-        $empresa = Empresa::with(['licenciaActual.tipoLicencia', 'adminUser', 'ciudad', 'licencias.tipoLicencia' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
-        
+        $empresa = Empresa::with([
+            'licenciaActual.tipoLicencia',
+            'adminUser',
+            'ciudad',
+            'licencias.tipoLicencia'
+        ])->findOrFail($id);
+
         $pdf = Pdf::loadView('pdf.empresa_detalle', compact('empresa'));
         return $pdf->download('detalle_empresa_' . $empresa->nit . '.pdf');
     }
 
-    // 📌 ACTUALIZAR
-    public function update(Request $request, $id)
-    {
-        $empresa = Empresa::findOrFail($id);
-
-        $adminIdx = \App\Models\Usuario::where('nit', $empresa->nit)
-                        ->where('id_rol', 2)
-                        ->first();
-
-        // Prepare validation rules with Rule objects
-        // We use the $id (which is the checked NIT) to ignore
-        $rules = [
-            'nit' => [
-                'required', 
-                'numeric',
-                'regex:/^[1-9][0-9]{8}-[0-9]$/', 
-                'max:12',
-                'min:11',
-                \Illuminate\Validation\Rule::unique('empresa', 'nit')->ignore($empresa->nit, 'nit')
-            ],
-            'nombre'   => 'required|string|min:3|max:100|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/',
-            'email_contacto'  => [
-                'required', 
-                'email:rfc,dns', 
-                'max:100',  
-                \Illuminate\Validation\Rule::unique('empresa', 'email_contacto')->ignore($empresa->nit, 'nit')
-            ],
-            'telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
-            'direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
-            'documento_representante' => 'required|numeric|min:6|max:10|regex:/^\d{1,10}$/',
-            'nombre_representante' => 'required|string|min:3|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-            'telefono_representante' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
-            'email_representante' => 'required|email:rfc,dns|unique:empresa,email_representante|max:100',
-            'id_estado' => 'required|integer|exists:estado,id_estado',
-            
-            // Optional admin validation
-            'admin_nombre' => 'required|string|max:20|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
-            'admin_apellido' => 'required|string|max:20|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
-            'admin_telefono' => 'required|numeric|regex:/^\d{1,10}$/|min:10|max:10',
-            'admin_direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
-            'admin_password' => 'nullable|string|min:8|max:25|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-        ];
-
-        // Conditional validation for admin email uniqueness if it changes
-        // Use the admin user's document/id to ignore self
-        if ($adminIdx) {
-            $rules['admin_email'] = [
-                'required',
-                'email:rfc,dns',
-                'max:100',
-
-                // Check uniqueness in 'usuario' table (assuming table name is 'usuario' or 'users' -> model says 'usuario')
-                // and ignore the current admin user's document
-                \Illuminate\Validation\Rule::unique('usuario', 'email')->ignore($adminIdx->documento, 'documento')
-            ];
-        } else {
-             $rules['admin_email'] = 'required|email:rfc,dns|unique:usuario,email|max:100';
-        }
-
-        $data = $request->validate($rules);
-
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($empresa, $adminIdx, $data, $request) {
-            
-            // 1. Update Company
-            // Filter out admin keys from $data before updating company, as $data contains everything from validate
-            $empresaData = collect($data)->except(['admin_nombre', 'admin_email', 'admin_password'])->toArray();
-            $empresa->update($empresaData);
-
-            // 2. Update Admin User if exists
-            if ($adminIdx) {
-                // Prepare admin update data
-                $adminUpdateCalls = [];
-                if ($request->filled('admin_nombre')) $adminUpdateCalls['nombre'] = $request->admin_nombre;
-                if ($request->filled('admin_documento')) $adminUpdateCalls['documento'] = $request->admin_documento; // Only if we want to allow updating document? Not in validation above.
-                if ($request->filled('admin_email')) $adminUpdateCalls['email'] = $request->admin_email;
-                if ($request->filled('admin_password')) {
-                    $adminUpdateCalls['contrasena'] = \Illuminate\Support\Facades\Hash::make($request->admin_password);
-                }
-
-                if (!empty($adminUpdateCalls)) {
-                    $adminIdx->update($adminUpdateCalls);
-                }
-            }
-            $empresa->refresh();
-
-            return response()->json([
-                'message' => 'Empresa actualizada correctamente',
-                'data' => $empresa->load('adminUser')
-            ]);
-        });
-    }
-
-    // 📌 ELIMINAR
+    /**
+     * ELIMINAR EMPRESA
+     */
     public function destroy($id)
     {
         Empresa::findOrFail($id)->delete();
@@ -228,81 +157,56 @@ class EmpresaController extends Controller
             'message' => 'Empresa eliminada'
         ]);
     }
-    // 📌 DASHBOARD STATS
+
+    /**
+     * DASHBOARD STATS REALES
+     */
     public function getDashboardStats()
     {
-        // 1. Licencias Activas (id_estado = 1)
-        $activeNow = \App\Models\EmpresaLicencia::where('id_estado', 1)->count();
-        $activeLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 1)
-            ->whereDate('fecha_inicio', '<', \Carbon\Carbon::now()->subMonth())
-            ->count();
-        
-        $activeChange = $this->calculatePercentageChange($activeNow, $activeLastMonth);
-
-        // 2. Expiran Pronto (id_estado = 4)
-        $expiringNow = \App\Models\EmpresaLicencia::where('id_estado', 4)->count();
-        $expiringLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 4)
-            ->whereDate('created_at', '<', \Carbon\Carbon::now()->subMonth()) // Aproximación
-            ->count();
-        
-        $expiringChange = $this->calculatePercentageChange($expiringNow, $expiringLastMonth);
-
-        // 3. Expiradas (id_estado = 5)
-        $expiredNow = \App\Models\EmpresaLicencia::where('id_estado', 5)->count();
-        $expiredLastMonth = \App\Models\EmpresaLicencia::where('id_estado', 5)
-            ->whereDate('fecha_fin', '<', \Carbon\Carbon::now()->subMonth())
-            ->count();
-
-        $expiredChange = $this->calculatePercentageChange($expiredNow, $expiredLastMonth);
-
-        // 4. Total Empresas
-        $totalNow = Empresa::count();
-        $totalLastMonth = Empresa::whereDate('created_at', '<', \Carbon\Carbon::now()->subMonth())->count();
-
-        $totalChange = $this->calculatePercentageChange($totalNow, $totalLastMonth);
+        $licenciasActivas = EmpresaLicencia::where('id_estado', 1)->count();
+        $licenciasPorVencer = EmpresaLicencia::where('id_estado', 4)->count();
+        $licenciasVencidas = EmpresaLicencia::where('id_estado', 5)->count();
+        $totalEmpresas = Empresa::count();
+        $empresasSinLicencia = Empresa::whereDoesntHave('licencias')->count();
 
         return response()->json([
             [
                 "title" => "Licencias Activas",
-                "value" => (string)$activeNow,
-                "change" => $activeChange,
-                "type" => $this->getChangeType($activeChange)
+                "value" => $licenciasActivas
             ],
             [
-                "title" => "Expiran pronto",
-                "value" => (string)$expiringNow,
-                "change" => $expiringChange,
-                "type" => "warning" 
+                "title" => "Expiran Pronto",
+                "value" => $licenciasPorVencer
             ],
             [
                 "title" => "Expiradas",
-                "value" => (string)$expiredNow,
-                "change" => $expiredChange,
-                "type" => "negative"
+                "value" => $licenciasVencidas
             ],
             [
                 "title" => "Total Empresas",
-                "value" => (string)$totalNow,
-                "change" => $totalChange,
-                "type" => "warning"
+                "value" => $totalEmpresas
+            ],
+            [
+                "title" => "Empresas Sin Licencia",
+                "value" => $empresasSinLicencia
             ]
         ]);
     }
 
-    private function calculatePercentageChange($current, $previous)
+    /**
+     * LICENCIAS POR MES (Gráfica)
+     */
+    public function getMonthlyLicenses()
     {
-        if ($previous == 0) {
-            return $current > 0 ? "+100%" : "0%";
-        }
-        $diff = $current - $previous;
-        $percentage = ($diff / $previous) * 100;
-        return ($percentage > 0 ? "+" : "") . round($percentage, 1) . "% vs mes anterior";
-    }
+        $data = EmpresaLicencia::selectRaw("
+                TO_CHAR(fecha_inicio, 'YYYY-MM') as month,
+                COUNT(*) as total
+            ")
+            ->where('fecha_inicio', '>=', now()->subMonths(6))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
-    private function getChangeType($changeString)
-    {
-        if (str_contains($changeString, '+')) return 'positive';
-        if (str_contains($changeString, '-')) return 'negative';
-        return 'warning';
+        return response()->json($data);
     }
 }

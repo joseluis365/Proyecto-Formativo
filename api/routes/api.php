@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ReporteController;
 use App\Http\Controllers\Api\EspecialidadesController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\CitaController;
+use App\Http\Controllers\Api\PrioridadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,23 +66,14 @@ Route::get('/recent-activity/{channelName}', function ($channel) {
             ];
         });
 });
+
 /*
 |--------------------------------------------------------------------------
-| 🔒 RUTAS PROTEGIDAS
+| 🔒 RUTAS PROTEGIDAS USUARIO NORMAL
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth:sanctum')->group(function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | SUPERADMIN
-    |--------------------------------------------------------------------------
-    */
-
-    Route::post('/superadmin/logout', [SuperadminAuthController::class, 'logout']);
-    Route::get('/superadmin/check-session', [SuperadminAuthController::class, 'checkSession']);
-    Route::get('/superadmin/dashboard-stats', [EmpresaController::class, 'getDashboardStats']);
+Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -100,6 +92,47 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | CITAS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(CitaController::class)->group(function () {
+        Route::get('/citas', 'index');
+        Route::get('/cita/{id}', 'show');
+        Route::post('/cita', 'store');
+        Route::put('/cita/{id}', 'update');
+        Route::delete('/cita/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — PRIORIDADES (CRUD ADMIN NORMAL)
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(PrioridadController::class)->group(function () {
+        Route::get('/prioridades', 'index');
+        Route::post('/prioridades', 'store');
+        Route::put('/prioridades/{id}', 'update');
+        Route::delete('/prioridades/{id}', 'destroy');
+    });
+
+});
+
+/*
+|--------------------------------------------------------------------------
+| 🔒 RUTAS PROTEGIDAS SUPERADMIN
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('superadmin')->middleware('auth:sanctum')->group(function () {
+
+    Route::post('/logout', [SuperadminAuthController::class, 'logout']);
+    Route::get('/check-session', [SuperadminAuthController::class, 'checkSession']);
+    Route::get('/dashboard-stats', [EmpresaController::class, 'getDashboardStats']);
+
+    /*
+    |--------------------------------------------------------------------------
     | EMPRESAS
     |--------------------------------------------------------------------------
     */
@@ -110,7 +143,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/empresa', 'store');
         Route::put('/empresa/{id}', 'update');
         Route::delete('/empresa/{id}', 'destroy');
-
         Route::get('/empresas/pdf', 'exportPdf');
         Route::get('/empresa/{id}/pdf', 'exportCompanyPdf');
     });
@@ -127,7 +159,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/licencia', 'store');
         Route::put('/licencia/{id}', 'update');
         Route::delete('/licencia/{id}', 'destroy');
-
         Route::get('/licencias/pendientes', 'pendientes');
         Route::post('/licencias/activar/{id}', 'activar');
     });
@@ -140,7 +171,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
-
     Route::get('/licenses/chart-data', [LicenciaChartController::class, 'getMonthlyStats']);
 
     /*
@@ -150,19 +180,5 @@ Route::middleware('auth:sanctum')->group(function () {
     */
 
     Route::get('/descargar-reporte', [ReporteController::class, 'generarPdf']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | CITAS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::controller(CitaController::class)->group(function () {
-        Route::get('/citas', 'index');
-        Route::get('/cita/{id}', 'show');
-        Route::post('/cita', 'store');
-        Route::put('/cita/{id}', 'update');
-        Route::delete('/cita/{id}', 'destroy');
-    });
 
 });
