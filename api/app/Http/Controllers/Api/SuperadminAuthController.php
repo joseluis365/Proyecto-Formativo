@@ -17,8 +17,18 @@ class SuperadminAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
+            'email' => 'required|regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/|email:rfc,dns|max:150|min:12',
+            'password' => 'required|string|max:25|min:8',
+        ],
+        [
+            'email.required' => 'El correo es obligatorio',
+            'email.email' => 'El correo debe ser válido',
+            'email.regex' => 'El formato del correo no es válido',
+            'email.max' => 'El correo debe tener máximo 150 caracteres',
+            'email.min' => 'El correo debe tener mínimo 12 caracteres',
+            'password.required' => 'La contraseña es obligatoria',
+            'password.max' => 'La contraseña debe tener máximo 25 caracteres',
+            'password.min' => 'La contraseña debe tener mínimo 8 caracteres',
         ]);
 
         $superadmin = Superadmin::where('email', $request->email)->first();
@@ -120,7 +130,16 @@ class SuperadminAuthController extends Controller
      */
     public function sendRecoveryCode(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate([
+            'email' => 'required|email:rfc,dns|max:150|min:12|regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/'
+        ],
+        [
+            'email.required' => 'El correo es obligatorio',
+            'email.email' => 'El correo debe ser válido',
+            'email.regex' => 'El formato del correo no es válido',
+            'email.max' => 'El correo debe tener máximo 150 caracteres',
+            'email.min' => 'El correo debe tener mínimo 12 caracteres',
+        ]);
 
         $superadmin = Superadmin::where('email', $request->email)->first();
 
@@ -155,7 +174,18 @@ class SuperadminAuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required|numeric'
+            'code' => 'required|numeric|digits:6|regex:/^[0-9]+$/'
+        ],
+        [
+            'email.required' => 'El correo es obligatorio',
+            'email.email' => 'El correo debe ser válido',
+            'email.regex' => 'El formato del correo no es válido',
+            'email.max' => 'El correo debe tener máximo 150 caracteres',
+            'email.min' => 'El correo debe tener mínimo 12 caracteres',
+            'code.required' => 'El código es obligatorio',
+            'code.numeric' => 'El código debe ser numérico',
+            'code.digits' => 'El código debe tener 6 dígitos',
+            'code.regex' => 'El código debe tener 6 numeros sin espacios.',
         ]);
 
         $cachedCode = Cache::get('superadmin_recovery_' . $request->email);
@@ -174,8 +204,25 @@ class SuperadminAuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required|numeric',
-            'password' => 'required|string|min:6|confirmed'
+            'code' => 'required|numeric|digits:6|regex:/^[0-9]{6}$/',
+            'password' => 'required|string|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/|min:8|max:25|confirmed'
+        ],
+        [
+            'email.required' => 'El correo es obligatorio',
+            'email.email' => 'El correo debe ser válido',
+            'email.regex' => 'El formato del correo no es válido',
+            'email.max' => 'El correo debe tener máximo 150 caracteres',
+            'email.min' => 'El correo debe tener mínimo 12 caracteres',
+            'code.required' => 'El código es obligatorio',
+            'code.numeric' => 'El código debe ser numérico',
+            'code.digits' => 'El código debe tener 6 dígitos',
+            'code.regex' => 'El código debe tener 6 numeros sin espacios.',
+            'password.required' => 'La contraseña es obligatoria',
+            'password.string' => 'La contraseña debe ser una cadena de texto',
+            'password.min' => 'La contraseña debe tener mínimo 8 caracteres',
+            'password.regex' => 'La contraseña debe tener al menos una mayúscula, una minúscula, un número y un carácter especial',
+            'password.confirmed' => 'Las contraseñas no coinciden',
+            'password.max' => 'La contraseña debe tener máximo 25 caracteres',
         ]);
 
         // Verificar código nuevamente por seguridad

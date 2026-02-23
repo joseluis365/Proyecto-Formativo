@@ -4,11 +4,13 @@ import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminResetPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
+import Swal from "sweetalert2";
 
 export default function SuperAdminResetPassword() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({ password: "", password_confirmation: "" });
+    const [errors, setErrors] = useState({});
 
     const email = sessionStorage.getItem("recovery_email");
     const code = sessionStorage.getItem("recovery_code");
@@ -21,12 +23,13 @@ export default function SuperAdminResetPassword() {
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+        setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.password_confirmation) {
-            return alert("Las contraseñas no coinciden");
+            return setErrors({ password_confirmation: ["Las contraseñas no coinciden"] });
         }
 
         setLoading(true);
@@ -39,15 +42,31 @@ export default function SuperAdminResetPassword() {
             });
 
             if (response.status === 200) {
-                alert("Contraseña restablecida correctamente");
+                Swal.fire({
+                    icon: "success",
+                    title: "Éxito",
+                    text: "Contraseña restablecida correctamente",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
                 // Limpiar sesión de recuperación
                 sessionStorage.removeItem("recovery_email");
                 sessionStorage.removeItem("recovery_code");
                 navigate("/SuperAdmin-Login");
             }
         } catch (error) {
-            const message = error.response?.data?.message || "Error al restablecer contraseña";
-            alert(message);
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors);
+            } else {
+                const message = error.response?.data?.message || "Error al restablecer contraseña";
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -64,6 +83,7 @@ export default function SuperAdminResetPassword() {
                     config={superAdminResetPassword}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
+                    errors={errors}
                 >
                     <BlueButton
                         text={loading ? "Guardando..." : superAdminResetPassword.buttonText}

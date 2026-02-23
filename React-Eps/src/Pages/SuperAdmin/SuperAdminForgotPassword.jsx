@@ -4,18 +4,16 @@ import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminForgotPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
+import Swal from "sweetalert2";
 
 export default function SuperAdminForgotPassword() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
+    const [errors, setErrors] = useState({});
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email) {
-            alert("Ingrese su correo electrónico");
-            return;
-        }
 
         setLoading(true);
         try {
@@ -23,12 +21,28 @@ export default function SuperAdminForgotPassword() {
 
             if (response.status === 200) {
                 sessionStorage.setItem("recovery_email", email);
-                alert("Código enviado a tu correo");
+                Swal.fire({
+                    icon: "success",
+                    title: "Código enviado",
+                    text: "Código de verificación enviado a tu correo",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
                 navigate("/SuperAdmin-RecoveryCode");
             }
         } catch (error) {
-            const message = error.response?.data?.message || "Error al enviar código";
-            alert(message);
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors);
+            } else {
+                const message = error.response?.data?.message || "Error al enviar código";
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -46,8 +60,12 @@ export default function SuperAdminForgotPassword() {
 
                 <Formbuilder
                     config={superAdminForgotPassword}
-                    onChange={(field, value) => setEmail(value)}
+                    onChange={(field, value) => {
+                        setEmail(value);
+                        setErrors((prev) => ({ ...prev, email: undefined }));
+                    }}
                     onSubmit={handleSubmit}
+                    errors={errors}
                 >
                     <BlueButton
                         text={loading ? "Enviando..." : superAdminForgotPassword.buttonText}

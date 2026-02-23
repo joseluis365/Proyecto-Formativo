@@ -15,7 +15,21 @@ export default function IconInput({ label, icon, placeholder, type, id, name, er
                     autoComplete={autoComplete}
                 />
             </div>
-            {error && <span className="text-red-500 text-xs mt-1">{error}</span>}
+            {error && (
+                <div className="flex flex-col gap-1">
+                    {Array.isArray(error) ? (
+                        error.map((err, index) => (
+                            <span key={index} className="text-red-500 text-xs">
+                                {err}
+                            </span>
+                        ))
+                    ) : (
+                        <span className="text-red-500 text-xs">
+                            {error}
+                        </span>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

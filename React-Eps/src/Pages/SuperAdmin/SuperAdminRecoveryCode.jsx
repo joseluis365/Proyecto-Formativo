@@ -4,11 +4,13 @@ import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminRecoveryCode } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
+import Swal from "sweetalert2";
 
 export default function SuperAdminRecoveryCode() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [code, setCode] = useState("");
+    const [errors, setErrors] = useState({});
     const email = sessionStorage.getItem("recovery_email");
 
     useEffect(() => {
@@ -19,19 +21,34 @@ export default function SuperAdminRecoveryCode() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!code) return alert("Ingrese el código");
-
         setLoading(true);
         try {
             const response = await api.post("/superadmin/verify-recovery-code", { email, code });
 
             if (response.status === 200) {
                 sessionStorage.setItem("recovery_code", code); // Guardar código verificado para el reset
+                Swal.fire({
+                    icon: "success",
+                    title: "Código verificado",
+                    text: "El código es correcto. Procede a cambiar tu contraseña.",
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
                 navigate("/SuperAdmin-ResetPassword");
             }
         } catch (error) {
-            const message = error.response?.data?.message || "Código inválido";
-            alert(message);
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors);
+            } else {
+                const message = error.response?.data?.message || "Código inválido";
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -49,8 +66,12 @@ export default function SuperAdminRecoveryCode() {
 
                 <Formbuilder
                     config={superAdminRecoveryCode}
-                    onChange={(field, value) => setCode(value)}
+                    onChange={(field, value) => {
+                        setCode(value);
+                        setErrors((prev) => ({ ...prev, code: undefined }));
+                    }}
                     onSubmit={handleSubmit}
+                    errors={errors}
                 >
                     <BlueButton
                         text={loading ? "Verificando..." : superAdminRecoveryCode.buttonText}

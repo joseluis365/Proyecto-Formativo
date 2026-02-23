@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 
 
 export default function SuperAdminLogin() {
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   // Limpiar sesión al cargar el login
@@ -29,17 +30,29 @@ export default function SuperAdminLogin() {
    * 🔹 Captura cambios del Formbuilder
    */
   const handleChange = (field, value) => {
-    const safeField = field ? String(field).toLowerCase() : "";
-    const safeValue = value ?? "";
+  const safeField = field ? String(field).toLowerCase() : "";
+  const safeValue = value ?? "";
 
-    if (safeField === "correo" || safeField === "email") {
-      setFormData((prev) => ({ ...prev, email: safeValue }));
-    }
+  let fieldName = null;
 
-    if (safeField === "clave" || safeField === "password") {
-      setFormData((prev) => ({ ...prev, password: safeValue }));
-    }
-  };
+  if (safeField === "correo" || safeField === "email") {
+    fieldName = "email";
+    setFormData((prev) => ({ ...prev, email: safeValue }));
+  }
+
+  if (safeField === "clave" || safeField === "password") {
+    fieldName = "password";
+    setFormData((prev) => ({ ...prev, password: safeValue }));
+  }
+
+  // 🔥 Limpiar error del campo cuando el usuario escribe
+  if (fieldName) {
+    setErrors((prev) => ({
+      ...prev,
+      [fieldName]: undefined,
+    }));
+  }
+};
 
   /**
    * 🔹 Login REAL (solo se ejecuta una vez)
@@ -48,10 +61,7 @@ export default function SuperAdminLogin() {
     // 🛑 Evita doble clic
     if (loading) return;
 
-    if (!formData.email || !formData.password) {
-      alert("Debes ingresar correo y contraseña");
-      return;
-    }
+
 
     try {
       setLoading(true); // 🔒 Bloquear botón inmediatamente
@@ -74,10 +84,16 @@ export default function SuperAdminLogin() {
       const result = await response.json();
 
       if (!response.ok) {
+
+        if (response.status === 422) {
+          setErrors(result.errors);
+          setLoading(false);
+          return;
+        }
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Credenciales inválidas',
+          text: result.message || "Error Inesperado",
           showConfirmButton: false,
           timer: 1000,
         });
@@ -109,6 +125,7 @@ export default function SuperAdminLogin() {
             e.preventDefault();
             handleLogin();
           }}
+          errors={errors}
         >
           {/* ✅ BOTÓN DENTRO DEL FORM */}
           <BlueButton

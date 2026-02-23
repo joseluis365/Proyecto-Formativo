@@ -124,7 +124,14 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'code' => 'required|numeric'
+            'code' => 'required|numeric|digits:6|regex:/^[0-9]{6}$/'
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo electrónico no es válido.',
+            'code.required' => 'El código es obligatorio.',
+            'code.numeric' => 'El código debe ser numérico.',
+            'code.digits' => 'El código debe tener 6 dígitos.',
+            'code.regex' => 'El código debe tener 6 numeros sin espacios.',
         ]);
 
         $cachedCode = Cache::get('user_recovery_' . $request->email);
