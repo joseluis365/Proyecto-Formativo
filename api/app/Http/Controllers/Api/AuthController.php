@@ -172,7 +172,8 @@ class AuthController extends Controller
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $user->contrasena = Hash::make($request->password);
+        // Se asigna la contraseña directamente, el mutator en el modelo Usuario se encargará de hashearla.
+        $user->contrasena = $request->password;
         $user->save();
 
         Cache::forget('user_recovery_' . $request->email);

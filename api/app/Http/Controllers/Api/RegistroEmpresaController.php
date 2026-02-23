@@ -72,7 +72,7 @@ class RegistroEmpresaController extends Controller
                     'email' => $request->admin_email,
                     'telefono' => $request->admin_telefono,
                     'direccion' => $request->admin_direccion,
-                    'contrasena' => Hash::make($request->admin_password),
+                    'contrasena' => $request->admin_password,
                     'nit' => $empresa->nit, 
                     'id_rol' => 2, 
                     'id_estado' => 1,

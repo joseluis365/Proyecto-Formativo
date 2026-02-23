@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\EspecialidadesController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\CitaController;
 use App\Http\Controllers\Api\PrioridadController;
+use App\Http\Controllers\Api\TipoCitaController;
+use App\Http\Controllers\Api\CategoriaExamenController;
+use App\Http\Controllers\Api\CategoriaMedicamentoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +118,45 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/prioridades', 'store');
         Route::put('/prioridades/{id}', 'update');
         Route::delete('/prioridades/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — TIPO CITA
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(TipoCitaController::class)->group(function () {
+        Route::get('/tipos-cita', 'index');
+        Route::post('/tipos-cita', 'store');
+        Route::put('/tipos-cita/{id}', 'update');
+        Route::delete('/tipos-cita/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — CATEGORÍA EXAMEN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(CategoriaExamenController::class)->group(function () {
+        Route::get('/categorias-examen', 'index');
+        Route::post('/categorias-examen', 'store');
+        Route::put('/categorias-examen/{id}', 'update');
+        Route::delete('/categorias-examen/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — CATEGORÍA MEDICAMENTO
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(CategoriaMedicamentoController::class)->group(function () {
+        Route::get('/categorias-medicamento', 'index');
+        Route::post('/categorias-medicamento', 'store');
+        Route::put('/categorias-medicamento/{id}', 'update');
+        Route::delete('/categorias-medicamento/{id}', 'destroy');
     });
 
 });

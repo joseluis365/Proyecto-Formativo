@@ -42,9 +42,7 @@ class EmpresaController extends Controller
 
         $empresas = $query->get();
 
-        return response()->json([
-            'data' => EmpresaResource::collection($empresas)
-        ]);
+        return EmpresaResource::collection($empresas);
     }
 
     /**
@@ -92,7 +90,7 @@ class EmpresaController extends Controller
                     'email' => $data['admin_email'],
                     'telefono' => $data['admin_telefono'],
                     'direccion' => $data['admin_direccion'],
-                    'contrasena' => \Hash::make($data['admin_password']),
+                    'contrasena' => $data['admin_password'],
                     'id_rol' => 2,
                     'id_estado' => 1,
                     'nit' => $empresa->nit,
