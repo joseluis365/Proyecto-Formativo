@@ -21,10 +21,12 @@ class PrioridadController extends Controller
 
         if ($request->filled('id_estado')) {
             $query->where('id_estado', $request->id_estado);
+        } elseif (!$request->boolean('all')) {
+            $query->where('id_estado', 1);
         }
 
         $prioridades = $query
-            ->orderBy('created_at', 'desc')
+            ->orderBy('prioridad', 'asc')
             ->paginate(10);
 
         return PrioridadResource::collection($prioridades);

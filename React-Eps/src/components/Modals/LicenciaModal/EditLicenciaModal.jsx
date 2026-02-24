@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../../Api/axios";
+import api from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";

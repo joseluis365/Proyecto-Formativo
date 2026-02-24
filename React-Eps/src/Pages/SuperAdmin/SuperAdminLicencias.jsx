@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import LicencesSection from "../../components/SuperAdmin/LicencesSection";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../../Api/axios";
+import api from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -37,7 +37,7 @@ export default function EditEmpresaModal({
             console.log("Enviando actualización para NIT:", empresaData.nit);
 
             // 2. Petición API
-            const response = await api.put(`/ empresa / ${ empresaData.nit } `, payload);
+            const response = await api.put(`/ empresa / ${empresaData.nit} `, payload);
 
             // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;

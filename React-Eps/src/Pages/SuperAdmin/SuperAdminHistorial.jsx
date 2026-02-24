@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import HistoryCard from "../../components/SuperAdmin/HistoryCard";
@@ -15,7 +15,7 @@ export default function SuperAdminHistorial() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await api.get("/empresa-licencias");
+                const response = await api.get("/superadmin/empresa-licencias");
                 setHistory(response.data);
             } catch (err) {
                 console.error("Error fetching history:", err);
@@ -30,7 +30,7 @@ export default function SuperAdminHistorial() {
 
     const handleDownloadHistory = async () => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("superadmin_token");
             const response = await fetch("http://localhost:8000/api/licencias/historial/pdf", {
                 headers: {
                     Authorization: `Bearer ${token}`,

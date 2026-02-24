@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminResetPassword } from "../../data/SuperAdminForms";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 
 export default function SuperAdminResetPassword() {
     const navigate = useNavigate();

@@ -31,6 +31,15 @@ import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
 
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
 
+// Configuración
+import ConfiguracionIndex from "./Pages/Admin/Configuracion/ConfiguracionIndex"
+import Prioridades from "./Pages/Admin/Configuracion/Prioridades"
+import TiposCita from "./Pages/Admin/Configuracion/TiposCita"
+import CategoriasExamen from "./Pages/Admin/Configuracion/CategoriasExamen"
+import CategoriasMedicamento from "./Pages/Admin/Configuracion/CategoriasMedicamento"
+import Especialidades from "./Pages/Admin/Configuracion/Especialidades"
+import Ubicaciones from "./Pages/Admin/Configuracion/Ubicaciones"
+
 export default function App() {
   return (
     <Routes>
@@ -70,8 +79,16 @@ export default function App() {
         <Route path="/usuarios/medicos" element={<Medicos />} />
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
         <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
-        <Route path="/usuarios/medicos/agenda-medico" element={<AgendaMedico />} />
+        <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
 
+        {/* Configuración */}
+        <Route path="/configuracion" element={<ConfiguracionIndex />} />
+        <Route path="/configuracion/prioridades" element={<Prioridades />} />
+        <Route path="/configuracion/tipos-cita" element={<TiposCita />} />
+        <Route path="/configuracion/categorias-examen" element={<CategoriasExamen />} />
+        <Route path="/configuracion/categorias-medicamento" element={<CategoriasMedicamento />} />
+        <Route path="/configuracion/especialidades" element={<Especialidades />} />
+        <Route path="/configuracion/ubicaciones" element={<Ubicaciones />} />
       </Route>
     </Routes>
   )

@@ -51,7 +51,7 @@ Route::prefix('superadmin')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/especialidades', [EspecialidadesController::class, 'index']);
+Route::get('/especialidades', [EspecialidadesController::class, 'select']);
 Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
 Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);
 
@@ -157,6 +157,19 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/categorias-medicamento', 'store');
         Route::put('/categorias-medicamento/{id}', 'update');
         Route::delete('/categorias-medicamento/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — ESPECIALIDADES (CRUD ADMIN)
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(EspecialidadesController::class)->group(function () {
+        Route::get('/configuracion/especialidades', 'index');
+        Route::post('/configuracion/especialidades', 'store');
+        Route::put('/configuracion/especialidades/{id}', 'update');
+        Route::delete('/configuracion/especialidades/{id}', 'destroy');
     });
 
 });

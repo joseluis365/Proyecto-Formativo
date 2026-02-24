@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import MotionSpinner from "../UI/Spinner";
+import api from "../../Api/superadminAxios";
 
 export default function SuperAdminRoute() {
     const [isLoading, setIsLoading] = useState(true);
@@ -16,25 +17,14 @@ export default function SuperAdminRoute() {
             }
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/superadmin/check-session", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Accept": "application/json"
-                    }
-                });
-
-                if (response.ok) {
-                    setIsAuthenticated(true);
-                } else {
-                    // Token inválido o expirado
-                    sessionStorage.removeItem("superadmin_token");
-                    sessionStorage.removeItem("superadmin_user");
-                    setIsAuthenticated(false);
-                }
+                // Usamos la instancia dedicada que ya maneja el token y errores 401
+                await api.get("/superadmin/check-session");
+                setIsAuthenticated(true);
             } catch (error) {
                 console.error("Error verificando sesión:", error);
                 setIsAuthenticated(false);
+                // No es necesario remover el token aquí manualmente porque 
+                // el interceptor de superadminAxios ya lo hace al recibir un 401.
             } finally {
                 setIsLoading(false);
             }

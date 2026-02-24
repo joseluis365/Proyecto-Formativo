@@ -1,11 +1,11 @@
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import Formbuilder from "../UI/Formbuilder";
 import { loginForm } from "../../data/InicioForms";
 import BlueButton from "../UI/BlueButton";
 import CheckBox from "../UI/CheckBox";
-import api from "../../Api/axios"; 
-import Swal from 'sweetalert2'; 
+import api from "../../Api/axios";
+import Swal from 'sweetalert2';
 import { useState } from "react";
 
 export default function LoginSection() {
@@ -35,11 +35,7 @@ export default function LoginSection() {
                 showConfirmButton: false
             });
 
-            if (user.id_rol === 1) { 
-                navigate('/SuperAdmin-Dashboard');
-            } else {
-                navigate('/dashboard');
-            }
+            navigate('/dashboard');
 
         } catch (error) {
             console.error("Login error:", error);

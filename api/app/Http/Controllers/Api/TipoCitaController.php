@@ -21,10 +21,12 @@ class TipoCitaController extends Controller
 
         if ($request->filled('id_estado')) {
             $query->where('id_estado', $request->id_estado);
+        } elseif (!$request->boolean('all')) {
+            $query->where('id_estado', 1);
         }
 
         $tipos = $query
-            ->orderBy('created_at', 'desc')
+            ->orderBy('tipo', 'asc')
             ->paginate(10);
 
         return TipoCitaResource::collection($tipos);

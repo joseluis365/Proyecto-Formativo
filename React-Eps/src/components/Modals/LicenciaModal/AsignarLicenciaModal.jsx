@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useState } from "react";
-import api from "../../../Api/axios";
+import api from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -103,7 +103,7 @@ export default function AssignLicenciaModal({
         fecha_inicio: formData.fecha_inicio
       };
 
-      await api.post('/empresa-licencia', payload);
+      await api.post('/superadmin/empresa-licencia', payload);
 
       Swal.fire({
         icon: 'success',

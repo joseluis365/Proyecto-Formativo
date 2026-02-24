@@ -11,6 +11,12 @@ class Especialidad extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'especialidad'
+        'especialidad',
+        'id_estado'
     ];
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'id_estado');
+    }
 }

@@ -2,7 +2,7 @@ import StatsPanel from "../../components/Dashboard/StatsPanel";
 import { superAdminStats } from "../../data/dashboardStats";
 import LineChart from "../../components/Charts/LineChart";
 import FeedPanel from "../../components/Dashboard/FeedPanel";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import { useEffect, useState } from "react";
 import MotionSpinner from "../../components/UI/Spinner";
 

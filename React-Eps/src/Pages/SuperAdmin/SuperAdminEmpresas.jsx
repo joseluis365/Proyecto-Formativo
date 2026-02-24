@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
@@ -40,7 +40,7 @@ export default function SuperAdminEmpresas() {
       setLoading(true);
       setError(null);
 
-      const res = await api.get("/empresas", {
+      const res = await api.get("/superadmin/empresas", {
         params: {
           search: debouncedSearch || undefined,
           id_estado: status || undefined,
@@ -82,7 +82,7 @@ export default function SuperAdminEmpresas() {
   useEffect(() => {
     const fetchLicencias = async () => {
       try {
-        const res = await api.get('/licencias');
+        const res = await api.get('/superadmin/licencias');
         setLicencias(res.data.data || res.data);
       } catch (err) {
         console.error("Error al cargar licencias:", err);
@@ -113,7 +113,7 @@ export default function SuperAdminEmpresas() {
       });
 
       if (result.isConfirmed) {
-        await api.post(`/empresa/${company.nit}/activar-licencia`);
+        await api.post(`/superadmin/empresa/${company.nit}/activar-licencia`);
         Swal.fire(
           'Activada!',
           'La licencia ha sido activada correctamente.',
@@ -133,7 +133,7 @@ export default function SuperAdminEmpresas() {
 
   const handleViewCompany = async (company) => {
     try {
-      const res = await api.get(`/empresa/${company.nit}`);
+      const res = await api.get(`/superadmin/empresa/${company.nit}`);
       setSelectedCompany(res.data);
       setViewingCompany(true);
     } catch (error) {
@@ -154,10 +154,10 @@ export default function SuperAdminEmpresas() {
 
   const exportarPDF = async () => {
     try {
-      const token = sessionStorage.getItem("token");
+      const token = sessionStorage.getItem("superadmin_token");
 
       const response = await fetch(
-        "http://localhost:8000/api/empresas/pdf",
+        "http://localhost:8000/api/superadmin/empresas/pdf",
         {
           headers: {
             Authorization: `Bearer ${token}`,
