@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             CiudadSeeder::class,
             TipoLicenciaSeeder::class,
             EmpresaSeeder::class,
+            EmpresaLicenciaSeeder::class,
             AdminUsuarioSeeder::class,
             SuperadminSeeder::class,       // 👈 SIEMPRE AL FINAL
         ]);

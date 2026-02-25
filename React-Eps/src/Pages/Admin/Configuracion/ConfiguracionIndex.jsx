@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useLayout } from "@/LayoutContext";
 
 export default function ConfiguracionIndex() {
     const { setTitle, setSubtitle } = useLayout();
+    const location = useLocation();
+    const isIndex = location.pathname === "/configuracion" || location.pathname === "/configuracion/";
 
     useEffect(() => {
         setTitle("Configuración");
@@ -56,28 +58,34 @@ export default function ConfiguracionIndex() {
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cards.map((card, index) => (
-                <Link
-                    key={index}
-                    to={card.to}
-                    className="flex flex-col p-6 bg-white dark:bg-gray-800 rounded-xl border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow group"
-                >
-                    <div className={`p-3 rounded-lg w-fit mb-4 bg-${card.color}-100 dark:bg-${card.color}-900/30 text-${card.color}-600 dark:text-${card.color}-400`}>
-                        <span className="material-symbols-outlined text-3xl">{card.icon}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
-                        {card.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                        {card.description}
-                    </p>
-                    <div className="mt-6 flex items-center text-primary font-bold text-sm">
-                        Gestionar
-                        <span className="material-symbols-outlined text-sm ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                    </div>
-                </Link>
-            ))}
-        </div>
+        <>
+            {isIndex ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {cards.map((card, index) => (
+                        <Link
+                            key={index}
+                            to={card.to}
+                            className="flex flex-col p-6 bg-white dark:bg-gray-800 rounded-xl border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow group"
+                        >
+                            <div className={`p-3 rounded-lg w-fit mb-4 bg-${card.color}-100 dark:bg-${card.color}-900/30 text-${card.color}-600 dark:text-${card.color}-400`}>
+                                <span className="material-symbols-outlined text-3xl">{card.icon}</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
+                                {card.title}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                                {card.description}
+                            </p>
+                            <div className="mt-6 flex items-center text-primary font-bold text-sm">
+                                Gestionar
+                                <span className="material-symbols-outlined text-sm ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            ) : (
+                <Outlet />
+            )}
+        </>
     );
 }

@@ -82,13 +82,14 @@ export default function App() {
         <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
 
         {/* Configuración */}
-        <Route path="/configuracion" element={<ConfiguracionIndex />} />
-        <Route path="/configuracion/prioridades" element={<Prioridades />} />
-        <Route path="/configuracion/tipos-cita" element={<TiposCita />} />
-        <Route path="/configuracion/categorias-examen" element={<CategoriasExamen />} />
-        <Route path="/configuracion/categorias-medicamento" element={<CategoriasMedicamento />} />
-        <Route path="/configuracion/especialidades" element={<Especialidades />} />
-        <Route path="/configuracion/ubicaciones" element={<Ubicaciones />} />
+        <Route path="/configuracion" element={<ConfiguracionIndex />}>
+          <Route path="prioridades" element={<Prioridades />} />
+          <Route path="tipos-cita" element={<TiposCita />} />
+          <Route path="categorias-examen" element={<CategoriasExamen />} />
+          <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
+          <Route path="especialidades" element={<Especialidades />} />
+          <Route path="ubicaciones" element={<Ubicaciones />} />
+        </Route>
       </Route>
     </Routes>
   )

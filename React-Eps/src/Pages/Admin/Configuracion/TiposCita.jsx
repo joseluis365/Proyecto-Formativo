@@ -9,6 +9,7 @@ import Filter from "@/components/UI/Filter";
 import TableSkeleton from "@/components/UI/TableSkeleton";
 import TipoCitaModal from "@/components/Modals/TipoCitaModal";
 import Swal from "sweetalert2";
+import { AnimatePresence, motion } from "framer-motion";
 import useTableData from "@/hooks/useTableData";
 
 const statusOptions = [
