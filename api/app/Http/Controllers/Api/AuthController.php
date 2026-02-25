@@ -89,7 +89,10 @@ class AuthController extends Controller
      */
     public function sendRecoveryCode(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate(['email' => 'required|email'], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo electrónico no es válido.',
+        ]);
 
         $user = Usuario::where('email', $request->email)->first();
 
@@ -103,13 +106,10 @@ class AuthController extends Controller
         Cache::put('user_recovery_' . $request->email, $code, now()->addMinutes(10));
 
         try {
-            Mail::raw(
-                "Tu código de recuperación es: {$code}. Válido por 10 minutos.",
-                function ($message) use ($user) {
-                    $message->to($user->email)
-                            ->subject('Recuperación de Contraseña - EPS');
-                }
-            );
+            Mail::send('emails.recovery_code', ['code' => $code], function ($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('Recuperación de Contraseña - Proyecto EPS');
+            });
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error enviando correo'], 500);
         }

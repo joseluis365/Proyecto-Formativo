@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import superAdminApi from "../../Api/superAdminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import HistoryCard from "../../components/SuperAdmin/HistoryCard";
@@ -15,7 +15,7 @@ export default function SuperAdminHistorial() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await api.get("/empresa-licencias");
+                const response = await superAdminApi.get("/empresa-licencias");
                 setHistory(response.data);
             } catch (err) {
                 console.error("Error fetching history:", err);
@@ -30,7 +30,7 @@ export default function SuperAdminHistorial() {
 
     const handleDownloadHistory = async () => {
         try {
-            const token = sessionStorage.getItem("token");
+            const token = sessionStorage.getItem("superadmin_token");
             const response = await fetch("http://localhost:8000/api/licencias/historial/pdf", {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -83,7 +83,7 @@ export default function SuperAdminHistorial() {
                         exit={{ opacity: 0 }}
                         className="flex flex-col justify-center items-center py-10"
                     >
-                        <p className="text-lg font-semibold mb-2">Cargando historial...</p>
+                        <p className="text-lg font-semibold mb-2">Cargando historial</p>
                         <MotionSpinner />
                     </motion.div>
                 ) : error ? (
@@ -103,6 +103,16 @@ export default function SuperAdminHistorial() {
                         ))}
                     </motion.div>
                 )}
+                {!loading && !error && history.length === 0 && (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-6 text-gray-500"
+          >
+            El historial está vacío
+          </motion.div>
+        )}
             </AnimatePresence>
 
             <AnimatePresence>

@@ -8,6 +8,7 @@ export const editUserFormConfig = [
   { name: "telefono", label: "Telefono", type: "number", readOnly: false },
   { name: "direccion", label: "Direccion", type: "text", readOnly: false },
   { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", readOnly: false },
+  { name: "contrasena", label: "Contraseña", type: "password", readOnly: true },
   { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false },
 ]
 

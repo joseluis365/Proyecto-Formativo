@@ -1,7 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import LogoutButton from "../../components/UI/LogoutButton";
+import SuperAdminLogoutButton from "../../components/UI/SuperAdminLogoutButton";
 
 export default function SuperAdminHeader() {
     const [open, setOpen] = useState(false);
@@ -12,10 +12,10 @@ export default function SuperAdminHeader() {
     }, [open]);
 
     const closeMenu = () => setOpen(false);
-    const navLinkStyles = ({ isActive }) => 
-    isActive 
-        ? "text-blue-600 font-bold dark:text-blue-400" 
-        : "text-slate-600 hover:text-blue-500 transition-colors dark:text-white dark:hover:text-blue-400";
+    const navLinkStyles = ({ isActive }) =>
+        isActive
+            ? "text-blue-600 font-bold dark:text-blue-400"
+            : "text-slate-600 hover:text-blue-500 transition-colors dark:text-white dark:hover:text-blue-400";
 
     return (
         <>
@@ -25,7 +25,7 @@ export default function SuperAdminHeader() {
                 {/* MENU DESKTOP */}
                 <div className="hidden md:flex flex-1 justify-between gap-8 items-center">
                     <div>
-                        
+
                     </div>
                     <nav className="flex items-center gap-6 mx-auto">
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Dashboard">Inicio</NavLink>
@@ -37,20 +37,20 @@ export default function SuperAdminHeader() {
                         <div className="flex items-center gap-2 mr-2 dark:text-white">
                             <p>SuperAdmin</p>
                         </div>
-                        
-                    
-                    <LogoutButton />
+
+
+                        <SuperAdminLogoutButton />
                     </div>
                 </div>
 
                 {/* BOTÓN HAMBURGUESA */}
                 <div className="md:hidden flex justify-start items-center">
-                <button
-                    onClick={() => setOpen(true)}
-                    className="md:hidden text-2xl cursor-pointer"
-                >
-                    ☰
-                </button>
+                    <button
+                        onClick={() => setOpen(true)}
+                        className="md:hidden text-2xl cursor-pointer"
+                    >
+                        ☰
+                    </button>
                 </div>
             </header>
 
@@ -86,11 +86,11 @@ export default function SuperAdminHeader() {
                     </nav>
 
                     {/* CTA */}
-                    
-                        <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
-                            Cerrar Sesión
-                        </button>
-                    
+
+                    <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
+                        Cerrar Sesión
+                    </button>
+
                 </div>
             </aside>
         </>

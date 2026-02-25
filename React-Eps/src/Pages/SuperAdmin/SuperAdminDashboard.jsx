@@ -2,7 +2,7 @@ import StatsPanel from "../../components/Dashboard/StatsPanel";
 import { superAdminStats } from "../../data/dashboardStats";
 import LineChart from "../../components/Charts/LineChart";
 import FeedPanel from "../../components/Dashboard/FeedPanel";
-import api from "../../Api/axios";
+import superAdminApi from "../../Api/superAdminAxios";
 import { useEffect, useState } from "react";
 import MotionSpinner from "../../components/UI/Spinner";
 
@@ -16,8 +16,8 @@ export default function SuperAdminDashboard() {
     const fetchData = async () => {
       try {
         const [activityRes, statsRes] = await Promise.all([
-          api.get(`/recent-activity/${channelName}`),
-          api.get('/superadmin/dashboard-stats')
+          superAdminApi.get(`/recent-activity/${channelName}`),
+          superAdminApi.get('/superadmin/dashboard-stats')
         ]);
 
         setActivities(activityRes.data);

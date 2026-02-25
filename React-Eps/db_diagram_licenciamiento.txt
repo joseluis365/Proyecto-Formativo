@@ -1,0 +1,95 @@
+Table ciudad {
+  codigo_postal integer [primary key]
+  nombre varchar
+  id_departamento integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table departamento {
+  codigo_DANE integer [primary key]
+  nombre varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table empresa {
+  nit varchar [primary key]
+  nombre varchar
+  email_contacto varchar
+  telefono varchar
+  direccion varchar
+  documento_representante integer
+  nombre_representante varchar
+  telefono_representante varchar
+  email_representante varchar
+  id_ciudad integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table empresa_licencia {
+  id_empresa_licencia varchar [primary key]
+  nit varchar
+  id_tipo_licencia integer
+  fecha_inicio date
+  fecha_fin date
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table rol {
+  id_rol integer [primary key]
+  tipo_usu varchar
+}
+
+Table superadmin {
+  documento integer [primary key]
+  nombre varchar
+  usuario varchar
+  email varchar
+  contrasena varchar
+  id_rol integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table tipo_licencia {
+  id_tipo_licencia integer [primary key]
+  tipo varchar
+  descripcion varchar
+  duracion_meses integer
+  precio numeric
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table usuario {
+  documento bigint [primary key]
+  nombre varchar
+  apellido varchar
+  email varchar
+  telefono varchar
+  direccion varchar
+  sexo varchar
+  fecha_nacimiento date
+  grupo_sanguineo varchar
+  contrasena varchar
+  registro_profesional varchar
+  nit varchar
+  id_rol integer
+  id_estado integer
+  created_at timestamp
+  updated_at timestamp
+  id_especialidad integer
+}
+
+// Relaciones
+Ref: ciudad.id_departamento > departamento.codigo_DANE
+Ref: empresa.id_ciudad > ciudad.codigo_postal
+Ref: empresa_licencia.id_tipo_licencia > tipo_licencia.id_tipo_licencia
+Ref: empresa_licencia.nit > empresa.nit
+Ref: superadmin.id_rol > rol.id_rol

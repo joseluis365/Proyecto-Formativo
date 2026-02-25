@@ -5,43 +5,34 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueIgnoreCase;
 
-class StoreUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
     }
 
-    protected function prepareForValidation()
-    {
-        \Illuminate\Support\Facades\Log::info('StoreUserRequest User:', ['user' => $this->user()]);
-        $this->merge([
-            'nit' => $this->user()->nit, // Aquí obtenemos el NIT del Admin logueado
-        ]);
-    }
-
     public function rules(): array
     {
+        $id = $this->route('id') ?? $this->route('usuario');
+
         $rules = [
-            'documento' => ['required', 'numeric', 'unique:usuario,documento', 'regex:/^\d{1,10}$/'],
-            'nit' => ['required', 'exists:empresa,nit'],
+            'documento' => ['required', 'numeric', 'regex:/^\d{1,10}$/', 'unique:usuario,documento,' . $id . ',documento'],
             'primer_nombre' => ['required', 'string', 'max:255'],
             'segundo_nombre' => ['nullable', 'string', 'max:255'],
             'primer_apellido' => ['required', 'string', 'max:255'],
             'segundo_apellido' => ['nullable', 'string', 'max:255'],
-            'email' => ['required', 'email', new UniqueIgnoreCase('usuario', 'email')],
-            'telefono' => ['required', 'numeric', 'regex:/^\d{1,10}$/', 'unique:usuario,telefono'],
+            'email' => ['required', 'email', new UniqueIgnoreCase('usuario', 'email', $id, 'documento')],
+            'telefono' => ['required', 'numeric', 'regex:/^\d{1,10}$/', 'unique:usuario,telefono,' . $id . ',documento'],
             'direccion' => ['required', 'string', 'max:255'],
             'fecha_nacimiento' => ['required', 'date'],
-            'contrasena' => ['required', 'string', 'min:8', 'max:25', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
             'id_estado' => ['required', 'in:1,2'],
             'id_rol' => ['required', 'exists:rol,id_rol'],
-            
         ];
 
         switch ($this->id_rol) {
             case 4:
-                $rules['registro_profesional'] = ['required', 'unique:usuario,registro_profesional', 'string', 'regex:/^\d{1,10}$/'];
+                $rules['registro_profesional'] = ['required', 'string', 'regex:/^\d{1,10}$/', 'unique:usuario,registro_profesional,' . $id . ',documento'];
                 $rules['id_especialidad'] = ['required', 'exists:especialidades,id_especialidad'];
                 break;
             case 5:
@@ -49,7 +40,6 @@ class StoreUserRequest extends FormRequest
                 $rules['grupo_sanguineo'] = ['required', 'string', 'max:10', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'];
                 break;
         }
-
 
         return $rules;
     }
@@ -77,10 +67,6 @@ class StoreUserRequest extends FormRequest
             'direccion.max' => 'La direccion debe tener como maximo 255 caracteres',
             'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria',
             'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha valida',
-            'contrasena.required' => 'La contraseña es obligatoria',
-            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres',
-            'contrasena.max' => 'La contraseña debe tener como maximo 25 caracteres',
-            'contrasena.regex' => 'La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial: @$!%*?&',
             'registro_profesional.required' => 'El registro profesional es obligatorio',
             'registro_profesional.regex' => 'El registro profesional debe ser maximo de 10 digitos',
             'id_especialidad.required' => 'La especialidad es obligatoria',

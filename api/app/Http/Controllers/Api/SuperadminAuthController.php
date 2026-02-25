@@ -48,13 +48,10 @@ class SuperadminAuthController extends Controller
         );
 
         try {
-            Mail::raw(
-                "Tu código de verificación es: {$code}",
-                function ($message) use ($superadmin) {
-                    $message->to($superadmin->email)
-                            ->subject('Código de verificación - EPS');
-                }
-            );
+            Mail::send('emails.verification_code', ['code' => $code], function ($message) use ($superadmin) {
+                $message->to($superadmin->email)
+                        ->subject('Código de verificación - Proyecto EPS');
+            });
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al enviar el correo: ' . $e->getMessage()
@@ -153,13 +150,10 @@ class SuperadminAuthController extends Controller
         Cache::put('superadmin_recovery_' . $request->email, $code, now()->addMinutes(10));
 
         try {
-            Mail::raw(
-                "Tu código de recuperación es: {$code}. Válido por 10 minutos.",
-                function ($message) use ($superadmin) {
-                    $message->to($superadmin->email)
-                            ->subject('Recuperación de Contraseña - EPS');
-                }
-            );
+            Mail::send('emails.recovery_code', ['code' => $code], function ($message) use ($superadmin) {
+                $message->to($superadmin->email)
+                        ->subject('Recuperación de Contraseña - Proyecto EPS');
+            });
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error enviando correo'], 500);
         }

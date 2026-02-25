@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class UsuarioController extends Controller
 {
@@ -83,37 +84,15 @@ class UsuarioController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
         $user = Usuario::findOrFail($id);
 
-        $rules =[
-            'documento' => 'required|integer|regex:/^\d{1,10}$/|unique:usuario,documento,' . $id . ',documento',
-            'primer_nombre'   => 'required|string|max:255',
-            'segundo_nombre'  => 'nullable|string|max:255',
-            'primer_apellido' => 'required|string|max:255',
-            'segundo_apellido'=> 'nullable|string|max:255',
-            'email'  => 'required|email|unique:usuario,email,' . $id . ',documento',
-            'telefono' => 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,telefono,' . $id . ',documento',
-            'direccion' => 'required|string|max:255',
-            'fecha_nacimiento' => 'required|date',
-            'id_estado' => 'required|exists:estado,id_estado',
-            'id_rol' => 'required|exists:rol,id_rol',
-        ];
+        $data = $request->validated();
+        
+        unset($data['documento']);
+        unset($data['contrasena']);
 
-        switch ((int) $request->id_rol) {
-        case 4:
-            $rules['registro_profesional'] = 'required|numeric|regex:/^\d{1,10}$/|unique:usuario,registro_profesional,' . $id . ',documento';
-            $rules['id_especialidad'] = 'required|integer|exists:especialidades,id_especialidad';
-            break;
-
-        case 5:
-            $rules['sexo'] = 'required|in:Masculino,Femenino';
-            $rules['grupo_sanguineo'] = 'required|in:A+,A-,B+,B-,AB+,AB-,O+,O-';
-            break;
-    }
-
-        $data = $request->validate($rules);
         $user->update($data);
 
         return response()->json([
