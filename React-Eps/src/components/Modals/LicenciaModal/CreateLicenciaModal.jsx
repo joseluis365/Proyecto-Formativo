@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../../Api/axios";
+import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalBody from "../ModalBody";
@@ -8,7 +8,13 @@ import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
 import Swal from 'sweetalert2';
-
+const initialLicencia = {
+    tipo: "",
+    descripcion: "",
+    duracion_meses: "",
+    precio: "",
+    id_estado: 1,
+};
 
 export default function CreateLicenciaModal({
     onClose,
@@ -20,15 +26,6 @@ export default function CreateLicenciaModal({
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
-    const initialLicencia = {
-        tipo: "",
-        descripcion: "",
-        duracion_meses: "",
-        precio: "",
-        id_estado: 1,
-    };
-
-
     const handleCreate = async (data) => {
         try {
             setSaving(true);
@@ -36,7 +33,7 @@ export default function CreateLicenciaModal({
             const payload = {
                 ...data,
             };
-            await api.post(`/licencia`, payload);
+            await superAdminApi.post(`/licencia`, payload);
 
             // 2. Disparas la alerta de SweetAlert2
             await Swal.fire({
@@ -46,8 +43,6 @@ export default function CreateLicenciaModal({
                 showConfirmButton: false,
                 timer: 1500
             });
-
-            // 3. Estas acciones ocurren SOLO después de que el usuario cierra la alerta
             setSuccess(true);
             onSuccess?.();
             onClose();

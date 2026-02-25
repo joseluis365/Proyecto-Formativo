@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../../Api/axios";
+import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -32,7 +32,7 @@ export default function EditLicenciaModal({
             console.log("Enviando actualización para NIT:", licenciaData.id);
 
             // 2. Petición API
-            const response = await api.put(`/licencia/${licenciaData.id}`, payload);
+            const response = await superAdminApi.put(`/licencia/${licenciaData.id}`, payload);
 
             // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;
@@ -91,7 +91,7 @@ export default function EditLicenciaModal({
             try {
                 setSaving(true);
                 // Petición DELETE a tu API de Laravel
-                await api.delete(`/licencia/${licenciaData.id}`);
+                await superAdminApi.delete(`/licencia/${licenciaData.id}`);
 
                 await Swal.fire({
                     icon: 'success',

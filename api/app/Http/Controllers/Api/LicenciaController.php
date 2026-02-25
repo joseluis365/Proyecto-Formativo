@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Licencia;
 use App\Http\Requests\StoreLicenciaRequest;
+use App\Http\Requests\UpdateLicenciaRequest;
 use App\Http\Resources\LicenciaResource;
 use Illuminate\Support\Facades\DB;
 use App\Models\EmpresaLicencia;
@@ -102,17 +103,11 @@ class LicenciaController extends Controller
         });
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateLicenciaRequest $request, $id)
     {
         $licencia = Licencia::findOrFail($id);
 
-        $data = $request->validate([
-            'tipo' => 'sometimes|string|max:255',
-            'descripcion' => 'sometimes|string',
-            'precio' => 'sometimes|numeric',
-            'duracion_meses' => 'sometimes|integer',
-            'id_estado' => 'sometimes|integer',
-        ]);
+        $data = $request->validated();
 
         $licencia->update($data);
 

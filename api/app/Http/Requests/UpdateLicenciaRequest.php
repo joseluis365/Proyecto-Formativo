@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueIgnoreCase;
 
-class StoreLicenciaRequest extends FormRequest
+class UpdateLicenciaRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,10 @@ class StoreLicenciaRequest extends FormRequest
 
     public function rules(): array
     {
+        $id = $this->route('id') ?? $this->route('licencium');
+
         return [
-            'tipo' => ['required', 'regex:/^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+)*$/', 'string', new UniqueIgnoreCase('tipo_licencia', 'tipo'), 'min:3', 'max:40'],
+            'tipo' => ['required', 'regex:/^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+)*$/', 'string', new UniqueIgnoreCase('tipo_licencia', 'tipo', $id, 'id_tipo_licencia'), 'min:3', 'max:40'],
             'descripcion' => ['required', 'regex:/^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+)*$/', 'string', 'min:10', 'max:250'],
             'precio' => ['required', 'regex:/^[0-9]+$/', 'digits_between:6,9'],
             'duracion_meses' => ['required', 'regex:/^[0-9]+$/', 'digits_between:1,2'],

@@ -9,7 +9,7 @@ class Licencia extends Model
     protected $table = 'tipo_licencia';
     protected $primaryKey = 'id_tipo_licencia';
     protected $fillable = [
-        'tipo', 
+        'tipo',             
         'descripcion', 
         'precio', 
         'duracion_meses', 

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useState } from "react";
-import api from "../../../Api/axios";
+import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -48,7 +48,7 @@ export default function AssignLicenciaModal({
       .filter(l => l.id && !seenIds.has(l.id)) // Evita duplicados
       .map((l) => ({
         value: l.id, // El ID que viene de Laravel
-        label: `${l.tipo} (${l.duracion})`,
+        label: `${l.tipo} - ${l.duracion}`,
         precio: l.precio_raw,
         duracion_meses: l.duracion_meses,
       }));
@@ -97,18 +97,26 @@ export default function AssignLicenciaModal({
   const handleSubmit = async () => {
     try {
       setSaving(true);
+      // Buscar la licencia seleccionada para enviar el precio numérico y duración real
+      const licenciaSeleccionada = licenciaOptions.find(
+        (l) => String(l.value) === String(formData.licencia_id)
+      );
+
       const payload = {
         nit: empresaNit,
         id_tipo_licencia: formData.licencia_id,
-        fecha_inicio: formData.fecha_inicio
+        fecha_inicio: formData.fecha_inicio,
+        fecha_fin: formData.fecha_fin,
+        precio: licenciaSeleccionada ? licenciaSeleccionada.precio : null,
+        duracion_meses: licenciaSeleccionada ? licenciaSeleccionada.duracion_meses : null
       };
 
-      await api.post('/empresa-licencia', payload);
+      await superAdminApi.post('/empresa-licencia', payload);
 
       Swal.fire({
         icon: 'success',
-        title: 'Licencia Asignada',
-        text: 'La licencia ha sido asignada correctamente.',
+        title: 'Plan Asignado',
+        text: 'El plan ha sido asignado correctamente.',
         confirmButtonColor: '#3085d6',
       }).then(() => {
         onSuccess?.();
@@ -120,7 +128,11 @@ export default function AssignLicenciaModal({
         setErrors(
           Object.fromEntries(
             Object.entries(error.response.data.errors).map(
-              ([k, v]) => [k, v[0]]
+              ([k, v]) => {
+                // Map the backend error key to the frontend field name
+                if (k === 'id_tipo_licencia') return ['licencia_id', v[0]];
+                return [k, v[0]];
+              }
             )
           )
         );
@@ -128,7 +140,7 @@ export default function AssignLicenciaModal({
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo asignar la licencia.',
+          text: 'No se pudo asignar el plan.',
         });
       }
     } finally {
@@ -138,7 +150,7 @@ export default function AssignLicenciaModal({
 
   return (
     <BaseModal>
-      <ModalHeader title="Asignar licencia" icon="verified" onClose={onClose} />
+      <ModalHeader title="Asignar Plan" icon="verified" onClose={onClose} />
       <div className="p-6">
         <Form
           values={formData}

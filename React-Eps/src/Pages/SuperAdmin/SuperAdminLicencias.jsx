@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import superAdminApi from "../../Api/superAdminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import LicencesSection from "../../components/SuperAdmin/LicencesSection";
@@ -20,7 +20,7 @@ export default function SuperAdminLicencias() {
       setLoading(true);
       setError(null);
 
-      const res = await api.get("/licencias");
+      const res = await superAdminApi.get("/licencias");
       console.log("Respuesta completa:", res.data);
 
 

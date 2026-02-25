@@ -3,7 +3,7 @@ export const createLicenciaFormConfig = {
     { name: "tipo", label: "Tipo", type: "text", readOnly: false },
     { name: "descripcion", label: "Descripcion", type: "text", readOnly: false },
     { name: "duracion_meses", label: "Duracion Meses", type: "number", readOnly: false },
-    { name: "precio", label: "Precio", type: "number", readOnly: false },
+    { name: "precio", label: "Precio", type: "text", readOnly: false },
     { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false },
   ],
   2: [

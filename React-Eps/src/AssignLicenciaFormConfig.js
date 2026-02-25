@@ -2,7 +2,7 @@ export const assignLicenciaFormConfig = {
   1: [
     {
       name: "licencia_id",
-      label: "Tipo de licencia",
+      label: "Tipo de Plan",
       type: "select",
       options: [], // se llena dinámicamente
     },

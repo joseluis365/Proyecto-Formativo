@@ -89,7 +89,7 @@
         <table class="info-grid">
             <tr>
                 <td class="info-label">Nombre:</td>
-                <td class="info-value">{{ $empresa->adminUser->nombre }}</td>
+                <td class="info-value">{{ $empresa->adminUser->primer_nombre . ' ' . $empresa->adminUser->segundo_nombre . ' ' . $empresa->adminUser->primer_apellido . ' ' . $empresa->adminUser->segundo_apellido }}</td>
             </tr>
             <tr>
                 <td class="info-label">Email Acceso:</td>
@@ -114,7 +114,7 @@
                     <th>ID Licencia</th>
                     <th>Tipo</th>
                     <th>Precio</th>
-                    <th></th>Inicio</th>
+                    <th>Inicio</th>
                     <th>Fin</th>
                     <th>Estado</th>
                 </tr>

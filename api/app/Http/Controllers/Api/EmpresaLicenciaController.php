@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreEmpresaLicenciaRequest;
 use Carbon\Carbon;
 use App\Models\EmpresaLicencia;
 use App\Models\Licencia;
@@ -31,12 +31,9 @@ class EmpresaLicenciaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreEmpresaLicenciaRequest $request)
     {
-        $data = $request->validate([
-            'nit' => 'required|exists:empresa,nit',
-            'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
-        ]);
+        $data = $request->validated();
 
         $tipoLicencia = Licencia::findOrFail($data['id_tipo_licencia']);
 
