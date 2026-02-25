@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../../Api/axios";
+import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -18,7 +18,6 @@ export default function CreateEmpresaModal({
     // Location State
     const [departamentos, setDepartamentos] = useState([]);
     const [ciudades, setCiudades] = useState([]);
-    const [selectedDepartamento, setSelectedDepartamento] = useState("");
 
     const initialEmpresa = {
         nit: "",
@@ -40,6 +39,7 @@ export default function CreateEmpresaModal({
         admin_telefono: "",
         admin_direccion: "",
         admin_password: "",
+        id_departamento: "",
         id_ciudad: "",
     };
 
@@ -47,7 +47,7 @@ export default function CreateEmpresaModal({
 
     // Fetch Departments on Mount
     useEffect(() => {
-        api.get('/departamentos').then(res => {
+        superAdminApi.get('/departamentos').then(res => {
             setDepartamentos(res.data);
         }).catch(err => console.error("Error fetching departamentos", err));
     }, []);
@@ -65,13 +65,13 @@ export default function CreateEmpresaModal({
 
     const handleDepartamentoChange = async (e) => {
         const deptoId = e.target.value;
-        setSelectedDepartamento(deptoId);
+        handleChange('id_departamento', deptoId);
         setCiudades([]);
         setFormData(prev => ({ ...prev, id_ciudad: "" })); // Reset city
 
         if (deptoId) {
             try {
-                const res = await api.get(`/ciudades/${deptoId}`);
+                const res = await superAdminApi.get(`/ciudades/${deptoId}`);
                 setCiudades(res.data);
             } catch (error) {
                 console.error("Error fetching cities", error);
@@ -87,7 +87,7 @@ export default function CreateEmpresaModal({
             const payload = {
                 ...formData,
             };
-            await api.post(`/empresa`, payload);
+            await superAdminApi.post(`/empresa`, payload);
             import("sweetalert2").then((Swal) => {
                 Swal.default.fire({
                     icon: 'success',
@@ -138,16 +138,16 @@ export default function CreateEmpresaModal({
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {fields.map((field) => {
-                                // Special handling for 'ciudad' field -> Render Depto + Ciudad
-                                if (field.name === 'ciudad') {
+                                // Special handling for location fields -> Render Depto + Ciudad
+                                if (field.name === 'id_departamento') {
                                     return (
                                         <React.Fragment key="location-group">
                                             {/* Departamento Select */}
                                             <div className="space-y-1">
                                                 <label className="text-sm font-medium text-gray-700">Departamento</label>
                                                 <select
-                                                    className="border rounded px-3 py-2 w-full border-gray-300"
-                                                    value={selectedDepartamento}
+                                                    className={`border rounded px-3 py-2 w-full ${errors.id_departamento ? "border-red-500" : "border-gray-300"}`}
+                                                    value={formData.id_departamento}
                                                     onChange={handleDepartamentoChange}
                                                 >
                                                     <option value="">Seleccionar Departamento</option>
@@ -155,6 +155,9 @@ export default function CreateEmpresaModal({
                                                         <option key={d.codigo_DANE} value={d.codigo_DANE}>{d.nombre}</option>
                                                     ))}
                                                 </select>
+                                                {errors.id_departamento && (
+                                                    <p className="text-red-500 text-sm transition-all">{errors.id_departamento}</p>
+                                                )}
                                             </div>
 
                                             {/* Ciudad Select */}
@@ -165,7 +168,7 @@ export default function CreateEmpresaModal({
                                                     className={`border rounded px-3 py-2 w-full ${errors.id_ciudad ? "border-red-500" : "border-gray-300"}`}
                                                     value={formData.id_ciudad}
                                                     onChange={(e) => handleChange('id_ciudad', e.target.value)}
-                                                    disabled={!selectedDepartamento}
+                                                    disabled={!formData.id_departamento}
                                                 >
                                                     <option value="">Seleccionar Ciudad</option>
                                                     {ciudades.map(c => (
@@ -178,6 +181,10 @@ export default function CreateEmpresaModal({
                                             </div>
                                         </React.Fragment>
                                     );
+                                }
+
+                                if (field.name === 'id_ciudad') {
+                                    return null; // Already rendered with id_departamento
                                 }
 
                                 const value = formData[field.name] ?? "";

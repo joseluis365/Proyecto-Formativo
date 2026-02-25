@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Rules\UniqueIgnoreCase;
 
-class StoreEmpresaRequest extends FormRequest
+class UpdateEmpresaRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,38 +15,52 @@ class StoreEmpresaRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'nit' => ['required', 'unique:empresa,nit', 'regex:/^[0-9\-]+$/', 'regex:/^[1-9][0-9]{8}-[0-9]$/', 'min:10', 'max:12'],
-            'nombre' => ['required', 'string', 'min:3', 'max:50', 'regex:/^(?!.*\s{2,})(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\.,&\/]+$/', new UniqueIgnoreCase('empresa', 'nombre')],
-            'email_contacto' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', new UniqueIgnoreCase('empresa', 'email_contacto'), 'min:12', 'max:150'],
-            'telefono' => ['required', 'regex:/^(3\d{9}|60[1-8]\d{7})$/', 'digits:10', 'unique:empresa,telefono'],
-            'id_departamento' => ['required', 'regex:/^[1-9][0-9]*$/', 'min:2', 'max:2', 'exists:departamento,codigo_DANE'],
-            'id_ciudad' => [
-                'required',
-                'regex:/^[1-9][0-9]*$/',
-                'min:5',
-                'max:6',
-                Rule::exists('ciudad', 'codigo_postal')
-                    ->where(function ($query) {
-                        $query->where('id_departamento', $this->id_departamento);
-                    }),
-            ],
-            'direccion' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'max:150', 'unique:empresa,direccion'],
-            'documento_representante' => ['required', 'regex:/^[1-9][0-9]*$/', 'numeric', 'digits_between:7,10', 'unique:empresa,documento_representante'],
+        $id = $this->route('id') ?? $this->route('empresa'); 
+        
+        $adminIdx = \App\Models\Usuario::where('nit', $id)
+                    ->where('id_rol', 2)
+                    ->first();
+
+        $rules = [
+            'nit' => ['required', 'regex:/^[0-9\-]+$/', 'regex:/^[1-9][0-9]{8}-[0-9]$/', 'min:10', 'max:12', 'unique:empresa,nit,' . $id . ',nit'],
+            'nombre' => ['required', 'string', 'min:3', 'max:50', 'regex:/^(?!.*\s{2,})(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\.,&\/]+$/', new UniqueIgnoreCase('empresa', 'nombre', $id, 'nit')],
+            'email_contacto' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('empresa', 'email_contacto', $id, 'nit')],
+            'telefono' => ['required', 'regex:/^(3\d{9}|60[1-8]\d{7})$/', 'digits:10', 'unique:empresa,telefono,' . $id . ',nit'],
+            'direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150', 'unique:empresa,direccion,' . $id . ',nit'],
+            'documento_representante' => ['required', 'regex:/^[1-9][0-9]*$/', 'numeric', 'digits_between:7,10', 'unique:empresa,documento_representante,' . $id . ',nit'],
             'nombre_representante' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
-            'telefono_representante' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:empresa,telefono_representante'],
-            'email_representante' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('empresa', 'email_representante')],
+            'telefono_representante' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:empresa,telefono_representante,' . $id . ',nit'],
+            'email_representante' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('empresa', 'email_representante', $id, 'nit')],
             'id_estado' => ['required', 'exists:estado,id_estado'],
+            
             'admin_primer_nombre' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
             'admin_segundo_nombre' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
             'admin_primer_apellido' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
             'admin_segundo_apellido' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
-            'admin_documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:7,10', 'numeric', 'unique:usuario,documento'],
-            'admin_email' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'min:12', 'max:150', new UniqueIgnoreCase('usuario', 'email')],
-            'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10',  'unique:usuario,telefono'],
+            'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10'],
             'admin_direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150'],
-            'admin_password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'max:25'],
         ];
+
+        if ($adminIdx) {
+            $rules['admin_email'] = [
+                'required',
+                'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
+                'email:rfc,dns',
+                'min:12',
+                'max:150',
+                new UniqueIgnoreCase('usuario', 'email', $adminIdx->documento, 'documento')
+            ];
+            $rules['admin_documento'] = [
+                'required',
+                'regex:/^[1-9][0-9]*$/',
+                'digits_between:7,10',
+                'numeric',
+                Rule::unique('usuario', 'documento')->ignore($adminIdx->documento, 'documento')
+            ];
+            $rules['admin_telefono'][] = Rule::unique('usuario', 'telefono')->ignore($adminIdx->documento, 'documento');
+        }
+
+        return $rules;
     }
 
     public function messages(): array
@@ -74,18 +88,6 @@ class StoreEmpresaRequest extends FormRequest
             'telefono.regex' => 'El telefono debe iniciar con 3 o 60 y tener 10 digitos numericos sin espacios',
             'telefono.digits' => 'El telefono debe tener exactamente 10 caracteres',
             'telefono.unique' => 'Este telefono ya está registrado',
-
-            'id_departamento.required' => 'El departamento es obligatorio',
-            'id_departamento.exists' => 'El departamento seleccionado no existe',
-            'id_departamento.regex' => 'El departamento debe ser un número válido',
-            'id_departamento.min' => 'El departamento debe tener como minimo 2 caracteres',
-            'id_departamento.max' => 'El departamento debe tener como maximo 2 caracteres',
-
-            'id_ciudad.required' => 'La ciudad es obligatoria',
-            'id_ciudad.exists' => 'La ciudad seleccionada no pertenece al departamento escogido',
-            'id_ciudad.regex' => 'La ciudad debe ser un número válido',
-            'id_ciudad.min' => 'La ciudad debe tener como minimo 5 caracteres',
-            'id_ciudad.max' => 'La ciudad debe tener como maximo 6 caracteres',
 
             'direccion.required' => 'La direccion es obligatoria',
             'direccion.unique' => 'Esta direccion ya está registrada',
@@ -158,11 +160,6 @@ class StoreEmpresaRequest extends FormRequest
             'admin_direccion.min' => 'La direccion debe tener al menos 8 caracteres',
             'admin_direccion.max' => 'La direccion debe tener como maximo 150 caracteres',
             'admin_direccion.regex' => 'La dirección debe contener letras y números, y puede incluir #, -, . o ,.',
-
-            'admin_password.required' => 'La contraseña del administrador es obligatoria',
-            'admin_password.min' => 'La contraseña del administrador debe tener al menos 8 caracteres',
-            'admin_password.max' => 'La contraseña del administrador debe tener como maximo 25 caracteres',
-            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero, sin espacios y un caracter especial: @$!%*?&',
         ];
     }
 }

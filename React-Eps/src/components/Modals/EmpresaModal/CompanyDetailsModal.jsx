@@ -33,6 +33,8 @@ export default function CompanyDetailsModal({ company, onClose }) {
             admin_segundo_apellido: company?.admin_user?.segundo_apellido || "",
             admin_documento: company?.admin_user?.documento || "",
             admin_email: company?.admin_user?.email || "",
+            admin_telefono: company?.admin_user?.telefono || "",
+            admin_direccion: company?.admin_user?.direccion || "",
 
             admin_password: "",
             admin_password_confirmation: "",

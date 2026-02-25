@@ -63,7 +63,7 @@ export default function Form({
               `}
               >
                 {!value && (
-                  <option value="default-empty">Seleccionar</option>
+                  <option value="">Seleccionar</option>
                 )}
 
                 {field.options?.map((opt) => (
@@ -103,10 +103,10 @@ export default function Form({
                     onClick={onDelete}
                     disabled={loading}
                     className="bg-red-600 hover:bg-red-700
-        text-white cursor-pointer rounded-lg
-        px-6 py-3 font-bold text-sm
-        transition-all flex items-center justify-center gap-2
-        shadow-lg shadow-red-600/20"
+                    text-white cursor-pointer rounded-lg
+                    px-6 py-3 font-bold text-sm
+                    transition-all flex items-center justify-center gap-2
+                    shadow-lg shadow-red-600/20"
                 >
                     <span className="material-symbols-outlined">delete</span>
                     Eliminar

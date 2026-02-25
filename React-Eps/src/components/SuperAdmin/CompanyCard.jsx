@@ -12,7 +12,7 @@ export default function CompanyCard({
     1: { text: "Licencia activa", classes: "bg-green-100 text-green-700" },
     4: { text: "Expira Pronto", classes: "bg-yellow-100 text-yellow-700" },
     5: { text: "Licencia expirada", classes: "bg-red-100 text-red-700" },
-    3: { text: "Sin licencia", classes: "bg-gray-100 text-gray-700" },
+    3: { text: "Sin Plan", classes: "bg-gray-100 text-gray-700" },
     6: { text: "Licencia Bloqueada", classes: "bg-gray-100 text-gray-700" },
   };
 
@@ -82,7 +82,7 @@ export default function CompanyCard({
             className="w-full py-2 text-sm font-semibold rounded-lg
                        bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
           >
-            Asignar licencia
+            Asignar Plan
           </button>
         )}
 

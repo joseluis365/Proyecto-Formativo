@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Empresa;
 use App\Http\Requests\StoreEmpresaRequest;
+use App\Http\Requests\UpdateEmpresaRequest;
 use App\Http\Resources\EmpresaResource;
 use App\Events\SystemActivityEvent;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -29,8 +29,8 @@ class EmpresaController extends Controller
     if ($request->filled('search')) {
         $search = $request->search;
         $query->where(function ($q) use ($search) {
-            $q->where('nombre', 'like', "%{$search}%")
-              ->orWhere('nit', 'like', "%{$search}%");
+            $q->where('nombre', 'ilike', "%{$search}%")
+              ->orWhere('nit', 'ilike', "%{$search}%");
         });
     }
 
@@ -68,16 +68,16 @@ class EmpresaController extends Controller
     {
         $data = $request->validated();
 
-        $data['nombre'] = Purifier::clean($data['nombre']);
-        $data['email_contacto'] = Purifier::clean($data['email_contacto']);
-        $data['direccion'] = Purifier::clean($data['direccion']);
-        $data['nombre_representante'] = Purifier::clean($data['nombre_representante']);
-        $data['admin_primer_nombre'] = Purifier::clean($data['admin_primer_nombre']);
-        $data['admin_segundo_nombre'] = isset($data['admin_segundo_nombre']) ? Purifier::clean($data['admin_segundo_nombre']) : null;
-        $data['admin_primer_apellido'] = Purifier::clean($data['admin_primer_apellido']);
-        $data['admin_segundo_apellido'] = isset($data['admin_segundo_apellido']) ? Purifier::clean($data['admin_segundo_apellido']) : null;
-        $data['admin_email'] = Purifier::clean($data['admin_email']);
-        $data['admin_direccion'] = Purifier::clean($data['admin_direccion']);
+        $data['nombre'] = strip_tags($data['nombre']);
+        $data['email_contacto'] = strip_tags($data['email_contacto']);
+        $data['direccion'] = strip_tags($data['direccion']);
+        $data['nombre_representante'] = strip_tags($data['nombre_representante']);
+        $data['admin_primer_nombre'] = strip_tags($data['admin_primer_nombre']);
+        $data['admin_segundo_nombre'] = isset($data['admin_segundo_nombre']) ? strip_tags($data['admin_segundo_nombre']) : null;
+        $data['admin_primer_apellido'] = strip_tags($data['admin_primer_apellido']);
+        $data['admin_segundo_apellido'] = isset($data['admin_segundo_apellido']) ? strip_tags($data['admin_segundo_apellido']) : null;
+        $data['admin_email'] = strip_tags($data['admin_email']);
+        $data['admin_direccion'] = strip_tags($data['admin_direccion']);
         
         if (!isset($data['id_estado'])) {
             $data['id_estado'] = 3;
@@ -89,15 +89,16 @@ class EmpresaController extends Controller
                 $empresa = Empresa::create($empresaData);
 
                 $usuario = \App\Models\Usuario::create([
-                    'documento' => Purifier::clean($data['admin_documento']),
+                    'documento' => $data['admin_documento'], // No strip_tags for numbers
                     'primer_nombre' => $data['admin_primer_nombre'],
                     'segundo_nombre' => $data['admin_segundo_nombre'],
                     'primer_apellido' => $data['admin_primer_apellido'],
                     'segundo_apellido' => $data['admin_segundo_apellido'],
-                    'email' => Purifier::clean($data['admin_email']),
-                    'telefono' => Purifier::clean($data['admin_telefono']),
-                    'direccion' => Purifier::clean($data['admin_direccion']),
+                    'email' => strip_tags($data['admin_email']),
+                    'telefono' => $data['admin_telefono'], // No strip_tags for numbers
+                    'direccion' => strip_tags($data['admin_direccion']),
                     'contrasena' => Hash::make($data['admin_password']),
+                    
                     'id_rol' => 2,
                     'id_estado' => 1,
                     'nit' => $empresa->nit,
@@ -117,6 +118,7 @@ class EmpresaController extends Controller
                 ], 201);
             });
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error registrando empresa: ' . $e->getMessage() . ' en ' . $e->getFile() . ':' . $e->getLine());
             return response()->json([
                 'message' => 'Error al crear la empresa',
                 'error' => $e->getMessage()
@@ -147,7 +149,7 @@ class EmpresaController extends Controller
 
     // 📌 ACTUALIZAR
 
-public function update(Request $request, $id)
+public function update(UpdateEmpresaRequest $request, $id)
 {
     $empresa = Empresa::findOrFail($id);
 
@@ -155,84 +157,39 @@ public function update(Request $request, $id)
                     ->where('id_rol', 2)
                     ->first();
 
-    $rules = [
-        'nit' => [
-            'required', 
-            'regex:/^[1-9][0-9]{8}-[0-9]$/', 
-            'max:12',
-            'min:11',
-            Rule::unique('empresa', 'nit')->ignore($empresa->nit, 'nit')
-        ],
-        'nombre'   => 'required|string|min:3|max:100|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s]+$/',
-        'email_contacto'  => [
-            'required', 
-            'email:rfc,dns', 
-            'max:100',   
-            Rule::unique('empresa', 'email_contacto')->ignore($empresa->nit, 'nit')
-        ],
-        'telefono' => 'required|regex:/^\d{10}$/',
-        'direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
-        'documento_representante' => 'required|regex:/^\d{6,10}$/',
-        'nombre_representante' => 'required|string|min:3|max:50|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/',
-        'telefono_representante' => 'required|regex:/^\d{10}$/',
-        'email_representante' => 'required|email:rfc,dns|unique:empresa,email_representante|max:100',
-        'id_estado' => 'required|integer|exists:estado,id_estado',
+    $data = $request->validated();
 
-        // Admin validation
-        'admin_primer_nombre' => 'required|string|max:40|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
-        'admin_segundo_nombre' => 'nullable|string|max:40|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/',
-        'admin_primer_apellido' => 'required|string|max:40|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/',
-        'admin_segundo_apellido' => 'nullable|string|max:40|min:3|regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/',
-        'admin_telefono' => 'required|regex:/^\d{10}$/',
-        'admin_direccion' => 'required|string|min:7|max:150|regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,]+$/',
-        'admin_password' => 'nullable|string|min:8|max:25|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-    ];
-
-    if ($adminIdx) {
-        $rules['admin_email'] = [
-            'required',
-            'email:rfc,dns',
-            'max:100',
-            Rule::unique('usuario', 'email')->ignore($adminIdx->documento, 'documento')
-        ];
-    } else {
-        $rules['admin_email'] = 'required|email:rfc,dns|unique:usuario,email|max:100';
-    }
-
-    $data = $request->validate($rules);
-
-    // Sanitizar entradas contra XSS
-    $data['nombre'] = Purifier::clean($data['nombre']);
-    $data['email_contacto'] = Purifier::clean($data['email_contacto']);
-    $data['telefono'] = Purifier::clean($data['telefono']);
-    $data['direccion'] = Purifier::clean($data['direccion']);
-    $data['nombre_representante'] = Purifier::clean($data['nombre_representante']);
-    $data['email_representante'] = Purifier::clean($data['email_representante']);
-    $data['admin_primer_nombre'] = Purifier::clean($data['admin_primer_nombre']);
-    if (isset($data['admin_segundo_nombre'])) $data['admin_segundo_nombre'] = Purifier::clean($data['admin_segundo_nombre']);
-    $data['admin_primer_apellido'] = Purifier::clean($data['admin_primer_apellido']);
-    if (isset($data['admin_segundo_apellido'])) $data['admin_segundo_apellido'] = Purifier::clean($data['admin_segundo_apellido']);
-    $data['admin_email'] = Purifier::clean($data['admin_email']);
-    $data['admin_telefono'] = Purifier::clean($data['admin_telefono']);
-    $data['admin_direccion'] = Purifier::clean($data['admin_direccion']);
+    // Sanitizar entradas contra XSS (usar strip_tags en vez de Purifier)
+    $data['nombre'] = strip_tags($data['nombre']);
+    $data['email_contacto'] = strip_tags($data['email_contacto']);
+    $data['telefono'] = strip_tags($data['telefono']);
+    $data['direccion'] = strip_tags($data['direccion']);
+    $data['nombre_representante'] = strip_tags($data['nombre_representante']);
+    $data['email_representante'] = strip_tags($data['email_representante']);
+    $data['admin_primer_nombre'] = strip_tags($data['admin_primer_nombre']);
+    if (isset($data['admin_segundo_nombre'])) $data['admin_segundo_nombre'] = strip_tags($data['admin_segundo_nombre']);
+    $data['admin_primer_apellido'] = strip_tags($data['admin_primer_apellido']);
+    if (isset($data['admin_segundo_apellido'])) $data['admin_segundo_apellido'] = strip_tags($data['admin_segundo_apellido']);
+    if (isset($data['admin_email'])) $data['admin_email'] = strip_tags($data['admin_email']);
+    if (isset($data['admin_telefono'])) $data['admin_telefono'] = strip_tags($data['admin_telefono']);
+    if (isset($data['admin_direccion'])) $data['admin_direccion'] = strip_tags($data['admin_direccion']);
 
     return DB::transaction(function () use ($empresa, $adminIdx, $data, $request) {
         
         // Actualizar empresa
-        $empresaData = collect($data)->except(['admin_primer_nombre', 'admin_segundo_nombre', 'admin_primer_apellido', 'admin_segundo_apellido', 'admin_email', 'admin_password'])->toArray();
+        $empresaData = collect($data)->except(['admin_primer_nombre', 'admin_segundo_nombre', 'admin_primer_apellido', 'admin_segundo_apellido', 'admin_email', 'admin_documento', 'admin_telefono', 'admin_direccion'])->toArray();
         $empresa->update($empresaData);
 
         // Actualizar usuario administrador
         if ($adminIdx) {
             $adminUpdateCalls = [];
-            if ($request->filled('admin_primer_nombre')) $adminUpdateCalls['primer_nombre'] = Purifier::clean($request->admin_primer_nombre);
-            if ($request->filled('admin_segundo_nombre')) $adminUpdateCalls['segundo_nombre'] = Purifier::clean($request->admin_segundo_nombre);
-            if ($request->filled('admin_primer_apellido')) $adminUpdateCalls['primer_apellido'] = Purifier::clean($request->admin_primer_apellido);
-            if ($request->filled('admin_segundo_apellido')) $adminUpdateCalls['segundo_apellido'] = Purifier::clean($request->admin_segundo_apellido);
-            if ($request->filled('admin_email')) $adminUpdateCalls['email'] = Purifier::clean($request->admin_email);
-            if ($request->filled('admin_password')) {
-                $adminUpdateCalls['contrasena'] = Hash::make($request->admin_password);
-            }
+            if ($request->filled('admin_primer_nombre')) $adminUpdateCalls['primer_nombre'] = strip_tags($request->admin_primer_nombre);
+            if ($request->filled('admin_segundo_nombre')) $adminUpdateCalls['segundo_nombre'] = strip_tags($request->admin_segundo_nombre);
+            if ($request->filled('admin_primer_apellido')) $adminUpdateCalls['primer_apellido'] = strip_tags($request->admin_primer_apellido);
+            if ($request->filled('admin_segundo_apellido')) $adminUpdateCalls['segundo_apellido'] = strip_tags($request->admin_segundo_apellido);
+            if ($request->filled('admin_email')) $adminUpdateCalls['email'] = strip_tags($request->admin_email);
+            if ($request->filled('admin_telefono')) $adminUpdateCalls['telefono'] = strip_tags($request->admin_telefono);
+            if ($request->filled('admin_direccion')) $adminUpdateCalls['direccion'] = strip_tags($request->admin_direccion);
 
             if (!empty($adminUpdateCalls)) {
                 $adminIdx->update($adminUpdateCalls);

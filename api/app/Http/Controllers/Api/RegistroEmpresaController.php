@@ -19,8 +19,13 @@ class RegistroEmpresaController extends Controller
     { 
         // Validamos todo lo que viene del formulario
         $request->validate([
-            'id_tipo_licencia' => 'required|exists :tipo_licencia,id_tipo_licencia',
+            'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
             'duracion_meses' => 'required|integer'
+        ], [
+            'id_tipo_licencia.required' => 'El tipo de licencia es obligatorio.',
+            'id_tipo_licencia.exists' => 'El tipo de licencia seleccionado no es válido.',
+            'duracion_meses.required' => 'La duración en meses es obligatoria.',
+            'duracion_meses.integer' => 'La duración en meses debe ser un número entero.'
         ]);
 
         try {
