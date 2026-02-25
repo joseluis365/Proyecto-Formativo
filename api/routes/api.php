@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\PrioridadController;
 use App\Http\Controllers\Api\TipoCitaController;
 use App\Http\Controllers\Api\CategoriaExamenController;
 use App\Http\Controllers\Api\CategoriaMedicamentoController;
+use App\Http\Controllers\Api\FarmaciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -157,6 +158,19 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/categorias-medicamento', 'store');
         Route::put('/categorias-medicamento/{id}', 'update');
         Route::delete('/categorias-medicamento/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | GESTIÓN — FARMACIAS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::controller(FarmaciaController::class)->group(function () {
+        Route::get('/farmacias', 'index');
+        Route::post('/farmacias', 'store');
+        Route::put('/farmacias/{nit}', 'update');
+        Route::delete('/farmacias/{nit}', 'destroy');
     });
 
     /*
