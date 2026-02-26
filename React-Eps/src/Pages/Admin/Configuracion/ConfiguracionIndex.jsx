@@ -54,6 +54,13 @@ export default function ConfiguracionIndex() {
             icon: "distance",
             to: "/configuracion/ubicaciones",
             color: "purple"
+        },
+        {
+            title: "Farmacias",
+            description: "Gestiona las farmacias asociadas a la empresa.",
+            icon: "local_pharmacy",
+            to: "/configuracion/farmacias",
+            color: "blue"
         }
     ];
 

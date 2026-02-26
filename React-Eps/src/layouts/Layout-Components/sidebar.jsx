@@ -55,7 +55,6 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
                 <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
               </SidebarDropdown>
-              <SidebarItem to="/farmacia" icon="pill" label="Farmacia" />
               <SidebarItem to="/citas" icon="calendar_month" label="Citas" />
               <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
               <SidebarDropdown icon="settings" label="Gestión Interna" basePath="/configuracion">
@@ -64,6 +63,9 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/configuracion/categorias-examen" label="Categorías de Examen" />
                 <SidebarSubItem to="/configuracion/categorias-medicamento" label="Categorías de Medicamento" />
                 <SidebarSubItem to="/configuracion/especialidades" label="Especialidades" />
+                <SidebarSubItem to="/configuracion/farmacias" label="Farmacias" />
+                <SidebarSubItem to="/configuracion/departamentos" label="Departamentos" />
+                <SidebarSubItem to="/configuracion/ciudades" label="Ciudades" />
               </SidebarDropdown>
             </div>
           </nav>

@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\TipoCitaController;
 use App\Http\Controllers\Api\CategoriaExamenController;
 use App\Http\Controllers\Api\CategoriaMedicamentoController;
 use App\Http\Controllers\Api\FarmaciaController;
+use App\Http\Controllers\Api\DepartamentoController;
+use App\Http\Controllers\Api\CiudadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -184,6 +186,32 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/configuracion/especialidades', 'store');
         Route::put('/configuracion/especialidades/{id}', 'update');
         Route::delete('/configuracion/especialidades/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — DEPARTAMENTOS
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(DepartamentoController::class)->group(function () {
+        Route::get('/configuracion/departamentos', 'index');
+        Route::post('/departamentos', 'store');
+        Route::put('/departamentos/{codigo_DANE}', 'update');
+        Route::delete('/departamentos/{codigo_DANE}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — CIUDADES
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(CiudadController::class)->group(function () {
+        Route::get('/configuracion/ciudades', 'index');
+        Route::post('/ciudades', 'store');
+        Route::put('/ciudades/{codigo_postal}', 'update');
+        Route::delete('/ciudades/{codigo_postal}', 'destroy');
     });
 
 });

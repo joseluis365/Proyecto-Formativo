@@ -39,6 +39,9 @@ import CategoriasExamen from "./Pages/Admin/Configuracion/CategoriasExamen"
 import CategoriasMedicamento from "./Pages/Admin/Configuracion/CategoriasMedicamento"
 import Especialidades from "./Pages/Admin/Configuracion/Especialidades"
 import Ubicaciones from "./Pages/Admin/Configuracion/Ubicaciones"
+import Farmacias from "./Pages/Admin/Configuracion/Farmacias"
+import Departamentos from "./Pages/Admin/Configuracion/Departamentos"
+import Ciudades from "./Pages/Admin/Configuracion/Ciudades"
 
 export default function App() {
   return (
@@ -89,6 +92,9 @@ export default function App() {
           <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
           <Route path="especialidades" element={<Especialidades />} />
           <Route path="ubicaciones" element={<Ubicaciones />} />
+          <Route path="farmacias" element={<Farmacias />} />
+          <Route path="departamentos" element={<Departamentos />} />
+          <Route path="ciudades" element={<Ciudades />} />
         </Route>
       </Route>
     </Routes>
