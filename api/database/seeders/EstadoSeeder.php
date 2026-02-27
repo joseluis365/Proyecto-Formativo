@@ -23,5 +23,13 @@ class EstadoSeeder extends Seeder
                 $estado
             );
         }
+
+        DB::statement("
+            SELECT setval(
+                pg_get_serial_sequence('estado', 'id_estado'),
+                COALESCE((SELECT MAX(id_estado) FROM estado), 1),
+                true
+            );
+        ");
     }
 }

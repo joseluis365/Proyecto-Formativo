@@ -9,8 +9,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolSeeder::class,              // 👈 PRIMERO
             EstadoSeeder::class,
+            RolSeeder::class,
             EspecialidadSeeder::class,
             DepartamentoSeeder::class,
             CiudadSeeder::class,
@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             EmpresaSeeder::class,
             EmpresaLicenciaSeeder::class,
             AdminUsuarioSeeder::class,
-            SuperadminSeeder::class,       // 👈 SIEMPRE AL FINAL
+            SuperadminSeeder::class,
         ]);
     }
 }

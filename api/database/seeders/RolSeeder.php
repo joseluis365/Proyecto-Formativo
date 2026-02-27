@@ -23,5 +23,13 @@ class RolSeeder extends Seeder
                 $rol
             );
         }
+
+        DB::statement("
+            SELECT setval(
+                pg_get_serial_sequence('rol', 'id_rol'),
+                COALESCE((SELECT MAX(id_rol) FROM rol), 1),
+                true
+            );
+        ");
     }
 }

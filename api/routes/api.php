@@ -22,6 +22,9 @@ use App\Http\Controllers\Api\CategoriaMedicamentoController;
 use App\Http\Controllers\Api\FarmaciaController;
 use App\Http\Controllers\Api\DepartamentoController;
 use App\Http\Controllers\Api\CiudadController;
+use App\Http\Controllers\Api\RolController;
+use App\Http\Controllers\Api\EstadoController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -212,6 +215,42 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/ciudades', 'store');
         Route::put('/ciudades/{codigo_postal}', 'update');
         Route::delete('/ciudades/{codigo_postal}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — ROLES
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(RolController::class)->group(function () {
+        Route::get('/configuracion/roles', 'index');
+        Route::post('/roles', 'store');
+        Route::put('/roles/{id_rol}', 'update');
+        Route::delete('/roles/{id_rol}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — ESTADOS
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(EstadoController::class)->group(function () {
+        Route::get('/configuracion/estados', 'index');
+        Route::post('/estados', 'store');
+        Route::put('/estados/{id_estado}', 'update');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | REPORTES DINÁMICOS
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::prefix('reportes')->group(function () {
+        Route::get('{entity}', [ReportController::class, 'index']);
+        Route::get('{entity}/export', [ReportController::class, 'export']);
     });
 
 });
