@@ -6,6 +6,7 @@ import Medicos from "./Pages/Admin/Medicos"
 import Pacientes from "./Pages/Admin/Pacientes"
 import AgendaMedico from "./Pages/Admin/AgendaMedico"
 import InfoPaciente from "./Pages/Admin/InfoPaciente"
+import Reportes from "./Pages/Admin/Reportes/Reportes"
 import IndexLayout from "./layouts/IndexLayout"
 import Index from "./Pages/Inicio/Index"
 import Contactenos from "./Pages/Inicio/Contactenos"
@@ -42,6 +43,8 @@ import Ubicaciones from "./Pages/Admin/Configuracion/Ubicaciones"
 import Farmacias from "./Pages/Admin/Configuracion/Farmacias"
 import Departamentos from "./Pages/Admin/Configuracion/Departamentos"
 import Ciudades from "./Pages/Admin/Configuracion/Ciudades"
+import Roles from "./Pages/Admin/Configuracion/Roles"
+import Estados from "./Pages/Admin/Configuracion/Estados"
 
 export default function App() {
   return (
@@ -83,6 +86,7 @@ export default function App() {
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
         <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
         <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
+        <Route path="/reportes" element={<Reportes />} />
 
         {/* Configuración */}
         <Route path="/configuracion" element={<ConfiguracionIndex />}>
@@ -95,6 +99,8 @@ export default function App() {
           <Route path="farmacias" element={<Farmacias />} />
           <Route path="departamentos" element={<Departamentos />} />
           <Route path="ciudades" element={<Ciudades />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="estados" element={<Estados />} />
         </Route>
       </Route>
     </Routes>

@@ -1,9 +1,9 @@
 Stack Tecnológico
-Backend
+🔹 Backend
 
 Laravel 12
 
-PostgreSQL (actualmente dependiente de ILIKE)
+PostgreSQL
 
 Laravel Sanctum
 
@@ -11,11 +11,15 @@ Arquitectura moderna (bootstrap/app.php)
 
 Middleware personalizado licencia.activa
 
-API Resources (uso parcial, en proceso de estandarización)
+API Resources (uso mayoritario, en proceso de estandarización total)
 
-FormRequest (uso mayoritario, pendiente unificación total)
+FormRequest (uso casi total, estructura consolidada)
 
-Frontend
+Servicios desacoplados (inicio de arquitectura ReportService)
+
+Configuración extensible vía config/*.php (nuevo patrón para reportes)
+
+🔹 Frontend
 
 React + React Router v6
 
@@ -27,26 +31,42 @@ axios.js para Admin
 
 superadminAxios.js para SuperAdmin
 
-Hooks reutilizables (useTableData, hooks de catálogos)
+Hooks reutilizables (useTableData, hooks por entidad)
 
 framer-motion para animaciones UI
 
-Arquitectura General
-Backend
+Módulo Gestión Interna consolidado
+
+Módulo Reportes en arquitectura profesional escalable
+
+🏗 Arquitectura General
+🔹 Backend
 
 Separación clara MVC
 
 Soft delete lógico mediante id_estado
 
-Seeders estructurados y portables
+Seeders estructurados, idempotentes y portables
+
+Secuencias PostgreSQL sincronizadas dentro de Seeders (no en migraciones)
 
 Middleware de licencia aplicado a rutas protegidas
 
-Contratos JSON parcialmente estandarizados con Resources
+Contratos JSON estandarizados con API Resources
 
-Riesgo actual: dependencia a PostgreSQL por uso de ILIKE
+Inicio de arquitectura desacoplada para reportes:
 
-Frontend
+config/reportables.php
+
+ReportService
+
+ReportController
+
+⚠ Riesgo actual:
+
+Dependencia a PostgreSQL por uso de ILIKE (pendiente abstracción con Trait HasSearch)
+
+🔹 Frontend
 
 Layouts jerárquicos:
 
@@ -56,14 +76,44 @@ SuperAdminLayout
 
 IndexLayout
 
-Módulo Gestión Interna implementado con rutas anidadas reales
+Módulos implementados:
 
-Hook centralizado useTableData para paginación y filtros
+Gestión Interna (CRUD completo):
 
-Duplicación detectada en modales CRUD (pendiente unificación futura)
+Prioridades
 
-Autenticación
-Usuario normal
+Tipos de Cita
+
+Categorías de Examen
+
+Categorías de Medicamento
+
+Especialidades
+
+Farmacias
+
+Departamentos
+
+Ciudades
+
+Roles
+
+Estados
+
+Hook centralizado:
+
+useTableData para paginación, filtros y búsqueda
+
+Deuda técnica controlada:
+
+Duplicación parcial en modales CRUD
+
+Algunos hooks aún no totalmente unificados
+
+Refactorización futura planificada, no urgente
+
+🔐 Autenticación
+Usuario Normal
 
 POST /api/login
 
@@ -73,7 +123,7 @@ Campo: contrasena (mutator automático hash)
 
 Sesión: localStorage
 
-Protegido con auth:sanctum + licencia.activa
+Middleware: auth:sanctum + licencia.activa
 
 SuperAdmin
 
@@ -83,19 +133,21 @@ Tabla: superadmin
 
 Sesión: sessionStorage
 
-Flujo independiente del Admin normal
+Flujo independiente
 
-No comparte axios ni token
+Axios independiente
 
-Reglas Arquitectónicas Activas
+No comparte token con Admin normal
+
+📏 Reglas Arquitectónicas Activas
 
 NO mezclar sesiones Admin y SuperAdmin.
 
-NO modificar UserFormConfig.js sin autorización explícita.
+NO modificar UserFormConfig.js sin autorización.
 
 NO cambiar estructura de payload.
 
-NO asumir campos que no existan en BD.
+NO asumir campos inexistentes.
 
 NO cambiar nombres de columnas.
 
@@ -105,53 +157,67 @@ Filtrar registros activos con id_estado = 1.
 
 No introducir lógica de negocio en controladores.
 
-Mantener compatibilidad con migrate:fresh --seed.
+Mantener compatibilidad total con migrate:fresh --seed.
 
-Estado Actual del Backend
-Fortalezas
+No usar migraciones para sincronizar secuencias.
 
-Middleware de licencia correctamente implementado.
+Las secuencias se sincronizan dentro de Seeders.
 
-Seeders idempotentes y portables.
+🧱 Estado Actual del Backend
+✅ Fortalezas
+
+Middleware de licencia estable.
+
+Seeders completamente portables.
+
+Secuencias PostgreSQL sincronizadas correctamente.
 
 Uso mayoritario de FormRequest.
 
-Arquitectura estable y funcional.
+Soft delete homogéneo por id_estado.
 
-Riesgos Detectados
+CRUD estandarizados.
+
+Arquitectura lista para escalar.
+
+Inicio de sistema profesional de reportes configurable.
+
+⚠ Riesgos Detectados
 
 Uso de ILIKE (dependencia PostgreSQL).
 
-Hardcoding de estados (id_estado = 1).
+Hardcoding parcial de id_estado = 1.
 
-Validaciones fragmentadas en algunos update.
+Algunos endpoints aún no usan Resource consistentemente.
 
-Uso inconsistente de API Resources en ciertos endpoints.
+Búsquedas no abstractas (pendiente Trait HasSearch).
 
-Estado Actual del Frontend
-Fortalezas
+🖥 Estado Actual del Frontend
+✅ Fortalezas
 
-Rutas anidadas correctamente implementadas.
+Rutas anidadas funcionales.
 
-Layout persistente funcional.
+Layout persistente estable.
 
 Separación modular clara.
 
-Hook useTableData centralizado.
+CRUD consistentes.
 
-Deuda Técnica Detectada
+Módulo Gestión Interna consolidado.
 
-Duplicación de modales CRUD.
+Arquitectura preparada para módulo Reportes profesional.
 
-Inconsistencias en uso de hooks en algunos catálogos.
+⚠ Deuda Técnica
 
-Duplicación parcial de instancias axios.
+Duplicación en modales CRUD.
 
-Componentes atómicos no completamente unificados.
+Unificación futura pendiente.
 
-Seeders Portables
+Algunas inconsistencias menores en hooks de catálogos.
 
-El sistema debe funcionar con:
+🌱 Seeders Portables
+
+El sistema debe funcionar correctamente con:
 
 php artisan migrate:fresh --seed
 
@@ -163,37 +229,57 @@ Licencia activa con fechas válidas
 
 Usuario admin activo
 
-Estados y roles correctamente creados
+Estados base creados
 
-Objetivo Arquitectónico Actual
+Roles base creados
 
-Consolidación y Profesionalización del Sistema:
+Secuencias sincronizadas
 
-Frontend
+Sin errores 23505
 
-Unificación futura de modales CRUD.
+Sin errores de FK
 
-Estandarización completa de catálogos.
+🎯 Nuevo Objetivo Arquitectónico (2026)
+Consolidación y Profesionalización
+🔹 Backend
 
-Eliminación progresiva de duplicación.
+Implementar Trait HasSearch para eliminar dependencia ILIKE
 
-Mantener estabilidad sin romper formularios existentes.
+Estandarizar 100% API Resources
 
-Backend
+Eliminar validaciones manuales en controllers
 
-Eliminar dependencia ILIKE (hacer búsquedas agnósticas).
+Migrar hardcodes a constantes / Enums
 
-Estandarizar uso de API Resources en todos los controladores.
+Implementar módulo Reportes configurable (Opción C)
 
-Eliminar validaciones manuales en controllers.
+config/reportables.php
 
-Migrar hardcodes a constantes o Enums.
+ReportService
 
-Mantener portabilidad total.
+Exportación PDF y Excel
 
-Principio Rector del Proyecto
+Mantener portabilidad total
+
+🔹 Frontend
+
+Implementar módulo Reportes profesional
+
+Filtros dinámicos
+
+Exportación PDF y Excel
+
+Mantener coherencia visual
+
+No romper formularios existentes
+
+Refactorización progresiva controlada
+
+🏛 Principio Rector del Proyecto
 
 Primero estabilidad.
 Luego estandarización.
 Luego optimización.
 Nunca refactorizar sin diagnóstico completo.
+No parches temporales.
+Arquitectura limpia antes que rapidez.

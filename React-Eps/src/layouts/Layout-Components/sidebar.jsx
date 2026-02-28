@@ -66,6 +66,8 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/configuracion/farmacias" label="Farmacias" />
                 <SidebarSubItem to="/configuracion/departamentos" label="Departamentos" />
                 <SidebarSubItem to="/configuracion/ciudades" label="Ciudades" />
+                <SidebarSubItem to="/configuracion/roles" label="Roles" />
+                <SidebarSubItem to="/configuracion/estados" label="Estados" />
               </SidebarDropdown>
             </div>
           </nav>
