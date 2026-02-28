@@ -52,8 +52,8 @@ export default function SuperAdminLicencias() {
     <>
       <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
         <PrincipalText
-          icon="badge"
-          text="Licencias Registradas"
+          icon="license"
+          text="Planes Registrados"
           number={totalLicenses}
         />
         <button
@@ -75,7 +75,7 @@ export default function SuperAdminLicencias() {
             exit={{ opacity: 0 }}
             className="flex flex-col justify-center items-center py-10"
           >
-            <p className="text-lg font-semibold mb-2">Cargando Planes</p>
+            <p className="text-lg font-semibold mb-2 dark:text-white">Cargando Planes</p>
             <MotionSpinner />
           </motion.div>
         ) : error ? (
@@ -92,7 +92,7 @@ export default function SuperAdminLicencias() {
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-6 text-gray-500"
+            className="text-center py-6 text-gray-500 dark:text-gray-200"
           >
             No se encontraron Planes
           </motion.div>

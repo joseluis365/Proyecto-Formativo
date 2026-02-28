@@ -29,9 +29,19 @@ import SuperAdminForgotPassword from "./Pages/SuperAdmin/SuperAdminForgotPasswor
 import SuperAdminRecoveryCode from "./Pages/SuperAdmin/SuperAdminRecoveryCode"
 import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
 
+import { useEffect } from "react";
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
 
 export default function App() {
+  // Global Dark Mode Initialization
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
   return (
     <Routes>
       <Route path="/SuperAdmin-Login" element={<SuperAdminLogin />} />

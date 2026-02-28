@@ -69,8 +69,8 @@ Table tipo_licencia {
 
 Table usuario {
   documento bigint [primary key]
-  nombre varchar
-  apellido varchar
+  primer_nombre varchar
+  primer_apellido varchar
   email varchar
   telefono varchar
   direccion varchar
@@ -85,6 +85,8 @@ Table usuario {
   created_at timestamp
   updated_at timestamp
   id_especialidad integer
+  segundo_nombre varchar
+  segundo_apellido varchar
 }
 
 // Relaciones

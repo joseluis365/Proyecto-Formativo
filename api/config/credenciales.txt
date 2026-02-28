@@ -1,2 +1,5 @@
 correo: joseluis1409rodriguez@gmail.com
-contraseña: adsoSENA123$
+contraseña: adsoSENA123.
+
+En caso de necesitar un numero de tarjeta de Credito valido
+Numero: 4532015112830366

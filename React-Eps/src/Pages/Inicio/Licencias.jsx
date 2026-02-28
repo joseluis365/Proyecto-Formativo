@@ -32,14 +32,14 @@ export default function Licencias() {
   }, []);
 
   return (
-    <section className="bg-gray-50 py-16 px-4">
+    <section className="bg-gray-50 dark:bg-gray-900 py-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Título */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             Planes
           </h2>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Elige el plan que mejor se adapte a tu empresa
           </p>
         </div>
@@ -49,11 +49,11 @@ export default function Licencias() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative bg-white rounded-2xl border shadow-sm p-6 flex flex-col justify-between
+              className={`relative bg-white dark:bg-gray-600 rounded-2xl border shadow-sm p-6 flex flex-col justify-between
                 ${
                   plan.popular
                     ? "border-blue-600 shadow-md"
-                    : "border-gray-200"
+                    : "border-gray-200 dark:border-gray-400"
                 }
               `}
             >
@@ -67,19 +67,19 @@ export default function Licencias() {
               {/* Contenido */}
               <div className="space-y-4">
                 {/* Duración */}
-                <h3 className="text-xl font-bold text-gray-900 text-center">
-                  {plan.duracion}
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center">
+                  {plan.tipo}
                 </h3>
 
                 {/* Descripción */}
-                <p className="text-sm text-gray-600 text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
                   {plan.descripcion}
                 </p>
 
                 {/* Precio */}
                 <div className="text-center mt-6">
-                  <p className="text-sm text-gray-500">Precio</p>
-                  <p className="text-2xl font-bold text-blue-600">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Precio</p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                     {plan.precio}
                   </p>
                 </div>
@@ -89,18 +89,18 @@ export default function Licencias() {
               <div className="mt-8 space-y-4">
                 <button
                   onClick={() => navigate("/pago", { state: { plan: plan } })} // Aquí conectarás al Checkout
-                  className={`w-full py-3 rounded-xl font-semibold transition
+                  className={`w-full py-3 rounded-xl cursor-pointer font-semibold transition
                     ${plan.popular 
                       ? "bg-blue-600 hover:bg-blue-700 text-white" 
-                      : "border border-blue-600 text-blue-600 hover:bg-blue-50"}
+                      : "border border-blue-600 dark:bg-blue-600/50 text-blue-600 dark:text-gray-200 hover:bg-blue-50 dark:hover:text-white dark:hover:bg-primary/70"}
                   `}
                 >
                   Seleccionar
                 </button>
 
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                   Utilizada por{" "}
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-gray-700 dark:text-gray-400">
                     {plan.companies} empresas
                   </span>
                 </p>

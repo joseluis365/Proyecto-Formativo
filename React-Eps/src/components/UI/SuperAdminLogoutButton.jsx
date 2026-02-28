@@ -33,7 +33,7 @@ const SuperAdminLogoutButton = () => {
             title="Cerrar Sesión SuperAdmin"
         >
             <span className="material-symbols-outlined text-3xl">
-                person
+                logout
             </span>
         </button>
     );

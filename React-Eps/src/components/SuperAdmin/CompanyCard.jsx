@@ -9,11 +9,11 @@ export default function CompanyCard({
   onActive
 }) {
   const LICENSE_STATUS = {
-    1: { text: "Licencia activa", classes: "bg-green-100 text-green-700" },
-    4: { text: "Expira Pronto", classes: "bg-yellow-100 text-yellow-700" },
-    5: { text: "Licencia expirada", classes: "bg-red-100 text-red-700" },
-    3: { text: "Sin Plan", classes: "bg-gray-100 text-gray-700" },
-    6: { text: "Licencia Bloqueada", classes: "bg-gray-100 text-gray-700" },
+    1: { text: "Licencia activa", classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+    4: { text: "Expira Pronto", classes: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
+    5: { text: "Licencia expirada", classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+    3: { text: "Sin Plan", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400" },
+    6: { text: "Licencia Bloqueada", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400" },
   };
 
   // Aseguramos que sea un número y que si no existe use el 3

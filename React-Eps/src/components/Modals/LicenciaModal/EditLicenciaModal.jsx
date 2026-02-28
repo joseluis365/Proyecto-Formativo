@@ -118,7 +118,7 @@ export default function EditLicenciaModal({
 
     return (
         <BaseModal>
-            <ModalHeader icon="edit" title="EDITAR LICENCIA" onClose={onClose} />
+            <ModalHeader icon="edit" title="EDITAR PLAN" onClose={onClose} />
             <div className="p-6 flex-1 overflow-y-auto">
                 <Form
                     values={values}

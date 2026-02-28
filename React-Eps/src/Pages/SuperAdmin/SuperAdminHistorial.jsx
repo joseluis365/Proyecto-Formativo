@@ -61,7 +61,7 @@ export default function SuperAdminHistorial() {
                         text="Historial de Vinculaciones"
                         number={history.length}
                     />
-                    <p className="text-gray-500 dark:text-gray-400 mt-2 ml-1 text-sm">
+                    <p className="text-gray-500 dark:text-gray-200 mt-2 ml-1 text-sm">
                         Registro completo de todas las licencias asignadas a empresas.
                     </p>
                 </div>
@@ -83,7 +83,7 @@ export default function SuperAdminHistorial() {
                         exit={{ opacity: 0 }}
                         className="flex flex-col justify-center items-center py-10"
                     >
-                        <p className="text-lg font-semibold mb-2">Cargando historial</p>
+                        <p className="text-lg font-semibold mb-2 dark:text-white">Cargando historial</p>
                         <MotionSpinner />
                     </motion.div>
                 ) : error ? (
@@ -104,15 +104,15 @@ export default function SuperAdminHistorial() {
                     </motion.div>
                 )}
                 {!loading && !error && history.length === 0 && (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-6 text-gray-500"
-          >
-            El historial está vacío
-          </motion.div>
-        )}
+                    <motion.div
+                        key="empty"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-6 text-gray-500 dark:text-gray-200"
+                    >
+                        El historial está vacío
+                    </motion.div>
+                )}
             </AnimatePresence>
 
             <AnimatePresence>

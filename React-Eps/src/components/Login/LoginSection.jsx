@@ -1,11 +1,11 @@
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import Formbuilder from "../UI/Formbuilder";
+import FormWithIcons from "../UI/FormWithIcons";
 import { loginForm } from "../../data/InicioForms";
 import BlueButton from "../UI/BlueButton";
 import CheckBox from "../UI/CheckBox";
-import api from "../../Api/axios"; 
-import Swal from 'sweetalert2'; 
+import api from "../../Api/axios";
+import Swal from 'sweetalert2';
 import { useState } from "react";
 
 export default function LoginSection() {
@@ -35,7 +35,7 @@ export default function LoginSection() {
                 showConfirmButton: false
             });
 
-            if (user.id_rol === 1) { 
+            if (user.id_rol === 1) {
                 navigate('/SuperAdmin-Dashboard');
             } else {
                 navigate('/dashboard');
@@ -64,13 +64,13 @@ export default function LoginSection() {
 
     return (
         <Layout title="Iniciar sesión" description="Ingrese sus credenciales para acceder a su cuenta.">
-            <Formbuilder config={loginForm} onSubmit={handleSubmit} errors={errors}>
+            <FormWithIcons config={loginForm} onSubmit={handleSubmit} errors={errors}>
                 <div className="flex justify-between items-center">
                     <CheckBox label="Recordar sesión" id="remember" name="remember" />
                     <Link to="/confirm-email" className="text-primary text-xs font-bold hover:underline">¿Olvidaste tu contraseña?</Link>
                 </div>
                 <BlueButton text={loginForm.buttonText} icon={loginForm.buttonIcon} type="submit" loading={false} />
-            </Formbuilder>
+            </FormWithIcons>
             <div className="pt-6 border-t border-[#e7ebf3] dark:border-white/5 flex flex-col gap-4">
                 <div className="flex items-start gap-3 p-3 bg-background-light dark:bg-white/5 rounded-lg border border-[#cfd7e7] dark:border-white/10">
                     <span className="material-symbols-outlined text-primary text-xl mt-0.5">verified_user</span>

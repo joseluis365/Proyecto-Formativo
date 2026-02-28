@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Formbuilder from "../../components/UI/Formbuilder";
+import FormWithIcons from "../../components/UI/FormWithIcons";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminLogin } from "../../data/SuperAdminForms";
 import Swal from 'sweetalert2';
@@ -10,8 +10,21 @@ export default function SuperAdminLogin() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // Limpiar sesión al cargar el login
+  // Limpiar sesión al cargar el login (Incluso si viene de atrás)
   useEffect(() => {
+    const token = sessionStorage.getItem("superadmin_token");
+    if (token) {
+      // Ejecutamos logout en backend enviando el token
+      fetch("http://127.0.0.1:8000/api/superadmin/logout", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
+      }).catch(() => console.log("Logout backend fallido o sesión ya muerta"));
+    }
+
     sessionStorage.removeItem("superadmin_token");
     sessionStorage.removeItem("superadmin_user");
     sessionStorage.removeItem("superadmin_email");
@@ -27,32 +40,32 @@ export default function SuperAdminLogin() {
   const [loading, setLoading] = useState(false);
 
   /**
-   * 🔹 Captura cambios del Formbuilder
+   * 🔹 Captura cambios del FormWithIcons
    */
   const handleChange = (field, value) => {
-  const safeField = field ? String(field).toLowerCase() : "";
-  const safeValue = value ?? "";
+    const safeField = field ? String(field).toLowerCase() : "";
+    const safeValue = value ?? "";
 
-  let fieldName = null;
+    let fieldName = null;
 
-  if (safeField === "correo" || safeField === "email") {
-    fieldName = "email";
-    setFormData((prev) => ({ ...prev, email: safeValue }));
-  }
+    if (safeField === "correo" || safeField === "email") {
+      fieldName = "email";
+      setFormData((prev) => ({ ...prev, email: safeValue }));
+    }
 
-  if (safeField === "clave" || safeField === "password") {
-    fieldName = "password";
-    setFormData((prev) => ({ ...prev, password: safeValue }));
-  }
+    if (safeField === "clave" || safeField === "password") {
+      fieldName = "password";
+      setFormData((prev) => ({ ...prev, password: safeValue }));
+    }
 
-  // 🔥 Limpiar error del campo cuando el usuario escribe
-  if (fieldName) {
-    setErrors((prev) => ({
-      ...prev,
-      [fieldName]: undefined,
-    }));
-  }
-};
+    // 🔥 Limpiar error del campo cuando el usuario escribe
+    if (fieldName) {
+      setErrors((prev) => ({
+        ...prev,
+        [fieldName]: undefined,
+      }));
+    }
+  };
 
   /**
    * 🔹 Login REAL (solo se ejecuta una vez)
@@ -94,8 +107,7 @@ export default function SuperAdminLogin() {
           icon: 'error',
           title: 'Error',
           text: result.message || "Error Inesperado",
-          showConfirmButton: false,
-          timer: 1000,
+          showConfirmButton: true,
         });
         setLoading(false); // 🔓 Libera si falla
         return;
@@ -118,7 +130,7 @@ export default function SuperAdminLogin() {
         </h1>
 
         {/* ✅ FORM CORRECTO */}
-        <Formbuilder
+        <FormWithIcons
           config={superAdminLogin}
           onChange={handleChange}
           onSubmit={(e) => {
@@ -134,7 +146,7 @@ export default function SuperAdminLogin() {
             type="submit"
             disabled={loading}
           />
-        </Formbuilder>
+        </FormWithIcons>
 
         <div className="mt-4 text-center">
           <Link to="/SuperAdmin-ForgotPassword" className="text-blue-600 hover:underline text-sm font-semibold">

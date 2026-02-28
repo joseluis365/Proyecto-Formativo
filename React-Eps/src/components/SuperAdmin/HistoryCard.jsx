@@ -4,12 +4,12 @@ export default function HistoryCard({ history, onClick }) {
     const { empresa, tipo_licencia, fecha_inicio, fecha_fin, id_estado } = history;
 
     const STATUS_MAP = {
-        1: { text: "Activa", classes: "bg-green-100 text-green-700" },
-        2: { text: "Inactiva", classes: "bg-red-100 text-red-700" },
-        3: { text: "Sin Licencia", classes: "bg-gray-100 text-gray-700" },
-        4: { text: "Por Vencer", classes: "bg-yellow-100 text-yellow-700" },
-        5: { text: "Vencida", classes: "bg-orange-100 text-orange-700" },
-        6: { text: "Pendiente", classes: "bg-blue-100 text-blue-700" },
+        1: { text: "Activa", classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+        2: { text: "Inactiva", classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+        3: { text: "Sin Licencia", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400" },
+        4: { text: "Por Vencer", classes: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
+        5: { text: "Vencida", classes: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
+        6: { text: "Pendiente", classes: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
     };
 
     const statusInfo = STATUS_MAP[id_estado] || { text: "Desconocido", classes: "bg-gray-100 text-gray-500" };

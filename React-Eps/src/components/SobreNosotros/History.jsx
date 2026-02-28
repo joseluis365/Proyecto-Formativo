@@ -2,7 +2,7 @@ export default function History({title, description, image}) {
     return (
         <section className="relative px-6 md:px-10 lg:px-40 pb-12 pt-0 -mt-12 z-30">
             <div className="max-w-[1200px] mx-auto">
-                <div className="bg-white dark:bg-background-dark rounded-3xl shadow-xl p-8 md:p-10 border border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div className="bg-white dark:bg-gray-700 rounded-3xl shadow-xl p-8 md:p-10 border border-slate-100 dark:border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
                     <div className="flex flex-col gap-4">
                         <span className="text-primary font-bold text-xs uppercase tracking-widest">Nuestra Historia</span>
                         <h2 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white leading-tight">{title}</h2>

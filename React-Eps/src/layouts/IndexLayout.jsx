@@ -6,7 +6,7 @@ export default function IndexLayout() {
     return (
         <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden">
             <IndexHeader/>
-            <main className="flex-1">
+            <main className="flex-1 dark:bg-gray-900">
                 <Outlet/>
             </main>
             <IndexFooter/>

@@ -20,7 +20,7 @@ export default function BlueButton({
         text-white cursor-pointer rounded-lg
         px-6 py-3 font-bold text-sm
         transition-all flex items-center justify-center gap-2
-        shadow-lg shadow-primary/20
+        shadow-lg shadow-primary/ w-full
         ${loading || disabled ? "opacity-70 cursor-not-allowed" : ""}
       `}
     >

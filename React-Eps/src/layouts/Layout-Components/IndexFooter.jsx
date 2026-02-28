@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 export default function IndexFooter() {
     return (
-        <footer className="bg-slate-50 dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 px-6 md:px-10 lg:px-40 py-10">
+        <footer className="bg-slate-50 dark:bg-gray-900/90 border-t border-slate-200 dark:border-slate-800 px-6 md:px-10 lg:px-40 py-10">
             <div className="max-w-[1280px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-8">
                 <div className="flex flex-col gap-4 col-span-2 md:col-span-2 pr-0 md:pr-10">
                     <div className="flex items-center gap-2 text-primary">

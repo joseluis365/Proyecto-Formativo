@@ -3,7 +3,7 @@ import Reason from "./Reason";
 export default function SecondSection({reasons}) {
     
     return (
-        <section className="px-6 md:px-10 lg:px-40 py-10 bg-slate-50 dark:bg-slate-900/40 -mt-8 relative z-20">
+        <section className="px-6 md:px-10 lg:px-40 py-10 bg-slate-50 dark:bg-slate-900 -mt-8 relative z-20">
             <div className="max-w-[1280px] mx-auto">
                 <div className="flex flex-col gap-2 text-center mb-8">
                     <h2 className="text-primary font-bold text-[10px] uppercase tracking-[0.2em]">Nuestras Ventajas</h2>

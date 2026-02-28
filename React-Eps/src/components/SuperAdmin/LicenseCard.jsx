@@ -19,11 +19,11 @@ export default function LicensePlanCard({
   const STATUS_MAP = {
     1: {
       text: "Activa",
-      classes: "bg-green-100 text-green-700",
+      classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
     },
     2: {
       text: "Inactiva",
-      classes: "bg-red-100 text-red-700",
+      classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
     },
   };
 
@@ -31,18 +31,18 @@ export default function LicensePlanCard({
 
   const handleEdit = () => {
     const parseCurrencyToNumber = (currencyString) => {
-    if (!currencyString) return 0;
-    
-    // 1. Eliminar "COP" y cualquier espacio
-    // 2. Eliminar los puntos de miles (separadores de miles en ES-CO)
-    const cleanNumber = currencyString
-      .replace(/COP/g, "")
-      .replace(/\./g, "")
-      .replace(/\s/g, "")
-      .trim();
-      
-    return Number(cleanNumber);
-  };
+      if (!currencyString) return 0;
+
+      // 1. Eliminar "COP" y cualquier espacio
+      // 2. Eliminar los puntos de miles (separadores de miles en ES-CO)
+      const cleanNumber = currencyString
+        .replace(/COP/g, "")
+        .replace(/\./g, "")
+        .replace(/\s/g, "")
+        .trim();
+
+      return Number(cleanNumber);
+    };
 
     const mappedData = {
       id: id,
@@ -62,7 +62,7 @@ export default function LicensePlanCard({
     setIsEditModalOpen(false);
     setSelectedPlan(null);
   };
-  
+
 
 
 

@@ -2,7 +2,7 @@ import ImageItem from "./ImageItem";
 
 export default function Compromise({image, image2}) {
     return (
-        <section className="px-6 md:px-10 lg:px-40 py-12 bg-white dark:bg-background-dark">
+        <section className="px-6 md:px-10 lg:px-40 py-12 bg-white dark:bg-gray-700">
             <div className="max-w-[1200px] mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
                     <div className="max-w-xl">

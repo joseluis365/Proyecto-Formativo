@@ -44,7 +44,7 @@ export default function SuperAdminRoute() {
     }, [token]);
 
     if (isLoading) {
-        return <div className="min-h-screen flex flex-col gap-4 items-center justify-center">Verificando sesión
+        return <div className="min-h-screen flex flex-col gap-4 items-center justify-center dark:bg-gray-900 dark:text-white">Verificando sesión
             <MotionSpinner />
 
         </div>;

@@ -2,7 +2,7 @@ import Service from "./Service";
 
 export default function ThirdSection({services}) {
     return (
-        <section className="px-6 md:px-10 lg:px-40 py-12 bg-white dark:bg-background-dark">
+        <section className="px-6 md:px-10 lg:px-40 py-12 bg-white dark:bg-gray-900">
             <div className="max-w-[1280px] mx-auto">
                 <div className="flex flex-col sm:flex-row justify-between items-baseline mb-8 gap-4">
                     <div className="flex flex-col gap-1">

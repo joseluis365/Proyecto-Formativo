@@ -240,7 +240,7 @@ export default function SuperAdminEmpresas() {
             exit={{ opacity: 0 }}
             className="flex flex-col justify-center items-center py-10"
           >
-            <p className="text-lg font-semibold mb-2">Cargando Empresas</p>
+            <p className="text-lg font-semibold mb-2 dark:text-white">Cargando Empresas</p>
             <MotionSpinner />
           </motion.div>
         )}
@@ -261,7 +261,7 @@ export default function SuperAdminEmpresas() {
             key="empty"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-6 text-gray-500"
+            className="text-center py-6 text-gray-500 dark:text-gray-200"
           >
             No se encontraron empresas
           </motion.div>
