@@ -28,6 +28,13 @@ class RegistroEmpresaController extends Controller
             'duracion_meses.integer' => 'La duración en meses debe ser un número entero.'
         ]);
 
+        if ($request->validate_only) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Validación exitosa.'
+            ], 200);
+        }
+
         try {
             return DB::transaction(function () use ($request) {
                 

@@ -42,10 +42,10 @@ class StoreEmpresaRequest extends FormRequest
             'admin_primer_apellido' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
             'admin_segundo_apellido' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
             'admin_documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:7,10', 'numeric', 'unique:usuario,documento'],
-            'admin_email' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'min:12', 'max:150', new UniqueIgnoreCase('usuario', 'email')],
-            'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10',  'unique:usuario,telefono'],
+            'admin_email' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('usuario', 'email')],
+            'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:usuario,telefono'],
             'admin_direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150'],
-            'admin_password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', 'max:25'],
+            'admin_password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/', 'max:25'],
         ];
     }
 
@@ -54,7 +54,7 @@ class StoreEmpresaRequest extends FormRequest
         return [
             'nit.required' => 'El NIT es obligatorio',
             'nit.unique' => 'Esta empresa ya tiene un registro',
-            'nit.regex' => 'El NIT debe tener 9 numeros y un guion en el formato correcto (ejemplo: 900123456-7)',
+            'nit.regex' => 'El NIT debe tener 9 numeros, un guion y 1 numero de verificación en el formato correcto (ejemplo: 900123456-7)',
             'nit.digits_between' => 'El NIT debe tener entre 10 y 12 caracteres',
 
             'nombre.required' => 'El nombre de la Empresa es obligatorio',
@@ -162,7 +162,7 @@ class StoreEmpresaRequest extends FormRequest
             'admin_password.required' => 'La contraseña del administrador es obligatoria',
             'admin_password.min' => 'La contraseña del administrador debe tener al menos 8 caracteres',
             'admin_password.max' => 'La contraseña del administrador debe tener como maximo 25 caracteres',
-            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero, sin espacios y un caracter especial: @$!%*?&',
+            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial',
         ];
     }
 }

@@ -1,8 +1,7 @@
---
 -- PostgreSQL database dump
 --
 
-\restrict CAAqtkEkpu2cX08cRgpC5bGiF0jFCKJIcCdnXFVM23jrbajTLf6k7ufeMLgjdtb
+\restrict 33lUU6pg1HqN4LXrwa8RZMqSGkReav9gzV7nQ2T5QYmIQIOipQiBOnGgXRVBzJh
 
 -- Dumped from database version 18.2
 -- Dumped by pg_dump version 18.2
@@ -193,46 +192,6 @@ ALTER TABLE public.cita ALTER COLUMN id_cita ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
--- Name: citas; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.citas (
-    id bigint NOT NULL,
-    fecha date NOT NULL,
-    hora time(0) without time zone NOT NULL,
-    paciente character varying(255) NOT NULL,
-    medico character varying(255) NOT NULL,
-    estado character varying(255) DEFAULT 'pendiente'::character varying NOT NULL,
-    created_at timestamp(0) without time zone,
-    updated_at timestamp(0) without time zone,
-    CONSTRAINT citas_estado_check CHECK (((estado)::text = ANY ((ARRAY['pendiente'::character varying, 'confirmada'::character varying, 'cancelada'::character varying])::text[])))
-);
-
-
-ALTER TABLE public.citas OWNER TO postgres;
-
---
--- Name: citas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.citas_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.citas_id_seq OWNER TO postgres;
-
---
--- Name: citas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.citas_id_seq OWNED BY public.citas.id;
-
-
---
 -- Name: ciudad; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -359,39 +318,6 @@ ALTER TABLE public.especialidad ALTER COLUMN id_especialidad ADD GENERATED ALWAY
     NO MAXVALUE
     CACHE 1
 );
-
-
---
--- Name: especialidades; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.especialidades (
-    id_especialidad bigint NOT NULL,
-    especialidad character varying(255) NOT NULL
-);
-
-
-ALTER TABLE public.especialidades OWNER TO postgres;
-
---
--- Name: especialidades_id_especialidad_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.especialidades_id_especialidad_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.especialidades_id_especialidad_seq OWNER TO postgres;
-
---
--- Name: especialidades_id_especialidad_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.especialidades_id_especialidad_seq OWNED BY public.especialidades.id_especialidad;
 
 
 --
@@ -1070,54 +996,13 @@ ALTER TABLE public.tipo_licencia ALTER COLUMN id_tipo_licencia ADD GENERATED ALW
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.users (
-    id bigint NOT NULL,
-    name character varying(255) NOT NULL,
-    email character varying(255) NOT NULL,
-    email_verified_at timestamp(0) without time zone,
-    password character varying(255) NOT NULL,
-    status character varying(255) NOT NULL,
-    id_rol bigint NOT NULL,
-    remember_token character varying(100),
-    created_at timestamp(0) without time zone,
-    updated_at timestamp(0) without time zone
-);
-
-
-ALTER TABLE public.users OWNER TO postgres;
-
---
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.users_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
-
---
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
---
 -- Name: usuario; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.usuario (
     documento bigint NOT NULL,
-    nombre character varying(50),
-    apellido character varying(50),
+    primer_nombre character varying(50),
+    primer_apellido character varying(50),
     email character varying(100),
     telefono character varying(30),
     direccion character varying(150),
@@ -1132,6 +1017,8 @@ CREATE TABLE public.usuario (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     id_especialidad integer,
+    segundo_nombre character varying(40),
+    segundo_apellido character varying(40),
     CONSTRAINT usuario_sexo_check CHECK (((sexo)::text = ANY ((ARRAY['Masculino'::character varying, 'Femenino'::character varying])::text[])))
 );
 
@@ -1143,20 +1030,6 @@ ALTER TABLE public.usuario OWNER TO postgres;
 --
 
 ALTER TABLE ONLY public.activities ALTER COLUMN id SET DEFAULT nextval('public.activities_id_seq'::regclass);
-
-
---
--- Name: citas id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.citas ALTER COLUMN id SET DEFAULT nextval('public.citas_id_seq'::regclass);
-
-
---
--- Name: especialidades id_especialidad; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.especialidades ALTER COLUMN id_especialidad SET DEFAULT nextval('public.especialidades_id_especialidad_seq'::regclass);
 
 
 --
@@ -1195,10 +1068,586 @@ ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.pro
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+COPY public.activities (id, title, type, icon, created_at, updated_at, channel_name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cache; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cache (key, value, expiration) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cache_locks; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cache_locks (key, owner, expiration) FROM stdin;
+\.
+
+
+--
+-- Data for Name: categoria_examen; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categoria_examen (id_categoria_examen, categoria) FROM stdin;
+\.
+
+
+--
+-- Data for Name: categoria_medicamento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.categoria_medicamento (id_categoria, categoria) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cita; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.cita (id_cita, doc_paciente, doc_medico, fecha, hora_inicio, hora_fin, motivo, tipo_cita_id, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ciudad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ciudad (codigo_postal, nombre, id_departamento, created_at, updated_at) FROM stdin;
+730001	Ibagué	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730024	Alpujarra	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730026	Alvarado	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730030	Ambalema	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730043	Anzoátegui	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730055	Armero	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730067	Ataco	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730124	Cajamarca	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730148	Carmen de Apicalá	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730152	Casabianca	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730168	Chaparral	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730200	Coello	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730217	Coyaima	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730226	Cunday	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730236	Dolores	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730268	Espinal	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730270	Falan	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730275	Flandes	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730283	Fresno	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730319	Guamo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730347	Herveo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730349	Honda	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730352	Icononzo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730408	Lérida	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730411	Líbano	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730443	Mariquita	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730449	Melgar	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730461	Murillo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730483	Natagaima	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730504	Ortega	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730520	Palocabildo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730547	Piedras	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730555	Planadas	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730563	Prado	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730585	Purificación	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730616	Rioblanco	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730622	Roncesvalles	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730624	Rovira	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730671	Saldaña	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730675	San Antonio	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730678	San Luis	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730686	Santa Isabel	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730770	Suárez	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730854	Valle de San Juan	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730861	Venadillo	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730870	Villahermosa	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+730873	Villarrica	73	2026-02-18 09:16:48.909778	2026-02-18 09:16:48.909778
+\.
+
+
+--
+-- Data for Name: departamento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.departamento ("codigo_DANE", nombre, created_at, updated_at) FROM stdin;
+73	Tolima	2026-02-18 09:10:51.975251	2026-02-18 09:10:51.975251
+\.
+
+
+--
+-- Data for Name: detalle_medicamento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.detalle_medicamento (id_detalle_medicamento, id_orden, id_medicamento, dosis, frecuencia, duracion, observaciones, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: empresa; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.empresa (nit, nombre, email_contacto, telefono, direccion, documento_representante, nombre_representante, telefono_representante, email_representante, id_ciudad, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: empresa_licencia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.empresa_licencia (id_empresa_licencia, nit, id_tipo_licencia, fecha_inicio, fecha_fin, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: especialidad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.especialidad (id_especialidad, especialidad) FROM stdin;
+1	Medicina General
+2	Pediatría
+3	Medicina Interna
+4	Cardiología
+5	Traumatología
+6	Ginecología
+7	Neurología
+8	Neumología
+9	Dermatología
+10	Oftalmología
+\.
+
+
+--
+-- Data for Name: estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.estado (id_estado, nombre_estado) FROM stdin;
+1	Activo
+2	Inactivo
+3	Sin Licencia
+4	Expira Pronto
+5	Licencia Expirada
+6	Licencia Bloqueada
+\.
+
+
+--
+-- Data for Name: examen; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.examen (id_examen, nombre, id_categoria_examen, requiere_ayuno, descripcion, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: failed_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.failed_jobs (id, uuid, connection, queue, payload, exception, failed_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: farmacia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.farmacia (nit, nombre, direccion, telefono, email, nombre_contacto, horario_apertura, horario_cierre, abierto_24h, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: historial_clinico; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.historial_clinico (id_historial, id_paciente, antecedentes_personales, antecedentes_familiares, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: historial_detalle; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.historial_detalle (id_detalle, id_historial, id_cita, diagnostico, tratamiento, notas_medicas, observaciones, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: job_batches; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.job_batches (id, name, total_jobs, pending_jobs, failed_jobs, failed_job_ids, options, cancelled_at, created_at, finished_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jobs; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: medicamento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.medicamento (id_medicamento, nombre, presentacion, descripcion, stock_disponible, precio_unitario, id_categoria, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.migrations (id, migration, batch) FROM stdin;
+1	2026_02_11_041917_create_personal_access_tokens_table	1
+2	2026_02_12_031848_create_activities_table	2
+3	0001_01_01_000000_create_users_table	3
+4	0001_01_01_000001_create_cache_table	3
+5	0001_01_01_000002_create_jobs_table	3
+6	2025_10_13_214855_create_products_table	3
+7	2026_01_31_223325_add_citas_table	3
+9	2026_02_18_021702_create_especialidades_table	4
+10	2026_02_21_232038_add_segundo_nombre_y_apellido_to_usuario_table	5
+\.
+
+
+--
+-- Data for Name: movimiento_inventario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.movimiento_inventario (id_movimiento, id_medicamento, tipo_movimiento, cantidad, fecha, documento, motivo, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: orden_medicamento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.orden_medicamento (id_orden, id_detalle_cita, nit_farmacia, fecha_vencimiento, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.password_reset_tokens (email, token, created_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: personal_access_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, token, abilities, last_used_at, expires_at, created_at, updated_at) FROM stdin;
+1	App\\Models\\Usuario	123456789	auth_token	6587b471fefc8704f77dad1a7bd199b48ab2f7a86b2f69b706c9d5dc94168d7c	["*"]	\N	\N	2026-02-11 04:20:52	2026-02-11 04:20:52
+2	App\\Models\\Usuario	123456789	auth_token	b4d2f9b3602b9c78cc8912a95cd0f5324a073dc2a504a0a764f65a215a9f3a0c	["*"]	\N	\N	2026-02-11 04:21:29	2026-02-11 04:21:29
+3	App\\Models\\Usuario	12891212	auth_token	a263448ea4063c241b337b629d24e83e7d37502f1e832e377ce0f9dfddef2433	["*"]	\N	\N	2026-02-11 17:10:02	2026-02-11 17:10:02
+4	App\\Models\\Usuario	1234567	auth_token	9182628b42d880bfd72f1b818eb7ccde2dee2d568c69919b7c0fcf4499d157ea	["*"]	\N	\N	2026-02-11 17:40:50	2026-02-11 17:40:50
+5	App\\Models\\Usuario	1234567	auth_token	0a726ca901e624d2e5ed330dbb86e55b5002bf514b10ed6da3d88b8846cadeb6	["*"]	\N	\N	2026-02-11 18:08:19	2026-02-11 18:08:19
+6	App\\Models\\Superadmin	123456789	superadmin_auth_token	41b6adc66b84030927beeecb5a5520d86425d8364fc8094567cf1dea15233024	["*"]	\N	\N	2026-02-11 21:20:24	2026-02-11 21:20:24
+35	App\\Models\\Usuario	123	auth_token	2c6334ad63ed13de1ff10d7cbeb6a11faedd01b5e4f12402017b6c6d30281016	["*"]	2026-02-18 22:06:15	\N	2026-02-18 20:58:32	2026-02-18 22:06:15
+7	App\\Models\\Superadmin	123456789	superadmin_auth_token	cdec03117947d1e669ab48e6103594861501793b167f48424af8cf60d7215b78	["*"]	2026-02-11 21:30:31	\N	2026-02-11 21:30:29	2026-02-11 21:30:31
+20	App\\Models\\Superadmin	123456789	superadmin_auth_token	9e1075862031ecd7c33368ac8bd38b6bba505d56615a4d0e93fe06a0b5c41559	["*"]	2026-02-15 19:01:45	\N	2026-02-15 14:41:59	2026-02-15 19:01:45
+13	App\\Models\\Superadmin	123456789	superadmin_auth_token	b5fbda8c2217c1cfa72affa22450854fcfb2fe91a0fb3c8124824b60e4d9664b	["*"]	2026-02-12 19:45:52	\N	2026-02-12 17:55:57	2026-02-12 19:45:52
+32	App\\Models\\Superadmin	123456789	superadmin_auth_token	010affdf73aae10309824c9be3f668a4112daf66bef8bc131ae131619fc1f3ac	["*"]	2026-02-18 17:41:13	\N	2026-02-18 14:21:01	2026-02-18 17:41:13
+25	App\\Models\\Superadmin	123456789	superadmin_auth_token	b8788ab7192bb4101b8ba44523676db5388d0076ab633932bc34d603a2ef0be1	["*"]	2026-02-16 19:59:50	\N	2026-02-16 19:03:37	2026-02-16 19:59:50
+9	App\\Models\\Usuario	123456	auth_token	f0de0b6f7339a19d86d35bae10e8263fe204d5c72586b84d4e2af36100970c88	["*"]	\N	\N	2026-02-11 21:40:23	2026-02-11 21:40:23
+21	App\\Models\\Superadmin	123456789	superadmin_auth_token	4d287267c5a26efb09d6c8c4baaa31a5040f4fed5b616608814b78f72a6aec60	["*"]	2026-02-16 17:34:32	\N	2026-02-16 02:43:32	2026-02-16 17:34:32
+8	App\\Models\\Superadmin	123456789	superadmin_auth_token	080ab9e0897b98c79c20059e8919cc82d56cb7605c17ec766d7fd26005137258	["*"]	2026-02-11 21:51:52	\N	2026-02-11 21:32:59	2026-02-11 21:51:52
+10	App\\Models\\Superadmin	123456789	superadmin_auth_token	f3a5cf8b47f7f13382630d5f05bc641e6def5be4b9e802326d0dd7895193a82c	["*"]	2026-02-11 22:09:41	\N	2026-02-11 22:09:39	2026-02-11 22:09:41
+18	App\\Models\\Usuario	1234564	auth_token	18bc6c8ee622329c16a91e8bc36a0c0cf88ff0770b6f4910158fcf8271fd6494	["*"]	\N	\N	2026-02-13 18:42:50	2026-02-13 18:42:50
+22	App\\Models\\Superadmin	123456789	superadmin_auth_token	5b515c246a926fd073641dc96aacea7c6cc729a0d77c13f0b299aa61b75a05bf	["*"]	2026-02-16 17:35:17	\N	2026-02-16 17:35:15	2026-02-16 17:35:17
+14	App\\Models\\Superadmin	123456789	superadmin_auth_token	70e04ab8d957fc6da50571a5b2bde2236c03204d7481533709766ad69f3bfe52	["*"]	2026-02-12 21:03:50	\N	2026-02-12 20:05:43	2026-02-12 21:03:50
+31	App\\Models\\Usuario	123456	auth_token	90a7783b57d2965288cae2b33edbb21b47347684bcda512787c5c7f78e1026e8	["*"]	2026-02-18 14:18:47	\N	2026-02-17 02:15:16	2026-02-18 14:18:47
+11	App\\Models\\Superadmin	123456789	superadmin_auth_token	5bb0fdbb6a4d552b5b381e9b909ff332decbbf91c895b1d7b42e7109f52b927b	["*"]	2026-02-12 04:02:39	\N	2026-02-12 02:54:52	2026-02-12 04:02:39
+12	App\\Models\\Usuario	1234567	auth_token	f35ca0941e7724a44d8bdad44e868283b244baa07a8b5e2c3a761fcdb0b1020f	["*"]	\N	\N	2026-02-12 14:21:03	2026-02-12 14:21:03
+23	App\\Models\\Superadmin	123456789	superadmin_auth_token	e2654739f26b372f8bc07c37967136006fc9bec7eccdc3a113f3867295c98e69	["*"]	2026-02-16 18:31:45	\N	2026-02-16 17:57:18	2026-02-16 18:31:45
+16	App\\Models\\Superadmin	123456789	superadmin_auth_token	7c03cfcd128f6b02256b6ed680bf02989d5be6471e7d87b034ef295b4df90283	["*"]	2026-02-13 03:59:29	\N	2026-02-13 02:59:26	2026-02-13 03:59:29
+17	App\\Models\\Superadmin	123456789	superadmin_auth_token	0a43ccc9146a8400d78f6dc42a2f57debdd4f7a7e94ceb175cd6cc6b0a03141b	["*"]	2026-02-13 19:55:01	\N	2026-02-13 15:51:44	2026-02-13 19:55:01
+15	App\\Models\\Superadmin	123456789	superadmin_auth_token	7b264412d2f5a6a3faffff555f2c0826efe47fda643ff632a69d3a563a29a7a3	["*"]	2026-02-13 02:46:17	\N	2026-02-13 02:30:42	2026-02-13 02:46:17
+19	App\\Models\\Superadmin	123456789	superadmin_auth_token	a9d3fd6e17b070096e87d0da607bc8918cea900406ae99a1e6746c1e80beb509	["*"]	2026-02-15 03:44:24	\N	2026-02-15 02:56:27	2026-02-15 03:44:24
+28	App\\Models\\Usuario	123456	auth_token	32363cda1629abfd01ee104d300b2f8c20132a4d8aa6a60db0546cc67d55b4d0	["*"]	\N	\N	2026-02-16 21:06:22	2026-02-16 21:06:22
+34	App\\Models\\Superadmin	123456789	superadmin_auth_token	6632ff0cc039d39461632de28f119ad786ab2f139ee7880b9fcdc759f81d229b	["*"]	2026-02-18 22:03:22	\N	2026-02-18 20:36:26	2026-02-18 22:03:22
+24	App\\Models\\Superadmin	123456789	superadmin_auth_token	7dffe3cba39330f445e78e8b99bfa7f10fd2cc161d1d260ed3d28a7fe05aa2eb	["*"]	2026-02-16 18:48:14	\N	2026-02-16 18:46:44	2026-02-16 18:48:14
+26	App\\Models\\Usuario	123456	auth_token	037eb57d4d45ed1cc71ee53d83b0843bc83476d9e312b7764ce1236cd1e28317	["*"]	\N	\N	2026-02-16 19:48:44	2026-02-16 19:48:44
+27	App\\Models\\Superadmin	123456789	superadmin_auth_token	781e0df92021b46abb6cca23df7a7258fa6a1550d4ba813b668b593641823853	["*"]	2026-02-16 21:46:17	\N	2026-02-16 21:04:51	2026-02-16 21:46:17
+29	App\\Models\\Usuario	123456	auth_token	701457ddd40ddbd31632bc9244fff1db1d76ba03150422a30aaa701917d65329	["*"]	\N	\N	2026-02-16 21:58:44	2026-02-16 21:58:44
+30	App\\Models\\Usuario	123456	auth_token	4bda8bb71b45a5dbd0a5dc631ec9054516fa60f4c432e60cafa50f1ecaf847c3	["*"]	\N	\N	2026-02-17 01:39:23	2026-02-17 01:39:23
+37	App\\Models\\Superadmin	123456789	superadmin_auth_token	020903951634cb5f337cd7dee31c62a69506bcf4d6987c65321b16e464b62a63	["*"]	2026-02-23 14:09:51	\N	2026-02-23 14:09:47	2026-02-23 14:09:51
+36	App\\Models\\Superadmin	123456789	superadmin_auth_token	c1232d8c0528123503093a72da6236e28852ebe58aee7ffa12322821ce121366	["*"]	2026-02-23 01:31:27	\N	2026-02-20 19:51:31	2026-02-23 01:31:27
+39	App\\Models\\Superadmin	123456789	superadmin_auth_token	4dc84afde88f810b2cc51aa4ad1411f099e47b0f6c7023604794c5f34760bc2c	["*"]	2026-02-23 17:07:13	\N	2026-02-23 15:59:03	2026-02-23 17:07:13
+38	App\\Models\\Superadmin	123456789	superadmin_auth_token	92f75261e03805d5b16167d4f419442dd66e7ed4b53b9616e9a88ec8f7e91966	["*"]	2026-02-23 15:49:53	\N	2026-02-23 15:49:50	2026-02-23 15:49:53
+41	App\\Models\\Superadmin	123456789	superadmin_auth_token	3d2a192dbdb02891248be696bb3ef33a3f29fba55ad9525f6ac13a830a88fa2b	["*"]	2026-02-24 03:07:47	\N	2026-02-24 02:51:16	2026-02-24 03:07:47
+40	App\\Models\\Superadmin	123456789	superadmin_auth_token	01c65d17e20131ed6165dee7441362706b0fef50de7ce890d36ddc897a347b46	["*"]	2026-02-23 22:31:26	\N	2026-02-23 19:32:51	2026-02-23 22:31:26
+42	App\\Models\\Superadmin	123456789	superadmin_auth_token	16cc49f8638d4cae56610aec1ee83618e47709c472d28bfa79174da9d6ae3b75	["*"]	2026-02-24 20:04:50	\N	2026-02-24 16:57:39	2026-02-24 20:04:50
+44	App\\Models\\Superadmin	123456789	superadmin_auth_token	fc677f00b80859570ea3f0dd7c7499f9f72b41e3795358a7ed096de8c27a9c55	["*"]	2026-02-25 03:16:16	\N	2026-02-24 21:19:15	2026-02-25 03:16:16
+48	App\\Models\\Usuario	1111111	auth_token	971105c799eacac44465f0ea17a0f9a910af3716053da0159f09711d7cdd7b4b	["*"]	\N	\N	2026-02-25 19:27:01	2026-02-25 19:27:01
+45	App\\Models\\Usuario	123	auth_token	0d0be4b48d2b071bfc83d8ae9dd16ace1a4061489a17c7458cf6c9ec58614763	["*"]	2026-02-24 21:51:04	\N	2026-02-24 21:49:03	2026-02-24 21:51:04
+\.
+
+
+--
+-- Data for Name: prioridad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.prioridad (id_prioridad, prioridad) FROM stdin;
+\.
+
+
+--
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.products (id, description, price, stock, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: remision; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.remision (id_remision, id_detalle_cita, tipo_remision, id_especialidad, id_examen, id_prioridad, notas, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: rol; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.rol (id_rol, tipo_usu) FROM stdin;
+1	Super Admin
+2	Admin
+3	personal Administrativo
+4	Medico
+5	Paciente
+6	Farmaceutico
+\.
+
+
+--
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.sessions (id, user_id, ip_address, user_agent, payload, last_activity) FROM stdin;
+1rDKufxxJYhaf4I1Y7ldGorK10gdYeL5yNLaWSh4	\N	127.0.0.1	Mozilla/5.0 (Windows NT; Windows NT 10.0; es-MX) WindowsPowerShell/5.1.26100.7705	YTozOntzOjY6Il90b2tlbiI7czo0MDoibFZJSDZOeHFzNjEwTkMxNDlzTTRMS1RyN3RNUHNzRXhwM3BzZ2FOZyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=	1771903033
+ZmqGWPH4Wt9zXFupl1kUbmmUHBGsJSb4990sEBp2	\N	127.0.0.1	Mozilla/5.0 (Windows NT; Windows NT 10.0; es-MX) WindowsPowerShell/5.1.26100.7705	YTozOntzOjY6Il90b2tlbiI7czo0MDoiemxQM1l1MWFOOXhiVmE3TWk0ZXZNMGh0NFpreUhadmk3dnhMbGFZWCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=	1771903067
+3D7Q1rOfisyyrHnee25gC4F7ZTkxyth6cjKI2T5R	\N	127.0.0.1	Mozilla/5.0 (Windows NT; Windows NT 10.0; es-MX) WindowsPowerShell/5.1.26100.7705	YTozOntzOjY6Il90b2tlbiI7czo0MDoidlFTN0tPd3JDWms2ZFpJbXBZSFhvU05QR1M3TFJqVElrUFc4aUVScSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=	1771903292
+\.
+
+
+--
+-- Data for Name: solicitud_cita; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.solicitud_cita (id_solicitud, id_especialidad, fecha_preferida, motivo, id_estado, id_cita, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: superadmin; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.superadmin (documento, nombre, usuario, email, contrasena, id_rol, created_at, updated_at) FROM stdin;
+123456789	Super Admin	admin	joseluis1409rodriguez@gmail.com	$2y$12$U8Plf0TUc2nDTFCkXXuXg.lcliq6LXzs.SIyQ0wwWBg787ANQX/lm	1	2026-02-11 21:11:20	2026-02-23 19:13:08
+\.
+
+
+--
+-- Data for Name: tipo_cita; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tipo_cita (id_tipo_cita, tipo) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tipo_licencia; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.tipo_licencia (id_tipo_licencia, tipo, descripcion, duracion_meses, precio, id_estado, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: usuario; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.usuario (documento, primer_nombre, primer_apellido, email, telefono, direccion, sexo, fecha_nacimiento, grupo_sanguineo, contrasena, registro_profesional, nit, id_rol, id_estado, created_at, updated_at, id_especialidad, segundo_nombre, segundo_apellido) FROM stdin;
+\.
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.activities_id_seq', 85, true);
+
+
+--
+-- Name: categoria_examen_id_categoria_examen_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categoria_examen_id_categoria_examen_seq', 1, false);
+
+
+--
+-- Name: categoria_medicamento_id_categoria_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.categoria_medicamento_id_categoria_seq', 1, false);
+
+
+--
+-- Name: cita_id_cita_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.cita_id_cita_seq', 1, false);
+
+
+--
+-- Name: detalle_medicamento_id_detalle_medicamento_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.detalle_medicamento_id_detalle_medicamento_seq', 1, false);
+
+
+--
+-- Name: especialidad_id_especialidad_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.especialidad_id_especialidad_seq', 10, true);
+
+
+--
+-- Name: estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.estado_id_estado_seq', 6, true);
+
+
+--
+-- Name: examen_id_examen_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.examen_id_examen_seq', 1, false);
+
+
+--
+-- Name: failed_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.failed_jobs_id_seq', 1, false);
+
+
+--
+-- Name: historial_clinico_id_historial_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.historial_clinico_id_historial_seq', 1, false);
+
+
+--
+-- Name: historial_detalle_id_detalle_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.historial_detalle_id_detalle_seq', 1, false);
+
+
+--
+-- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.jobs_id_seq', 1, false);
+
+
+--
+-- Name: medicamento_id_medicamento_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.medicamento_id_medicamento_seq', 1, false);
+
+
+--
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.migrations_id_seq', 10, true);
+
+
+--
+-- Name: movimiento_inventario_id_movimiento_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.movimiento_inventario_id_movimiento_seq', 1, false);
+
+
+--
+-- Name: orden_medicamento_id_orden_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.orden_medicamento_id_orden_seq', 1, false);
+
+
+--
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 49, true);
+
+
+--
+-- Name: prioridad_id_prioridad_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.prioridad_id_prioridad_seq', 1, false);
+
+
+--
+-- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.products_id_seq', 1, false);
+
+
+--
+-- Name: remision_id_remision_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.remision_id_remision_seq', 1, false);
+
+
+--
+-- Name: rol_id_rol_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.rol_id_rol_seq', 6, true);
+
+
+--
+-- Name: solicitud_cita_id_solicitud_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.solicitud_cita_id_solicitud_seq', 1, false);
+
+
+--
+-- Name: tipo_cita_id_tipo_cita_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tipo_cita_id_tipo_cita_seq', 1, false);
+
+
+--
+-- Name: tipo_licencia_id_tipo_licencia_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.tipo_licencia_id_tipo_licencia_seq', 22, true);
 
 
 --
@@ -1247,14 +1696,6 @@ ALTER TABLE ONLY public.categoria_medicamento
 
 ALTER TABLE ONLY public.cita
     ADD CONSTRAINT cita_pkey PRIMARY KEY (id_cita);
-
-
---
--- Name: citas citas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.citas
-    ADD CONSTRAINT citas_pkey PRIMARY KEY (id);
 
 
 --
@@ -1319,14 +1760,6 @@ ALTER TABLE ONLY public.empresa
 
 ALTER TABLE ONLY public.especialidad
     ADD CONSTRAINT especialidad_pkey PRIMARY KEY (id_especialidad);
-
-
---
--- Name: especialidades especialidades_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.especialidades
-    ADD CONSTRAINT especialidades_pkey PRIMARY KEY (id_especialidad);
 
 
 --
@@ -1543,22 +1976,6 @@ ALTER TABLE ONLY public.tipo_cita
 
 ALTER TABLE ONLY public.tipo_licencia
     ADD CONSTRAINT tipo_licencia_pkey PRIMARY KEY (id_tipo_licencia);
-
-
---
--- Name: users users_email_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_email_unique UNIQUE (email);
-
-
---
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
 --
@@ -1884,14 +2301,6 @@ ALTER TABLE ONLY public.tipo_licencia
 
 
 --
--- Name: users users_id_rol_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_id_rol_foreign FOREIGN KEY (id_rol) REFERENCES public.rol(id_rol) ON DELETE CASCADE;
-
-
---
 -- Name: usuario usuario_id_especialidad_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1927,5 +2336,5 @@ ALTER TABLE ONLY public.usuario
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CAAqtkEkpu2cX08cRgpC5bGiF0jFCKJIcCdnXFVM23jrbajTLf6k7ufeMLgjdtb
+\unrestrict 33lUU6pg1HqN4LXrwa8RZMqSGkReav9gzV7nQ2T5QYmIQIOipQiBOnGgXRVBzJh
 

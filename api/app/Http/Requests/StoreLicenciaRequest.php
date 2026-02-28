@@ -17,8 +17,8 @@ class StoreLicenciaRequest extends FormRequest
         return [
             'tipo' => ['required', 'regex:/^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+)*$/', 'string', new UniqueIgnoreCase('tipo_licencia', 'tipo'), 'min:3', 'max:40'],
             'descripcion' => ['required', 'regex:/^(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ0-9-]+)*$/', 'string', 'min:10', 'max:250'],
-            'precio' => ['required', 'regex:/^[0-9]+$/', 'digits_between:6,9'],
-            'duracion_meses' => ['required', 'regex:/^[0-9]+$/', 'digits_between:1,2'],
+            'precio' => ['required', 'numeric', 'min:100000', 'max:999999999'],
+            'duracion_meses' => ['required', 'numeric', 'min:1', 'max:99'],
             'id_estado' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:1,2', 'exists:estado,id_estado'],
         ];
     }
@@ -38,12 +38,14 @@ class StoreLicenciaRequest extends FormRequest
             'descripcion.max' => 'La descripcion debe tener menos de 250 caracteres',
 
             'precio.required' => 'El precio es obligatorio',
-            'precio.regex' => 'El precio debe ser un número valido sin espacios ni puntos',
-            'precio.digits_between' => 'El precio debe tener entre 6 y 9 dígitos sin espacios ni puntos',
+            'precio.numeric' => 'El precio debe ser un número valido',
+            'precio.min' => 'El precio mínimo permitido es de $100.000 COP',
+            'precio.max' => 'El precio excede el máximo permitido',
 
             'duracion_meses.required' => 'La duracion es obligatoria',
-            'duracion_meses.regex' => 'La duracion debe ser un número valido',
-            'duracion_meses.digits_between' => 'La duracion debe tener entre 1 y 2 dígitos',
+            'duracion_meses.numeric' => 'La duracion debe ser un número valido',
+            'duracion_meses.min' => 'La duracion en meses debe ser mínimo 1',
+            'duracion_meses.max' => 'La duracion en meses debe ser menor a 100',
 
             'id_estado.required' => 'El estado es obligatorio',
             'id_estado.regex' => 'El estado debe ser un número valido',
