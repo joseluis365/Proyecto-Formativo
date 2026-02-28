@@ -3,9 +3,8 @@ import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
-import Form from "../../UI/Form";
+import FormWithIcons from "../../UI/FormWithIcons";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
-
 
 export default function EditEmpresaModal({
     empresaData,
@@ -20,15 +19,25 @@ export default function EditEmpresaModal({
         if (empresaData) setValues(empresaData);
     }, [empresaData]);
 
-    const handleUpdate = async (data) => {
+    const handleChange = (name, value) => {
+        setValues(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) {
+            setErrors(prev => {
+                const newErr = { ...prev };
+                delete newErr[name];
+                return newErr;
+            });
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
         try {
             setSaving(true);
             setErrors({});
 
-            // 1. Limpieza estricta de datos
-            const payload = { ...data };
+            const payload = { ...values };
 
-            // Si el password está vacío, no lo enviamos para no sobrescribir con vacío
             if (!payload.admin_password || payload.admin_password.trim() === "") {
                 delete payload.admin_password;
                 delete payload.admin_password_confirmation;
@@ -36,10 +45,8 @@ export default function EditEmpresaModal({
 
             console.log("Enviando actualización para NIT:", empresaData.nit);
 
-            // 2. Petición API
-            const response = await superAdminApi.put(`/empresa/${empresaData.nit}`, payload);
+            await superAdminApi.put(`/empresa/${empresaData.nit}`, payload);
 
-            // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;
             await Swal.fire({
                 icon: 'success',
@@ -49,7 +56,6 @@ export default function EditEmpresaModal({
                 timer: 1500,
             });
 
-            // IMPORTANTE: Aquí llamamos a la prop que recibimos
             if (typeof onSuccess === 'function') {
                 onSuccess();
             }
@@ -78,18 +84,37 @@ export default function EditEmpresaModal({
         }
     };
 
+    const fields = createEmpresaFormConfig[2];
+    const camposEmpresa = fields.filter(f => !f.name.startsWith('admin_'));
+    const camposAdmin = fields.filter(f => f.name.startsWith('admin_'));
+
+    const formSections = [
+        { title: "Información de la Empresa", fields: camposEmpresa },
+        { title: "Información del Admin del Sistema", fields: camposAdmin }
+    ];
+
     return (
         <BaseModal>
             <ModalHeader icon="edit" title="EDITAR EMPRESA" onClose={onClose} />
             <div className="p-6 flex-1 overflow-y-auto">
-                <Form
+                <FormWithIcons
+                    sections={formSections}
                     values={values}
-                    fields={createEmpresaFormConfig[2]}
-                    onSubmit={handleUpdate}
-                    disabled={saving}
-                    loading={saving}
+                    onChange={handleChange}
                     errors={errors}
-                />
+                    onSubmit={handleUpdate}
+                >
+                    <div className="flex mt-10 justify-end gap-10">
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2 transition-colors disabled:opacity-50"
+                        >
+                            <span className="material-symbols-outlined">save</span>
+                            {saving ? "Guardando..." : "Guardar"}
+                        </button>
+                    </div>
+                </FormWithIcons>
             </div>
             <ModalFooter />
         </BaseModal>

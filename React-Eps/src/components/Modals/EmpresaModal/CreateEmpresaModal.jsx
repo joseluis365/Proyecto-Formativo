@@ -3,8 +3,9 @@ import superAdminApi from "../../../Api/superAdminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
-import Form from "../../UI/Form";
+import FormWithIcons from "../../UI/FormWithIcons";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
+import Swal from "sweetalert2";
 
 
 export default function CreateEmpresaModal({
@@ -12,10 +13,9 @@ export default function CreateEmpresaModal({
     onSuccess,
 }) {
     const [saving, setSaving] = useState(false);
-    const [loading, setLoading] = useState(false); // Used for initial data if needed
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Location State
     const [departamentos, setDepartamentos] = useState([]);
     const [ciudades, setCiudades] = useState([]);
 
@@ -45,7 +45,6 @@ export default function CreateEmpresaModal({
 
     const [formData, setFormData] = useState(initialEmpresa);
 
-    // Fetch Departments on Mount
     useEffect(() => {
         superAdminApi.get('/departamentos').then(res => {
             setDepartamentos(res.data);
@@ -67,7 +66,7 @@ export default function CreateEmpresaModal({
         const deptoId = e.target.value;
         handleChange('id_departamento', deptoId);
         setCiudades([]);
-        setFormData(prev => ({ ...prev, id_ciudad: "" })); // Reset city
+        setFormData(prev => ({ ...prev, id_ciudad: "" }));
 
         if (deptoId) {
             try {
@@ -84,20 +83,17 @@ export default function CreateEmpresaModal({
         try {
             setSaving(true);
             setErrors({});
-            const payload = {
-                ...formData,
-            };
+            const payload = { ...formData };
             await superAdminApi.post(`/empresa`, payload);
-            import("sweetalert2").then((Swal) => {
-                Swal.default.fire({
-                    icon: 'success',
-                    title: 'Empresa Creada',
-                    text: 'La empresa y su administrador han sido registrados correctamente.',
-                    confirmButtonColor: '#3085d6',
-                }).then(() => {
-                    onSuccess?.();
-                    onClose();
-                });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Empresa Creada',
+                text: 'La empresa y su administrador han sido registrados correctamente.',
+                confirmButtonColor: '#3085d6',
+            }).then(() => {
+                onSuccess?.();
+                onClose();
             });
 
         } catch (error) {
@@ -111,12 +107,10 @@ export default function CreateEmpresaModal({
                     )
                 );
             } else {
-                import("sweetalert2").then((Swal) => {
-                    Swal.default.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error inesperado al crear la empresa.',
-                    });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error inesperado al crear la empresa.',
                 });
             }
         }
@@ -125,103 +119,87 @@ export default function CreateEmpresaModal({
         }
     };
 
-    // Prepare fields
     const fields = createEmpresaFormConfig[1];
+    const camposEmpresa = fields.filter(f => !f.name.startsWith('admin_'));
+    const camposAdmin = fields.filter(f => f.name.startsWith('admin_'));
+
+    const formSections = [
+        { title: "Información de la Empresa", fields: camposEmpresa },
+        { title: "Información del Admin del Sistema", fields: camposAdmin }
+    ];
+
+    const customRenderers = {
+        id_departamento: (field, value, error) => (
+            <div key="location-group-depto" className="space-y-1 pb-3">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_departamento">{field.label}</label>
+                <div className="relative">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
+                    <select
+                        className={`border rounded-lg pl-10 pr-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all ${error ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-gray-300 dark:border-gray-700"} bg-white dark:bg-gray-800 text-gray-900 dark:text-white`}
+                        name="id_departamento"
+                        id="id_departamento"
+                        value={value || ""}
+                        onChange={handleDepartamentoChange}
+                    >
+                        <option value="">Seleccionar Departamento</option>
+                        {departamentos.map(d => (
+                            <option key={d.codigo_DANE} value={d.codigo_DANE}>{d.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                {error && <span className="text-red-500 text-xs">{error}</span>}
+            </div>
+        ),
+        id_ciudad: (field, value, error) => (
+            <div key="location-group-ciudad" className="space-y-1 pb-3">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_ciudad">{field.label}</label>
+                <div className="relative">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
+                    <select
+                        id="id_ciudad"
+                        name="id_ciudad"
+                        className={`border rounded-lg pl-10 pr-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all ${error ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-gray-300 dark:border-gray-700"} bg-white dark:bg-gray-800 text-gray-900 dark:text-white`}
+                        value={value || ""}
+                        onChange={(e) => handleChange("id_ciudad", e.target.value)}
+                        disabled={!formData.id_departamento}
+                    >
+                        <option value="">Seleccionar Ciudad</option>
+                        {ciudades.map(c => (
+                            <option key={c.codigo_postal} value={c.codigo_postal}>{c.nombre}</option>
+                        ))}
+                    </select>
+                </div>
+                {error && <span className="text-red-500 text-xs">{error}</span>}
+            </div>
+        )
+    };
 
     return (
         <BaseModal>
             <ModalHeader icon="business" title="CREAR EMPRESA" onClose={onClose} />
-            <div className="p-6 flex-1 overflow-y-auto">
+            <div className="p-6 flex-1 overflow-y-auto dark:scheme-dark">
                 {loading ? (
                     <p>Cargando...</p>
                 ) : (
-                    <form onSubmit={handleCreate} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {fields.map((field) => {
-                                // Special handling for location fields -> Render Depto + Ciudad
-                                if (field.name === 'id_departamento') {
-                                    return (
-                                        <React.Fragment key="location-group">
-                                            {/* Departamento Select */}
-                                            <div className="space-y-1">
-                                                <label className="text-sm font-medium text-gray-700">Departamento</label>
-                                                <select
-                                                    className={`border rounded px-3 py-2 w-full ${errors.id_departamento ? "border-red-500" : "border-gray-300"}`}
-                                                    value={formData.id_departamento}
-                                                    onChange={handleDepartamentoChange}
-                                                >
-                                                    <option value="">Seleccionar Departamento</option>
-                                                    {departamentos.map(d => (
-                                                        <option key={d.codigo_DANE} value={d.codigo_DANE}>{d.nombre}</option>
-                                                    ))}
-                                                </select>
-                                                {errors.id_departamento && (
-                                                    <p className="text-red-500 text-sm transition-all">{errors.id_departamento}</p>
-                                                )}
-                                            </div>
-
-                                            {/* Ciudad Select */}
-                                            <div className="space-y-1">
-                                                <label className="text-sm font-medium text-gray-700">Ciudad</label>
-                                                <select
-                                                    name="id_ciudad"
-                                                    className={`border rounded px-3 py-2 w-full ${errors.id_ciudad ? "border-red-500" : "border-gray-300"}`}
-                                                    value={formData.id_ciudad}
-                                                    onChange={(e) => handleChange('id_ciudad', e.target.value)}
-                                                    disabled={!formData.id_departamento}
-                                                >
-                                                    <option value="">Seleccionar Ciudad</option>
-                                                    {ciudades.map(c => (
-                                                        <option key={c.codigo_postal} value={c.codigo_postal}>{c.nombre}</option>
-                                                    ))}
-                                                </select>
-                                                {errors.id_ciudad && (
-                                                    <p className="text-red-500 text-sm transition-all">{errors.id_ciudad}</p>
-                                                )}
-                                            </div>
-                                        </React.Fragment>
-                                    );
-                                }
-
-                                if (field.name === 'id_ciudad') {
-                                    return null; // Already rendered with id_departamento
-                                }
-
-                                const value = formData[field.name] ?? "";
-
-                                return (
-                                    <div key={field.name} className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-700" htmlFor={field.name}>
-                                            {field.label}
-                                        </label>
-                                        <input
-                                            id={field.name}
-                                            name={field.name}
-                                            type={field.type}
-                                            value={value}
-                                            onChange={(e) => handleChange(field.name, e.target.value)}
-                                            placeholder={field.label}
-                                            className={`border border-gray-300 rounded px-3 py-2 w-full ${errors[field.name] ? "border-red-500" : ""}`}
-                                        />
-                                        {errors[field.name] && (
-                                            <p className="text-red-500 text-sm transition-all">{errors[field.name]}</p>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
+                    <FormWithIcons
+                        sections={formSections}
+                        values={formData}
+                        onChange={handleChange}
+                        customRenderers={customRenderers}
+                        errors={errors}
+                        onSubmit={handleCreate}
+                    >
                         <div className="flex mt-10 justify-end gap-10">
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2 transition-colors disabled:opacity-50"
                             >
                                 <span className="material-symbols-outlined">save</span>
                                 {saving ? "Guardando..." : "Guardar"}
                             </button>
                         </div>
-                    </form>
+                    </FormWithIcons>
                 )}
             </div>
             <ModalFooter />

@@ -4,7 +4,7 @@ import ContactItem from "./ContactItem";
 export default function FormSection({canales, emails, horarios, config}) {
     
     return (
-        <section className="px-6 md:px-10 lg:px-40 py-6 bg-white dark:bg-background-dark">
+        <section className="px-6 md:px-10 lg:px-40 py-6 bg-white dark:bg-gray-700">
             <div className="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-10 gap-6">
                 <div className="lg:col-span-6">
                     <ContactForm config={config} />
