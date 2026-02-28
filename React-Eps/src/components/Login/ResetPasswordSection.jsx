@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import { resetPasswordForm } from "../../data/InicioForms";
-import FormBuilder from "../UI/Formbuilder";
+import FormWithIcons from "../UI/FormWithIcons";
 import BlueButton from "../UI/BlueButton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
@@ -68,7 +68,7 @@ export default function ResetPasswordSection() {
 
     return (
         <Layout title="Restablecer Contraseña" description="Ingrese su nueva contraseña para restablecerla">
-            <FormBuilder
+            <FormWithIcons
                 config={resetPasswordForm}
                 onChange={handleChange}
                 onSubmit={handleSubmit}

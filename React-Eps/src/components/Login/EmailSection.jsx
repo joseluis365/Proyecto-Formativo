@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import { emailForm } from "../../data/InicioForms";
-import FormBuilder from "../UI/Formbuilder";
+import FormWithIcons from "../UI/FormWithIcons";
 import BlueButton from "../UI/BlueButton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
@@ -18,8 +18,12 @@ export default function EmailSection() {
 
         setLoading(true);
         try {
-            await api.post("/forgot-password", { email });
+            const response = await api.post("/forgot-password", { email });
             sessionStorage.setItem("recovery_email", email);
+            sessionStorage.setItem("recovery_timer_end", Date.now() + 30000);
+            if (response.data?.available_attempts !== undefined) {
+                sessionStorage.setItem("recovery_attempts", response.data.available_attempts);
+            }
 
             Swal.fire({
                 icon: 'success',
@@ -43,7 +47,7 @@ export default function EmailSection() {
 
     return (
         <Layout title="Verificar Correo Electronico" description="Ingrese su correo electronico registrado para continuar">
-            <FormBuilder
+            <FormWithIcons
                 config={emailForm}
                 onChange={(field, value) => setEmail(value)}
                 onSubmit={handleSubmit}

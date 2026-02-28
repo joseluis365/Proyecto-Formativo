@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Formbuilder from "../../components/UI/Formbuilder";
+import FormWithIcons from "../../components/UI/FormWithIcons";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminResetPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
@@ -17,7 +17,7 @@ export default function SuperAdminResetPassword() {
 
     useEffect(() => {
         if (!email || !code) {
-            navigate("/SuperAdmin-ForgotPassword");
+            navigate("/SuperAdmin-Login");
         }
     }, [email, code, navigate]);
 
@@ -63,8 +63,7 @@ export default function SuperAdminResetPassword() {
                     icon: "error",
                     title: "Error",
                     text: message,
-                    timer: 1500,
-                    showConfirmButton: false,
+                    showConfirmButton: true,
                 });
             }
         } finally {
@@ -79,7 +78,7 @@ export default function SuperAdminResetPassword() {
                     Restablecer Contraseña
                 </h1>
 
-                <Formbuilder
+                <FormWithIcons
                     config={superAdminResetPassword}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
@@ -91,7 +90,7 @@ export default function SuperAdminResetPassword() {
                         type="submit"
                         disabled={loading}
                     />
-                </Formbuilder>
+                </FormWithIcons>
             </div>
         </div>
     );

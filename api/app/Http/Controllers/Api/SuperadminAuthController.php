@@ -8,6 +8,7 @@ use App\Models\Superadmin;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class SuperadminAuthController extends Controller
 {
@@ -78,7 +79,7 @@ class SuperadminAuthController extends Controller
 
         if (!$storedCode || (int) $storedCode !== (int) $request->code) {
             return response()->json([
-                'message' => 'Código inválido o expirado'
+                'message' => 'Código inválido o expirado, por favor intentalo de nuevo'
             ], 401);
         }
 
@@ -138,11 +139,47 @@ class SuperadminAuthController extends Controller
             'email.min' => 'El correo debe tener mínimo 12 caracteres',
         ]);
 
+        $ipKey = 'superadmin_recovery_ip_' . $request->ip();
+        $emailKey = 'superadmin_recovery_email_' . $request->email;
+        $delayKey = 'superadmin_recovery_delay_' . $request->email;
+
+        if (RateLimiter::tooManyAttempts($ipKey, 10)) {
+            $seconds = RateLimiter::availableIn($ipKey);
+            return response()->json([
+                'message' => 'Demasiados intentos desde esta IP. Por favor intente en ' . ceil($seconds / 60) . ' minutos.',
+                'remaining_time' => $seconds,
+                'available_attempts' => 0
+            ], 429);
+        }
+
+        if (RateLimiter::tooManyAttempts($emailKey, 5)) {
+            $seconds = RateLimiter::availableIn($emailKey);
+            return response()->json([
+                'message' => 'Ha excedido el límite de códigos (5) para este correo. Por favor intente en ' . ceil($seconds / 60) . ' minutos.',
+                'remaining_time' => $seconds,
+                'available_attempts' => 0
+            ], 429);
+        }
+
+        if (RateLimiter::tooManyAttempts($delayKey, 1)) {
+            $seconds = RateLimiter::availableIn($delayKey);
+            return response()->json([
+                'message' => 'Debe esperar ' . $seconds . ' segundos antes de solicitar otro código.',
+                'remaining_time' => $seconds,
+                'available_attempts' => RateLimiter::remaining($emailKey, 5)
+            ], 429);
+        }
+
+        RateLimiter::hit($ipKey, 1800);
+        RateLimiter::hit($delayKey, 30);
+
         $superadmin = Superadmin::where('email', $request->email)->first();
 
         if (!$superadmin) {
             return response()->json(['message' => 'Correo no encontrado'], 404);
         }
+
+        RateLimiter::hit($emailKey, 1800);
 
         $code = random_int(100000, 999999);
 
@@ -158,7 +195,10 @@ class SuperadminAuthController extends Controller
             return response()->json(['message' => 'Error enviando correo'], 500);
         }
 
-        return response()->json(['message' => 'Código enviado']);
+        return response()->json([
+            'message' => 'Código enviado',
+            'available_attempts' => RateLimiter::remaining($emailKey, 5)
+        ]);
     }
 
     /**
@@ -185,7 +225,7 @@ class SuperadminAuthController extends Controller
         $cachedCode = Cache::get('superadmin_recovery_' . $request->email);
 
         if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
-            return response()->json(['message' => 'Código inválido o expirado'], 400);
+            return response()->json(['message' => 'Código inválido o expirado, por favor intentalo de nuevo'], 400);
         }
 
         return response()->json(['message' => 'Código correcto']);
@@ -199,7 +239,7 @@ class SuperadminAuthController extends Controller
         $request->validate([
             'email' => 'required|email',
             'code' => 'required|numeric|digits:6|regex:/^[0-9]{6}$/',
-            'password' => 'required|string|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/|min:8|max:25|confirmed'
+            'password' => 'required|string|regex:/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/|min:8|max:25|confirmed'
         ],
         [
             'email.required' => 'El correo es obligatorio',

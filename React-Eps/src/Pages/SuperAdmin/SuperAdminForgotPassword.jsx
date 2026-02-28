@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import Formbuilder from "../../components/UI/Formbuilder";
+import FormWithIcons from "../../components/UI/FormWithIcons";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminForgotPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
@@ -21,6 +21,10 @@ export default function SuperAdminForgotPassword() {
 
             if (response.status === 200) {
                 sessionStorage.setItem("recovery_email", email);
+                sessionStorage.setItem("recovery_timer_end", Date.now() + 30000);
+                if (response.data?.available_attempts !== undefined) {
+                    sessionStorage.setItem("recovery_attempts", response.data.available_attempts);
+                }
                 Swal.fire({
                     icon: "success",
                     title: "Código enviado",
@@ -39,8 +43,7 @@ export default function SuperAdminForgotPassword() {
                     icon: "error",
                     title: "Error",
                     text: message,
-                    timer: 1500,
-                    showConfirmButton: false,
+                    showConfirmButton: true,
                 });
             }
         } finally {
@@ -58,7 +61,7 @@ export default function SuperAdminForgotPassword() {
                     Ingrese su correo electrónico para recibir un código de recuperación.
                 </p>
 
-                <Formbuilder
+                <FormWithIcons
                     config={superAdminForgotPassword}
                     onChange={(field, value) => {
                         setEmail(value);
@@ -73,7 +76,7 @@ export default function SuperAdminForgotPassword() {
                         type="submit"
                         disabled={loading}
                     />
-                </Formbuilder>
+                </FormWithIcons>
 
                 <div className="mt-4 text-center">
                     <Link to="/SuperAdmin-Login" className="text-blue-600 hover:underline text-sm font-semibold">
