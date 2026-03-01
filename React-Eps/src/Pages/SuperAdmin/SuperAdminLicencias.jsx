@@ -20,7 +20,7 @@ export default function SuperAdminLicencias() {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get("/licencias");
+      const res = await axios.get("/superadmin/licencias");
       console.log("Respuesta completa:", res.data);
 
 

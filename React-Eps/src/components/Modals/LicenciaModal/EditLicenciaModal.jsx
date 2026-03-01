@@ -32,7 +32,7 @@ export default function EditLicenciaModal({
             console.log("Enviando actualización para NIT:", licenciaData.id);
 
             // 2. Petición API
-            const response = await axios.put(`/licencia/${licenciaData.id}`, payload);
+            const response = await axios.put(`/superadmin/licencia/${licenciaData.id}`, payload);
 
             // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;
@@ -91,7 +91,7 @@ export default function EditLicenciaModal({
             try {
                 setSaving(true);
                 // Petición DELETE a tu API de Laravel
-                await superAdminApi.delete(`/licencia/${licenciaData.id}`);
+                await superAdminApi.delete(`/superadmin/licencia/${licenciaData.id}`);
 
                 await Swal.fire({
                     icon: 'success',

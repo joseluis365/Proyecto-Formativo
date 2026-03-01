@@ -15,7 +15,7 @@ export default function SuperAdminHistorial() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await superAdminApi.get("/empresa-licencias");
+                const response = await superAdminApi.get("/superadmin/empresa-licencias");
                 setHistory(response.data);
             } catch (err) {
                 console.error("Error fetching history:", err);
@@ -31,7 +31,7 @@ export default function SuperAdminHistorial() {
     const handleDownloadHistory = async () => {
         try {
             const token = sessionStorage.getItem("superadmin_token");
-            const response = await fetch("http://localhost:8000/api/licencias/historial/pdf", {
+            const response = await fetch("http://localhost:8000/api/superadmin/licencias/historial/pdf", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

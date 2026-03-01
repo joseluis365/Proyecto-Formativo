@@ -33,7 +33,7 @@ export default function CreateLicenciaModal({
             const payload = {
                 ...data,
             };
-            await superAdminApi.post(`/licencia`, payload);
+            await superAdminApi.post(`/superadmin/licencia`, payload);
 
             // 2. Disparas la alerta de SweetAlert2
             await Swal.fire({

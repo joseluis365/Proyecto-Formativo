@@ -45,7 +45,7 @@ export default function EditEmpresaModal({
 
             console.log("Enviando actualización para NIT:", empresaData.nit);
 
-            await axios.put(`/empresa/${empresaData.nit}`, payload);
+            await axios.put(`/superadmin/empresa/${empresaData.nit}`, payload);
 
             const Swal = (await import("sweetalert2")).default;
             await Swal.fire({

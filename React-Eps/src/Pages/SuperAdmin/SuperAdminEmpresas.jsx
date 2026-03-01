@@ -41,7 +41,7 @@ export default function SuperAdminEmpresas() {
       setLoading(true);
       setError(null);
 
-      const res = await superAdminApi.get("/empresas", {
+      const res = await superAdminApi.get("/superadmin/empresas", {
         params: {
           search: debouncedSearch || undefined,
           id_estado: status || undefined,
@@ -83,7 +83,7 @@ export default function SuperAdminEmpresas() {
   useEffect(() => {
     const fetchLicencias = async () => {
       try {
-        const res = await superAdminApi.get('/licencias');
+        const res = await superAdminApi.get('/superadmin/licencias');
         setLicencias(res.data.data || res.data);
       } catch (err) {
         console.error("Error al cargar licencias:", err);
@@ -114,7 +114,7 @@ export default function SuperAdminEmpresas() {
       });
 
       if (result.isConfirmed) {
-        await superAdminApi.post(`/empresa/${company.nit}/activar-licencia`);
+        await superAdminApi.post(`/superadmin/empresa/${company.nit}/activar-licencia`);
         Swal.fire(
           'Activada!',
           'La licencia ha sido activada correctamente.',
@@ -134,7 +134,7 @@ export default function SuperAdminEmpresas() {
 
   const handleViewCompany = async (company) => {
     try {
-      const res = await superAdminApi.get(`/empresa/${company.nit}`);
+      const res = await superAdminApi.get(`/superadmin/empresa/${company.nit}`);
       setSelectedCompany(res.data);
       setViewingCompany(true);
     } catch (error) {
@@ -158,7 +158,7 @@ export default function SuperAdminEmpresas() {
       const token = sessionStorage.getItem("superadmin_token");
 
       const response = await fetch(
-        "http://localhost:8000/api/empresas/pdf",
+        "http://localhost:8000/api/superadmin/empresas/pdf",
         {
           headers: {
             Authorization: `Bearer ${token}`,

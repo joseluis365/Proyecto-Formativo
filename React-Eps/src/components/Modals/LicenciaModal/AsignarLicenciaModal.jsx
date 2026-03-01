@@ -111,7 +111,7 @@ export default function AssignLicenciaModal({
         duracion_meses: licenciaSeleccionada ? licenciaSeleccionada.duracion_meses : null
       };
 
-      await superAdminApi.post('/empresa-licencia', payload);
+      await superAdminApi.post('/superadmin/empresa-licencia', payload);
 
       Swal.fire({
         icon: 'success',

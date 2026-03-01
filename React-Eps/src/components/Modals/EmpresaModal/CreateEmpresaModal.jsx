@@ -84,7 +84,7 @@ export default function CreateEmpresaModal({
             setSaving(true);
             setErrors({});
             const payload = { ...formData };
-            await superAdminApi.post(`/empresa`, payload);
+            await superAdminApi.post(`/superadmin/empresa`, payload);
 
             Swal.fire({
                 icon: 'success',
