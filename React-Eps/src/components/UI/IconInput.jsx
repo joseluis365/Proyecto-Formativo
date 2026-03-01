@@ -25,9 +25,8 @@ export default function IconInput({
 
         <input
           {...props}
-          className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${
-            error ? "border-red-500" : "border-[#cfd7e7] dark:border-white/10"
-          } bg-white dark:bg-background-dark/50 h-12 pl-12 placeholder:text-[#4c669a]/60 text-base font-normal`}
+          className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? "border-red-500" : "border-[#cfd7e7] dark:border-white/10"
+            } bg-white dark:bg-background-dark/50 h-12 pl-12 placeholder:text-[#4c669a]/60 text-base font-normal`}
           placeholder={placeholder}
           type={type}
           id={id}

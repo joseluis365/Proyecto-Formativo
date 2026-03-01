@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { ToastProvider } from "./ToastContext";
 import LicenciasSection from './Pages/Inicio/Licencias'
 
+
 import SuperAdminLogin from './Pages/SuperAdmin/SuperAdminLogin'
 
 ReactDOM.createRoot(document.getElementById('root')).render(

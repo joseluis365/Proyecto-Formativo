@@ -34,7 +34,7 @@ export default function IndexHeader() {
                         <NavLink className={navLinkStyles} to="/">Inicio</NavLink>
                         <NavLink className={navLinkStyles} to="/SobreNosotros">Sobre Nosotros</NavLink>
                         <NavLink className={navLinkStyles} to="/Contactenos">Contáctenos</NavLink>
-                        <NavLink className={navLinkStyles} to="/Licencias">Licencias</NavLink>
+                        <NavLink className={navLinkStyles} to="/Licencias">Planes</NavLink>
                     </nav>
 
                     <Link to="/login">

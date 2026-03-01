@@ -1,11 +1,11 @@
 export default function CompanyCard({
   company,
   email,
-  expiresAt,
+  licenseType,
   status,
-  onView,          
-  onAssignLicense, 
-  onRenew, 
+  onView,
+  onAssignLicense,
+  onRenew,
   onActive
 }) {
   const LICENSE_STATUS = {
@@ -22,7 +22,7 @@ export default function CompanyCard({
 
   return (
     <div className="relative w-full max-w-sm bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
-      
+
       {/* Estado */}
       <span
         className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full ${statusData.classes}`}
@@ -56,10 +56,10 @@ export default function CompanyCard({
 
         <div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Licencia expira
+            Tipo de Licencia
           </p>
           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {expiresAt || "-"}
+            {licenseType || "Sin Licencia"}
           </p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default function CompanyCard({
         {/* Asignar licencia si no tiene ninguna */}
         {(status === 3 || status === undefined) && (
           <button
-          onClick={onAssignLicense}
+            onClick={onAssignLicense}
             className="w-full py-2 text-sm font-semibold rounded-lg
                        bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
           >
@@ -100,7 +100,7 @@ export default function CompanyCard({
         {/* Opcional: por vencer solo ver o ver + renovar */}
         {status === 4 && (
           <button
-          onClick={onRenew}
+            onClick={onRenew}
             className="w-full py-2 text-sm font-semibold rounded-lg
                        bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
           >

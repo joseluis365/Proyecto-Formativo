@@ -1,11 +1,22 @@
 import HorizontalCard from "./HorizontalCard";
+import BackArrow from "../UI/BackArrow";
 
 export default function LeftSection() {
     return (
         <div className="relative hidden lg:flex lg:w-3/5 flex-col justify-center px-12 xl:px-24 bg-linear-to-br from-[#0a1e4d] to-primary overflow-hidden">
+            
             <div className="absolute inset-0 medical-pattern"></div>
+            <div className="absolute top-8 left-12 xl:left-24 z-20 group flex items-center">
+    <BackArrow />
+    
+    {/* El Tooltip */}
+    <span className="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity absolute left-12 ml-2 px-2 py-1 text-xs font-medium text-white bg-black/60 backdrop-blur-sm rounded-md whitespace-nowrap">
+        Volver al inicio
+    </span>
+</div>
             <div className="relative z-10 flex flex-col gap-8">
                 <div className="flex items-center gap-3 text-white">
+                    
                     <div className="size-10">
                         <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                             <path d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z" fill="white"></path>
@@ -16,6 +27,7 @@ export default function LeftSection() {
                 </div>
                 <div className="flex flex-col gap-4 max-w-lg">
                     <h1 className="text-white text-5xl font-black leading-tight tracking-tight">
+                        
                         Acceso al portal de Salud Total
                     </h1>
                     <p className="text-lg font-medium text-white/80 leading-relaxed">

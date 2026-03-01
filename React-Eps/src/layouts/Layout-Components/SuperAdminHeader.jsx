@@ -1,6 +1,8 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+import LogoutButton from "../../components/UI/LogoutButton";
+
 export default function SuperAdminHeader() {
     const [open, setOpen] = useState(false);
 
@@ -28,7 +30,7 @@ export default function SuperAdminHeader() {
                     <nav className="flex items-center gap-6 mx-auto">
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Dashboard">Inicio</NavLink>
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Empresas">Empresas</NavLink>
-                        <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Licencias</NavLink>
+                        <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Planes</NavLink>
                         <NavLink className={navLinkStyles} to="/SuperAdmin-Historial">Historial</NavLink>
                     </nav>
                     <div className="flex items-center" >
@@ -37,18 +39,7 @@ export default function SuperAdminHeader() {
                         </div>
                         
                     
-                    <Link to="/login">
-                        <button
-                            type="button"
-                            className="w-10 h-10 flex items-center justify-center rounded-full 
-                            bg-primary text-white hover:bg-primary/90 
-                            transition cursor-pointer"
-                        >
-                            <span className="material-symbols-outlined text-3xl">
-                                person
-                            </span>
-                        </button>
-                    </Link>
+                    <LogoutButton />
                     </div>
                 </div>
 
@@ -95,11 +86,11 @@ export default function SuperAdminHeader() {
                     </nav>
 
                     {/* CTA */}
-                    <Link to="/login" onClick={closeMenu} className="mt-auto">
+                    
                         <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
-                            Iniciar Sesión
+                            Cerrar Sesión
                         </button>
-                    </Link>
+                    
                 </div>
             </aside>
         </>

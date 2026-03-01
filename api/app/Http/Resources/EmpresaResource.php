@@ -22,9 +22,10 @@ class EmpresaResource extends JsonResource
         $fechaFin = Carbon::parse($licencia->fecha_fin)->startOfDay();
         $fechaExpiracion = $licencia->fecha_fin;
 
-        // Usamos el estado real de la licencia de la base de datos
-        // (Esto respeta el estado 6 'Pendiente', 5 'Vencida', etc., tal cual esté en DB)
         $estadoCalculado = $licencia->id_estado;
+        $tipoLicencia = $licencia->tipoLicencia ? $licencia->tipoLicencia->tipo : 'Desconocido';
+    } else {
+        $tipoLicencia = 'Sin Licencia';
     }
 
         return [
@@ -35,6 +36,7 @@ class EmpresaResource extends JsonResource
             'direccion' => $this->direccion,
             'id_estado' => $estadoCalculado,
             'expiresAt' => $fechaExpiracion,
+            'licenseType' => $tipoLicencia,
         ];
     }
 }

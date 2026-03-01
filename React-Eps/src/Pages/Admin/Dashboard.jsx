@@ -25,7 +25,7 @@ export default function Dashboard() {
             <PieChartOrdenes data={ordenesMock} />
           </div>
         </div>
-        <FeedPanel feedItems={dashboardFeed} />
+        <FeedPanel feedItems={dashboardFeed} channelName="admin-feed" />
       </div>
     </>
   );

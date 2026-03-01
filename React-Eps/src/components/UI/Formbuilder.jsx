@@ -1,11 +1,11 @@
 import IconInput from "./IconInput";
 
-export default function Formbuilder({ 
-  onSubmit, 
-  config, 
-  onChange, 
-  children, 
-  errors = {} 
+export default function Formbuilder({
+  onSubmit,
+  config,
+  onChange,
+  children,
+  errors = {}
 }) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5">

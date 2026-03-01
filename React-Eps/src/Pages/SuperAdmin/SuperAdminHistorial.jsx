@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import HistoryCard from "../../components/SuperAdmin/HistoryCard";
@@ -15,7 +15,7 @@ export default function SuperAdminHistorial() {
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await api.get("/empresa-licencias");
+                const response = await api.get("/superadmin/empresa-licencias");
                 setHistory(response.data);
             } catch (err) {
                 console.error("Error fetching history:", err);
@@ -28,17 +28,50 @@ export default function SuperAdminHistorial() {
         fetchHistory();
     }, []);
 
+    const handleDownloadHistory = async () => {
+        try {
+            const token = sessionStorage.getItem("superadmin_token");
+            const response = await fetch("http://localhost:8000/api/licencias/historial/pdf", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error("Error al descargar el PDF");
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "historial_licencias.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+        }
+    };
+
     return (
         <>
-            <div className="mb-8">
-                <PrincipalText
-                    icon="history_edu"
-                    text="Historial de Vinculaciones"
-                    number={history.length}
-                />
-                <p className="text-gray-500 dark:text-gray-400 mt-2 ml-1 text-sm">
-                    Registro completo de todas las licencias asignadas a empresas.
-                </p>
+            <div className="mb-8 flex flex-wrap justify-between items-start">
+                <div>
+                    <PrincipalText
+                        icon="history_edu"
+                        text="Historial de Vinculaciones"
+                        number={history.length}
+                    />
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 ml-1 text-sm">
+                        Registro completo de todas las licencias asignadas a empresas.
+                    </p>
+                </div>
+                <button
+                    onClick={handleDownloadHistory}
+                    className="bg-red-600 hover:bg-red-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all shadow-lg flex items-center gap-2"
+                >
+                    <span className="material-symbols-outlined">description</span>
+                    Descargar Historial
+                </button>
             </div>
 
             <AnimatePresence>

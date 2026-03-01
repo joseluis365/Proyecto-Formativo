@@ -9,34 +9,40 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Empresa;
 use App\Models\Usuario;
 use App\Models\EmpresaLicencia;
+use App\Http\Requests\StoreEmpresaRequest;
+use App\Events\SystemActivityEvent;
 
 class RegistroEmpresaController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreEmpresaRequest $request)
     {
-        // 1. Validamos todo lo que viene del formulario
+        // Validamos todo lo que viene del formulario
         $request->validate([
             'nit' => 'required|unique:empresa,nit',
             'nombre' => 'required|string',
             'direccion' => 'required|string',
-            'email_contacto' => 'required|email|unique:usuario,email',
-            'telefono' => 'required|string',
+            'email_contacto' => 'required|email:rfc,dns|unique:usuario,email',
+            'telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
             'documento_representante' => 'required|string',
             'nombre_representante' => 'required|string',
-            'email_representante' => 'required|email|unique:usuario,email',
-            'telefono_representante' => 'required|string',
-            'ciudad' => 'required|string',
-            'admin_name' => 'required|string',
-            'admin_email' => 'required|email|unique:usuario,email',
+            'email_representante' => 'required|email:rfc,dns|unique:usuario,email',
+            'telefono_representante' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
+            'id_ciudad' => 'required|exists:ciudad,codigo_postal',
+            'admin_nombre' => 'required|string',
+            'admin_apellido' => 'required|string',
+            'admin_documento' => 'required|string|unique:usuario,documento',
+            'admin_email' => 'required|email:rfc,dns|unique:usuario,email',
+            'admin_telefono' => 'required|numeric|min:10|max:10|regex:/^\d{1,10}$/',
+            'admin_direccion' => 'required|string',
             'admin_password' => 'required|min:8',
-            'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
+            'id_tipo_licencia' => 'required|exists :tipo_licencia,id_tipo_licencia',
             'duracion_meses' => 'required|integer'
         ]);
 
         try {
             return DB::transaction(function () use ($request) {
                 
-                // PASO 1: Crear la Empresa
+                // Crear la Empresa
                 $empresa = Empresa::create([
                     'nit' => $request->nit,
                     'nombre' => $request->nombre,
@@ -46,19 +52,29 @@ class RegistroEmpresaController extends Controller
                     'nombre_representante' => $request->nombre_representante,
                     'email_representante' => $request->email_representante,
                     'telefono_representante' => $request->telefono_representante,
-                    'ciudad' => $request->ciudad,
+                    'id_ciudad' => $request->id_ciudad,
                     'direccion' => $request->direccion,
-                    'id_estado' => 1, // Estado inicial (ej: registrado sin activar)
+                    'id_estado' => 1,
                 ]);
 
-                // PASO 2: Crear el Usuario Administrador vinculado a ese NIT
+                event(new SystemActivityEvent(
+                    "Nueva empresa registrada: " . $empresa->nombre, // Título
+                    'red',                                   // Tipo (Color rojo)
+                    'store',                                       // Icono
+                    'superadmin-feed'
+                ));
+
+                // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
                     'documento' => $request->admin_documento,
-                    'nombre' => $request->admin_name,
+                    'nombre' => $request->admin_nombre,
+                    'apellido' => $request->admin_apellido,
                     'email' => $request->admin_email,
-                    'contrasena' => Hash::make($request->admin_password),
-                    'nit' => $empresa->nit, // Relación por NIT
-                    'id_rol' => 2, // Rol de Admin de Empresa
+                    'telefono' => $request->admin_telefono,
+                    'direccion' => $request->admin_direccion,
+                    'contrasena' => $request->admin_password,
+                    'nit' => $empresa->nit, 
+                    'id_rol' => 2, 
                     'id_estado' => 1,
                 ]);
 
@@ -66,16 +82,26 @@ class RegistroEmpresaController extends Controller
                 $letras = strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 6));
                 $customId = $numeros . $letras;
 
-                // PASO 3: Vincular la Licencia (con estado Pendiente)
+                // Vincular la Licencia (con estado Pendiente)
                 EmpresaLicencia::create([
                     'id_empresa_licencia' => $customId,
                     'nit' => $empresa->nit,
                     'id_tipo_licencia' => $request->id_tipo_licencia,
-                    'fecha_inicio' => now(),
-                    'fecha_fin' => now()->addMonths($request->duracion_meses),
-                    'id_estado' => 6, // ESTADO 6: Pendiente de pago/activación
-                    'referencia_pago' => 'REF-' . strtoupper(bin2hex(random_bytes(4)))
+                    'fecha_inicio' => null,
+                    'fecha_fin' => null,
+                    'id_estado' => 6, 
                 ]);
+
+                event(new SystemActivityEvent(
+                    "Nueva licencia registrada: " . $customId, // Título
+                    'blue',                                   // Tipo (Color rojo)
+                    'store',                                       // Icono
+                    'superadmin-feed'
+                ));
+
+                
+
+                
 
                 return response()->json([
                     'status' => 'success',

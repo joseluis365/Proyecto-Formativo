@@ -49,25 +49,28 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Nav */}
           <nav className="mt-6 grow">
             <div className="flex flex-col gap-2">
-              <SidebarItem to="/dashboard" icon="home" label="Inicio" onClick={onClose}/>
+              <SidebarItem to="/dashboard" icon="home" label="Inicio" onClick={onClose} />
               <SidebarDropdown icon="group" label="Usuarios" basePath="/usuarios">
                 <SidebarSubItem to="/usuarios/personal" label="Personal" />
                 <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
                 <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
               </SidebarDropdown>
-              <SidebarItem to="/farmacia" icon="pill" label="Farmacia" />
               <SidebarItem to="/citas" icon="calendar_month" label="Citas" />
               <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
+              <SidebarDropdown icon="settings" label="Gestión Interna" basePath="/configuracion">
+                <SidebarSubItem to="/configuracion/prioridades" label="Prioridades" />
+                <SidebarSubItem to="/configuracion/tipos-cita" label="Tipos de Cita" />
+                <SidebarSubItem to="/configuracion/categorias-examen" label="Categorías de Examen" />
+                <SidebarSubItem to="/configuracion/categorias-medicamento" label="Categorías de Medicamento" />
+                <SidebarSubItem to="/configuracion/especialidades" label="Especialidades" />
+                <SidebarSubItem to="/configuracion/farmacias" label="Farmacias" />
+                <SidebarSubItem to="/configuracion/departamentos" label="Departamentos" />
+                <SidebarSubItem to="/configuracion/ciudades" label="Ciudades" />
+                <SidebarSubItem to="/configuracion/roles" label="Roles" />
+                <SidebarSubItem to="/configuracion/estados" label="Estados" />
+              </SidebarDropdown>
             </div>
           </nav>
-
-          {/* Footer */}
-          <div>
-            <a className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300">
-              <span className="material-symbols-outlined">settings</span>
-              <p className="text-sm font-medium">Settings</p>
-            </a>
-          </div>
         </div>
       </aside>
     </>

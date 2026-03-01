@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminLogin } from "../../data/SuperAdminForms";
+import Swal from 'sweetalert2';
 
 export default function SuperAdminLogin() {
   const navigate = useNavigate();
+
+  // Limpiar sesión al cargar el login
+  useEffect(() => {
+    sessionStorage.removeItem("superadmin_token");
+    sessionStorage.removeItem("superadmin_user");
+    sessionStorage.removeItem("superadmin_email");
+  }, []);
 
   // 🔹 Estado del formulario
   const [formData, setFormData] = useState({
@@ -65,7 +73,13 @@ export default function SuperAdminLogin() {
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "Credenciales inválidas");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Credenciales inválidas',
+          showConfirmButton: false,
+          timer: 1000,
+        });
         setLoading(false); // 🔓 Libera si falla
         return;
       }
@@ -103,6 +117,12 @@ export default function SuperAdminLogin() {
             disabled={loading}
           />
         </Formbuilder>
+
+        <div className="mt-4 text-center">
+          <Link to="/SuperAdmin-ForgotPassword" className="text-blue-600 hover:underline text-sm font-semibold">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
 
         {/* Info */}
         <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 flex items-start gap-3">

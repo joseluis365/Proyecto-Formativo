@@ -1,13 +1,13 @@
 import { useState } from "react";
-import api from "../../../Api/axios";
+import api from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalBody from "../ModalBody";
-import ModalFooter from "../ModalFooter";
-import UserForm from "../../Users/UserForm";
+import Form from "../../UI/Form";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
+import Swal from 'sweetalert2';
 
 
 export default function CreateLicenciaModal({
@@ -33,17 +33,24 @@ export default function CreateLicenciaModal({
         try {
             setSaving(true);
             setErrors({});
-            // Ensure numeric values are numbers if needed, but API might handle strings
             const payload = {
                 ...data,
             };
             await api.post(`/licencia`, payload);
-            toast.success("Licencia creada correctamente");
+
+            // 2. Disparas la alerta de SweetAlert2
+            await Swal.fire({
+                icon: 'success',
+                title: 'Plan Creado',
+                text: 'El plan ha sido creado correctamente.',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            // 3. Estas acciones ocurren SOLO después de que el usuario cierra la alerta
             setSuccess(true);
-            setTimeout(() => {
-                onSuccess?.();
-                onClose();
-            }, 1200);
+            onSuccess?.();
+            onClose();
         } catch (error) {
             if (error.response?.status === 422) {
                 setErrors(
@@ -54,7 +61,13 @@ export default function CreateLicenciaModal({
                     )
                 );
             } else {
-                toast.error("Error al crear la licencia");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error inesperado al crear la licencia.',
+                    showConfirmButton: false,
+                    timer: 1100
+                });
             }
         }
         finally {
@@ -80,7 +93,7 @@ export default function CreateLicenciaModal({
                 onClick={(e) => e.stopPropagation()}
             >
                 <BaseModal>
-                    <ModalHeader icon="verified" title="CREAR LICENCIA" onClose={onClose} />
+                    <ModalHeader icon="verified" title="CREAR PLAN" onClose={onClose} />
                     <ModalBody>
                         <AnimatePresence>
                             {success && (
@@ -94,7 +107,7 @@ export default function CreateLicenciaModal({
                                     onClick={!saving ? onClose : undefined}
                                 >
                                     <span className="material-symbols-outlined">check_circle</span>
-                                    <span className="font-medium">Licencia creada correctamente</span>
+                                    <span className="font-medium">Plan creado correctamente</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -103,8 +116,8 @@ export default function CreateLicenciaModal({
                             loading ? (
                                 <p>Cargando...</p>
                             ) : (
-                                <UserForm
-                                    initialValues={initialLicencia}
+                                <Form
+                                    values={initialLicencia}
                                     fields={createLicenciaFormConfig[1]}
                                     onSubmit={handleCreate}
                                     disabled={saving}
@@ -114,10 +127,6 @@ export default function CreateLicenciaModal({
                             )
                         )}
                     </ModalBody>
-
-                    <ModalFooter>
-
-                    </ModalFooter>
                 </BaseModal>
             </motion.div>
         </motion.div>

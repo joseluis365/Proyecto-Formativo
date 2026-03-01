@@ -45,7 +45,6 @@ class CheckLicenses extends Command
             // Actualizamos el detalle
             $licencia->update(['id_estado' => $nuevoEstado]);
             
-            // Opcional: Actualizamos la empresa también para que coincida
             \App\Models\Empresa::where('nit', $licencia->nit)
                 ->update(['id_estado' => $nuevoEstado]);
                 

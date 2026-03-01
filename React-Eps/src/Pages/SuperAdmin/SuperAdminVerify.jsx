@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Formbuilder from "../../components/UI/Formbuilder";
 import BlueButton from "../../components/UI/BlueButton";
+import Swal from 'sweetalert2';
 import { superAdminVerify } from "../../data/SuperAdminForms";
 
 export default function SuperAdminVerify() {
   const navigate = useNavigate();
 
   const [code, setCode] = useState("");
-
+  // Estado local para el email por si se pierde del storage, aunque idealmente viene del login
   const email = sessionStorage.getItem("superadmin_email");
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function SuperAdminVerify() {
           },
           body: JSON.stringify({
             email,
-            code: code, // ✅ NOMBRE CORRECTO
+            code: code,
           }),
         }
       );
@@ -55,14 +56,42 @@ export default function SuperAdminVerify() {
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "Código incorrecto o expirado");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Código incorrecto o expirado',
+          showConfirmButton: false,
+          timer: 1000,
+        });
         return;
       }
 
-      // ✅ Autenticación completa
+      // ✅ Autenticación completa - Guardar Token
+      if (result.access_token) {
+        sessionStorage.setItem("superadmin_token", result.access_token);
+        // Opcional: Guardar usuario si se devuelve
+        if (result.user) {
+          sessionStorage.setItem("superadmin_user", JSON.stringify(result.user));
+        }
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Verificado',
+        text: 'Código verificado correctamente',
+        showConfirmButton: false,
+        timer: 1000,
+      });
+
       navigate("/SuperAdmin-Dashboard");
     } catch (error) {
-      alert("Error de conexión con el servidor");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error de conexión con el servidor',
+        showConfirmButton: false,
+        timer: 1000,
+      });
     }
   };
 

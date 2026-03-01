@@ -1,19 +1,74 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import EditEmpresaModal from "./EditEmpresaModal";
 
 export default function CompanyDetailsModal({ company, onClose }) {
     const modalRef = useRef(null);
 
-    // Cierra el modal si se hace clic fuera
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose();
-            }
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEmpresa, setSelectedEmpresa] = useState(null);
+
+    const handleEditClick = (company) => {
+        console.log("Editing company:", company);
+        const mappedData = {
+            // Explicitly map properties to ensure they exist for the form
+            nit: company.nit || "",
+            nombre: company.nombre || "",
+            email_contacto: company.email_contacto || "",
+            telefono: company.telefono || "",
+            ciudad: company.ciudad || "",
+            direccion: company.direccion || "",
+            id_estado: company.id_estado || 1, // Default or pass 1 if missing
+
+            // Representante
+            documento_representante: company.documento_representante || "",
+            nombre_representante: company.nombre_representante || "",
+            telefono_representante: company.telefono_representante || "",
+            email_representante: company.email_representante || "",
+
+            // Admin data
+            admin_nombre: company?.admin_user?.nombre || "",
+            admin_documento: company?.admin_user?.documento || "",
+            admin_email: company?.admin_user?.email || "",
+
+            admin_password: "",
+            admin_password_confirmation: "",
+        };
+        console.log("Mapped data for form:", mappedData);
+        setSelectedEmpresa(mappedData);
+        setIsEditModalOpen(true);
+    };
+
+    // Función para cerrar y limpiar
+    const handleCloseModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedEmpresa(null);
+    };
+
+    const handleDownloadPdf = async () => {
+        try {
+            const token = sessionStorage.getItem("token");
+            const response = await fetch(`http://localhost:8000/api/empresa/${company.nit}/pdf`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) throw new Error("Error al descargar el PDF");
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `detalle_empresa_${company.nit}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+            // You might want to show a toast/alert here
         }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [onClose]);
+    };
 
     if (!company) return null;
 
@@ -26,7 +81,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
             case 3: return "Sin Licencia";
             case 4: return "Por vencer";
             case 5: return "Vencida";
-            case 6: return "Pendiente de pago";
+            case 6: return "Bloqueada";
             default: return "Desconocido";
         }
     };
@@ -82,7 +137,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500 block">Ciudad</span>
-                                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(company.ciudad)}</span>
+                                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{safeText(company.ciudad?.nombre)}</span>
                             </div>
                             <div>
                                 <span className="text-xs text-gray-500 block">Teléfono Contacto</span>
@@ -151,13 +206,13 @@ export default function CompanyDetailsModal({ company, onClose }) {
                                         <div>
                                             <span className="text-xs text-gray-500 block">Inicio</span>
                                             <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                {licencia.fecha_inicio ? new Date(licencia.fecha_inicio).toLocaleDateString() : 'N/A'}
+                                                {licencia.fecha_inicio ? new Date(licencia.fecha_inicio).toISOString().split('T')[0] : 'N/A'}
                                             </span>
                                         </div>
                                         <div>
                                             <span className="text-xs text-gray-500 block">Fin</span>
                                             <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                {licencia.fecha_fin ? new Date(licencia.fecha_fin).toLocaleDateString() : 'N/A'}
+                                                {licencia.fecha_fin ? new Date(licencia.fecha_fin).toISOString().split('T')[0] : 'N/A'}
                                             </span>
                                         </div>
                                     </div>
@@ -207,6 +262,20 @@ export default function CompanyDetailsModal({ company, onClose }) {
                 {/* Footer */}
                 <div className="p-6 border-t border-gray-200 dark:border-gray-800 flex justify-end">
                     <button
+                        onClick={handleDownloadPdf}
+                        className="mr-5 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium cursor-pointer flex items-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-lg">download</span>
+                        Descargar PDF
+                    </button>
+                    <button
+                        onClick={() => handleEditClick(company)}
+                        className="mr-3 px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors font-medium cursor-pointer"
+                    >
+                        Editar
+                    </button>
+
+                    <button
                         onClick={onClose}
                         className="px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors font-medium cursor-pointer"
                     >
@@ -214,6 +283,16 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     </button>
                 </div>
             </motion.div>
+            {isEditModalOpen && (
+                <EditEmpresaModal
+                    empresaData={selectedEmpresa}
+                    onClose={handleCloseModal}
+                    onSuccess={() => {
+                        handleCloseModal();
+                        onClose();
+                    }}
+                />
+            )}
         </div>
     );
 }

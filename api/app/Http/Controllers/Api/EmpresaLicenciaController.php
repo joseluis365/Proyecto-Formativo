@@ -8,19 +8,24 @@ use Carbon\Carbon;
 use App\Models\EmpresaLicencia;
 use App\Models\Licencia;
 use App\Models\Empresa;
+use App\Events\SystemActivityEvent;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpresaLicenciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia'])
+        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
+        $query->where('id_rol', 2);
+    },])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json($historial);
+    }
+
+    public function getTipos() {
+    return response()->json(Licencia::all());
     }
 
     /**
@@ -29,36 +34,35 @@ class EmpresaLicenciaController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nit' => 'required|exists:empresa,nit', // Note: Table is 'empresa' not 'empresas' based on Model
-            'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia', // Note: Model says table 'tipo_licencia', PK 'id_tipo_licencia'
-            'fecha_inicio' => 'required|date',
+            'nit' => 'required|exists:empresa,nit',
+            'id_tipo_licencia' => 'required|exists:tipo_licencia,id_tipo_licencia',
         ]);
 
         $tipoLicencia = Licencia::findOrFail($data['id_tipo_licencia']);
 
-        $fechaInicio = Carbon::parse($data['fecha_inicio']);
-        $fechaFin = $fechaInicio->copy()->addMonths($tipoLicencia->duracion_meses);
-
-        // Generar ID personalizado: 6 números + 6 letras
-        // Ejemplo: 123456ABCDEF
         $numeros = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
         $letras = strtoupper(substr(str_shuffle('abcdefghijklmnopqrstuvwxyz'), 0, 6));
         $customId = $numeros . $letras;
 
-        // Crear la licencia
         $licencia = EmpresaLicencia::create([
             'id_empresa_licencia' => $customId,
             'nit' => $data['nit'],
-            'id_tipo_licencia' => $tipoLicencia->id_tipo_licencia, // Use correct Column
-            'fecha_inicio' => $fechaInicio,
-            'fecha_fin' => $fechaFin,
-            'id_estado' => 1, // Licencia Activa
+            'id_tipo_licencia' => $tipoLicencia->id_tipo_licencia,
+            'fecha_inicio' => null,
+            'fecha_fin' => null,
+            'id_estado' => 6,
         ]);
         
-        // Actualizar estado de la empresa
         $empresa = Empresa::findOrFail($data['nit']);
-        $empresa->id_estado = 1; // 1 = Con Licencia Activa (asumido)
+        $empresa->id_estado = 1;
         $empresa->save();
+
+        event(new SystemActivityEvent(
+            "Nueva licencia registrada: " . $customId, // Título
+            'blue',                                   // Tipo (Color rojo)
+            'store',                                       // Icono
+            'superadmin-feed'
+        ));
 
         return response()->json([
             'data' => $licencia
@@ -67,9 +71,8 @@ class EmpresaLicenciaController extends Controller
 
     public function activate($nit)
     {
-        // Buscar la licencia pendiente (6) más reciente o cualquiera que necesite activación
         $licencia = EmpresaLicencia::where('nit', $nit)
-            ->where('id_estado', 6) // Pendiente
+            ->where('id_estado', 6)
             ->latest()
             ->first();
 
@@ -79,18 +82,46 @@ class EmpresaLicenciaController extends Controller
             ], 404);
         }
 
-        // Actualizar estado licencia
-        $licencia->id_estado = 1; // Activa
+        // Cargar el tipo de licencia para obtener la duración
+        $licencia->load('tipoLicencia');
+        
+        $fechaInicio = Carbon::now()->timezone('America/Bogota');
+        // Asumiendo que tipoLicencia siempre existe si la llave foránea está bien
+        $duracion = $licencia->tipoLicencia ? $licencia->tipoLicencia->duracion_meses : 0; 
+        $fechaFin = $fechaInicio->copy()->addMonths($duracion);
+
+        $licencia->fecha_inicio = $fechaInicio;
+        $licencia->fecha_fin = $fechaFin;
+
+        $licencia->id_estado = 1;
         $licencia->save();
 
-        // Actualizar estado empresa (opcional, pero consistente con la lógica previa)
         $empresa = Empresa::findOrFail($nit);
         $empresa->id_estado = 1;
         $empresa->save();
+
+        event(new SystemActivityEvent(
+            "Licencia activada: " . $licencia->id_empresa_licencia, // Título
+            'blue',                                   // Tipo (Color rojo)
+            'store',                                       // Icono
+            'superadmin-feed'
+        ));
 
         return response()->json([
             'message' => 'Licencia activada correctamente',
             'data' => $licencia
         ]);
+    }
+
+    public function exportHistoryPdf()
+    {
+        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
+            $query->where('id_rol', 2);
+        }])
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $pdf = Pdf::loadView('pdf.historial_licencias', compact('historial'));
+        return $pdf->download('historial_licencias.pdf');
     }
 }

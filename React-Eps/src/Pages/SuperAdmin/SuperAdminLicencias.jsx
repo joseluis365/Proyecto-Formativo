@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../../Api/axios";
+import api from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import MotionSpinner from "../../components/UI/Spinner";
 import LicencesSection from "../../components/SuperAdmin/LicencesSection";
@@ -60,12 +60,11 @@ export default function SuperAdminLicencias() {
           onClick={() => setCreating(true)}
           className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20"
         >
-          Agregar Licencia
+          Agregar Plan
           <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
         </button>
       </div>
 
-      {/* CONTENIDO */}
       {/* CONTENIDO */}
       <AnimatePresence mode="wait">
         {loading ? (
@@ -76,7 +75,7 @@ export default function SuperAdminLicencias() {
             exit={{ opacity: 0 }}
             className="flex flex-col justify-center items-center py-10"
           >
-            <p className="text-lg font-semibold mb-2">Cargando licencias</p>
+            <p className="text-lg font-semibold mb-2">Cargando Planes</p>
             <MotionSpinner />
           </motion.div>
         ) : error ? (
@@ -95,7 +94,7 @@ export default function SuperAdminLicencias() {
             animate={{ opacity: 1 }}
             className="text-center py-6 text-gray-500"
           >
-            No se encontraron licencias
+            No se encontraron Planes
           </motion.div>
         ) : (
           <motion.div

@@ -1,11 +1,11 @@
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import Formbuilder from "../UI/Formbuilder";
 import { loginForm } from "../../data/InicioForms";
 import BlueButton from "../UI/BlueButton";
 import CheckBox from "../UI/CheckBox";
-import api from "../../Api/axios"; // Import api instance
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import api from "../../Api/axios";
+import Swal from 'sweetalert2';
 import { useState } from "react";
 
 export default function LoginSection() {
@@ -16,17 +16,14 @@ export default function LoginSection() {
         e.preventDefault();
         setErrors({});
 
-        // Extract form data efficiently
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
 
         try {
             const response = await api.post('/login', data);
 
-            // Success
             const { access_token, user } = response.data;
 
-            // Save token (localStorage for simplicity, or Context)
             localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(user));
 
@@ -38,17 +35,11 @@ export default function LoginSection() {
                 showConfirmButton: false
             });
 
-            // Redirect based on role
-            if (user.id_rol === 1) { // Example: SuperAdmin
-                navigate('/SuperAdmin-Dashboard');
-            } else {
-                navigate('/dashboard');
-            }
+            navigate('/dashboard');
 
         } catch (error) {
             console.error("Login error:", error);
             if (error.response?.status === 422) {
-                // Validation errors
                 setErrors(
                     Object.fromEntries(
                         Object.entries(error.response.data.errors).map(
