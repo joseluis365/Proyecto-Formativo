@@ -1,0 +1,62 @@
+﻿diff --cc React-Eps/src/Pages/SuperAdmin/SuperAdminEmpresas.jsx
+index 0a7ac4e,fbcf686..0000000
+--- a/React-Eps/src/Pages/SuperAdmin/SuperAdminEmpresas.jsx
++++ b/React-Eps/src/Pages/SuperAdmin/SuperAdminEmpresas.jsx
+@@@ -1,5 -1,5 +1,9 @@@
+  import { useEffect, useState } from "react";
+++<<<<<<< HEAD
+ +import superAdminApi from "../../Api/superAdminAxios";
+++=======
++ import api from "../../Api/superadminAxios";
+++>>>>>>> david
+  import PrincipalText from "../../components/Users/PrincipalText";
+  import Input from "../../components/UI/Input";
+  import Filter from "../../components/UI/Filter";
+@@@ -41,7 -40,7 +45,11 @@@ export default function SuperAdminEmpre
+        setLoading(true);
+        setError(null);
+  
+++<<<<<<< HEAD
+ +      const res = await superAdminApi.get("/empresas", {
+++=======
++       const res = await api.get("/superadmin/empresas", {
+++>>>>>>> david
+          params: {
+            search: debouncedSearch || undefined,
+            id_estado: status || undefined,
+@@@ -83,7 -82,7 +91,11 @@@
+    useEffect(() => {
+      const fetchLicencias = async () => {
+        try {
+++<<<<<<< HEAD
+ +        const res = await superAdminApi.get('/licencias');
+++=======
++         const res = await api.get('/superadmin/licencias');
+++>>>>>>> david
+          setLicencias(res.data.data || res.data);
+        } catch (err) {
+          console.error("Error al cargar licencias:", err);
+@@@ -114,7 -113,7 +126,11 @@@
+        });
+  
+        if (result.isConfirmed) {
+++<<<<<<< HEAD
+ +        await superAdminApi.post(`/empresa/${company.nit}/activar-licencia`);
+++=======
++         await api.post(`/superadmin/empresa/${company.nit}/activar-licencia`);
+++>>>>>>> david
+          Swal.fire(
+            'Activada!',
+            'La licencia ha sido activada correctamente.',
+@@@ -134,7 -133,7 +150,11 @@@
+  
+    const handleViewCompany = async (company) => {
+      try {
+++<<<<<<< HEAD
+ +      const res = await superAdminApi.get(`/empresa/${company.nit}`);
+++=======
++       const res = await api.get(`/superadmin/empresa/${company.nit}`);
+++>>>>>>> david
+        setSelectedCompany(res.data);
+        setViewingCompany(true);
+      } catch (error) {

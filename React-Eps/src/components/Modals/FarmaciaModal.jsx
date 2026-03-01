@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formFarmacia } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
@@ -53,12 +54,29 @@ export default function FarmaciaModal({ isOpen, onClose, onSuccess, editData = n
         setErrors({});
     }, [editData, isOpen]);
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+    const handleChange = (name, value) => {
         setFormData(prev => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value
+            [name]: value
         }));
+    };
+
+    const customRenderers = {
+        abierto_24h: (field, value, error) => (
+            <div className="flex items-center gap-3 py-2 pt-6">
+                <input
+                    type="checkbox"
+                    id="abierto_24h"
+                    name="abierto_24h"
+                    checked={!!value}
+                    onChange={(e) => handleChange("abierto_24h", e.target.checked)}
+                    className="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary"
+                />
+                <label htmlFor="abierto_24h" className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
+                    {field.label}
+                </label>
+            </div>
+        )
     };
 
     const handleSubmit = async (e) => {
@@ -108,117 +126,25 @@ export default function FarmaciaModal({ isOpen, onClose, onSuccess, editData = n
                 icon="local_pharmacy"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-2 overflow-y-auto max-h-[70vh]">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <IconInput
-                        label="NIT"
-                        name="nit"
-                        icon="badge"
-                        placeholder="Ej: 900.123.456-1"
-                        value={formData.nit}
-                        onChange={handleChange}
-                        error={errors.nit}
-                        required
-                        disabled={!!editData}
-                    />
-                    <IconInput
-                        label="Nombre de la Farmacia"
-                        name="nombre"
-                        icon="store"
-                        placeholder="Nombre de la farmacia"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        error={errors.nombre}
-                        required
-                    />
-                </div>
-
-                <IconInput
-                    label="Dirección"
-                    name="direccion"
-                    icon="location_on"
-                    placeholder="Calle 123 # 45-67"
-                    value={formData.direccion}
+            <div className="p-6 overflow-y-auto max-h-[70vh]">
+                <FormWithIcons
+                    config={formFarmacia}
+                    values={formData}
                     onChange={handleChange}
-                    error={errors.direccion}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <IconInput
-                        label="Teléfono"
-                        name="telefono"
-                        icon="phone"
-                        placeholder="300 123 4567"
-                        value={formData.telefono}
-                        onChange={handleChange}
-                        error={errors.telefono}
-                    />
-                    <IconInput
-                        label="Email"
-                        name="email"
-                        type="email"
-                        icon="mail"
-                        placeholder="email@ejemplo.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        error={errors.email}
-                    />
-                </div>
-
-                <IconInput
-                    label="Nombre de Contacto"
-                    name="nombre_contacto"
-                    icon="person"
-                    placeholder="Responsable de la farmacia"
-                    value={formData.nombre_contacto}
-                    onChange={handleChange}
-                    error={errors.nombre_contacto}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <IconInput
-                        label="Horario Apertura"
-                        name="horario_apertura"
-                        type="time"
-                        icon="schedule"
-                        value={formData.horario_apertura}
-                        onChange={handleChange}
-                        error={errors.horario_apertura}
-                    />
-                    <IconInput
-                        label="Horario Cierre"
-                        name="horario_cierre"
-                        type="time"
-                        icon="schedule"
-                        value={formData.horario_cierre}
-                        onChange={handleChange}
-                        error={errors.horario_cierre}
-                    />
-                </div>
-
-                <div className="flex items-center gap-3 py-2">
-                    <input
-                        type="checkbox"
-                        id="abierto_24h"
-                        name="abierto_24h"
-                        checked={formData.abierto_24h}
-                        onChange={handleChange}
-                        className="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary"
-                    />
-                    <label htmlFor="abierto_24h" className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer">
-                        Abierto las 24 horas
-                    </label>
-                </div>
-
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                    customRenderers={customRenderers}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }

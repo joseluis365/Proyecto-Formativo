@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formCategoriaMedicamento } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function CategoriaMedicamentoModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [categoria, setCategoria] = useState("");
+    const [formData, setFormData] = useState({ categoria: "" });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (editData) {
-            setCategoria(editData.categoria);
+            setFormData({ categoria: editData.categoria || "" });
         } else {
-            setCategoria("");
+            setFormData({ categoria: "" });
         }
         setErrors({});
     }, [editData, isOpen]);
@@ -27,10 +28,10 @@ export default function CategoriaMedicamentoModal({ isOpen, onClose, onSuccess, 
 
         try {
             if (editData) {
-                await api.put(`/categorias-medicamento/${editData.id_categoria}`, { categoria });
+                await api.put(`/categorias-medicamento/${editData.id_categoria}`, formData);
                 Swal.fire("Éxito", "Categoría actualizada correctamente", "success");
             } else {
-                await api.post("/categorias-medicamento", { categoria });
+                await api.post("/categorias-medicamento", formData);
                 Swal.fire("Éxito", "Categoría creada correctamente", "success");
             }
             onSuccess();
@@ -60,25 +61,24 @@ export default function CategoriaMedicamentoModal({ isOpen, onClose, onSuccess, 
                 icon="medication"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <IconInput
-                    label="Nombre de la Categoría"
-                    icon="text_fields"
-                    placeholder="Ej: Analgésicos, Antibióticos..."
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    error={errors.categoria}
-                    required
-                />
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+            <div className="p-6">
+                <FormWithIcons
+                    config={formCategoriaMedicamento}
+                    values={formData}
+                    onChange={(name, value) => setFormData(prev => ({ ...prev, [name]: value }))}
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }

@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formPrioridad } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function PrioridadModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [name, setName] = useState("");
+    const [formData, setFormData] = useState({ prioridad: "" });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (editData) {
-            setName(editData.prioridad);
+            setFormData({ prioridad: editData.prioridad || "" });
         } else {
-            setName("");
+            setFormData({ prioridad: "" });
         }
         setErrors({});
     }, [editData, isOpen]);
@@ -27,10 +28,10 @@ export default function PrioridadModal({ isOpen, onClose, onSuccess, editData = 
 
         try {
             if (editData) {
-                await api.put(`/prioridades/${editData.id_prioridad}`, { prioridad: name });
+                await api.put(`/prioridades/${editData.id_prioridad}`, formData);
                 Swal.fire("Éxito", "Prioridad actualizada correctamente", "success");
             } else {
-                await api.post("/prioridades", { prioridad: name });
+                await api.post("/prioridades", formData);
                 Swal.fire("Éxito", "Prioridad creada correctamente", "success");
             }
             onSuccess();
@@ -60,25 +61,24 @@ export default function PrioridadModal({ isOpen, onClose, onSuccess, editData = 
                 icon="priority_high"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <IconInput
-                    label="Nombre de la Prioridad"
-                    icon="text_fields"
-                    placeholder="Ej: Urgente, Normal..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    error={errors.prioridad}
-                    required
-                />
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+            <div className="p-6">
+                <FormWithIcons
+                    config={formPrioridad}
+                    values={formData}
+                    onChange={(name, value) => setFormData(prev => ({ ...prev, [name]: value }))}
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formDepartamento } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
@@ -32,8 +33,7 @@ export default function DepartamentoModal({ isOpen, onClose, onSuccess, editData
         setErrors({});
     }, [editData, isOpen]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    const handleChange = (name, value) => {
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -80,37 +80,24 @@ export default function DepartamentoModal({ isOpen, onClose, onSuccess, editData
                 icon="map"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <IconInput
-                    label="Código DANE"
-                    name="codigo_DANE"
-                    icon="pin"
-                    placeholder="Ej: 05"
-                    value={formData.codigo_DANE}
+            <div className="p-6">
+                <FormWithIcons
+                    config={formDepartamento}
+                    values={formData}
                     onChange={handleChange}
-                    error={errors.codigo_DANE}
-                    required
-                    disabled={!!editData}
-                />
-                <IconInput
-                    label="Nombre del Departamento"
-                    name="nombre"
-                    icon="description"
-                    placeholder="Ej: Antioquia"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    error={errors.nombre}
-                    required
-                />
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }

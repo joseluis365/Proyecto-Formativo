@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formTipoCita } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function TipoCitaModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [tipo, setTipo] = useState("");
+    const [formData, setFormData] = useState({ tipo: "" });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (editData) {
-            setTipo(editData.tipo);
+            setFormData({ tipo: editData.tipo || "" });
         } else {
-            setTipo("");
+            setFormData({ tipo: "" });
         }
         setErrors({});
     }, [editData, isOpen]);
@@ -27,10 +28,10 @@ export default function TipoCitaModal({ isOpen, onClose, onSuccess, editData = n
 
         try {
             if (editData) {
-                await api.put(`/tipos-cita/${editData.id_tipo_cita}`, { tipo });
+                await api.put(`/tipos-cita/${editData.id_tipo_cita}`, formData);
                 Swal.fire("Éxito", "Tipo de cita actualizado correctamente", "success");
             } else {
-                await api.post("/tipos-cita", { tipo });
+                await api.post("/tipos-cita", formData);
                 Swal.fire("Éxito", "Tipo de cita creado correctamente", "success");
             }
             onSuccess();
@@ -60,25 +61,24 @@ export default function TipoCitaModal({ isOpen, onClose, onSuccess, editData = n
                 icon="calendar_today"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <IconInput
-                    label="Nombre del Tipo"
-                    icon="text_fields"
-                    placeholder="Ej: General, Especialista..."
-                    value={tipo}
-                    onChange={(e) => setTipo(e.target.value)}
-                    error={errors.tipo}
-                    required
-                />
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+            <div className="p-6">
+                <FormWithIcons
+                    config={formTipoCita}
+                    values={formData}
+                    onChange={(name, value) => setFormData(prev => ({ ...prev, [name]: value }))}
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }

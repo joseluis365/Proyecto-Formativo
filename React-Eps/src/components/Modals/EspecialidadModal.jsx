@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
-import IconInput from "@/components/UI/IconInput";
+import FormWithIcons from "@/components/UI/FormWithIcons";
+import { formEspecialidad } from "@/data/BaseTablesForms";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function EspecialidadModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [name, setName] = useState("");
+    const [formData, setFormData] = useState({ especialidad: "" });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
         if (editData) {
-            setName(editData.especialidad);
+            setFormData({ especialidad: editData.especialidad || "" });
         } else {
-            setName("");
+            setFormData({ especialidad: "" });
         }
         setErrors({});
     }, [editData, isOpen]);
@@ -27,10 +28,10 @@ export default function EspecialidadModal({ isOpen, onClose, onSuccess, editData
 
         try {
             if (editData) {
-                await api.put(`/configuracion/especialidades/${editData.id_especialidad}`, { especialidad: name });
+                await api.put(`/configuracion/especialidades/${editData.id_especialidad}`, formData);
                 Swal.fire("Éxito", "Especialidad actualizada correctamente", "success");
             } else {
-                await api.post("/configuracion/especialidades", { especialidad: name });
+                await api.post("/configuracion/especialidades", formData);
                 Swal.fire("Éxito", "Especialidad creada correctamente", "success");
             }
             onSuccess();
@@ -60,25 +61,24 @@ export default function EspecialidadModal({ isOpen, onClose, onSuccess, editData
                 icon="clinical_notes"
                 onClose={onClose}
             />
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                <IconInput
-                    label="Nombre de la Especialidad"
-                    icon="text_fields"
-                    placeholder="Ej: Pediatría, Cardiología..."
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    error={errors.especialidad}
-                    required
-                />
-                <div className="flex justify-end pt-4">
-                    <BlueButton
-                        text={editData ? "Actualizar" : "Crear"}
-                        icon="save"
-                        type="submit"
-                        loading={loading}
-                    />
-                </div>
-            </form>
+            <div className="p-6">
+                <FormWithIcons
+                    config={formEspecialidad}
+                    values={formData}
+                    onChange={(name, value) => setFormData(prev => ({ ...prev, [name]: value }))}
+                    onSubmit={handleSubmit}
+                    errors={errors}
+                >
+                    <div className="flex justify-end pt-4">
+                        <BlueButton
+                            text={editData ? "Actualizar" : "Crear"}
+                            icon="save"
+                            type="submit"
+                            loading={loading}
+                        />
+                    </div>
+                </FormWithIcons>
+            </div>
         </BaseModal>
     );
 }
