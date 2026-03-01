@@ -10,21 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('description');
-            $table->decimal('price', 10, 2);
-            $table->integer('stock');
-            $table->timestamps();
-        });
-    }
+{
+    Schema::table('activities', function (Blueprint $table) {
+        $table->string('channel_name')->nullable();
+    });
+}
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::table('activities', function (Blueprint $table) {
+            //
+        });
     }
 };

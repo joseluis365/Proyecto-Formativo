@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 use App\Models\Empresa;
@@ -24,7 +23,6 @@ class AuthController extends Controller
             'email.email' => 'El formato del correo electrónico no es válido.',
             'password.required' => 'La contraseña es obligatoria.',
         ]);
-            
 
         $user = Usuario::where('email', $request->email)->first();
 
@@ -34,12 +32,16 @@ class AuthController extends Controller
             ], 401);
         }
 
-        //VALIDACIÓN DE LICENCIA
-        // Verificar si el usuario pertenece a una empresa (tiene NIT)
+        // ==========================
+        // VALIDACIÓN DE LICENCIA
+        // ==========================
         if ($user->nit) {
-            $empresa = Empresa::with('licenciaActual')->find($user->nit);
+
+            // Cargamos también el tipo de licencia
+            $empresa = Empresa::with('licenciaActual.tipoLicencia')->find($user->nit);
 
             if ($empresa) {
+
                 $licencia = $empresa->licenciaActual;
 
                 if (!$licencia) {
@@ -48,8 +50,12 @@ class AuthController extends Controller
                     ], 403);
                 }
 
-                if ($licencia->id_estado != 1) {
-                    $estadoTexto = match ($licencia->id_estado) {
+                // Tomamos el estado desde tipo_licencia
+                $estadoLicencia = $licencia->tipoLicencia->id_estado ?? null;
+
+                if ($estadoLicencia != 1) {
+
+                    $estadoTexto = match ($estadoLicencia) {
                         2 => 'Inactiva',
                         3 => 'Sin Licencia',
                         4 => 'Por vencer',
@@ -64,7 +70,6 @@ class AuthController extends Controller
                 }
             }
         }
-
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -139,7 +144,6 @@ class AuthController extends Controller
 
         $code = random_int(100000, 999999);
 
-        // Guardar código de recuperación por 10 minutos
         Cache::put('user_recovery_' . $request->email, $code, now()->addMinutes(10));
 
         try {
@@ -203,7 +207,6 @@ class AuthController extends Controller
             'password.regex' => 'La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial',
         ]);
 
-        // Verificar código nuevamente por seguridad
         $cachedCode = Cache::get('user_recovery_' . $request->email);
 
         if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
@@ -216,10 +219,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
 
-        $user->contrasena = Hash::make($request->password);
+        // Se asigna la contraseña directamente, el mutator en el modelo Usuario se encargará de hashearla.
+        $user->contrasena = $request->password;
         $user->save();
 
-        // Eliminar código usado
         Cache::forget('user_recovery_' . $request->email);
 
         return response()->json(['message' => 'Contraseña actualizada correctamente']);

@@ -1,5 +1,7 @@
-export default function Priority({ priority }) {
-  const isUrgent = priority === "urgente"
+import usePrioridades from "@/hooks/usePrioridades";
+
+export default function Priority({ priority, onChange }) {
+  const { prioridades, loading } = usePrioridades();
 
   return (
     <div>
@@ -13,31 +15,21 @@ export default function Priority({ priority }) {
       </div>
 
       <div className="flex gap-4">
-        {/* URGENTE */}
-        <div
-          className={`flex-1 text-center px-4 py-2.5 rounded-lg border-2 cursor-pointer
-            ${
-              isUrgent
-                ? "border-red-500 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
-                : "border-gray-300 bg-gray-50 dark:bg-gray-700/50 text-gray-500"
-            }
-          `}
-        >
-          <span className="font-semibold">Urgente</span>
-        </div>
-
-        {/* NORMAL */}
-        <div
-          className={`flex-1 text-center px-4 py-2.5 rounded-lg border-2 cursor-pointer
-            ${
-              !isUrgent
-                ? "border-blue-500 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
-                : "border-gray-300 bg-gray-50 dark:bg-gray-700/50 text-gray-500"
-            }
-          `}
-        >
-          <span className="font-semibold">Normal</span>
-        </div>
+        {loading ? (
+          <div className="text-gray-500 text-sm">Cargando prioridades...</div>
+        ) : (
+          <select
+            name="id_prioridad"
+            value={priority || ""}
+            onChange={onChange}
+            className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+          >
+            <option value="">Seleccione una prioridad</option>
+            {prioridades.map(p => (
+              <option key={p.value} value={p.value}>{p.label}</option>
+            ))}
+          </select>
+        )}
       </div>
     </div>
   )

@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import api from "../../../Api/axios";
-import BaseModal from "../BaseModal";
-import ModalHeader from "../ModalHeader";
-import Form from "../../UI/Form";
-import { getCreateUserFormConfig } from "../../../UserFormConfig";
+import { useState } from "react";
+import api from "@/Api/axios";
+import BaseModal from "@/components/Modals/BaseModal";
+import ModalHeader from "@/components/Modals/ModalHeader";
+import Form from "@/components/UI/Form";
+import { getCreateUserFormConfig } from "@/UserFormConfig";
 import Swal from 'sweetalert2';
-import MotionSpinner from "../../UI/Spinner";
+import MotionSpinner from "@/components/UI/Spinner";
+import useEspecialidades from "@/hooks/useEspecialidades";
 
 const initialUser = {
   documento: "",
@@ -30,16 +31,7 @@ export default function CreateMedicoModal({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-
-
-
-  const [specialties, setSpecialties] = useState([]);
-
-  useEffect(() => {
-    api.get('/especialidades').then(res => {
-      setSpecialties(res.data);
-    });
-  }, []);
+  const { specialties } = useEspecialidades();
 
   const handleCreate = async (data) => {
     try {
@@ -58,7 +50,6 @@ export default function CreateMedicoModal({
         id_especialidad: data.id_especialidad,
         id_estado: data.id_estado,
         contrasena: data.contrasena,
-        id_rol: data.id_rol,
       };
       await api.post(`/usuario`, payload);
 

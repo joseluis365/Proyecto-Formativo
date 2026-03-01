@@ -13,4 +13,6 @@ class Estado extends Model
         'id_estado',
         'nombre_estado',
     ];
+
+    public $timestamps = false;
 }

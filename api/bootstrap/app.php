@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+        $middleware->alias([
+            'licencia.activa' => \App\Http\Middleware\CheckLicenciaActiva::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
