@@ -69,7 +69,7 @@ export default function Farmacias() {
         }
     };
 
-    const handleEdit = (item) => {
+    const handleView = (item) => {
         setEditData(item);
         setIsModalOpen(true);
     };
@@ -96,59 +96,17 @@ export default function Farmacias() {
             render: (item) => <span className="text-sm">{item.direccion || "-"}</span>
         },
         {
-            key: "telefono",
-            header: "Teléfono",
-            render: (item) => <span className="text-sm">{item.telefono || "-"}</span>
-        },
-        {
-            key: "email",
-            header: "Email",
-            render: (item) => <span className="text-sm truncate max-w-[150px] inline-block">{item.email || "-"}</span>
-        },
-        {
-            key: "nombre_contacto",
-            header: "Contacto",
-            render: (item) => <span className="text-sm">{item.nombre_contacto || "-"}</span>
-        },
-        {
-            key: "horario",
-            header: "Horario",
-            render: (item) => (
-                <div className="text-xs">
-                    {item.abierto_24h ? (
-                        <span className="text-primary font-bold">24 Horas</span>
-                    ) : (
-                        <span>{item.horario_apertura?.substring(0, 5) || "00:00"} - {item.horario_cierre?.substring(0, 5) || "00:00"}</span>
-                    )}
-                </div>
-            )
-        },
-        {
-            key: "id_estado",
-            header: "Estado",
-            render: (item) => (
-                <span
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-full ${item.id_estado === 1
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-                        : "bg-red-100 text-red-800"
-                        }`}
-                >
-                    {item.id_estado === 1 ? "Activo" : "Inactivo"}
-                </span>
-            )
-        },
-        {
             key: "actions",
             header: "Acciones",
             align: "center",
             render: (item) => (
                 <div className="flex items-center justify-center gap-2">
                     <button
-                        onClick={() => handleEdit(item)}
-                        className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                        title="Editar"
+                        onClick={() => handleView(item)}
+                        className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-blue-600"
+                        title="Ver Info"
                     >
-                        <span className="material-symbols-outlined text-base">edit</span>
+                        <span className="material-symbols-outlined text-base">visibility</span>
                     </button>
                     <button
                         onClick={() => handleToggleStatus(item)}
@@ -239,7 +197,7 @@ export default function Farmacias() {
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}

@@ -5,9 +5,9 @@ export default function Filter({ options = [], placeholder, value, onChange }) {
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 className="appearance-none w-full bg-gray-50 dark:bg-gray-800 border border-neutral-gray-border/50 dark:border-gray-700 rounded-lg shadow-sm py-2.5 pl-4 pr-10 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-shadow duration-200 dark:text-white">
-                <option value="">{placeholder}</option>
+                <option value="" className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5">{placeholder}</option>
                 {options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    <option key={opt.value} value={opt.value} className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5">{opt.label}</option>
                 ))}
             </select>
             <span

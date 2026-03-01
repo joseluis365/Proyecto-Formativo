@@ -1,7 +1,7 @@
 export const formEstado = {
     fields: [
         {
-            name: "nombre_estado",
+            name: "nombre",
             label: "Nombre del Estado",
             icon: "description",
             type: "text",
@@ -14,7 +14,7 @@ export const formEstado = {
 export const formRol = {
     fields: [
         {
-            name: "nombre_rol",
+            name: "tipo_usu",
             label: "Nombre del Rol",
             icon: "badge",
             type: "text",
@@ -27,7 +27,15 @@ export const formRol = {
 export const formCiudad = {
     fields: [
         {
-            name: "nombre_ciudad",
+            name: "codigo_postal",
+            label: "Código Postal",
+            icon: "markunread_mailbox",
+            type: "number",
+            placeholder: "Ej: 11001",
+            required: true,
+        },
+        {
+            name: "nombre",
             label: "Nombre de la Ciudad",
             icon: "location_city",
             type: "text",
@@ -48,7 +56,15 @@ export const formCiudad = {
 export const formDepartamento = {
     fields: [
         {
-            name: "nombre_departamento",
+            name: "codigo_DANE",
+            label: "Código DANE",
+            icon: "pin",
+            type: "number",
+            placeholder: "Ej: 11",
+            required: true,
+        },
+        {
+            name: "nombre",
             label: "Nombre del Departamento",
             icon: "map",
             type: "text",
@@ -128,7 +144,7 @@ export const formFarmacia = {
 export const formCategoriaExamen = {
     fields: [
         {
-            name: "categoria",
+            name: "nombre",
             label: "Nombre de la Categoría",
             icon: "category",
             type: "text",
@@ -141,7 +157,7 @@ export const formCategoriaExamen = {
 export const formCategoriaMedicamento = {
     fields: [
         {
-            name: "categoria",
+            name: "nombre",
             label: "Nombre de la Categoría",
             icon: "category",
             type: "text",
@@ -154,7 +170,7 @@ export const formCategoriaMedicamento = {
 export const formEspecialidad = {
     fields: [
         {
-            name: "especialidad",
+            name: "nombre",
             label: "Nombre de la Especialidad",
             icon: "medical_services",
             type: "text",
@@ -167,7 +183,7 @@ export const formEspecialidad = {
 export const formPrioridad = {
     fields: [
         {
-            name: "prioridad",
+            name: "nombre",
             label: "Nombre de la Prioridad",
             icon: "priority_high",
             type: "text",
@@ -180,7 +196,7 @@ export const formPrioridad = {
 export const formTipoCita = {
     fields: [
         {
-            name: "tipo",
+            name: "nombre",
             label: "Nombre del Tipo de Cita",
             icon: "event",
             type: "text",

@@ -153,10 +153,10 @@ export default function Reportes() {
                     <select
                         value={entity}
                         onChange={(e) => setEntity(e.target.value)}
-                        className="bg-transparent border-none text-sm focus:ring-0 cursor-pointer font-bold text-primary dark:text-blue-400"
+                        className="bg-transparent border-none text-sm focus:ring-0 focus:outline-none cursor-pointer font-bold text-primary dark:text-blue-400 appearance-none pr-4"
                     >
                         {entityOptions.map(opt => (
-                            <option key={opt.value} value={opt.value} className="dark:bg-gray-900">{opt.label}</option>
+                            <option key={opt.value} value={opt.value} className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5 font-medium">{opt.label}</option>
                         ))}
                     </select>
                 </div>

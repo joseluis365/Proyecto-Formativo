@@ -211,7 +211,7 @@ export default function Ciudades() {
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}
