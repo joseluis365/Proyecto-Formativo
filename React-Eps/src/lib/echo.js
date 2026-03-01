@@ -7,10 +7,11 @@ const echo = new Echo({
     broadcaster: 'reverb',
     key: '27ocbxgmhteniyxeaef7',
     wsHost: window.location.hostname,
-    wsPort: 6001,
+    wsPort: 8080,
+    wssPort: 8080,
     forceTLS: false,
     disableStats: true,
-    enabledTransports: ['ws'],
+    enabledTransports: ['ws', 'wss'],
 });
 
 export default echo;

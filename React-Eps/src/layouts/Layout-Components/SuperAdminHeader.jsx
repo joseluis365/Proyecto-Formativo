@@ -1,7 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import superAdminApi from "../../Api/superAdminAxios";
+import superAdminApi from "../../Api/superadminAxios";
 
 import SuperAdminLogoutButton from "../../components/UI/SuperAdminLogoutButton";
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import superAdminApi from "../../Api/superAdminAxios";
+import superAdminApi from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";

@@ -1,5 +1,5 @@
 import React from 'react';
-import superAdminApi from '../../Api/superAdminAxios';
+import superAdminApi from '../../Api/superadminAxios';
 import { useNavigate } from 'react-router-dom';
 
 const SuperAdminLogoutButton = () => {

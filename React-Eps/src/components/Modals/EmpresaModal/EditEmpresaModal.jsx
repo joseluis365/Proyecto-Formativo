@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import superAdminApi from "../../../Api/superAdminAxios";
+import axios from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -45,7 +45,7 @@ export default function EditEmpresaModal({
 
             console.log("Enviando actualización para NIT:", empresaData.nit);
 
-            await superAdminApi.put(`/empresa/${empresaData.nit}`, payload);
+            await axios.put(`/empresa/${empresaData.nit}`, payload);
 
             const Swal = (await import("sweetalert2")).default;
             await Swal.fire({

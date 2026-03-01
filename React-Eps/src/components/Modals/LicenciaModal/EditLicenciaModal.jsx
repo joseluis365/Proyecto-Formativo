@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import superAdminApi from "../../../Api/superAdminAxios";
+import axios from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -32,7 +32,7 @@ export default function EditLicenciaModal({
             console.log("Enviando actualización para NIT:", licenciaData.id);
 
             // 2. Petición API
-            const response = await superAdminApi.put(`/licencia/${licenciaData.id}`, payload);
+            const response = await axios.put(`/licencia/${licenciaData.id}`, payload);
 
             // 3. Notificación y cierre
             const Swal = (await import("sweetalert2")).default;
