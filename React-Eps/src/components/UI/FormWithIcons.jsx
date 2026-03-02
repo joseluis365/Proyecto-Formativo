@@ -2,20 +2,21 @@ import React from "react";
 import IconInput from "./IconInput";
 
 export default function FormWithIcons({
-    onSubmit,
-    config,
+    register,
     sections,
-    values, // removed '= {}' to allow undefined
     customRenderers = {},
     children,
     errors = {},
-    onChange
+    handleSubmit,
+    onSubmit
 }) {
     const renderField = (field) => {
         if (customRenderers[field.name]) {
-            return <React.Fragment key={field.name}>
-                {customRenderers[field.name](field, values ? values[field.name] : undefined, errors[field.name])}
-            </React.Fragment>;
+            return (
+                <React.Fragment key={field.name}>
+                    {customRenderers[field.name](field, errors[field.name])}
+                </React.Fragment>
+            );
         }
 
         return (
@@ -31,15 +32,14 @@ export default function FormWithIcons({
                 readOnly={field.readOnly}
                 error={errors[field.name]}
                 autoComplete={field.autoComplete}
-                value={values ? (values[field.name] ?? "") : undefined}
-                onChange={onChange ? (e) => onChange(field.name, e.target.value) : undefined}
+                register={register}
             />
         );
     };
 
     return (
-        <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            {sections && sections.length > 0 ? (
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+            {sections && sections.length > 0 && (
                 sections.map((section, idx) => (
                     <div key={idx} className="space-y-4">
                         {section.title && (
@@ -52,8 +52,6 @@ export default function FormWithIcons({
                         </div>
                     </div>
                 ))
-            ) : (
-                config?.fields?.map(field => renderField(field))
             )}
 
             {children}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function IconInput({ label, icon, placeholder, type, id, name, error, value, onChange, autoComplete, readOnly, required }) {
+export default function IconInput({ label, icon, placeholder, type, id, name, error, register, autoComplete, readOnly, required }) {
     const [showPassword, setShowPassword] = useState(false);
 
     const isPasswordType = type === 'password';
@@ -12,6 +12,7 @@ export default function IconInput({ label, icon, placeholder, type, id, name, er
             <div className="relative">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{icon}</span>
                 <input
+                    {...register(name)}
                     className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? 'border-red-500' : 'border-[#cfd7e7] dark:border-white/30'} bg-white dark:bg-gray-800/50 h-12 pl-12 ${isPasswordType ? 'pr-12' : 'pr-4'} placeholder:text-[#4c669a]/60 text-base font-normal`}
                     placeholder={placeholder}
                     readOnly={readOnly}
@@ -19,8 +20,6 @@ export default function IconInput({ label, icon, placeholder, type, id, name, er
                     type={currentType}
                     id={id}
                     name={name}
-                    value={value}
-                    onChange={onChange}
                     autoComplete={autoComplete}
                 />
                 {isPasswordType && (
@@ -46,7 +45,7 @@ export default function IconInput({ label, icon, placeholder, type, id, name, er
                         ))
                     ) : (
                         <span className="text-red-500 text-xs">
-                            {error}
+                            {typeof error === 'object' ? error.message : error}
                         </span>
                     )}
                 </div>

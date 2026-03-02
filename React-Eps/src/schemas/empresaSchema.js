@@ -1,0 +1,77 @@
+import { z } from "zod";
+
+export const empresaSchema = z.object({
+    nit: z.string()
+        .min(1, "El NIT es obligatorio")
+        .regex(/^[1-9][0-9]{8}-[0-9]$/, "El NIT debe tener 9 numeros, un guion y 1 numero de verificación en el formato correcto (ejemplo: 900123456-7)"),
+
+    nombre: z.string()
+        .min(3, "El nombre de la empresa debe tener al menos 3 caracteres")
+        .max(50, "El nombre de la empresa no puede ser mayor a 50 caracteres")
+        .regex(/^(?!.*\s{2,})(?=.*[A-Za-zÁÉÍÓÚáéíóúÑñ])[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s\-\.,&\/]+$/, "El nombre de la empresa debe tener al menos una letra, numeros y algunos caracteres (-, ., &, /)"),
+
+    email_contacto: z.string()
+        .min(12, "El correo debe tener al menos 12 caracteres")
+        .max(150, "El correo debe tener como maximo 150 caracteres")
+        .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
+
+    telefono: z.string()
+        .length(10, "El telefono debe tener exactamente 10 caracteres")
+        .regex(/^(3\d{9}|60[1-8]\d{7})$/, "El telefono debe iniciar con 3 o 60 y tener 10 digitos numericos sin espacios"),
+
+    direccion: z.string()
+        .min(8, "La direccion debe tener al menos 8 caracteres")
+        .max(150, "La direccion debe tener como maximo 150 caracteres")
+        .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/, "La dirección debe contener letras y números, y puede incluir #, -, . o ,."),
+
+    id_departamento: z.string().min(1, "El departamento es obligatorio"),
+    id_ciudad: z.string().min(1, "La ciudad es obligatoria"),
+
+    documento_representante: z.string()
+        .min(7, "El documento debe tener entre 7 y 10 digitos")
+        .max(10, "El documento debe tener entre 7 y 10 digitos")
+        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
+
+    nombre_representante: z.string()
+        .min(3, "El nombre del representante debe tener al menos 3 caracteres")
+        .max(50, "El nombre del representante debe tener como maximo 50 caracteres")
+        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/, "El nombre del representante debe tener solo letras sin espacios dobles"),
+
+    telefono_representante: z.string()
+        .length(10, "El telefono debe tener exactamente 10 digitos")
+        .regex(/^3\d{9}$/, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
+
+    email_representante: z.string()
+        .min(12, "El correo debe tener al menos 12 caracteres")
+        .max(150, "El correo debe tener como maximo 150 caracteres")
+        .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
+
+    admin_primer_nombre: z.string()
+        .min(3, "El primer nombre del administrador debe tener al menos 3 caracteres")
+        .max(40, "El primer nombre del administrador debe tener como maximo 40 caracteres")
+        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/, "El primer nombre del administrador debe tener solo letras sin esapcios"),
+
+    admin_primer_apellido: z.string()
+        .min(3, "El primer apellido del administrador debe tener al menos 3 caracteres")
+        .max(40, "El primer apellido del administrador debe tener como maximo 40 caracteres")
+        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/, "El primer apellido del administrador debe tener solo letras sin esapcios dobles"),
+
+    admin_documento: z.string()
+        .min(7, "El documento debe tener entre 7 y 10 digitos")
+        .max(10, "El documento debe tener entre 7 y 10 digitos")
+        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
+
+    admin_email: z.string()
+        .min(12, "El correo debe tener al menos 12 caracteres")
+        .max(150, "El correo debe tener como maximo 150 caracteres")
+        .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
+
+    admin_telefono: z.string()
+        .length(10, "El telefono debe tener exactamente 10 digitos")
+        .regex(/^3\d{9}$/, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
+
+    admin_password: z.string()
+        .min(8, "La contraseña del administrador debe tener al menos 8 caracteres")
+        .max(25, "La contraseña del administrador debe tener como maximo 25 caracteres")
+        .regex(/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/, "La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial"),
+});

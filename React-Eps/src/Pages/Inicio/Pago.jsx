@@ -6,12 +6,14 @@ import Swal from "sweetalert2";
 import { createEmpresaFormConfig } from '../../EmpresaFormConfig';
 import FormWithIcons from "../../components/UI/FormWithIcons";
 import BackArrow from "../../components/UI/BackArrow";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { empresaSchema } from "../../schemas/empresaSchema";
 
 export default function Pago() {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
-  const [errors, setErrors] = useState({});
 
   const plan = location.state?.plan || null;
 
@@ -42,24 +44,26 @@ export default function Pago() {
     { title: "Cuenta Administrador", fields: camposAdmin }
   ];
 
-  const [formData, setFormData] = useState({
-    ...Object.fromEntries(fields.map(f => [f.name, ""]))
-  });
 
   const subtotal = Number(plan?.precio_raw || plan?.precio || 0);
   const iva = subtotal * 0.19;
   const total = Math.round(subtotal + iva);
 
-  const handleChange = (name, value) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    setError,
+    setValue,
+    watch,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: zodResolver(empresaSchema),
+    mode: "onChange",
+  });
+
+  const selectedDepto = watch("id_departamento");
+  const selectedCiudad = watch("id_ciudad");
+
 
   const handleCardChange = (name, value) => {
     let formattedValue = value;
@@ -123,7 +127,7 @@ export default function Pago() {
     return Object.keys(errors).length === 0;
   };
 
-  const handlePagar = async () => {
+  const onSubmit = async (data) => {
     if (!plan) return Swal.fire({
       icon: "error",
       title: "Error",
@@ -144,7 +148,7 @@ export default function Pago() {
 
     try {
       const payload = {
-        ...formData,
+        ...data,
         id_tipo_licencia: plan.id,
         duracion_meses: plan.duracion_meses,
         id_estado: 3,
@@ -176,7 +180,12 @@ export default function Pago() {
         Object.keys(backendErrors).forEach((key) => {
           formattedErrors[key] = backendErrors[key][0];
         });
-        setErrors(formattedErrors);
+        Object.keys(backendErrors).forEach((key) => {
+          setError(key, {
+            type: "server",
+            message: backendErrors[key][0],
+          });
+        });
 
         // Si la tarjeta también tenía errores, avisamos
         if (cardIsInvalid) {
@@ -199,28 +208,15 @@ export default function Pago() {
   };
 
   const customRenderers = {
-    id_departamento: (field, value, error) => (
+    id_departamento: (field, error) => (
       <div key="location-group-depto" className="flex flex-col gap-1.5 pb-3">
         <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor="id_departamento">{field.label}</label>
         <div className="relative">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{field.icon}</span>
           <select
+            {...register("id_departamento")}
             className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? 'border-red-500 bg-red-50' : 'border-[#cfd7e7] dark:border-white/10'} bg-white dark:bg-gray-800/50 h-12 pl-12 pr-4 text-base font-normal`}
-            name="id_departamento"
             id="id_departamento"
-            value={value || ""}
-            onChange={async (e) => {
-              const val = e.target.value;
-              handleChange("id_departamento", val);
-              setCiudades([]);
-              handleChange("id_ciudad", "");
-              if (val) {
-                try {
-                  const res = await api.get(`/ciudades/${val}`);
-                  setCiudades(res.data);
-                } catch (err) { console.error(err); }
-              }
-            }}
           >
             <option value="">{field.placeholder || "Seleccionar"}</option>
             {departamentos.map(d => (
@@ -228,21 +224,19 @@ export default function Pago() {
             ))}
           </select>
         </div>
-        {error && <span className="text-red-500 text-xs">{error}</span>}
+        {error && <span className="text-red-500 text-xs">{error.message}</span>}
       </div>
     ),
-    id_ciudad: (field, value, error) => (
+    id_ciudad: (field, error) => (
       <div key="location-group-ciudad" className="flex flex-col gap-1.5 pb-3">
         <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor="id_ciudad">{field.label}</label>
         <div className="relative">
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{field.icon}</span>
           <select
+            {...register("id_ciudad")}
             id="id_ciudad"
-            name="id_ciudad"
             className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? 'border-red-500 bg-red-50' : 'border-[#cfd7e7] dark:border-white/10'} bg-white dark:bg-gray-800/50 h-12 pl-12 pr-4 text-base font-normal`}
-            value={value || ""}
-            onChange={(e) => handleChange("id_ciudad", e.target.value)}
-            disabled={!formData.id_departamento}
+            disabled={!selectedDepto}
           >
             <option value="">{field.placeholder || "Seleccionar"}</option>
             {ciudades.map(c => (
@@ -250,10 +244,24 @@ export default function Pago() {
             ))}
           </select>
         </div>
-        {error && <span className="text-red-500 text-xs">{error}</span>}
+        {error && <span className="text-red-500 text-xs">{error.message}</span>}
       </div>
     )
   };
+
+  // Efecto para cargar ciudades cuando cambia el departamento
+  useEffect(() => {
+    if (selectedDepto) {
+      setCiudades([]);
+      setValue("id_ciudad", "");
+      api.get(`/ciudades/${selectedDepto}`)
+        .then(res => setCiudades(res.data))
+        .catch(console.error);
+    } else {
+      setCiudades([]);
+      setValue("id_ciudad", "");
+    }
+  }, [selectedDepto, setValue]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-700 py-10 px-4">
@@ -322,10 +330,10 @@ export default function Pago() {
 
             <FormWithIcons
               sections={formSections}
-              values={formData}
               customRenderers={customRenderers}
-              onChange={handleChange}
+              register={register}
               errors={errors}
+              handleSubmit={handleSubmit}
             >
               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                 <h3 className="text-base font-medium text-gray-800 dark:text-gray-200">Método de Pago</h3>
@@ -372,9 +380,8 @@ export default function Pago() {
               </div>
 
               <button
-                onClick={handlePagar}
-                disabled={loading}
-                type="button"
+                disabled={!isValid || loading}
+                type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold flex items-center justify-center gap-2 py-3 rounded-xl transition disabled:bg-blue-300 dark:disabled:bg-blue-900/50 cursor-pointer"
               >
                 {loading ? "Procesando Registro..." : (

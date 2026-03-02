@@ -60,6 +60,8 @@ Route::prefix('superadmin')->group(function () {
 Route::get('/especialidades', [EspecialidadesController::class, 'select']);
 Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
 Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);
+Route::get('/licencias', [LicenciaController::class, 'index']);
+Route::get('/licencia/{id}', [LicenciaController::class, 'show']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
     return Activity::latest()
