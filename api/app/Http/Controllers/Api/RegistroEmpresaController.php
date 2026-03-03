@@ -8,10 +8,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Empresa;
 use App\Models\Usuario;
+use App\Models\Superadmin;
 use App\Models\EmpresaLicencia;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Events\SystemActivityEvent;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistroEmpresaContacto;
+use App\Mail\RegistroEmpresaRepresentante;
+use App\Mail\RegistroEmpresaAdmin;
+use App\Mail\NuevaEmpresaSuperAdmin;
 
 class RegistroEmpresaController extends Controller
 {
@@ -91,15 +97,29 @@ class RegistroEmpresaController extends Controller
                 ]);
 
                 event(new SystemActivityEvent(
-                    "Nueva licencia registrada: " . $customId, // Título
-                    'blue',                                   // Tipo (Color rojo)
-                    'store',                                       // Icono
+                    "Nueva licencia registrada: " . $customId,
+                    'blue',
+                    'store',
                     'superadmin-feed'
                 ));
 
-                
+                // Envío de correos a los 3 involucrados usando Colas (Queues)
+                // 1. Correo a la empresa (contacto)
+                Mail::to($empresa->email_contacto)->queue(new RegistroEmpresaContacto($empresa));
 
-                
+                // 2. Correo al representante legal
+                Mail::to($empresa->email_representante)->queue(new RegistroEmpresaRepresentante($empresa));
+
+                // 3. Correo al administrador (con credenciales)
+                Mail::to($user->email)->queue(new RegistroEmpresaAdmin($empresa, $user, $request->admin_password));
+
+                // 4. Correo al SuperAdmin (Notificación de nueva empresa)
+                $empresa->load(['ciudad.departamento']);
+                $superAdmin = SuperAdmin::first();
+
+                if ($superAdmin) {
+                    Mail::to($superAdmin->email)->queue(new NuevaEmpresaSuperAdmin($empresa));
+                }
 
                 return response()->json([
                     'status' => 'success',

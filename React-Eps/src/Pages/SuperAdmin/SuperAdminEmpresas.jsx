@@ -157,8 +157,14 @@ export default function SuperAdminEmpresas() {
     try {
       const token = sessionStorage.getItem("superadmin_token");
 
+      const queryParams = new URLSearchParams();
+      if (debouncedSearch) queryParams.append("search", debouncedSearch);
+      if (status) queryParams.append("id_estado", status);
+
+      const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+
       const response = await fetch(
-        "http://localhost:8000/api/superadmin/empresas/pdf",
+        `http://localhost:8000/api/superadmin/empresas/pdf${queryString}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

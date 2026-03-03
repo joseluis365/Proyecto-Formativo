@@ -47,21 +47,37 @@ export const empresaSchema = z.object({
         .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
 
     admin_primer_nombre: z.string()
+        .min(1, "El primer nombre del administrador es obligatorio")
         .min(3, "El primer nombre del administrador debe tener al menos 3 caracteres")
         .max(40, "El primer nombre del administrador debe tener como maximo 40 caracteres")
         .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/, "El primer nombre del administrador debe tener solo letras sin esapcios"),
 
+    admin_segundo_nombre: z.string()
+        .max(40, "El segundo nombre del administrador no puede ser mayor a 40 caracteres")
+        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]*$/, "El segundo nombre del administrador debe tener solo letras")
+        .optional()
+        .transform(val => val === "" ? undefined : val),
+
     admin_primer_apellido: z.string()
+        .min(1, "El primer apellido del administrador es obligatorio")
         .min(3, "El primer apellido del administrador debe tener al menos 3 caracteres")
         .max(40, "El primer apellido del administrador debe tener como maximo 40 caracteres")
         .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/, "El primer apellido del administrador debe tener solo letras sin esapcios dobles"),
 
+    admin_segundo_apellido: z.string()
+        .max(40, "El segundo apellido del administrador no puede ser mayor a 40 caracteres")
+        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]*$/, "El segundo apellido del administrador debe tener solo letras")
+        .optional()
+        .transform(val => val === "" ? undefined : val),
+
     admin_documento: z.string()
+        .min(1, "El documento del administrador es obligatorio")
         .min(7, "El documento debe tener entre 7 y 10 digitos")
         .max(10, "El documento debe tener entre 7 y 10 digitos")
         .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
 
     admin_email: z.string()
+        .min(1, "El correo del administrador es obligatorio")
         .min(12, "El correo debe tener al menos 12 caracteres")
         .max(150, "El correo debe tener como maximo 150 caracteres")
         .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
@@ -69,6 +85,12 @@ export const empresaSchema = z.object({
     admin_telefono: z.string()
         .length(10, "El telefono debe tener exactamente 10 digitos")
         .regex(/^3\d{9}$/, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
+
+    admin_direccion: z.string()
+        .min(1, "La direccion del administrador es obligatoria")
+        .min(8, "La direccion debe tener al menos 8 caracteres")
+        .max(150, "La direccion debe tener como maximo 150 caracteres")
+        .regex(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/, "La dirección debe contener letras y números, y puede incluir #, -, . o ,."),
 
     admin_password: z.string()
         .min(8, "La contraseña del administrador debe tener al menos 8 caracteres")

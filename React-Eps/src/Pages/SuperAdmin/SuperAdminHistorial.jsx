@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import superAdminApi from "../../Api/superadminAxios";
 import PrincipalText from "../../components/Users/PrincipalText";
+import Input from "../../components/UI/Input";
+import Filter from "../../components/UI/Filter";
 import MotionSpinner from "../../components/UI/Spinner";
 import HistoryCard from "../../components/SuperAdmin/HistoryCard";
 import HistoryDetailsModal from "../../components/Modals/LicenciaModal/HistoryDetailsModal";
@@ -12,10 +14,34 @@ export default function SuperAdminHistorial() {
     const [error, setError] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
 
+    const [search, setSearch] = useState("");
+    const [status, setStatus] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    const statusOptions = [
+        { value: 1, label: "Activas" },
+        { value: 4, label: "Expiran Pronto" },
+        { value: 5, label: "Expiradas" },
+        { value: 6, label: "Pendientes" },
+    ];
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]);
+
     useEffect(() => {
         const fetchHistory = async () => {
             try {
-                const response = await superAdminApi.get("/superadmin/empresa-licencias");
+                setLoading(true);
+                const response = await superAdminApi.get("/superadmin/empresa-licencias", {
+                    params: {
+                        search: debouncedSearch || undefined,
+                        id_estado: status || undefined,
+                    }
+                });
                 setHistory(response.data);
             } catch (err) {
                 console.error("Error fetching history:", err);
@@ -26,12 +52,18 @@ export default function SuperAdminHistorial() {
         };
 
         fetchHistory();
-    }, []);
+    }, [debouncedSearch, status]);
 
     const handleDownloadHistory = async () => {
         try {
             const token = sessionStorage.getItem("superadmin_token");
-            const response = await fetch("http://localhost:8000/api/superadmin/licencias/historial/pdf", {
+
+            const queryParams = new URLSearchParams();
+            if (debouncedSearch) queryParams.append("search", debouncedSearch);
+            if (status) queryParams.append("id_estado", status);
+            const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
+
+            const response = await fetch(`http://localhost:8000/api/superadmin/licencias/historial/pdf${queryString}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -72,6 +104,26 @@ export default function SuperAdminHistorial() {
                     <span className="material-symbols-outlined">description</span>
                     Descargar Historial
                 </button>
+            </div>
+
+            {/* Filtros */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <div className="flex-1">
+                    <Input
+                        placeholder="Buscar por NIT, ID de licencia o Nombre de empresa..."
+                        icon="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                </div>
+                <div className="w-full md:w-64">
+                    <Filter
+                        options={statusOptions}
+                        value={status}
+                        onChange={(val) => setStatus(val)}
+                        placeholder="Todos los estados"
+                    />
+                </div>
             </div>
 
             <AnimatePresence>

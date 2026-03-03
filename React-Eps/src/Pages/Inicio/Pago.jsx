@@ -64,6 +64,11 @@ export default function Pago() {
   const selectedDepto = watch("id_departamento");
   const selectedCiudad = watch("id_ciudad");
 
+  useEffect(() => {
+    console.log("Form Errors:", errors);
+    console.log("Is Form Valid:", isValid);
+  }, [errors, isValid]);
+
 
   const handleCardChange = (name, value) => {
     let formattedValue = value;
@@ -140,7 +145,6 @@ export default function Pago() {
     }
 
     setLoading(true);
-    setErrors({});
 
     // Si la tarjeta está mal, activamos el modo solo validación para el backend
     const cardIsInvalid = paymentMethod === 'card' && Object.keys(cardErrors).length > 0;
@@ -334,6 +338,7 @@ export default function Pago() {
               register={register}
               errors={errors}
               handleSubmit={handleSubmit}
+              onSubmit={onSubmit}
             >
               <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                 <h3 className="text-base font-medium text-gray-800 dark:text-gray-200">Método de Pago</h3>

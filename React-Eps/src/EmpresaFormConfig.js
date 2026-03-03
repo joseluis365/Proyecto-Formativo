@@ -1,6 +1,6 @@
 export const createEmpresaFormConfig = {
   1: [
-    { name: "nit", label: "Nit", type: "text", readOnly: false, icon: "badge", placeholder: "Ej: 900123456" },
+    { name: "nit", label: "Nit", type: "text", readOnly: false, icon: "badge", placeholder: "Ej: 900123456-7" },
     { name: "nombre", label: "Nombre", type: "text", readOnly: false, icon: "business", placeholder: "Ej: Mi Empresa S.A." },
     { name: "email_contacto", label: "Correo Contacto", type: "email", readOnly: false, icon: "mail", placeholder: "contacto@empresa.com" },
     { name: "telefono", label: "Telefono", type: "number", readOnly: false, icon: "phone", placeholder: "Ej: 3001234567" },

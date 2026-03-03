@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistroEmpresaContacto;
+use App\Mail\RegistroEmpresaRepresentante;
+use App\Mail\RegistroEmpresaAdmin;
 
 class EmpresaController extends Controller
 {
@@ -111,6 +115,11 @@ class EmpresaController extends Controller
                     'store',                                       // Icono
                     'superadmin-feed'
                 ));
+                
+                // Envío de correos a los 3 involucrados (creación manual por SuperAdmin)
+                Mail::to($empresa->email_contacto)->queue(new RegistroEmpresaContacto($empresa));
+                Mail::to($empresa->email_representante)->queue(new RegistroEmpresaRepresentante($empresa));
+                Mail::to($usuario->email)->queue(new RegistroEmpresaAdmin($empresa, $usuario, $data['admin_password']));
 
                 return response()->json([
                     'message' => 'Empresa y administrador creados correctamente',
@@ -128,9 +137,33 @@ class EmpresaController extends Controller
 
     // 📌 EXPORTAR PDF (NUEVO MÉTODO)
 
-    public function exportPdf()
+    public function exportPdf(Request $request)
     {
-        $empresas = Empresa::with('ciudad')->get();
+        Artisan::call('app:check-licenses');
+        $query = Empresa::with('ciudad');
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'ilike', "%{$search}%")
+                  ->orWhere('nit', 'ilike', "%{$search}%");
+            });
+        }
+
+        // Filtro por estado
+        if ($request->filled('id_estado')) {
+            $estado = $request->id_estado;
+            if ($estado == 3) {
+                $query->whereDoesntHave('licencias');
+            } else {
+                $query->whereHas('licenciaActual', function ($q) use ($estado) {
+                    $q->where('id_estado', $estado);
+                });
+            }
+        }
+
+        $empresas = $query->get();
 
         $pdf = Pdf::loadView('pdf.empresas', compact('empresas'));
 

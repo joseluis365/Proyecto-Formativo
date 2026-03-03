@@ -62,6 +62,7 @@ Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
 Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);
 Route::get('/licencias', [LicenciaController::class, 'index']);
 Route::get('/licencia/{id}', [LicenciaController::class, 'show']);
+Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
     return Activity::latest()
@@ -308,7 +309,7 @@ Route::prefix('superadmin')->middleware('auth:sanctum')->group(function () {
         Route::get('/licencias/historial/pdf', 'exportHistoryPdf');
     });
 
-    Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
+
     Route::get('/licenses/chart-data', [LicenciaChartController::class, 'getMonthlyStats']);
 
     /*

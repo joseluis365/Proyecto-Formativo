@@ -10,16 +10,34 @@ use App\Models\Licencia;
 use App\Models\Empresa;
 use App\Events\SystemActivityEvent;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\LicenciaActivadaEmpresa;
+use App\Mail\LicenciaActivadaAdmin;
 
 class EmpresaLicenciaController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
-        $query->where('id_rol', 2);
-    },])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($q) {
+            $q->where('id_rol', 2);
+        }]);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id_empresa_licencia', 'ilike', "%{$search}%")
+                  ->orWhereHas('empresa', function($qEmp) use ($search) {
+                      $qEmp->where('nombre', 'ilike', "%{$search}%")
+                           ->orWhere('nit', 'ilike', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('id_estado')) {
+            $query->where('id_estado', $request->id_estado);
+        }
+
+        $historial = $query->orderBy('created_at', 'desc')->get();
 
         return response()->json($historial);
     }
@@ -96,6 +114,18 @@ class EmpresaLicenciaController extends Controller
         $empresa = Empresa::findOrFail($nit);
         $empresa->id_estado = 1;
         $empresa->save();
+        
+        // Cargar el administrador para el correo
+        $empresa->load('adminUser');
+
+        // Enviar correos de activación en segundo plano
+        // 1. Al contacto de la empresa
+        Mail::to($empresa->email_contacto)->queue(new LicenciaActivadaEmpresa($empresa, $licencia));
+
+        // 2. Al administrador
+        if ($empresa->adminUser) {
+            Mail::to($empresa->adminUser->email)->queue(new LicenciaActivadaAdmin($empresa, $empresa->adminUser));
+        }
 
         event(new SystemActivityEvent(
             "Licencia activada: " . $licencia->id_empresa_licencia, // Título
@@ -110,13 +140,28 @@ class EmpresaLicenciaController extends Controller
         ]);
     }
 
-    public function exportHistoryPdf()
+    public function exportHistoryPdf(\Illuminate\Http\Request $request)
     {
-        $historial = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($query) {
-            $query->where('id_rol', 2);
-        }])
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $query = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($q) {
+            $q->where('id_rol', 2);
+        }]);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id_empresa_licencia', 'ilike', "%{$search}%")
+                  ->orWhereHas('empresa', function($qEmp) use ($search) {
+                      $qEmp->where('nombre', 'ilike', "%{$search}%")
+                           ->orWhere('nit', 'ilike', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('id_estado')) {
+            $query->where('id_estado', $request->id_estado);
+        }
+
+        $historial = $query->orderBy('created_at', 'desc')->get();
 
         $pdf = Pdf::loadView('pdf.historial_licencias', compact('historial'));
         return $pdf->download('historial_licencias.pdf');
