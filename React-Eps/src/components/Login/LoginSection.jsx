@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema } from "../../schemas/authSchemas";
+import { handleApiErrors } from "../../utils/formHandlers";
 
 export default function LoginSection() {
     const navigate = useNavigate();
@@ -28,9 +29,10 @@ export default function LoginSection() {
         setLoading(true);
 
         try {
-            const response = await api.post('/login', data);
+            // El interceptor devuelve directamente response.data.data
+            const loginData = await api.post('/login', data);
 
-            const { access_token, user } = response.data;
+            const { access_token, user } = loginData;
 
             localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(user));
@@ -50,22 +52,11 @@ export default function LoginSection() {
             }
 
         } catch (error) {
-            console.error("Login error:", error);
-            if (error.response?.status === 422) {
-                setErrors(
-                    Object.fromEntries(
-                        Object.entries(error.response.data.errors).map(
-                            ([key, value]) => [key, value[0]]
-                        )
-                    )
-                );
-            } else {
-                const message = error.response?.data?.message || "Error al iniciar sesión";
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de acceso',
-                    text: message,
-                });
+            // handleApiErrors procesa errores 422 automáticamente
+            if (!handleApiErrors(error, setError)) {
+                // El interceptor global ya maneja 401, 403 y 500 con Swal.
+                // Aquí solo capturamos errores que no fueron manejados globalmente o lógica específica.
+                console.error("Login unexpected error:", error);
             }
         } finally {
             setLoading(false);
@@ -99,7 +90,7 @@ export default function LoginSection() {
                     </div>
                 </div>
                 <div className="flex justify-center gap-6 mt-2">
-                    <Link className="text-[#4c669a] text-xs hover:text-primary flex items-center gap-1" href="#">
+                    <Link className="text-[#4c669a] text-xs hover:text-primary flex items-center gap-1" to="#">
                         <span className="material-symbols-outlined text-sm">support_agent</span>
                         Ayuda
                     </Link>

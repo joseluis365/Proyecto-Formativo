@@ -1,64 +1,58 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/Api/axios";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
-import Form from "@/components/UI/Form";
+import FormWithIcons from "@/components/UI/FormWithIcons";
 import { getCreateUserFormConfig } from "@/UserFormConfig";
+import { medicoSchema } from "@/schemas/userSchema";
+import { handleApiErrors } from "@/utils/formHandlers";
 import Swal from 'sweetalert2';
-import MotionSpinner from "@/components/UI/Spinner";
+import BlueButton from "@/components/UI/BlueButton";
 import useEspecialidades from "@/hooks/useEspecialidades";
-
-const initialUser = {
-  documento: "",
-  nombre: "",
-  apellido: "",
-  email: "",
-  telefono: "",
-  direccion: "",
-  fecha_nacimiento: "",
-  registro_profesional: "",
-  id_especialidad: "",
-  id_estado: 1,
-  contrasena: "",
-  id_rol: 4,
-};
 
 export default function CreateMedicoModal({
   onClose,
   onSuccess,
 }) {
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const { specialties, loading: loadingSpecialties } = useEspecialidades();
 
-  const { specialties } = useEspecialidades();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(medicoSchema),
+    mode: "onChange",
+    reValidateMode: "onBlur",
+    defaultValues: {
+      id_estado: 1,
+      segundo_nombre: "",
+      segundo_apellido: ""
+    }
+  });
 
-  const handleCreate = async (data) => {
+  const onSubmit = async (data) => {
     try {
       setSaving(true);
-      setErrors({});
+
+      // Inyección de rol Médico (4)
       const payload = {
-        id_rol: 4,
-        documento: data.documento,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        email: data.email,
-        telefono: data.telefono,
-        direccion: data.direccion,
-        fecha_nacimiento: data.fecha_nacimiento,
-        registro_profesional: data.registro_profesional,
-        id_especialidad: data.id_especialidad,
-        id_estado: data.id_estado,
-        contrasena: data.contrasena,
+        ...data,
+        id_rol: 4
       };
+
       await api.post(`/usuario`, payload);
 
       Swal.fire({
         icon: 'success',
-        title: 'Usuario Creado',
-        text: 'El medico ha sido creado correctamente.',
+        title: 'Médico Creado',
+        text: 'El médico ha sido registrado correctamente.',
         showConfirmButton: false,
-        timer: 1100,
+        timer: 1500,
         timerProgressBar: true,
       }).then(() => {
         onSuccess?.();
@@ -66,48 +60,39 @@ export default function CreateMedicoModal({
       });
 
     } catch (error) {
-      if (error.response?.status === 422) {
-        setErrors(
-          Object.fromEntries(
-            Object.entries(error.response.data.errors).map(
-              ([key, value]) => [key, value[0]]
-            )
-          )
-        );
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo crear el medico.',
-        });
-      }
-    }
-    finally {
+      handleApiErrors(error, setError);
+    } finally {
       setSaving(false);
     }
   };
 
+  const formConfig = {
+    fields: getCreateUserFormConfig(4, { id_especialidad: specialties })
+  };
 
   return (
     <BaseModal>
-      <ModalHeader icon="person" title="CREAR MEDICO" onClose={onClose} />
+      <ModalHeader icon="medical_services" title="CREAR MÉDICO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <MotionSpinner />
+        <FormWithIcons
+          config={formConfig}
+          register={register}
+          errors={errors}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
+        >
+          <div className="flex mt-8 justify-end">
+            <div className="w-full md:w-48">
+              <BlueButton
+                text="Guardar Médico"
+                icon="save"
+                type="submit"
+                loading={saving || loadingSpecialties}
+              />
+            </div>
           </div>
-        ) : (
-          <Form
-            values={initialUser}
-            fields={getCreateUserFormConfig(4, { id_especialidad: specialties })}
-            onSubmit={handleCreate}
-            disabled={saving}
-            loading={saving}
-            errors={errors}
-          />
-        )}
+        </FormWithIcons>
       </div>
-
     </BaseModal>
   );
 }

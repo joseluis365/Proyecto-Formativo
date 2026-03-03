@@ -1,12 +1,13 @@
 export const formEstado = {
     fields: [
         {
-            name: "nombre",
+            name: "nombre_estado",
             label: "Nombre del Estado",
             icon: "description",
             type: "text",
             placeholder: "Ej: Pendiente",
             required: true,
+            onlyLetters: true,
         },
     ],
 };
@@ -20,6 +21,7 @@ export const formRol = {
             type: "text",
             placeholder: "Ej: Administrador",
             required: true,
+            onlyLetters: true,
         },
     ],
 };
@@ -41,6 +43,7 @@ export const formCiudad = {
             type: "text",
             placeholder: "Ej: Bogotá",
             required: true,
+            onlyLetters: true,
         },
         {
             name: "id_departamento",
@@ -70,6 +73,7 @@ export const formDepartamento = {
             type: "text",
             placeholder: "Ej: Cundinamarca",
             required: true,
+            onlyLetters: true,
         },
     ],
 };
@@ -91,6 +95,7 @@ export const formFarmacia = {
             type: "text",
             placeholder: "Nombre de la farmacia",
             required: true,
+            onlyLetters: true,
         },
         {
             name: "direccion",
@@ -144,12 +149,13 @@ export const formFarmacia = {
 export const formCategoriaExamen = {
     fields: [
         {
-            name: "nombre",
+            name: "categoria",
             label: "Nombre de la Categoría",
             icon: "category",
             type: "text",
             placeholder: "Ej: Sangre",
             required: true,
+            onlyLetters: true,
         }
     ]
 };
@@ -157,12 +163,13 @@ export const formCategoriaExamen = {
 export const formCategoriaMedicamento = {
     fields: [
         {
-            name: "nombre",
+            name: "categoria",
             label: "Nombre de la Categoría",
             icon: "category",
             type: "text",
             placeholder: "Ej: Analgésicos",
             required: true,
+            onlyLetters: true,
         }
     ]
 };
@@ -170,12 +177,13 @@ export const formCategoriaMedicamento = {
 export const formEspecialidad = {
     fields: [
         {
-            name: "nombre",
+            name: "especialidad",
             label: "Nombre de la Especialidad",
             icon: "medical_services",
             type: "text",
             placeholder: "Ej: Cardiología",
             required: true,
+            onlyLetters: true,
         }
     ]
 };
@@ -183,12 +191,13 @@ export const formEspecialidad = {
 export const formPrioridad = {
     fields: [
         {
-            name: "nombre",
+            name: "prioridad",
             label: "Nombre de la Prioridad",
             icon: "priority_high",
             type: "text",
             placeholder: "Ej: Alta",
             required: true,
+            onlyLetters: true,
         }
     ]
 };
@@ -196,12 +205,13 @@ export const formPrioridad = {
 export const formTipoCita = {
     fields: [
         {
-            name: "nombre",
+            name: "tipo",
             label: "Nombre del Tipo de Cita",
             icon: "event",
             type: "text",
             placeholder: "Ej: General",
             required: true,
+            onlyLetters: true,
         }
     ]
 };

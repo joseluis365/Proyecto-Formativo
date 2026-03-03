@@ -1,69 +1,92 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
 import FormWithIcons from "@/components/UI/FormWithIcons";
 import { formEstado } from "@/data/BaseTablesForms";
+import { estadoSchema } from "@/schemas/estadoSchema";
+import { handleApiErrors } from "@/utils/formHandlers";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function EstadoModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [formData, setFormData] = useState({
-        nombre_estado: ""
-    });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
+    const isEdit = !!editData;
 
-    useEffect(() => {
-        if (editData) {
-            setFormData({
-                nombre_estado: editData.nombre_estado || ""
-            });
-        } else {
-            setFormData({
-                nombre_estado: ""
-            });
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(estadoSchema),
+        mode: "onChange",
+        reValidateMode: "onBlur",
+        criteriaMode: "firstError",
+        defaultValues: {
+            nombre_estado: ""
         }
-        setErrors({});
-    }, [editData, isOpen]);
+    });
 
-    const handleChange = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors({});
-
-        try {
+    // Patrón para edición: reset() al cargar datos o al abrir modal
+    useEffect(() => {
+        if (isOpen) {
             if (editData) {
-                await api.put(`/estados/${editData.id_estado}`, formData);
-                Swal.fire("Éxito", "Estado actualizado correctamente", "success");
+                reset({
+                    nombre_estado: editData.nombre_estado || ""
+                });
             } else {
-                await api.post("/estados", formData);
-                Swal.fire("Éxito", "Estado creado correctamente", "success");
+                reset({
+                    nombre_estado: ""
+                });
+            }
+        }
+    }, [editData, isOpen, reset]);
+
+    const handleFormSubmit = async (data) => {
+        try {
+            if (isEdit) {
+                await api.put(`/estados/${editData.id_estado}`, data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Estado actualizado correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                await api.post("/estados", data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Estado creado correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
             onSuccess();
             onClose();
         } catch (error) {
+            // Manejo específico del backend 403 (IDs protegidos)
             if (error.response?.status === 403) {
-                Swal.fire("Error", "No tienes permiso para modificar este estado (IDs protegidos < 7).", "error");
-            } else if (error.response?.status === 422) {
-                const apiErrors = error.response.data.errors;
-                const formattedErrors = {};
-                Object.keys(apiErrors).forEach(key => {
-                    formattedErrors[key] = apiErrors[key][0];
+                Swal.fire({
+                    icon: "error",
+                    title: "Acceso Denegado",
+                    text: error.response.data.message || "No tienes permiso para modificar este estado protegidos.",
                 });
-                setErrors(formattedErrors);
-            } else {
-                Swal.fire("Error", "Ocurrió un error al procesar la solicitud", "error");
+                return;
             }
-        } finally {
-            setLoading(false);
+
+            // Mapeo automático de errores 422
+            if (!handleApiErrors(error, setError)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error Inesperado",
+                    text: "Ocurrió un error al procesar la solicitud."
+                });
+            }
         }
     };
 
@@ -72,24 +95,24 @@ export default function EstadoModal({ isOpen, onClose, onSuccess, editData = nul
     return (
         <BaseModal>
             <ModalHeader
-                title={editData ? "Editar Estado" : "Nuevo Estado"}
+                title={isEdit ? "EDITAR ESTADO" : "NUEVO ESTADO"}
                 icon="settings"
                 onClose={onClose}
             />
             <div className="p-6">
                 <FormWithIcons
                     config={formEstado}
-                    values={formData}
-                    onChange={handleChange}
-                    onSubmit={handleSubmit}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={handleFormSubmit}
                     errors={errors}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={editData ? "Actualizar" : "Crear"}
+                            text={isEdit ? "Actualizar" : "Guardar"}
                             icon="save"
                             type="submit"
-                            loading={loading}
+                            loading={isSubmitting}
                         />
                     </div>
                 </FormWithIcons>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const api = axios.create({
   baseURL: "http://localhost:8000/api",
@@ -8,7 +9,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // El nombre que usas en el Login
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -16,13 +17,71 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login"; // O usa tu router de React
+  (response) => {
+    // Extracción automática del campo 'data' si existe la estructura estándar
+    if (response.data && typeof response.data.success !== "undefined") {
+      // Si el backend envió data: null (ej: Logout), devolvemos el objeto completo para no perder el mensaje
+      return response.data.data !== null ? response.data.data : response.data;
     }
+    return response.data;
+  },
+  (error) => {
+    const { response } = error;
+
+    if (response) {
+      switch (response.status) {
+        case 401:
+          // Sesión expirada o inválida
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          Swal.fire({
+            icon: 'warning',
+            title: 'Sesión Finalizada',
+            text: 'Tu sesión ha expirado o no es válida. Por favor, ingresa de nuevo.',
+            confirmButtonColor: '#3085d6',
+          }).then(() => {
+            window.location.href = "/login";
+          });
+          break;
+
+        case 403:
+          // Acceso prohibido (ej: Problemas de licencia)
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso Denegado',
+            text: response.data?.message || 'No tienes permisos para realizar esta acción o hay problemas con la licencia de tu empresa.',
+            confirmButtonColor: '#d33',
+          });
+          break;
+
+        case 500:
+          // Error interno del servidor
+          Swal.fire({
+            icon: 'error',
+            title: 'Error del Servidor',
+            text: 'Ha ocurrido un error inesperado en el servidor. Por favor, inténtalo más tarde.',
+            confirmButtonColor: '#d33',
+          });
+          break;
+
+        case 422:
+          // Manejado habitualmente por handleApiErrors en el componente,
+          // no disparamos Swal global para no interferir con el feedback de formularios.
+          break;
+
+        default:
+          // Otros errores no manejados específicamente
+          console.error("API Error:", response.data?.message || error.message);
+      }
+    } else {
+      // Error de red o servidor caído
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de Conexión',
+        text: 'No se pudo establecer conexión con el servidor. Verifica tu conexión a internet.',
+      });
+    }
+
     return Promise.reject(error);
   }
 );

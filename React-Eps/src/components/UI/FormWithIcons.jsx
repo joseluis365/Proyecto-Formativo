@@ -22,17 +22,10 @@ export default function FormWithIcons({
 
         return (
             <IconInput
+                {...field}
                 key={field.name}
-                label={field.label}
-                icon={field.icon}
-                placeholder={field.placeholder || field.label}
-                type={field.type}
-                id={field.name}
-                name={field.name}
-                required={field.required}
-                readOnly={field.readOnly}
+                id={field.id || field.name}
                 error={errors[field.name]}
-                autoComplete={field.autoComplete}
                 register={register}
             />
         );

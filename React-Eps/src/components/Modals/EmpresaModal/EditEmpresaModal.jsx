@@ -26,6 +26,8 @@ export default function EditEmpresaModal({
         resolver: zodResolver(updateEmpresaSchema),
         defaultValues: empresaData || {},
         mode: "onChange",
+        reValidateMode: "onBlur",
+        criteriaMode: "firstError",
     });
 
     useEffect(() => {

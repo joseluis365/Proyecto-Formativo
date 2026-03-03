@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class StoreEspecialidadRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class StoreEspecialidadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'especialidad' => 'required|string|max:150|unique:especialidad,especialidad'
+            'especialidad' => ['required', 'string', 'max:150', new UniqueIgnoreCase('especialidad', 'especialidad')]
         ];
     }
 

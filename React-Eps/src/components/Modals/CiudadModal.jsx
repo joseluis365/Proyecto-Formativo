@@ -1,48 +1,67 @@
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
 import FormWithIcons from "@/components/UI/FormWithIcons";
 import { formCiudad } from "@/data/BaseTablesForms";
+import { ciudadSchema } from "@/schemas/ciudadSchema";
+import { handleApiErrors } from "@/utils/formHandlers";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function CiudadModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [formData, setFormData] = useState({
-        codigo_postal: "",
-        nombre: "",
-        id_departamento: "",
-        id_estado: 1
-    });
+    const isEdit = !!editData;
     const [departamentos, setDepartamentos] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [loadingDeps, setLoadingDeps] = useState(false);
-    const [errors, setErrors] = useState({});
 
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(ciudadSchema),
+        mode: "onChange",
+        reValidateMode: "onBlur",
+        criteriaMode: "firstError",
+        defaultValues: {
+            codigo_postal: "",
+            nombre: "",
+            id_departamento: "",
+            id_estado: 1
+        }
+    });
+
+    // Cargar departamentos al abrir el modal
     useEffect(() => {
         if (isOpen) {
             fetchDepartamentos();
         }
     }, [isOpen]);
 
+    // Patrón de edición: reset() al cargar datos o al abrir el modal
     useEffect(() => {
-        if (editData) {
-            setFormData({
-                codigo_postal: editData.codigo_postal || "",
-                nombre: editData.nombre || "",
-                id_departamento: editData.id_departamento || "",
-                id_estado: editData.id_estado || 1
-            });
-        } else {
-            setFormData({
-                codigo_postal: "",
-                nombre: "",
-                id_departamento: "",
-                id_estado: 1
-            });
+        if (isOpen) {
+            if (editData) {
+                reset({
+                    codigo_postal: editData.codigo_postal || "",
+                    nombre: editData.nombre || "",
+                    id_departamento: editData.id_departamento || "",
+                    id_estado: editData.id_estado || 1
+                });
+            } else {
+                reset({
+                    codigo_postal: "",
+                    nombre: "",
+                    id_departamento: "",
+                    id_estado: 1
+                });
+            }
         }
-        setErrors({});
-    }, [editData, isOpen]);
+    }, [editData, isOpen, reset]);
 
     const fetchDepartamentos = async () => {
         setLoadingDeps(true);
@@ -56,17 +75,56 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
         }
     };
 
-    const handleChange = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleFormSubmit = async (data) => {
+        try {
+            if (isEdit) {
+                // El endpoint usa el codigo_postal original como identificador
+                await api.put(`/ciudades/${editData.codigo_postal}`, data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Ciudad actualizada correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                await api.post("/ciudades", data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Ciudad creada correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            onSuccess();
+            onClose();
+        } catch (error) {
+            if (!handleApiErrors(error, setError)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error Inesperado",
+                    text: "Ocurrió un error al procesar la solicitud."
+                });
+            }
+        }
     };
 
+    if (!isOpen) return null;
+
+    // Configuración dinámica para marcar el Código Postal como solo lectura en edición
+    const config = {
+        ...formCiudad,
+        fields: formCiudad.fields.map(field =>
+            field.name === "codigo_postal" ? { ...field, readOnly: isEdit } : field
+        )
+    };
+
+    // Renderizador personalizado para integrar select con RHF
     const customRenderers = {
-        id_departamento: (field, value, error) => (
-            <div className="flex flex-col gap-1.5 pb-3 w-full">
-                <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal">
+        id_departamento: (field, error) => (
+            <div key={field.name} className="flex flex-col gap-1.5 pb-3 w-full">
+                <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor={field.name}>
                     {field.label}
                 </label>
                 <div className="relative">
@@ -74,13 +132,11 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
                         {field.icon}
                     </span>
                     <select
-                        name={field.name}
-                        value={value ?? ""}
-                        onChange={(e) => handleChange(field.name, e.target.value)}
-                        required={field.required}
+                        {...register(field.name)}
+                        id={field.name}
                         disabled={loadingDeps}
-                        className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? "border-red-500" : "border-[#cfd7e7] dark:border-white/30"
-                            } bg-white dark:bg-gray-800/50 h-12 pl-12 pr-10 appearance-none text-base font-normal`}
+                        className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? "border-red-500 bg-red-50/50" : "border-[#cfd7e7] dark:border-white/30"
+                            } bg-white dark:bg-gray-800/50 h-12 pl-12 pr-10 appearance-none text-base font-normal transition-all`}
                     >
                         <option value="">Seleccione un departamento</option>
                         {departamentos.map(dep => (
@@ -93,66 +149,33 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
                         expand_more
                     </span>
                 </div>
-                {error && <span className="text-red-500 text-xs">{error}</span>}
+                {error && <span className="text-red-500 text-xs mt-1">{error.message}</span>}
             </div>
         )
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors({});
-
-        try {
-            if (editData) {
-                await api.put(`/ciudades/${editData.codigo_postal}`, formData);
-                Swal.fire("Éxito", "Ciudad actualizada correctamente", "success");
-            } else {
-                await api.post("/ciudades", formData);
-                Swal.fire("Éxito", "Ciudad creada correctamente", "success");
-            }
-            onSuccess();
-            onClose();
-        } catch (error) {
-            if (error.response?.status === 422) {
-                const apiErrors = error.response.data.errors;
-                const formattedErrors = {};
-                Object.keys(apiErrors).forEach(key => {
-                    formattedErrors[key] = apiErrors[key][0];
-                });
-                setErrors(formattedErrors);
-            } else {
-                Swal.fire("Error", "Ocurrió un error al procesar la solicitud", "error");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (!isOpen) return null;
-
     return (
         <BaseModal>
             <ModalHeader
-                title={editData ? "Editar Ciudad" : "Nueva Ciudad"}
+                title={isEdit ? "EDITAR CIUDAD" : "NUEVA CIUDAD"}
                 icon="location_city"
                 onClose={onClose}
             />
             <div className="p-6">
                 <FormWithIcons
-                    config={formCiudad}
-                    values={formData}
-                    onChange={handleChange}
-                    onSubmit={handleSubmit}
+                    config={config}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={handleFormSubmit}
                     errors={errors}
                     customRenderers={customRenderers}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={editData ? "Actualizar" : "Crear"}
+                            text={isEdit ? "Actualizar" : "Guardar"}
                             icon="save"
                             type="submit"
-                            loading={loading}
+                            loading={isSubmitting}
                         />
                     </div>
                 </FormWithIcons>

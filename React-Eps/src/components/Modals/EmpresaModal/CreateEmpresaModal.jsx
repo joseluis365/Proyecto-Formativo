@@ -56,6 +56,8 @@ export default function CreateEmpresaModal({
         resolver: zodResolver(empresaSchema),
         defaultValues: initialEmpresa,
         mode: "onChange",
+        reValidateMode: "onBlur",
+        criteriaMode: "firstError",
     });
 
     const selectedDepto = watch("id_departamento");
