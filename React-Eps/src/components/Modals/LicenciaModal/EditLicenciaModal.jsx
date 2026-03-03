@@ -6,6 +6,9 @@ import ModalFooter from "../ModalFooter";
 import Form from "../../UI/Form";
 import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import Swal from "sweetalert2";
+import { updatePlanSchema } from "../../../schemas/updatePlanSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 export default function EditLicenciaModal({
@@ -14,22 +17,29 @@ export default function EditLicenciaModal({
     onSuccess,
 }) {
     const [saving, setSaving] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [values, setValues] = useState(licenciaData || {});
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(updatePlanSchema),
+        defaultValues: licenciaData || {},
+        mode: "onChange"
+    });
 
     useEffect(() => {
-        if (licenciaData) setValues(licenciaData);
-    }, [licenciaData]);
+        if (licenciaData) reset(licenciaData);
+    }, [licenciaData, reset]);
 
     const handleUpdate = async (data) => {
         try {
             setSaving(true);
-            setErrors({});
-
-            // 1. Limpieza estricta de datos
             const payload = { ...data };
 
-            console.log("Enviando actualización para NIT:", licenciaData.id);
+            console.log("Enviando actualización para ID:", licenciaData.id);
 
             // 2. Petición API
             const response = await axios.put(`/superadmin/licencia/${licenciaData.id}`, payload);
@@ -53,13 +63,13 @@ export default function EditLicenciaModal({
         } catch (error) {
             console.error("Update Error:", error);
             if (error.response?.status === 422) {
-                setErrors(
-                    Object.fromEntries(
-                        Object.entries(error.response.data.errors).map(
-                            ([key, val]) => [key, val[0]]
-                        )
-                    )
-                );
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 const Swal = (await import("sweetalert2")).default;
                 Swal.fire({
@@ -121,7 +131,8 @@ export default function EditLicenciaModal({
             <ModalHeader icon="edit" title="EDITAR PLAN" onClose={onClose} />
             <div className="p-6 flex-1 overflow-y-auto">
                 <Form
-                    values={values}
+                    register={register}
+                    handleSubmit={handleSubmit}
                     fields={createLicenciaFormConfig[2]}
                     onSubmit={handleUpdate}
                     disabled={saving}

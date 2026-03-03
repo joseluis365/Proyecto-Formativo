@@ -4,15 +4,24 @@ import FormWithIcons from "../../components/UI/FormWithIcons";
 import BlueButton from "../../components/UI/BlueButton";
 import Swal from 'sweetalert2';
 import { superAdminVerify } from "../../data/SuperAdminForms";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { superAdmin2FASchema } from "../../schemas/authSchemas";
 
 export default function SuperAdminVerify() {
   const navigate = useNavigate();
-
-  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  // Estado local para el email por si se pierde del storage, aunque idealmente viene del login
   const email = sessionStorage.getItem("superadmin_email");
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(superAdmin2FASchema),
+    defaultValues: { email: email || "", code: "" }
+  });
 
   useEffect(() => {
     const token = sessionStorage.getItem("superadmin_token");
@@ -39,36 +48,7 @@ export default function SuperAdminVerify() {
     }
   }, [email, navigate]);
 
-  const handleChange = (field, value) => {
-    const safeField = field ? String(field).toLowerCase() : "";
-    const safeValue = value ?? "";
-
-    if (
-      safeField === "code" ||
-      safeField === "codigo" ||
-      safeField === "otp"
-    ) {
-      setCode(safeValue);
-      // Limpiar error al escribir
-      if (errors[safeField]) {
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          delete newErrors[safeField];
-          return newErrors;
-        });
-      }
-    }
-  };
-
-  const handleVerify = async () => {
-    setErrors({});
-
-    // Validación: Exactamente 6 dígitos, sin espacios, letras, ni negativos
-    if (!/^\d{6}$/.test(code)) {
-      setErrors({ code: "El código debe contener exactamente 6 dígitos numéricos." });
-      return;
-    }
-
+  const onSubmit = async (data) => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -80,8 +60,8 @@ export default function SuperAdminVerify() {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            email,
-            code: code,
+            email: data.email,
+            code: data.code,
           }),
         }
       );
@@ -139,14 +119,12 @@ export default function SuperAdminVerify() {
 
         <FormWithIcons
           config={superAdminVerify}
-          onChange={handleChange}
+          register={register}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
           errors={errors}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleVerify();
-          }}
         >
-          <div className="flex justify-center w-full" onClick={!loading ? handleVerify : undefined}>
+          <div className="flex justify-center w-full">
             <BlueButton
               text={loading ? "Verificando..." : superAdminVerify.buttonText}
               icon={superAdminVerify.buttonIcon}

@@ -6,6 +6,9 @@ import ModalFooter from "../ModalFooter";
 import FormWithIcons from "../../UI/FormWithIcons";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { empresaSchema } from "../../../schemas/empresaSchema";
 
 
 export default function CreateEmpresaModal({
@@ -14,7 +17,6 @@ export default function CreateEmpresaModal({
 }) {
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
 
     const [departamentos, setDepartamentos] = useState([]);
     const [ciudades, setCiudades] = useState([]);
@@ -43,47 +45,45 @@ export default function CreateEmpresaModal({
         id_ciudad: "",
     };
 
-    const [formData, setFormData] = useState(initialEmpresa);
+    const {
+        register,
+        handleSubmit,
+        setError,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(empresaSchema),
+        defaultValues: initialEmpresa,
+        mode: "onChange",
+    });
+
+    const selectedDepto = watch("id_departamento");
 
     useEffect(() => {
-        superAdminApi.get('/departamentos').then(res => {
-            setDepartamentos(res.data);
-        }).catch(err => console.error("Error fetching departamentos", err));
+        superAdminApi.get('/departamentos')
+            .then(res => setDepartamentos(res.data))
+            .catch(err => console.error("Error fetching departamentos", err));
     }, []);
 
-    const handleChange = (name, value) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErr = { ...prev };
-                delete newErr[name];
-                return newErr;
-            });
+    // Efecto para cargar ciudades de la misma manera que Pago.jsx
+    useEffect(() => {
+        if (selectedDepto) {
+            setCiudades([]);
+            setValue("id_ciudad", "");
+            superAdminApi.get(`/ciudades/${selectedDepto}`)
+                .then(res => setCiudades(res.data))
+                .catch(console.error);
+        } else {
+            setCiudades([]);
+            setValue("id_ciudad", "");
         }
-    };
+    }, [selectedDepto, setValue]);
 
-    const handleDepartamentoChange = async (e) => {
-        const deptoId = e.target.value;
-        handleChange('id_departamento', deptoId);
-        setCiudades([]);
-        setFormData(prev => ({ ...prev, id_ciudad: "" }));
-
-        if (deptoId) {
-            try {
-                const res = await superAdminApi.get(`/ciudades/${deptoId}`);
-                setCiudades(res.data);
-            } catch (error) {
-                console.error("Error fetching cities", error);
-            }
-        }
-    };
-
-    const handleCreate = async (e) => {
-        e.preventDefault();
+    const handleCreate = async (data) => {
         try {
             setSaving(true);
-            setErrors({});
-            const payload = { ...formData };
+            const payload = { ...data, id_estado: 3 }; // asegurar id_estado
             await superAdminApi.post(`/superadmin/empresa`, payload);
 
             Swal.fire({
@@ -99,13 +99,13 @@ export default function CreateEmpresaModal({
         } catch (error) {
             console.error(error);
             if (error.response?.status === 422) {
-                setErrors(
-                    Object.fromEntries(
-                        Object.entries(error.response.data.errors).map(
-                            ([key, value]) => [key, value[0]]
-                        )
-                    )
-                );
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -129,17 +129,15 @@ export default function CreateEmpresaModal({
     ];
 
     const customRenderers = {
-        id_departamento: (field, value, error) => (
+        id_departamento: (field, error) => (
             <div key="location-group-depto" className="space-y-1 pb-3">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_departamento">{field.label}</label>
                 <div className="relative">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
                     <select
+                        {...register("id_departamento")}
                         className={`border rounded-lg pl-10 pr-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all ${error ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-gray-300 dark:border-gray-700"} bg-white dark:bg-gray-800 text-gray-900 dark:text-white`}
-                        name="id_departamento"
                         id="id_departamento"
-                        value={value || ""}
-                        onChange={handleDepartamentoChange}
                     >
                         <option value="">Seleccionar Departamento</option>
                         {departamentos.map(d => (
@@ -147,21 +145,19 @@ export default function CreateEmpresaModal({
                         ))}
                     </select>
                 </div>
-                {error && <span className="text-red-500 text-xs">{error}</span>}
+                {error && <span className="text-red-500 text-xs">{error.message}</span>}
             </div>
         ),
-        id_ciudad: (field, value, error) => (
+        id_ciudad: (field, error) => (
             <div key="location-group-ciudad" className="space-y-1 pb-3">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_ciudad">{field.label}</label>
                 <div className="relative">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
                     <select
+                        {...register("id_ciudad")}
                         id="id_ciudad"
-                        name="id_ciudad"
                         className={`border rounded-lg pl-10 pr-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all ${error ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-gray-300 dark:border-gray-700"} bg-white dark:bg-gray-800 text-gray-900 dark:text-white`}
-                        value={value || ""}
-                        onChange={(e) => handleChange("id_ciudad", e.target.value)}
-                        disabled={!formData.id_departamento}
+                        disabled={!selectedDepto}
                     >
                         <option value="">Seleccionar Ciudad</option>
                         {ciudades.map(c => (
@@ -169,7 +165,7 @@ export default function CreateEmpresaModal({
                         ))}
                     </select>
                 </div>
-                {error && <span className="text-red-500 text-xs">{error}</span>}
+                {error && <span className="text-red-500 text-xs">{error.message}</span>}
             </div>
         )
     };
@@ -183,10 +179,10 @@ export default function CreateEmpresaModal({
                 ) : (
                     <FormWithIcons
                         sections={formSections}
-                        values={formData}
-                        onChange={handleChange}
                         customRenderers={customRenderers}
+                        register={register}
                         errors={errors}
+                        handleSubmit={handleSubmit}
                         onSubmit={handleCreate}
                     >
                         <div className="flex mt-10 justify-end gap-10">

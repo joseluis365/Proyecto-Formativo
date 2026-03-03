@@ -15,7 +15,7 @@ export const empresaSchema = z.object({
         .max(150, "El correo debe tener como maximo 150 caracteres")
         .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
 
-    telefono: z.string()
+    telefono: z.coerce.string()
         .length(10, "El telefono debe tener exactamente 10 caracteres")
         .regex(/^(3\d{9}|60[1-8]\d{7})$/, "El telefono debe iniciar con 3 o 60 y tener 10 digitos numericos sin espacios"),
 
@@ -27,7 +27,7 @@ export const empresaSchema = z.object({
     id_departamento: z.string().min(1, "El departamento es obligatorio"),
     id_ciudad: z.string().min(1, "La ciudad es obligatoria"),
 
-    documento_representante: z.string()
+    documento_representante: z.coerce.string()
         .min(7, "El documento debe tener entre 7 y 10 digitos")
         .max(10, "El documento debe tener entre 7 y 10 digitos")
         .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
@@ -37,7 +37,7 @@ export const empresaSchema = z.object({
         .max(50, "El nombre del representante debe tener como maximo 50 caracteres")
         .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/, "El nombre del representante debe tener solo letras sin espacios dobles"),
 
-    telefono_representante: z.string()
+    telefono_representante: z.coerce.string()
         .length(10, "El telefono debe tener exactamente 10 digitos")
         .regex(/^3\d{9}$/, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
 
@@ -70,7 +70,7 @@ export const empresaSchema = z.object({
         .optional()
         .transform(val => val === "" ? undefined : val),
 
-    admin_documento: z.string()
+    admin_documento: z.coerce.string()
         .min(1, "El documento del administrador es obligatorio")
         .min(7, "El documento debe tener entre 7 y 10 digitos")
         .max(10, "El documento debe tener entre 7 y 10 digitos")
@@ -82,7 +82,7 @@ export const empresaSchema = z.object({
         .max(150, "El correo debe tener como maximo 150 caracteres")
         .regex(/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido."),
 
-    admin_telefono: z.string()
+    admin_telefono: z.coerce.string()
         .length(10, "El telefono debe tener exactamente 10 digitos")
         .regex(/^3\d{9}$/, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
 

@@ -8,7 +8,10 @@ import Form from "../../UI/Form";
 import { assignLicenciaFormConfig } from "../../../AssignLicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import Swal from 'sweetalert2';
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
+import { asignarLicenciaSchema } from "../../../schemas/asignarLicenciaSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function AssignLicenciaModal({
   onClose,
@@ -18,27 +21,38 @@ export default function AssignLicenciaModal({
 }) {
 
   const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState({});
-
-
-
-  const [formData, setFormData] = useState({
-    licencia_id: "",
-    precio: "",
-    fecha_inicio: "",
-    fecha_fin: "",
-  });
 
   const formatMoney = (value) => {
     if (!value) return "";
-    // Convertimos a número y formateamos con puntos
     const number = parseFloat(value);
+    if (isNaN(number)) return value;
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
       minimumFractionDigits: 0,
     }).format(number);
   };
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    setValue,
+    watch,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(asignarLicenciaSchema),
+    defaultValues: {
+      licencia_id: "",
+      precio: "",
+      fecha_inicio: "",
+      fecha_fin: "",
+    },
+    mode: "onChange"
+  });
+
+  const selectedLicenciaId = watch("licencia_id");
+  const selectedFechaInicio = watch("fecha_inicio");
 
   const licenciaOptions = useMemo(() => {
     // Filtramos para que solo pasen licencias con IDs que no hayamos visto antes
@@ -61,52 +75,42 @@ export default function AssignLicenciaModal({
     return f;
   });
 
-  // Detectar cambios del formulario
-  const handleFormChange = (updatedData) => {
-    // 1. Copiamos los datos que vienen del formulario
-    let nextData = { ...updatedData };
-
-    // 2. Buscamos la licencia en nuestro array de opciones usando el ID actual
+  // Effect para manejar los cambios depedientes
+  useEffect(() => {
     const licenciaSeleccionada = licenciaOptions.find(
-      (l) => String(l.value) === String(nextData.licencia_id)
+      (l) => String(l.value) === String(selectedLicenciaId)
     );
 
-    // 3. Si se seleccionó una licencia, actualizamos el precio
     if (licenciaSeleccionada) {
-      nextData.precio = formatMoney(licenciaSeleccionada.precio);
+      setValue("precio", formatMoney(licenciaSeleccionada.precio), { shouldValidate: true });
 
-      // 4. Si además ya hay una fecha de inicio, calculamos la fecha fin de una vez
-      if (nextData.fecha_inicio) {
-        const start = dayjs(nextData.fecha_inicio);
+      if (selectedFechaInicio) {
+        const start = dayjs(selectedFechaInicio);
         if (start.isValid()) {
-          nextData.fecha_fin = start
+          const endDate = start
             .add(licenciaSeleccionada.duracion_meses, "month")
             .format("YYYY-MM-DD");
+          setValue("fecha_fin", endDate, { shouldValidate: true });
         }
       }
     } else {
-      // Si no hay licencia (se limpió el select), limpiamos precio y fecha fin
-      nextData.precio = "";
-      nextData.fecha_fin = "";
+      setValue("precio", "");
+      setValue("fecha_fin", "");
     }
+  }, [selectedLicenciaId, selectedFechaInicio, licenciaOptions, setValue]);
 
-    // 5. Actualizamos el estado principal
-    setFormData(nextData);
-  };
-
-  const handleSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
       setSaving(true);
-      // Buscar la licencia seleccionada para enviar el precio numérico y duración real
       const licenciaSeleccionada = licenciaOptions.find(
-        (l) => String(l.value) === String(formData.licencia_id)
+        (l) => String(l.value) === String(data.licencia_id)
       );
 
       const payload = {
         nit: empresaNit,
-        id_tipo_licencia: formData.licencia_id,
-        fecha_inicio: formData.fecha_inicio,
-        fecha_fin: formData.fecha_fin,
+        id_tipo_licencia: data.licencia_id,
+        fecha_inicio: data.fecha_inicio,
+        fecha_fin: data.fecha_fin,
         precio: licenciaSeleccionada ? licenciaSeleccionada.precio : null,
         duracion_meses: licenciaSeleccionada ? licenciaSeleccionada.duracion_meses : null
       };
@@ -125,17 +129,14 @@ export default function AssignLicenciaModal({
 
     } catch (error) {
       if (error.response?.status === 422) {
-        setErrors(
-          Object.fromEntries(
-            Object.entries(error.response.data.errors).map(
-              ([k, v]) => {
-                // Map the backend error key to the frontend field name
-                if (k === 'id_tipo_licencia') return ['licencia_id', v[0]];
-                return [k, v[0]];
-              }
-            )
-          )
-        );
+        const backendErrors = error.response.data.errors;
+        Object.keys(backendErrors).forEach((k) => {
+          const field = k === 'id_tipo_licencia' ? 'licencia_id' : k;
+          setError(field, {
+            type: "server",
+            message: backendErrors[k][0],
+          });
+        });
       } else {
         Swal.fire({
           icon: 'error',
@@ -153,12 +154,12 @@ export default function AssignLicenciaModal({
       <ModalHeader title="Asignar Plan" icon="verified" onClose={onClose} />
       <div className="p-6">
         <Form
-          values={formData}
+          register={register}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
           fields={fields}
           errors={errors}
           loading={saving}
-          onSubmit={handleSubmit}
-          onChange={handleFormChange}
         />
       </div>
       <ModalFooter />

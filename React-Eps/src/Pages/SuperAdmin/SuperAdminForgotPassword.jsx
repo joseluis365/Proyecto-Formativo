@@ -5,22 +5,30 @@ import BlueButton from "../../components/UI/BlueButton";
 import { superAdminForgotPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { superAdminRecoveryEmailSchema } from "../../schemas/authSchemas";
 
 export default function SuperAdminForgotPassword() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [email, setEmail] = useState("");
-    const [errors, setErrors] = useState({});
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(superAdminRecoveryEmailSchema)
+    });
 
+    const onSubmit = async (data) => {
         setLoading(true);
         try {
-            const response = await api.post("/superadmin/forgot-password", { email });
+            const response = await api.post("/superadmin/forgot-password", { email: data.email });
 
             if (response.status === 200) {
-                sessionStorage.setItem("recovery_email", email);
+                sessionStorage.setItem("recovery_email", data.email);
                 sessionStorage.setItem("recovery_timer_end", Date.now() + 30000);
                 if (response.data?.available_attempts !== undefined) {
                     sessionStorage.setItem("recovery_attempts", response.data.available_attempts);
@@ -36,7 +44,13 @@ export default function SuperAdminForgotPassword() {
             }
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(error.response.data.errors);
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 const message = error.response?.data?.message || "Error al enviar código";
                 Swal.fire({
@@ -63,11 +77,9 @@ export default function SuperAdminForgotPassword() {
 
                 <FormWithIcons
                     config={superAdminForgotPassword}
-                    onChange={(field, value) => {
-                        setEmail(value);
-                        setErrors((prev) => ({ ...prev, email: undefined }));
-                    }}
-                    onSubmit={handleSubmit}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={onSubmit}
                     errors={errors}
                 >
                     <BlueButton

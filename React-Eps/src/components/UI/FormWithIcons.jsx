@@ -4,6 +4,7 @@ import IconInput from "./IconInput";
 export default function FormWithIcons({
     register,
     sections,
+    config,
     customRenderers = {},
     children,
     errors = {},
@@ -52,6 +53,12 @@ export default function FormWithIcons({
                         </div>
                     </div>
                 ))
+            )}
+
+            {config && config.fields && config.fields.length > 0 && (
+                <div className="flex flex-col gap-4">
+                    {config.fields.map(renderField)}
+                </div>
             )}
 
             {children}

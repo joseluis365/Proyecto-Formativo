@@ -5,6 +5,9 @@ import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
 import FormWithIcons from "../../UI/FormWithIcons";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
+import { updateEmpresaSchema } from "../../../schemas/updateEmpresaSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function EditEmpresaModal({
     empresaData,
@@ -12,31 +15,27 @@ export default function EditEmpresaModal({
     onSuccess,
 }) {
     const [saving, setSaving] = useState(false);
-    const [errors, setErrors] = useState({});
-    const [values, setValues] = useState(empresaData || {});
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(updateEmpresaSchema),
+        defaultValues: empresaData || {},
+        mode: "onChange",
+    });
 
     useEffect(() => {
-        if (empresaData) setValues(empresaData);
-    }, [empresaData]);
+        if (empresaData) reset(empresaData);
+    }, [empresaData, reset]);
 
-    const handleChange = (name, value) => {
-        setValues(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErr = { ...prev };
-                delete newErr[name];
-                return newErr;
-            });
-        }
-    };
-
-    const handleUpdate = async (e) => {
-        e.preventDefault();
+    const handleUpdate = async (data) => {
         try {
             setSaving(true);
-            setErrors({});
-
-            const payload = { ...values };
+            const payload = { ...data };
 
             if (!payload.admin_password || payload.admin_password.trim() === "") {
                 delete payload.admin_password;
@@ -64,13 +63,13 @@ export default function EditEmpresaModal({
         } catch (error) {
             console.error("Update Error:", error);
             if (error.response?.status === 422) {
-                setErrors(
-                    Object.fromEntries(
-                        Object.entries(error.response.data.errors).map(
-                            ([key, val]) => [key, val[0]]
-                        )
-                    )
-                );
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 const Swal = (await import("sweetalert2")).default;
                 Swal.fire({
@@ -99,9 +98,9 @@ export default function EditEmpresaModal({
             <div className="p-6 flex-1 overflow-y-auto">
                 <FormWithIcons
                     sections={formSections}
-                    values={values}
-                    onChange={handleChange}
+                    register={register}
                     errors={errors}
+                    handleSubmit={handleSubmit}
                     onSubmit={handleUpdate}
                 >
                     <div className="flex mt-10 justify-end gap-10">

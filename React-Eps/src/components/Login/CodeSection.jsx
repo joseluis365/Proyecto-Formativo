@@ -6,13 +6,25 @@ import FormWithIcons from "../UI/FormWithIcons";
 import BlueButton from "../UI/BlueButton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { verifyCodeSchema } from "../../schemas/authSchemas";
 
 export default function CodeSection() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [resendLoading, setResendLoading] = useState(false);
-    const [code, setCode] = useState("");
     const email = sessionStorage.getItem("recovery_email");
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(verifyCodeSchema),
+        defaultValues: { email: email || "", code: "" }
+    });
 
     const [timer, setTimer] = useState(() => {
         const timerEnd = sessionStorage.getItem("recovery_timer_end");
@@ -99,14 +111,11 @@ export default function CodeSection() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!code) return;
-
+    const onSubmit = async (data) => {
         setLoading(true);
         try {
-            await api.post("/verify-recovery-code", { email, code });
-            sessionStorage.setItem("recovery_code", code);
+            await api.post("/verify-recovery-code", { email: data.email, code: data.code });
+            sessionStorage.setItem("recovery_code", data.code);
 
             Swal.fire({
                 icon: 'success',
@@ -117,11 +126,21 @@ export default function CodeSection() {
 
             navigate("/reset-password");
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response?.data?.message || "Código inválido o expirado",
-            });
+            if (error.response?.status === 422) {
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((k) => {
+                    setError(k, {
+                        type: "server",
+                        message: backendErrors[k][0],
+                    });
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || "Código inválido o expirado",
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -131,17 +150,20 @@ export default function CodeSection() {
         <Layout title="Verificar Código" description={`Ingrese el código enviado a ${email}`}>
             <FormWithIcons
                 config={codeForm}
-                onChange={(field, value) => setCode(value)}
-                onSubmit={handleSubmit}
-            />
-
-            <div onClick={resendLoading ? undefined : handleSubmit}>
-                <BlueButton
-                    text={loading ? "Verificando..." : codeForm.buttonText}
-                    icon={codeForm.buttonIcon}
-                    disabled={loading || resendLoading}
-                />
-            </div>
+                register={register}
+                handleSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                errors={errors}
+            >
+                <div>
+                    <BlueButton
+                        text={loading ? "Verificando..." : codeForm.buttonText}
+                        icon={codeForm.buttonIcon}
+                        type="submit"
+                        disabled={loading || resendLoading}
+                    />
+                </div>
+            </FormWithIcons>
 
             <div className="flex flex-col items-center mt-5 mb-2">
                 {timer > 0 ? (

@@ -6,14 +6,37 @@ import FormWithIcons from "../UI/FormWithIcons";
 import BlueButton from "../UI/BlueButton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userResetPasswordSchema } from "../../schemas/authSchemas";
 
 export default function ResetPasswordSection() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
 
     const email = sessionStorage.getItem("recovery_email");
     const code = sessionStorage.getItem("recovery_code");
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        trigger,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(userResetPasswordSchema),
+        defaultValues: { email: email || "", code: code || "", password: "", confirmPassword: "" },
+        mode: "onChange"
+    });
+
+    const watchPassword = watch("password");
+
+    useEffect(() => {
+        if (watchPassword) {
+            trigger("confirmPassword");
+        }
+    }, [watchPassword, trigger]);
 
     useEffect(() => {
         if (!email || !code) {
@@ -21,28 +44,13 @@ export default function ResetPasswordSection() {
         }
     }, [email, code, navigate]);
 
-    const handleChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Contraseñas no coinciden',
-                text: 'Por favor verifique que ambas contraseñas sean iguales'
-            });
-            return;
-        }
-
+    const onSubmit = async (data) => {
         setLoading(true);
         try {
             await api.post("/reset-password", {
-                email,
-                code,
-                password: formData.password
+                email: data.email,
+                code: data.code,
+                password: data.password
             });
 
             await Swal.fire({
@@ -57,11 +65,21 @@ export default function ResetPasswordSection() {
             sessionStorage.removeItem("recovery_code");
             navigate("/login");
         } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response?.data?.message || "Error al restablecer contraseña",
-            });
+            if (error.response?.status === 422) {
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.response?.data?.message || "Error al restablecer contraseña",
+                });
+            }
             setLoading(false);
         }
     };
@@ -70,17 +88,20 @@ export default function ResetPasswordSection() {
         <Layout title="Restablecer Contraseña" description="Ingrese su nueva contraseña para restablecerla">
             <FormWithIcons
                 config={resetPasswordForm}
-                onChange={handleChange}
-                onSubmit={handleSubmit}
-            />
-
-            <div onClick={handleSubmit}>
-                <BlueButton
-                    text={loading ? "Actualizando..." : resetPasswordForm.buttonText}
-                    icon={resetPasswordForm.buttonIcon}
-                    disabled={loading}
-                />
-            </div>
+                register={register}
+                handleSubmit={handleSubmit}
+                onSubmit={onSubmit}
+                errors={errors}
+            >
+                <div>
+                    <BlueButton
+                        text={loading ? "Actualizando..." : resetPasswordForm.buttonText}
+                        icon={resetPasswordForm.buttonIcon}
+                        type="submit"
+                        disabled={loading}
+                    />
+                </div>
+            </FormWithIcons>
         </Layout>
     )
 }

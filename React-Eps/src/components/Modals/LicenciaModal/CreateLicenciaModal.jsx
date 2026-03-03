@@ -8,6 +8,9 @@ import { createLicenciaFormConfig } from "../../../LicenciaFormConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../../ToastContext";
 import Swal from 'sweetalert2';
+import { planSchema } from "../../../schemas/planSchema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 const initialLicencia = {
     tipo: "",
     descripcion: "",
@@ -24,15 +27,26 @@ export default function CreateLicenciaModal({
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(planSchema),
+        defaultValues: initialLicencia,
+        mode: "onChange"
+    });
 
     const handleCreate = async (data) => {
         try {
             setSaving(true);
-            setErrors({});
             const payload = {
                 ...data,
+                id_estado: 1 // Asegurado que llegue
             };
+
             await superAdminApi.post(`/superadmin/licencia`, payload);
 
             // 2. Disparas la alerta de SweetAlert2
@@ -48,13 +62,13 @@ export default function CreateLicenciaModal({
             onClose();
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(
-                    Object.fromEntries(
-                        Object.entries(error.response.data.errors).map(
-                            ([key, value]) => [key, value[0]]
-                        )
-                    )
-                );
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -112,7 +126,8 @@ export default function CreateLicenciaModal({
                                 <p>Cargando...</p>
                             ) : (
                                 <Form
-                                    values={initialLicencia}
+                                    register={register}
+                                    handleSubmit={handleSubmit}
                                     fields={createLicenciaFormConfig[1]}
                                     onSubmit={handleCreate}
                                     disabled={saving}

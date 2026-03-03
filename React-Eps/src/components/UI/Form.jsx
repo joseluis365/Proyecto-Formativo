@@ -2,19 +2,16 @@ import React, { useEffect, useState } from "react";
 import BlueButton from "../UI/BlueButton";
 
 export default function Form({
-  values = {},
   fields = [],
   sections = [],
-  onSubmit,
-  onChange,
+  onSubmit, // Función que el padre quiere ejecutar al final (handleCreate/handleUpdate)
+  handleSubmit, // Función handleSubmit de react-hook-form
+  register, // Función register de react-hook-form
   loading,
   errors = {},
   showDeleteButton = false,
   onDelete,
 }) {
-  const [form, setForm] = useState(values);
-  const [showPasswords, setShowPasswords] = useState({});
-
   const togglePasswordVisibility = (fieldName) => {
     setShowPasswords(prev => ({
       ...prev,
@@ -22,27 +19,7 @@ export default function Form({
     }));
   };
 
-  // Sincronizar con cambios externos (del padre)
-  useEffect(() => {
-    // Solo actualiza si los valores son realmente diferentes (evita el bucle)
-    if (JSON.stringify(values) !== JSON.stringify(form)) {
-      setForm(values);
-    }
-  }, [values]);
-
-  const handleChange = (name, value) => {
-    const updated = { ...form, [name]: value };
-    setForm(updated);
-    onChange?.(updated);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(form);
-  };
-
   const renderField = (field) => {
-    const value = form[field.name] ?? "";
     const error = errors[field.name];
 
     return (
@@ -55,16 +32,14 @@ export default function Form({
         {/* SELECT */}
         {field.type === "select" ? (
           <select
+            {...(register ? register(field.name) : {})}
             id={field.name}
-            name={field.name}
             readOnly={field.readOnly}
-            value={value}
-            onChange={(e) => handleChange(field.name, e.target.value)}
             className={`border rounded px-3 py-2 w-full bg-white dark:bg-gray-800 dark:text-white dark:border-gray-700
           ${error ? "border-red-500" : "border-gray-300"}
         `}
           >
-            {!value && <option value="">Seleccionar</option>}
+            <option value="">Seleccionar</option>
             {field.options?.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
@@ -75,13 +50,11 @@ export default function Form({
           /* INPUT */
           <div className="relative">
             <input
+              {...(register ? register(field.name) : {})}
               id={field.name}
-              name={field.name}
               readOnly={field.readOnly}
               disabled={field.disabled}
               type={field.type === "password" && showPasswords[field.name] ? "text" : field.type}
-              value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
               placeholder={field.placeholder || field.label}
               className={`border rounded px-3 py-2 w-full bg-white dark:bg-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 ${error ? "border-red-500 dark:border-red-500" : "border-gray-300 dark:border-gray-700"} ${field.type === "password" ? 'pr-12' : ''}`}
             />
@@ -100,14 +73,14 @@ export default function Form({
           </div>
         )}
         {error && (
-          <p className="text-red-500 text-sm transition-all">{error}</p>
+          <p className="text-red-500 text-sm transition-all">{error.message || error}</p>
         )}
       </div>
     );
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" >
+    <form onSubmit={handleSubmit ? handleSubmit(onSubmit) : onSubmit} className="space-y-4" >
       {sections && sections.length > 0 ? (
         sections.map((section, idx) => (
           <div key={idx} className="space-y-4">

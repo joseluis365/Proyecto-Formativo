@@ -5,14 +5,25 @@ import BlueButton from "../../components/UI/BlueButton";
 import { superAdminRecoveryCode } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { superAdminVerifyCodeSchema } from "../../schemas/authSchemas";
 
 export default function SuperAdminRecoveryCode() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [resendLoading, setResendLoading] = useState(false);
-    const [code, setCode] = useState("");
-    const [errors, setErrors] = useState({});
     const email = sessionStorage.getItem("recovery_email");
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(superAdminVerifyCodeSchema),
+        defaultValues: { email: email || "", code: "" }
+    });
 
     const [timer, setTimer] = useState(() => {
         const timerEnd = sessionStorage.getItem("recovery_timer_end");
@@ -102,14 +113,13 @@ export default function SuperAdminRecoveryCode() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
         setLoading(true);
         try {
-            const response = await api.post("/superadmin/verify-recovery-code", { email, code });
+            const response = await api.post("/superadmin/verify-recovery-code", { email: data.email, code: data.code });
 
             if (response.status === 200) {
-                sessionStorage.setItem("recovery_code", code); // Guardar código verificado para el reset
+                sessionStorage.setItem("recovery_code", data.code);
                 Swal.fire({
                     icon: "success",
                     title: "Código verificado",
@@ -120,7 +130,13 @@ export default function SuperAdminRecoveryCode() {
             }
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(error.response.data.errors);
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 const message = error.response?.data?.message || "Código inválido";
                 Swal.fire({
@@ -147,11 +163,9 @@ export default function SuperAdminRecoveryCode() {
 
                 <FormWithIcons
                     config={superAdminRecoveryCode}
-                    onChange={(field, value) => {
-                        setCode(value);
-                        setErrors((prev) => ({ ...prev, code: undefined }));
-                    }}
-                    onSubmit={handleSubmit}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={onSubmit}
                     errors={errors}
                 >
                     <BlueButton

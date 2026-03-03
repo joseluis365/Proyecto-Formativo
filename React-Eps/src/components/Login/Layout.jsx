@@ -1,6 +1,6 @@
 export default function Layout({title, description, children}) {
     return (
-        <div className="flex-1 flex flex-col justify-center items-center bg-white dark:bg-background-dark px-6 py-12">
+        <div className="flex-1 flex flex-col justify-center items-center bg-white dark:bg-gray-800 px-6 py-12">
             <div className="w-full max-w-md flex flex-col gap-8">
                 <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
                     <div className="size-8 text-primary">

@@ -5,15 +5,37 @@ import BlueButton from "../../components/UI/BlueButton";
 import { superAdminResetPassword } from "../../data/SuperAdminForms";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { superAdminResetPasswordSchema } from "../../schemas/authSchemas";
 
 export default function SuperAdminResetPassword() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ password: "", password_confirmation: "" });
-    const [errors, setErrors] = useState({});
 
     const email = sessionStorage.getItem("recovery_email");
     const code = sessionStorage.getItem("recovery_code");
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        trigger,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(superAdminResetPasswordSchema),
+        defaultValues: { email: email || "", code: code || "", password: "", password_confirmation: "" },
+        mode: "onChange"
+    });
+
+    const watchPassword = watch("password");
+
+    useEffect(() => {
+        if (watchPassword) {
+            trigger("password_confirmation");
+        }
+    }, [watchPassword, trigger]);
 
     useEffect(() => {
         if (!email || !code) {
@@ -21,24 +43,14 @@ export default function SuperAdminResetPassword() {
         }
     }, [email, code, navigate]);
 
-    const handleChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        setErrors((prev) => ({ ...prev, [field]: undefined }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formData.password !== formData.password_confirmation) {
-            return setErrors({ password_confirmation: ["Las contraseñas no coinciden"] });
-        }
-
+    const onSubmit = async (data) => {
         setLoading(true);
         try {
             const response = await api.post("/superadmin/reset-password", {
-                email,
-                code,
-                password: formData.password,
-                password_confirmation: formData.password_confirmation
+                email: data.email,
+                code: data.code,
+                password: data.password,
+                password_confirmation: data.password_confirmation
             });
 
             if (response.status === 200) {
@@ -56,7 +68,13 @@ export default function SuperAdminResetPassword() {
             }
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(error.response.data.errors);
+                const backendErrors = error.response.data.errors;
+                Object.keys(backendErrors).forEach((key) => {
+                    setError(key, {
+                        type: "server",
+                        message: backendErrors[key][0],
+                    });
+                });
             } else {
                 const message = error.response?.data?.message || "Error al restablecer contraseña";
                 Swal.fire({
@@ -80,8 +98,9 @@ export default function SuperAdminResetPassword() {
 
                 <FormWithIcons
                     config={superAdminResetPassword}
-                    onChange={handleChange}
-                    onSubmit={handleSubmit}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={onSubmit}
                     errors={errors}
                 >
                     <BlueButton

@@ -4,11 +4,23 @@ import FormWithIcons from "../../components/UI/FormWithIcons";
 import BlueButton from "../../components/UI/BlueButton";
 import { superAdminLogin } from "../../data/SuperAdminForms";
 import Swal from 'sweetalert2';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { superAdminLoginSchema } from "../../schemas/authSchemas";
 
 
 export default function SuperAdminLogin() {
-  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(superAdminLoginSchema)
+  });
 
   // Limpiar sesión al cargar el login (Incluso si viene de atrás)
   useEffect(() => {
@@ -30,51 +42,12 @@ export default function SuperAdminLogin() {
     sessionStorage.removeItem("superadmin_email");
   }, []);
 
-  // 🔹 Estado del formulario
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  // 🔹 Estado de carga (bloquea múltiples envíos)
-  const [loading, setLoading] = useState(false);
-
-  /**
-   * 🔹 Captura cambios del FormWithIcons
-   */
-  const handleChange = (field, value) => {
-    const safeField = field ? String(field).toLowerCase() : "";
-    const safeValue = value ?? "";
-
-    let fieldName = null;
-
-    if (safeField === "correo" || safeField === "email") {
-      fieldName = "email";
-      setFormData((prev) => ({ ...prev, email: safeValue }));
-    }
-
-    if (safeField === "clave" || safeField === "password") {
-      fieldName = "password";
-      setFormData((prev) => ({ ...prev, password: safeValue }));
-    }
-
-    // 🔥 Limpiar error del campo cuando el usuario escribe
-    if (fieldName) {
-      setErrors((prev) => ({
-        ...prev,
-        [fieldName]: undefined,
-      }));
-    }
-  };
-
   /**
    * 🔹 Login REAL (solo se ejecuta una vez)
    */
-  const handleLogin = async () => {
+  const onSubmit = async (data) => {
     // 🛑 Evita doble clic
     if (loading) return;
-
-
 
     try {
       setLoading(true); // 🔒 Bloquear botón inmediatamente
@@ -88,8 +61,8 @@ export default function SuperAdminLogin() {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
+            email: data.email,
+            password: data.password,
           }),
         }
       );
@@ -99,7 +72,13 @@ export default function SuperAdminLogin() {
       if (!response.ok) {
 
         if (response.status === 422) {
-          setErrors(result.errors);
+          const backendErrors = result.errors;
+          Object.keys(backendErrors).forEach((key) => {
+            setError(key, {
+              type: "server",
+              message: backendErrors[key][0],
+            });
+          });
           setLoading(false);
           return;
         }
@@ -114,7 +93,7 @@ export default function SuperAdminLogin() {
       }
 
       // 👉 Guardamos email y redirigimos INMEDIATO
-      sessionStorage.setItem("superadmin_email", formData.email);
+      sessionStorage.setItem("superadmin_email", data.email);
       navigate("/SuperAdmin-Verify");
     } catch (error) {
       alert("Error de conexión con el servidor");
@@ -132,11 +111,9 @@ export default function SuperAdminLogin() {
         {/* ✅ FORM CORRECTO */}
         <FormWithIcons
           config={superAdminLogin}
-          onChange={handleChange}
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleLogin();
-          }}
+          register={register}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
           errors={errors}
         >
           {/* ✅ BOTÓN DENTRO DEL FORM */}
