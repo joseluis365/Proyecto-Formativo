@@ -7,6 +7,8 @@ import Pacientes from "./Pages/Admin/Pacientes"
 import AgendaMedico from "./Pages/Admin/AgendaMedico"
 import InfoPaciente from "./Pages/Admin/InfoPaciente"
 import Reportes from "./Pages/Admin/Reportes/Reportes"
+import CitasDelDia from "./Pages/Admin/Citas/CitasDelDia"
+import AgendaCitas from "./Pages/Admin/Citas/AgendaCitas"
 import IndexLayout from "./layouts/IndexLayout"
 import Index from "./Pages/Inicio/Index"
 import Contactenos from "./Pages/Inicio/Contactenos"
@@ -96,6 +98,8 @@ export default function App() {
         <Route path="/usuarios/pacientes" element={<Pacientes />} />
         <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
         <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
+        <Route path="/citas/del-dia" element={<CitasDelDia />} />
+        <Route path="/citas/agenda" element={<AgendaCitas />} />
         <Route path="/reportes" element={<Reportes />} />
 
         {/* Configuración */}

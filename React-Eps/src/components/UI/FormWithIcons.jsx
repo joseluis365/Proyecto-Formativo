@@ -9,7 +9,9 @@ export default function FormWithIcons({
     children,
     errors = {},
     handleSubmit,
-    onSubmit
+    onSubmit,
+    values,
+    onChange
 }) {
     const renderField = (field) => {
         if (customRenderers[field.name]) {
@@ -31,15 +33,23 @@ export default function FormWithIcons({
                 name={field.name}
                 required={field.required}
                 readOnly={field.readOnly}
-                error={errors[field.name]}
+                error={errors && errors[field.name] ? errors[field.name] : null}
                 autoComplete={field.autoComplete}
                 register={register}
+                value={values ? values[field.name] : undefined}
+                onChange={onChange ? (val) => {
+                    // Verificamos si onChange espera (name, value) o el evento real
+                    // Dependiendo de cómo lo usen los componentes antiguos, en general era (name, value) pero lo pasamos como se hacía antes
+                    // En BaseTablesForms.js no hay especificación, el modal hace `onChange(name, e.target.value)` o directo?
+                    // IconInput antes emitía onChange={props.onChange} ... pasemos el comportamiento original.
+                } : undefined}
+                onChangeHandler={onChange}
             />
         );
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit ? handleSubmit(onSubmit) : onSubmit} className="flex flex-col gap-5">
             {sections && sections.length > 0 && (
                 sections.map((section, idx) => (
                     <div key={idx} className="space-y-4">

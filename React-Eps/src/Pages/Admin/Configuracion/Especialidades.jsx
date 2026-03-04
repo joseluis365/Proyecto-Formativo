@@ -145,7 +145,9 @@ export default function Especialidades() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="clinical_notes" text="Especialidades Médicas" number={total} />
-                <BlueButton text="Nueva Especialidad" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
+                <div className="w-sl">
+                    <BlueButton text="Nueva Especialidad" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">

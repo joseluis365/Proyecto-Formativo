@@ -12,6 +12,7 @@ export default function Form({
   showDeleteButton = false,
   onDelete,
 }) {
+  const [showPasswords, setShowPasswords] = useState({});
   const togglePasswordVisibility = (fieldName) => {
     setShowPasswords(prev => ({
       ...prev,

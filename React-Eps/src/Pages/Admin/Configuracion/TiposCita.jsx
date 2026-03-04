@@ -119,7 +119,9 @@ export default function TiposCita() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="calendar_today" text="Gestión de Tipos de Cita" number={total} />
-                <BlueButton text="Nuevo Tipo" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
+                <div className="w-sl">
+                    <BlueButton text="Nuevo Tipo" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">

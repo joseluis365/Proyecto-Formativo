@@ -1,7 +1,7 @@
 export const formEstado = {
     fields: [
         {
-            name: "nombre",
+            name: "nombre_estado",
             label: "Nombre del Estado",
             icon: "description",
             type: "text",

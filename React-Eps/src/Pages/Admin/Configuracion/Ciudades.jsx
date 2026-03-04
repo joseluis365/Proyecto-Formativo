@@ -140,7 +140,9 @@ export default function Ciudades() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="location_city" text="Gestión de Ciudades" number={total} />
-                <BlueButton text="Nueva Ciudad" icon="add" onClick={handleCreate} />
+                <div className="w-sl">
+                    <BlueButton text="Nueva Ciudad" icon="add" onClick={handleCreate} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">

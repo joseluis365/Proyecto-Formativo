@@ -131,14 +131,20 @@ export default function Roles() {
         }
     ];
 
-    // Requisito: No mostrar ningún rol cuyo tipo_usu sea "SUPERADMIN"
-    const filteredData = data.filter(item => item.tipo_usu.toUpperCase() !== "SUPERADMIN");
+    // Requisito: No mostrar ningún rol cuyo tipo_usu sea o contenga "SUPERADMIN" ni el id 1
+    const filteredData = data.filter(item =>
+        item.id_rol !== 1 &&
+        !item.tipo_usu.toUpperCase().includes("SUPERADMIN") &&
+        !item.tipo_usu.toUpperCase().includes("SUPER ADMIN")
+    );
 
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="group" text="Gestión de Roles" number={total - (data.length - filteredData.length)} />
-                <BlueButton text="Nuevo Rol" icon="add" onClick={handleCreate} />
+                <div className="w-sl">
+                    <BlueButton text="Nuevo Rol" icon="add" onClick={handleCreate} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
@@ -209,7 +215,7 @@ export default function Roles() {
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}

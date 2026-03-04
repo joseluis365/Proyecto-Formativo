@@ -135,7 +135,9 @@ export default function Departamentos() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="map" text="Gestión de Departamentos" number={total} />
-                <BlueButton text="Nuevo Departamento" icon="add" onClick={handleCreate} />
+                <div className="w-sl">
+                    <BlueButton text="Nuevo Departamento" icon="add" onClick={handleCreate} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
@@ -206,7 +208,7 @@ export default function Departamentos() {
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}

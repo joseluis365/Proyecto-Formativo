@@ -130,7 +130,9 @@ export default function Prioridades() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="priority_high" text="Gestión de Prioridades" number={total} />
-                <BlueButton text="Nueva Prioridad" icon="add" onClick={handleCreate} />
+                <div className="w-sl">
+                    <BlueButton text="Nueva Prioridad" icon="add" onClick={handleCreate} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
