@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class StoreTipoCitaRequest extends FormRequest
 {
@@ -10,7 +11,7 @@ class StoreTipoCitaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo' => 'required|string|max:50|unique:tipo_cita,tipo'
+            'tipo' => ['required', 'string', 'max:50', new UniqueIgnoreCase('tipo_cita', 'tipo')]
         ];
     }
 }

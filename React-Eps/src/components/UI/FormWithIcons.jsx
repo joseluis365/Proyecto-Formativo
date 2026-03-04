@@ -1,5 +1,6 @@
 import React from "react";
 import IconInput from "./IconInput";
+import Swal from "sweetalert2";
 
 export default function FormWithIcons({
     register,
@@ -13,6 +14,20 @@ export default function FormWithIcons({
     values,
     onChange
 }) {
+    const onInvalid = (errs) => {
+        console.warn("Validation failed:", errs);
+        Swal.fire({
+            icon: 'warning',
+            title: 'Formulario incompleto',
+            text: 'Verifique los campos marcados en rojo antes de continuar.',
+            confirmButtonColor: '#3085d6',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    };
+
     const renderField = (field) => {
         if (customRenderers[field.name]) {
             return (
@@ -24,32 +39,23 @@ export default function FormWithIcons({
 
         return (
             <IconInput
-                key={field.name}
-                label={field.label}
-                icon={field.icon}
+                {...field}
                 placeholder={field.placeholder || field.label}
-                type={field.type}
-                id={field.name}
-                name={field.name}
-                required={field.required}
-                readOnly={field.readOnly}
+                key={field.name}
+                id={field.id || field.name}
                 error={errors && errors[field.name] ? errors[field.name] : null}
-                autoComplete={field.autoComplete}
                 register={register}
                 value={values ? values[field.name] : undefined}
-                onChange={onChange ? (val) => {
-                    // Verificamos si onChange espera (name, value) o el evento real
-                    // Dependiendo de cómo lo usen los componentes antiguos, en general era (name, value) pero lo pasamos como se hacía antes
-                    // En BaseTablesForms.js no hay especificación, el modal hace `onChange(name, e.target.value)` o directo?
-                    // IconInput antes emitía onChange={props.onChange} ... pasemos el comportamiento original.
-                } : undefined}
                 onChangeHandler={onChange}
             />
         );
     };
 
     return (
-        <form onSubmit={handleSubmit ? handleSubmit(onSubmit) : onSubmit} className="flex flex-col gap-5">
+        <form
+            onSubmit={handleSubmit ? handleSubmit(onSubmit, onInvalid) : onSubmit}
+            className="flex flex-col gap-5"
+        >
             {sections && sections.length > 0 && (
                 sections.map((section, idx) => (
                     <div key={idx} className="space-y-4">

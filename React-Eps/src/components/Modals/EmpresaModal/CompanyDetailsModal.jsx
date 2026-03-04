@@ -16,9 +16,10 @@ export default function CompanyDetailsModal({ company, onClose }) {
             nombre: company.nombre || "",
             email_contacto: company.email_contacto || "",
             telefono: company.telefono || "",
-            ciudad: company.ciudad || "",
+            id_departamento: company.ciudad?.id_departamento || "",
+            id_ciudad: company.id_ciudad || company.ciudad?.codigo_postal || "",
             direccion: company.direccion || "",
-            id_estado: company.id_estado || 1, // Default or pass 1 if missing
+            id_estado: company.id_estado || 1,
 
             // Representante
             documento_representante: company.documento_representante || "",
@@ -52,8 +53,8 @@ export default function CompanyDetailsModal({ company, onClose }) {
 
     const handleDownloadPdf = async () => {
         try {
-            const token = sessionStorage.getItem("token");
-            const response = await fetch(`http://localhost:8000/api/empresa/${company.nit}/pdf`, {
+            const token = sessionStorage.getItem("superadmin_token");
+            const response = await fetch(`http://localhost:8000/api/superadmin/empresa/${company.nit}/pdf`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

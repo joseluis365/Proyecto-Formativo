@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class UpdatePrioridadRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class UpdatePrioridadRequest extends FormRequest
         $id = $this->route('id');
 
         return [
-            'prioridad' => 'required|string|max:30|unique:prioridad,prioridad,' . $id . ',id_prioridad'
+            'prioridad' => ['required', 'string', 'max:30', new UniqueIgnoreCase('prioridad', 'prioridad', $id, 'id_prioridad')]
         ];
     }
 

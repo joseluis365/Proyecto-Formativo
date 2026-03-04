@@ -42,7 +42,7 @@ class StoreUserRequest extends FormRequest
         switch ($this->id_rol) {
             case 4:
                 $rules['registro_profesional'] = ['required', 'unique:usuario,registro_profesional', 'string', 'regex:/^[0-9]{5,15}$/', 'digits_between:5,15'];
-                $rules['id_especialidad'] = ['required', 'exists:especialidades,id_especialidad'];
+                $rules['id_especialidad'] = ['required', 'exists:especialidad,id_especialidad'];
                 break;
             case 5:
                 $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];

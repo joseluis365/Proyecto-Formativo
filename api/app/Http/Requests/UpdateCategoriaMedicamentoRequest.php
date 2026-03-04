@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class UpdateCategoriaMedicamentoRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateCategoriaMedicamentoRequest extends FormRequest
     {
         $id = $this->route('id');
         return [
-            'categoria' => 'required|string|max:100|unique:categoria_medicamento,categoria,' . $id . ',id_categoria'
+            'categoria' => ['required', 'string', 'max:100', new UniqueIgnoreCase('categoria_medicamento', 'categoria', $id, 'id_categoria')]
         ];
     }
 }

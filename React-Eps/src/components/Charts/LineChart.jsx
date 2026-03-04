@@ -21,10 +21,11 @@ export default function ExampleChart() {
   useEffect(() => {
     api.get("/superadmin/licenses/chart-data")
       .then((res) => {
+        // La API devuelve { mesActual, mesAnterior, data: [...] }
         setChartConfig({
-          data: res.data.data,
-          mesActual: res.data.mesActual,
-          mesAnterior: res.data.mesAnterior,
+          data: res?.data || [],
+          mesActual: res?.mesActual || "",
+          mesAnterior: res?.mesAnterior || "",
           loading: false
         });
       });

@@ -29,7 +29,7 @@ export default function BloqueoAgenda() {
         const res = await api.get("/usuarios", {
           params: { id_rol: 2 },
         });
-        setMedicos(res.data.data || res.data);
+        setMedicos(res.data || []);
       } catch (err) {
         console.error("Error cargando médicos:", err);
         setError("No se pudieron cargar los médicos.");

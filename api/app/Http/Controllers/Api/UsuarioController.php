@@ -72,10 +72,8 @@ class UsuarioController extends Controller
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
-        $data['contrasena'] = \Illuminate\Support\Facades\Hash::make($data['contrasena']);
-
-
-        
+        // No se hashea aquí: el modelo tiene un mutator setContrasenaAttribute
+        // que hashea la contraseña automáticamente al asignarla
         $user = Usuario::create($data);
 
         return response()->json([

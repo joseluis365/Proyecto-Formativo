@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class StoreRolRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class StoreRolRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                'unique:rol,tipo_usu',
+                new UniqueIgnoreCase('rol', 'tipo_usu'),
                 function ($attribute, $value, $fail) {
                     if (strtoupper($value) === 'SUPERADMIN') {
                         $fail('El valor "SUPERADMIN" no está permitido para el tipo de usuario.');

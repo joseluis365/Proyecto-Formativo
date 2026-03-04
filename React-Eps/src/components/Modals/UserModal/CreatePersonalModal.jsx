@@ -1,37 +1,22 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
-import Form from "../../UI/Form";
+import FormWithIcons from "../../UI/FormWithIcons";
 import { getCreateUserFormConfig } from "../../../UserFormConfig";
-import Swal from 'sweetalert2';
-import MotionSpinner from "../../UI/Spinner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { createPersonalSchema } from "@/schemas/usuarioSchemas";
-
-const initialUser = {
-  documento: "",
-  primer_nombre: "",
-  segundo_nombre: "",
-  primer_apellido: "",
-  segundo_apellido: "",
-  email: "",
-  telefono: "",
-  direccion: "",
-  fecha_nacimiento: "",
-  id_estado: 1,
-  contrasena: "",
-  id_rol: 3,
-};
-
+import { handleApiErrors } from "../../../utils/formHandlers";
+import Swal from 'sweetalert2';
+import BlueButton from "../../UI/BlueButton";
 export default function CreatePersonalModal({
   onClose,
   onSuccess,
 }) {
   const [saving, setSaving] = useState(false);
-  const [loading, setLoading] = useState(false);
 
+  // Configuración del formulario con RHF y Zod
   const {
     register,
     handleSubmit,
@@ -39,35 +24,33 @@ export default function CreatePersonalModal({
     formState: { errors }
   } = useForm({
     resolver: zodResolver(createPersonalSchema),
-    defaultValues: initialUser,
-    mode: "onChange"
+    mode: "onChange",
+    reValidateMode: "onChange",
+    defaultValues: {
+      id_estado: 1,
+      id_rol: 3,
+      segundo_nombre: "",
+      segundo_apellido: ""
+    }
   });
 
   const onSubmit = async (data) => {
     try {
       setSaving(true);
+      // Inyección de rol administrativo (3)
       const payload = {
-        id_rol: 3,
-        documento: data.documento,
-        primer_nombre: data.primer_nombre,
-        segundo_nombre: data.segundo_nombre,
-        primer_apellido: data.primer_apellido,
-        segundo_apellido: data.segundo_apellido,
-        email: data.email,
-        telefono: data.telefono,
-        direccion: data.direccion,
-        fecha_nacimiento: data.fecha_nacimiento,
-        contrasena: data.contrasena,
-        id_estado: data.id_estado,
+        ...data,
+        id_rol: 3
       };
+
       await api.post(`/usuario`, payload);
 
       Swal.fire({
         icon: 'success',
         title: 'Usuario Creado',
-        text: 'El usuario ha sido creado correctamente.',
+        text: 'El personal administrativo ha sido registrado correctamente.',
         showConfirmButton: false,
-        timer: 1100,
+        timer: 1500,
         timerProgressBar: true,
       }).then(() => {
         onSuccess?.();
@@ -75,49 +58,42 @@ export default function CreatePersonalModal({
       });
 
     } catch (error) {
-      if (error.response?.status === 422) {
-        const backendErrors = error.response.data.errors;
-        Object.keys(backendErrors).forEach((key) => {
-          setError(key, {
-            type: "server",
-            message: backendErrors[key][0],
-          });
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo crear el usuario.',
-        });
-      }
-    }
-    finally {
+      // Los errores 401/403/500 son manejados por el interceptor global.
+      // Aquí manejamos errores de validación 422.
+      handleApiErrors(error, setError);
+    } finally {
       setSaving(false);
     }
   };
 
+  // Obtenemos la configuración de campos para el rol 3 (Personal)
+  const formConfig = {
+    fields: getCreateUserFormConfig(3)
+  };
 
   return (
     <BaseModal>
-      <ModalHeader icon="person" title="CREAR USUARIO ADMINISTRATIVO" onClose={onClose} />
+      <ModalHeader icon="person_add" title="CREAR USUARIO ADMINISTRATIVO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <MotionSpinner />
+        <FormWithIcons
+          config={formConfig}
+          register={register}
+          errors={errors}
+          handleSubmit={handleSubmit}
+          onSubmit={onSubmit}
+        >
+          <div className="flex mt-8 justify-end">
+            <div className="w-full md:w-48">
+              <BlueButton
+                text="Guardar"
+                icon="save"
+                type="submit"
+                loading={saving}
+              />
+            </div>
           </div>
-        ) : (
-          <Form
-            fields={getCreateUserFormConfig()}
-            register={register}
-            handleSubmit={handleSubmit}
-            onSubmit={onSubmit}
-            disabled={saving}
-            loading={saving}
-            errors={errors}
-          />
-        )}
+        </FormWithIcons>
       </div>
-
     </BaseModal>
   );
 }

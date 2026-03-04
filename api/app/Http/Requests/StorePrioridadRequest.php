@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class StorePrioridadRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class StorePrioridadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prioridad' => 'required|string|max:30|unique:prioridad,prioridad'
+            'prioridad' => ['required', 'string', 'max:30', new UniqueIgnoreCase('prioridad', 'prioridad')]
         ];
     }
 

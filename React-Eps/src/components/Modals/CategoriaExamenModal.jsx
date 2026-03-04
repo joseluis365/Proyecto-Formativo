@@ -1,54 +1,64 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
 import FormWithIcons from "@/components/UI/FormWithIcons";
 import { formCategoriaExamen } from "@/data/BaseTablesForms";
+import { categoriaExamenSchema } from "@/schemas/categoriaExamenSchema";
+import { handleApiErrors } from "@/utils/formHandlers";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function CategoriaExamenModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [formData, setFormData] = useState({ categoria: "" });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
+    const isEdit = !!editData;
+
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(categoriaExamenSchema),
+        mode: "onChange",
+        reValidateMode: "onChange",
+        criteriaMode: "firstError",
+        defaultValues: {
+            categoria: ""
+        }
+    });
 
     useEffect(() => {
-        if (editData) {
-            setFormData({ categoria: editData.categoria || "" });
-        } else {
-            setFormData({ categoria: "" });
-        }
-        setErrors({});
-    }, [editData, isOpen]);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors({});
-
-        try {
+        if (isOpen) {
             if (editData) {
-                await api.put(`/categorias-examen/${editData.id_categoria_examen}`, formData);
+                reset({
+                    categoria: editData.categoria || ""
+                });
+            } else {
+                reset({
+                    categoria: ""
+                });
+            }
+        }
+    }, [editData, isOpen, reset]);
+
+    const handleFormSubmit = async (data) => {
+        try {
+            if (isEdit) {
+                await api.put(`/categorias-examen/${editData.id_categoria_examen}`, data);
                 Swal.fire("Éxito", "Categoría actualizada correctamente", "success");
             } else {
-                await api.post("/categorias-examen", formData);
+                await api.post("/categorias-examen", data);
                 Swal.fire("Éxito", "Categoría creada correctamente", "success");
             }
             onSuccess();
             onClose();
         } catch (error) {
-            if (error.response?.status === 422) {
-                const apiErrors = error.response.data.errors;
-                const formattedErrors = {};
-                Object.keys(apiErrors).forEach(key => {
-                    formattedErrors[key] = apiErrors[key][0];
-                });
-                setErrors(formattedErrors);
-            } else {
+            if (!handleApiErrors(error, setError)) {
                 Swal.fire("Error", "Ocurrió un error al procesar la solicitud", "error");
             }
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -57,24 +67,25 @@ export default function CategoriaExamenModal({ isOpen, onClose, onSuccess, editD
     return (
         <BaseModal>
             <ModalHeader
-                title={editData ? "Editar Categoría de Examen" : "Nueva Categoría de Examen"}
+                title={isEdit ? "Editar Categoría de Examen" : "Nueva Categoría de Examen"}
                 icon="biotech"
                 onClose={onClose}
             />
             <div className="p-6">
                 <FormWithIcons
                     config={formCategoriaExamen}
-                    values={formData}
-                    onChange={(name, value) => setFormData(prev => ({ ...prev, [name]: value }))}
-                    onSubmit={handleSubmit}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={editData ? "Actualizar" : "Crear"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
-                            loading={loading}
+                            loading={isSubmitting}
                         />
                     </div>
                 </FormWithIcons>

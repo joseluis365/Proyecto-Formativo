@@ -21,7 +21,7 @@ export default function CitasDelDia() {
 
             // Filtrar por citas de hoy
             const todayStr = new Date().toISOString().split('T')[0];
-            const citasHoy = res.data.data.filter(cita => cita.fecha === todayStr);
+            const citasHoy = (res.data || []).filter(cita => cita.fecha === todayStr);
 
             setCitas(citasHoy);
         } catch (error) {

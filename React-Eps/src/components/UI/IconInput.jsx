@@ -1,57 +1,128 @@
 import { useState } from "react";
 
-export default function IconInput({ label, icon, placeholder, type, id, name, error, register, autoComplete, readOnly, required, value, onChangeHandler }) {
+/**
+ * IconInput Component
+ * Refactorizado para soportar validación visual inmediata y tipo select.
+ */
+export default function IconInput({
+    label,
+    icon,
+    placeholder,
+    type,
+    id,
+    name,
+    error,
+    register,
+    autoComplete,
+    readOnly,
+    required,
+    options, // Soporte para opciones de select
+    onlyLetters, // Restricción física de caracteres
+    value,
+    onChangeHandler,
+    ...props
+}) {
     const [showPassword, setShowPassword] = useState(false);
 
+    /**
+     * Sanitización en tiempo real para campos marcados con onlyLetters.
+     * Bloquea caracteres especiales y dobles espacios físicamente en el DOM.
+     */
+    const handleInput = (e) => {
+        if (onlyLetters) {
+            let value = e.target.value;
+            // Solo letras (incluyento acentos y ñ) y un solo espacio
+            value = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
+            // Eliminar dobles espacios
+            value = value.replace(/\s{2,}/g, " ");
+
+            if (e.target.value !== value) {
+                e.target.value = value;
+            }
+        }
+
+        // Propagar el evento original si existe en props
+        if (props.onInput) props.onInput(e);
+    };
+
     const isPasswordType = type === 'password';
+    const isSelectType = type === 'select';
     const currentType = isPasswordType && showPassword ? 'text' : type;
+
+    // Clases base dinámicas. Se usa "!" para forzar override sobre Tailwind Forms configurado globalmente.
+    const baseClasses = `form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 transition-all bg-white dark:bg-gray-800/50 h-12 pl-12 placeholder:text-[#4c669a]/60 text-base font-normal border`;
+
+    const statusClasses = error
+        ? "!border-red-500 ring-1 !ring-red-500 focus:!ring-red-500 bg-red-50/10"
+        : "border-[#cfd7e7] dark:border-white/30 focus:ring-2 focus:ring-primary/20";
+
+    const commonProps = {
+        ...(register ? register(name) : {}),
+        id,
+        name,
+        placeholder,
+        readOnly,
+        required,
+        autoComplete,
+        className: `${baseClasses} ${statusClasses} ${isPasswordType ? 'pr-12' : 'pr-4'} ${isSelectType ? 'appearance-none pr-10' : ''}`,
+        onInput: handleInput,
+        ...(!register && value !== undefined ? { value } : {}),
+        ...(!register && onChangeHandler ? { onChange: (e) => onChangeHandler(name, e.target.value) } : {}),
+        ...props
+    };
 
     return (
         <div className="flex flex-col gap-1.5 pb-3">
-            <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor={id}>{label}</label>
+            {label && (
+                <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor={id}>
+                    {label}
+                </label>
+            )}
+
             <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{icon}</span>
-                <input
-                    {...(register ? register(name) : {})}
-                    value={!register && value !== undefined ? value : ""}
-                    onChange={!register && onChangeHandler ? (e) => onChangeHandler(name, e.target.value) : undefined}
-                    className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? 'border-red-500' : 'border-[#cfd7e7] dark:border-white/30'} bg-white dark:bg-gray-800/50 h-12 pl-12 ${isPasswordType ? 'pr-12' : 'pr-4'} placeholder:text-[#4c669a]/60 text-base font-normal`}
-                    placeholder={placeholder}
-                    readOnly={readOnly}
-                    required={required}
-                    type={currentType}
-                    id={id}
-                    name={name}
-                    autoComplete={autoComplete}
-                />
+                {icon && (
+                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
+                        {icon}
+                    </span>
+                )}
+
+                {isSelectType ? (
+                    <select {...commonProps}>
+                        <option key="placeholder" value="">{placeholder || 'Seleccione una opción'}</option>
+                        {options?.map((opt, index) => (
+                            <option key={opt.value || index} value={opt.value}>
+                                {opt.label}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <input {...commonProps} type={currentType} />
+                )}
                 {isPasswordType && (
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c669a] hover:text-[#0d121b] dark:hover:text-white transition-colors focus:outline-none flex items-center justify-center p-1"
-                        title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        title={showPassword ? "Ocultar" : "Mostrar"}
                     >
                         <span className="material-symbols-outlined text-[22px]">
                             {showPassword ? 'visibility' : 'visibility_off'}
                         </span>
                     </button>
                 )}
+
+                {isSelectType && (
+                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]">
+                        expand_more
+                    </span>
+                )}
             </div>
-            {error && (
-                <div className="flex flex-col gap-1">
-                    {Array.isArray(error) ? (
-                        error.map((err, index) => (
-                            <span key={index} className="text-red-500 text-xs">
-                                {err}
-                            </span>
-                        ))
-                    ) : (
-                        <span className="text-red-500 text-xs">
-                            {typeof error === 'object' ? error.message : error}
-                        </span>
-                    )}
-                </div>
+
+            {error?.message && (
+                <span className="text-red-500 text-xs mt-1 font-medium italic">
+                    {error.message}
+                </span>
             )}
         </div>
-    )
+    );
 }

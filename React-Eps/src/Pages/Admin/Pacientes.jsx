@@ -53,8 +53,8 @@ export default function Pacientes() {
         },
       });
 
-      setUsers(res.data.data);
-      setTotalUsersByRol(res.data.totalPorRol);
+      setUsers(res.data || []);
+      setTotalUsersByRol(res.totalPorRol || 0);
     } catch (err) {
       console.error("Error cargando pacientes:", err);
       setError("No se pudieron cargar los pacientes"); // ❌ error controlado
@@ -99,12 +99,12 @@ export default function Pacientes() {
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
         <div className="lg:w-sm md:w-1/2 xs:w-full">
-        <Input
-          placeholder="Buscar paciente"
-          icon="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+          <Input
+            placeholder="Buscar paciente"
+            icon="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
 
         <Filter

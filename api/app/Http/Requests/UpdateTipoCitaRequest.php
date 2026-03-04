@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class UpdateTipoCitaRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateTipoCitaRequest extends FormRequest
     {
         $id = $this->route('id');
         return [
-            'tipo' => 'required|string|max:50|unique:tipo_cita,tipo,' . $id . ',id_tipo_cita'
+            'tipo' => ['required', 'string', 'max:50', new UniqueIgnoreCase('tipo_cita', 'tipo', $id, 'id_tipo_cita')]
         ];
     }
 }

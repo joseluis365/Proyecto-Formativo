@@ -56,13 +56,15 @@ export default function CreateEmpresaModal({
         resolver: zodResolver(empresaSchema),
         defaultValues: initialEmpresa,
         mode: "onChange",
+        reValidateMode: "onChange",
+        criteriaMode: "firstError",
     });
 
     const selectedDepto = watch("id_departamento");
 
     useEffect(() => {
         superAdminApi.get('/departamentos')
-            .then(res => setDepartamentos(res.data))
+            .then(res => setDepartamentos(res?.data || res || []))
             .catch(err => console.error("Error fetching departamentos", err));
     }, []);
 
@@ -72,7 +74,7 @@ export default function CreateEmpresaModal({
             setCiudades([]);
             setValue("id_ciudad", "");
             superAdminApi.get(`/ciudades/${selectedDepto}`)
-                .then(res => setCiudades(res.data))
+                .then(res => setCiudades(res?.data || res || []))
                 .catch(console.error);
         } else {
             setCiudades([]);

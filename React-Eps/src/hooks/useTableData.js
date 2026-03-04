@@ -51,7 +51,7 @@ const useTableData = (endpoint, extraParams = {}) => {
                 },
             });
 
-            const result = response.data;
+            const result = response;
 
             // Manejo de estructura de respuesta de Laravel (con meta o directa)
             if (result.meta) {

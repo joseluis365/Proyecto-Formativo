@@ -48,7 +48,9 @@ export default function AssignLicenciaModal({
       fecha_inicio: "",
       fecha_fin: "",
     },
-    mode: "onChange"
+    mode: "onChange",
+    reValidateMode: "onChange",
+    criteriaMode: "firstError",
   });
 
   const selectedLicenciaId = watch("licencia_id");

@@ -37,8 +37,8 @@ export default function EditPacienteModal({
     if (!userId) return;
 
     api.get(`/usuario/${userId}`).then((res) => {
-      setUser(res.data);
-      reset(res.data);
+      setUser(res);
+      reset(res);
       setLoading(false);
     });
   }, [userId]);
@@ -96,6 +96,7 @@ export default function EditPacienteModal({
             disabled={saving}
             loading={saving}
             errors={errors}
+            isEditing={true}
           />
         )}
       </div>

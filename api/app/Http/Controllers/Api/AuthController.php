@@ -10,51 +10,46 @@ use App\Models\Empresa;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\SendRecoveryCodeRequest;
+use App\Http\Requests\Auth\VerifyRecoveryCodeRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * Inicio de sesión para usuarios generales
+     */
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El formato del correo electrónico no es válido.',
-            'password.required' => 'La contraseña es obligatoria.',
-        ]);
-
         $user = Usuario::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->contrasena)) {
             return response()->json([
+                'success' => false,
                 'message' => 'Credenciales incorrectas.',
+                'data' => null
             ], 401);
         }
 
-        // ==========================
-        // VALIDACIÓN DE LICENCIA
-        // ==========================
+        // Validación de Licencia
         if ($user->nit) {
-
-            // Cargamos también el tipo de licencia
             $empresa = Empresa::with('licenciaActual.tipoLicencia')->find($user->nit);
 
             if ($empresa) {
-
                 $licencia = $empresa->licenciaActual;
 
                 if (!$licencia) {
                     return response()->json([
+                        'success' => false,
                         'message' => 'Su empresa no tiene una licencia asignada. Contacte al administrador.',
+                        'data' => null
                     ], 403);
                 }
 
-                // Tomamos el estado desde tipo_licencia
                 $estadoLicencia = $licencia->tipoLicencia->id_estado ?? null;
 
                 if ($estadoLicencia != 1) {
-
                     $estadoTexto = match ($estadoLicencia) {
                         2 => 'Inactiva',
                         3 => 'Sin Licencia',
@@ -65,7 +60,9 @@ class AuthController extends Controller
                     };
 
                     return response()->json([
+                        'success' => false,
                         'message' => "Acceso denegado. La licencia de su empresa está: $estadoTexto.",
+                        'data' => null
                     ], 403);
                 }
             }
@@ -74,32 +71,35 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
+            'success' => true,
             'message' => 'Inicio de sesión exitoso',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
+            'data' => [
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]
         ]);
     }
 
+    /**
+     * Cerrar sesión
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Sesión cerrada correctamente'
+            'success' => true,
+            'message' => 'Sesión cerrada correctamente',
+            'data' => null
         ]);
     }
 
     /**
      * Paso 1: Enviar código de recuperación
      */
-    public function sendRecoveryCode(Request $request)
+    public function sendRecoveryCode(SendRecoveryCodeRequest $request)
     {
-        $request->validate(['email' => 'required|email'], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El formato del correo electrónico no es válido.',
-        ]);
-
         $ipKey = 'recovery_ip_' . $request->ip();
         $emailKey = 'user_recovery_email_' . $request->email;
         $delayKey = 'user_recovery_delay_' . $request->email;
@@ -107,27 +107,36 @@ class AuthController extends Controller
         if (RateLimiter::tooManyAttempts($ipKey, 10)) {
             $seconds = RateLimiter::availableIn($ipKey);
             return response()->json([
+                'success' => false,
                 'message' => 'Demasiados intentos desde esta IP. Por favor intente en ' . ceil($seconds / 60) . ' minutos.',
-                'remaining_time' => $seconds,
-                'available_attempts' => 0
+                'data' => [
+                    'remaining_time' => $seconds,
+                    'available_attempts' => 0
+                ]
             ], 429);
         }
 
         if (RateLimiter::tooManyAttempts($emailKey, 5)) {
             $seconds = RateLimiter::availableIn($emailKey);
             return response()->json([
+                'success' => false,
                 'message' => 'Ha excedido el límite de códigos para este correo. Por favor intente en ' . ceil($seconds / 60) . ' minutos.',
-                'remaining_time' => $seconds,
-                'available_attempts' => 0
+                'data' => [
+                    'remaining_time' => $seconds,
+                    'available_attempts' => 0
+                ]
             ], 429);
         }
 
         if (RateLimiter::tooManyAttempts($delayKey, 1)) {
             $seconds = RateLimiter::availableIn($delayKey);
             return response()->json([
+                'success' => false,
                 'message' => 'Debe esperar ' . $seconds . ' segundos antes de solicitar otro código.',
-                'remaining_time' => $seconds,
-                'available_attempts' => RateLimiter::remaining($emailKey, 5)
+                'data' => [
+                    'remaining_time' => $seconds,
+                    'available_attempts' => RateLimiter::remaining($emailKey, 5)
+                ]
             ], 429);
         }
 
@@ -137,7 +146,11 @@ class AuthController extends Controller
         $user = Usuario::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Correo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Correo no encontrado',
+                'data' => null
+            ], 404);
         }
 
         RateLimiter::hit($emailKey, 1800);
@@ -152,79 +165,78 @@ class AuthController extends Controller
                         ->subject('Recuperación de Contraseña - Proyecto EPS');
             });
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error enviando correo'], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error enviando correo',
+                'data' => null
+            ], 500);
         }
 
         return response()->json([
+            'success' => true,
             'message' => 'Código enviado',
-            'available_attempts' => RateLimiter::remaining($emailKey, 5)
+            'data' => [
+                'available_attempts' => RateLimiter::remaining($emailKey, 5)
+            ]
         ]);
     }
 
     /**
      * Paso 2: Verificar código de recuperación
      */
-    public function verifyRecoveryCode(Request $request)
+    public function verifyRecoveryCode(VerifyRecoveryCodeRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'code' => 'required|numeric|digits:6|regex:/^[0-9]{6}$/'
-        ], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El formato del correo electrónico no es válido.',
-            'code.required' => 'El código es obligatorio.',
-            'code.numeric' => 'El código debe ser numérico.',
-            'code.digits' => 'El código debe tener 6 dígitos.',
-            'code.regex' => 'El código debe tener 6 numeros sin espacios.',
-        ]);
-
         $cachedCode = Cache::get('user_recovery_' . $request->email);
 
         if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
-            return response()->json(['message' => 'Código inválido o expirado'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Código inválido o expirado',
+                'data' => null
+            ], 400);
         }
 
-        return response()->json(['message' => 'Código correcto']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Código correcto',
+            'data' => null
+        ]);
     }
 
     /**
      * Paso 3: Restablecer contraseña
      */
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'code' => 'required|numeric',
-            'password' => 'required|string|min:8|max:25|regex:/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/'
-        ], [
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El formato del correo electrónico no es válido.',
-            'code.required' => 'El código es obligatorio.',
-            'code.numeric' => 'El código debe ser numérico.',
-            'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'password.max' => 'La contraseña debe tener como maximo 25 caracteres.',
-            'password.regex' => 'La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial',
-        ]);
-
         $cachedCode = Cache::get('user_recovery_' . $request->email);
 
         if (!$cachedCode || (int)$cachedCode !== (int)$request->code) {
-            return response()->json(['message' => 'Sesión expirada o código inválido'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesión expirada o código inválido',
+                'data' => null
+            ], 400);
         }
 
         $user = Usuario::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado',
+                'data' => null
+            ], 404);
         }
 
-        // Se asigna la contraseña directamente, el mutator en el modelo Usuario se encargará de hashearla.
         $user->contrasena = $request->password;
         $user->save();
 
         Cache::forget('user_recovery_' . $request->email);
 
-        return response()->json(['message' => 'Contraseña actualizada correctamente']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Contraseña actualizada correctamente',
+            'data' => null
+        ]);
     }
 }

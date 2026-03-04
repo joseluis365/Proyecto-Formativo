@@ -11,11 +11,12 @@ export default function useEspecialidades() {
             try {
                 // Endpoint público o protegido según api.php
                 const response = await api.get("/especialidades");
-                // Backend devuelve array directo o { data: [] }
-                const data = Array.isArray(response.data) ? response.data : response.data.data || [];
+                // El interceptor ya devuelve response.data o response.data.data
+                const data = Array.isArray(response) ? response : response?.data || [];
+
                 setSpecialties(data.map(item => ({
-                    value: item.id_especialidad,
-                    label: item.especialidad
+                    value: item.value ?? item.id_especialidad,
+                    label: item.label ?? item.especialidad
                 })));
             } catch (error) {
                 console.error("Error fetching specialties:", error);

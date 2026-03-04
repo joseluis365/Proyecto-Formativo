@@ -10,7 +10,7 @@ export default function useTiposCita() {
             setLoading(true);
             try {
                 const response = await api.get("/tipos-cita");
-                const data = response.data.data || [];
+                const data = Array.isArray(response) ? response : response?.data || [];
                 setTiposCita(data.map(item => ({
                     value: item.id_tipo_cita,
                     label: item.tipo

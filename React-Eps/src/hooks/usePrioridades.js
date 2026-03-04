@@ -10,7 +10,7 @@ export default function usePrioridades() {
             setLoading(true);
             try {
                 const response = await api.get("/prioridades");
-                const data = response.data.data || [];
+                const data = Array.isArray(response) ? response : response?.data || [];
                 setPrioridades(data.map(item => ({
                     value: item.id_prioridad,
                     label: item.prioridad

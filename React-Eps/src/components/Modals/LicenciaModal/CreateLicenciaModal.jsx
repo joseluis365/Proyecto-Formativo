@@ -36,7 +36,9 @@ export default function CreateLicenciaModal({
     } = useForm({
         resolver: zodResolver(planSchema),
         defaultValues: initialLicencia,
-        mode: "onChange"
+        mode: "onChange",
+        reValidateMode: "onChange",
+        criteriaMode: "firstError",
     });
 
     const handleCreate = async (data) => {

@@ -1,99 +1,124 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
 import FormWithIcons from "@/components/UI/FormWithIcons";
 import { formDepartamento } from "@/data/BaseTablesForms";
+import { departamentoSchema } from "@/schemas/departamentoSchema";
+import { handleApiErrors } from "@/utils/formHandlers";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 
 export default function DepartamentoModal({ isOpen, onClose, onSuccess, editData = null }) {
-    const [formData, setFormData] = useState({
-        codigo_DANE: "",
-        nombre: "",
-        id_estado: 1
-    });
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({});
+    const isEdit = !!editData;
 
-    useEffect(() => {
-        if (editData) {
-            setFormData({
-                codigo_DANE: editData.codigo_DANE || "",
-                nombre: editData.nombre || "",
-                id_estado: editData.id_estado || 1
-            });
-        } else {
-            setFormData({
-                codigo_DANE: "",
-                nombre: "",
-                id_estado: 1
-            });
+    const {
+        register,
+        handleSubmit,
+        setError,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: zodResolver(departamentoSchema),
+        mode: "onChange",
+        reValidateMode: "onChange",
+        criteriaMode: "firstError",
+        defaultValues: {
+            codigo_DANE: "",
+            nombre: "",
+            id_estado: 1
         }
-        setErrors({});
-    }, [editData, isOpen]);
+    });
 
-    const handleChange = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setErrors({});
-
-        try {
+    // Patrón de edición: reset() al cargar datos o al abrir el modal
+    useEffect(() => {
+        if (isOpen) {
             if (editData) {
-                await api.put(`/departamentos/${editData.codigo_DANE}`, formData);
-                Swal.fire("Éxito", "Departamento actualizado correctamente", "success");
+                reset({
+                    codigo_DANE: editData.codigo_DANE || "",
+                    nombre: editData.nombre || "",
+                    id_estado: editData.id_estado || 1
+                });
             } else {
-                await api.post("/departamentos", formData);
-                Swal.fire("Éxito", "Departamento creado correctamente", "success");
+                reset({
+                    codigo_DANE: "",
+                    nombre: "",
+                    id_estado: 1
+                });
+            }
+        }
+    }, [editData, isOpen, reset]);
+
+    const handleFormSubmit = async (data) => {
+        try {
+            if (isEdit) {
+                // El endpoint usa codigo_DANE como identificador para departamentos
+                await api.put(`/departamentos/${editData.codigo_DANE}`, data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Departamento actualizado correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            } else {
+                await api.post("/departamentos", data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: 'Departamento creado correctamente',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
             onSuccess();
             onClose();
         } catch (error) {
-            if (error.response?.status === 422) {
-                const apiErrors = error.response.data.errors;
-                const formattedErrors = {};
-                Object.keys(apiErrors).forEach(key => {
-                    formattedErrors[key] = apiErrors[key][0];
+            // Mapeo automático de errores 422
+            if (!handleApiErrors(error, setError)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error Inesperado",
+                    text: "Ocurrió un error al procesar la solicitud."
                 });
-                setErrors(formattedErrors);
-            } else {
-                Swal.fire("Error", "Ocurrió un error al procesar la solicitud", "error");
             }
-        } finally {
-            setLoading(false);
         }
     };
 
     if (!isOpen) return null;
 
+    // Configuración dinámica para marcar el Código DANE como solo lectura en edición
+    const config = {
+        ...formDepartamento,
+        fields: formDepartamento.fields.map(field =>
+            field.name === "codigo_DANE" ? { ...field, readOnly: isEdit } : field
+        )
+    };
+
     return (
         <BaseModal>
             <ModalHeader
-                title={editData ? "Editar Departamento" : "Nuevo Departamento"}
+                title={isEdit ? "EDITAR DEPARTAMENTO" : "NUEVO DEPARTAMENTO"}
                 icon="map"
                 onClose={onClose}
             />
             <div className="p-6">
                 <FormWithIcons
-                    config={formDepartamento}
-                    values={formData}
-                    onChange={handleChange}
-                    onSubmit={handleSubmit}
+                    config={config}
+                    register={register}
+                    handleSubmit={handleSubmit}
+                    onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={editData ? "Actualizar" : "Crear"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
-                            loading={loading}
+                            loading={isSubmitting}
                         />
                     </div>
                 </FormWithIcons>

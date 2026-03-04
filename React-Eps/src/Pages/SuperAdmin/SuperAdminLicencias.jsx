@@ -21,13 +21,14 @@ export default function SuperAdminLicencias() {
       setError(null);
 
       const res = await axios.get("/superadmin/licencias");
-      console.log("Respuesta completa:", res.data);
+      console.log("Respuesta completa:", res);
 
 
-      // Mapeamos los datos para que coincidan con lo que espera CompaniesSection
-      const formattedData = res.data.data.map(licencia => ({
+      // La API devuelve { total: X, data: [...] }
+      const dataArray = res?.data || res || [];
+      const formattedData = dataArray.map(licencia => ({
         ...licencia,
-        empresas: licencia.companies || "Sin empresas Asignadas", // Manejo de fecha vacía
+        empresas: licencia.companies || "Sin empresas Asignadas",
       }));
 
       setLicenses(formattedData);

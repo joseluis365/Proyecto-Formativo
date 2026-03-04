@@ -47,8 +47,7 @@ export default function AgendaCitas() {
             setLoading(true);
             const res = await api.get("/citas");
 
-            // FIltrar localmente
-            let filteredCitas = res.data.data.filter(cita => cita.fecha === selectedDate);
+            let filteredCitas = (res.data || []).filter(cita => cita.fecha === selectedDate);
 
             if (search) {
                 const searchLower = search.toLowerCase();
@@ -121,50 +120,50 @@ export default function AgendaCitas() {
                 {/* Recuadro de Filtros Abajo del Título/Botón */}
                 <div className="mb-8 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-4 w-full">
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
 
-        {/* Buscador */}
-        <div className="sm:col-span-1 lg:col-span-5 w-full">
-            <Input
-                placeholder="Buscar paciente o médico"
-                icon="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-            />
-        </div>
+                        {/* Buscador */}
+                        <div className="sm:col-span-1 lg:col-span-5 w-full">
+                            <Input
+                                placeholder="Buscar paciente o médico"
+                                icon="search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
 
-        {/* Especialidad */}
-        <div className="sm:col-span-1 lg:col-span-3 w-full">
-            <Filter
-                value={specialty}
-                onChange={setSpecialty}
-                options={specialtyOptions}
-                placeholder="Todas las Especialidades"
-            />
-        </div>
+                        {/* Especialidad */}
+                        <div className="sm:col-span-1 lg:col-span-3 w-full">
+                            <Filter
+                                value={specialty}
+                                onChange={setSpecialty}
+                                options={specialtyOptions}
+                                placeholder="Todas las Especialidades"
+                            />
+                        </div>
 
-        {/* Hora Inicio */}
-        <div className="sm:col-span-1 lg:col-span-2 w-full">
-            <Input
-                type="time"
-                placeholder="Hora Inicio"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-            />
-        </div>
+                        {/* Hora Inicio */}
+                        <div className="sm:col-span-1 lg:col-span-2 w-full">
+                            <Input
+                                type="time"
+                                placeholder="Hora Inicio"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                            />
+                        </div>
 
-        {/* Hora Fin */}
-        <div className="sm:col-span-1 lg:col-span-2 w-full">
-            <Input
-                type="time"
-                placeholder="Hora Fin"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-            />
-        </div>
+                        {/* Hora Fin */}
+                        <div className="sm:col-span-1 lg:col-span-2 w-full">
+                            <Input
+                                type="time"
+                                placeholder="Hora Fin"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                            />
+                        </div>
 
-    </div>
-</div>
+                    </div>
+                </div>
 
                 {/* Listado de Citas */}
                 {citas.length === 0 ? (

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\UniqueIgnoreCase;
 
 class UpdateEstadoRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class UpdateEstadoRequest extends FormRequest
         $id = $this->route('id_estado');
 
         return [
-            'nombre_estado' => 'required|string|max:50|unique:estado,nombre_estado,' . $id . ',id_estado'
+            'nombre_estado' => ['required', 'string', 'max:50', new UniqueIgnoreCase('estado', 'nombre_estado', $id, 'id_estado')]
         ];
     }
 
