@@ -100,12 +100,14 @@ export default function Personal() {
 
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
+        <div className="lg:w-sm md:w-1/2 xs:w-full">
         <Input
           placeholder="Buscar nombre o documento"
           icon="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        </div>
 
         <Filter
           value={status}
