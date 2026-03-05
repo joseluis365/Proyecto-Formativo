@@ -41,7 +41,8 @@ class UsuarioController extends Controller
 }
 
 
-    $usuarios = $query->paginate(10);
+    $perPage = $request->input('per_page', 15);
+    $usuarios = $query->paginate($perPage);
 
     $totalPorRol = Usuario::where('id_rol', $request->id_rol)->count();
 
@@ -55,6 +56,41 @@ class UsuarioController extends Controller
         'per_page' => $usuarios->perPage()
 
     ]);
+}
+
+/**
+ * Obtiene médicos activos que no tengan cita en la fecha y hora proporcionada.
+ */
+public function medicosDisponibles(Request $request)
+{
+    $request->validate([
+        'fecha' => 'required|date',
+        'hora' => 'required|date_format:H:i',
+    ]);
+
+    $fecha = $request->fecha;
+    $hora = $request->hora;
+
+    // Buscamos el ID del rol Médico dinámicamente
+    $rolMedico = \App\Models\Rol::where('tipo_usu', 'MEDICO')->first();
+    if (!$rolMedico) return response()->json([]);
+
+    $medicos = Usuario::with('especialidad')
+        ->where('id_rol', $rolMedico->id_rol)
+        ->where('id_estado', 1) // Activo
+        ->whereDoesntHave('medicoCitas', function ($query) use ($fecha, $hora) {
+            $query->where('fecha', $fecha)
+                  ->where('hora_inicio', $hora)
+                  ->where('id_estado', '!=', 4); // No cancelada (4 = Cancelada según seeder)
+        })
+        ->get();
+
+    return response()->json($medicos->map(function ($medico) {
+        return [
+            'value' => $medico->documento,
+            'label' => "Dr. {$medico->primer_nombre} {$medico->primer_apellido} - " . ($medico->especialidad->especialidad ?? 'Sin especialidad'),
+        ];
+    }));
 }
 
 

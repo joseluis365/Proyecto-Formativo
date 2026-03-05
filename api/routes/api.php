@@ -95,6 +95,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     Route::controller(UsuarioController::class)->group(function () {
         Route::get('/usuarios', 'index');
+        Route::get('/medicos-disponibles', 'medicosDisponibles');
         Route::get('/usuario/{id}', 'show');
         Route::post('/usuario', 'store');
         Route::put('/usuario/{id}', 'update');

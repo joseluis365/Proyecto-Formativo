@@ -86,6 +86,11 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
     }
 
+    public function medicoCitas()
+    {
+        return $this->hasMany(Cita::class, 'doc_medico', 'documento');
+    }
+
     /**
      * 🔒 Mutator automático para encriptar contraseña
      * Evita que alguien olvide hacer Hash::make()

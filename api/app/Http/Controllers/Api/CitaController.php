@@ -10,21 +10,32 @@ use App\Http\Requests\StoreCitaRequest;
 use App\Http\Requests\UpdateCitaRequest;
 use App\Mail\CitaAgendadaMailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 class CitaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Cita::with(['paciente', 'medico', 'estado', 'tipoCita']);
+
+        if ($request->has('fecha')) {
+            $query->where('fecha', $request->fecha);
+        }
+
         return response()->json([
             'message' => 'Citas obtenidas correctamente',
-            'data' => Cita::with(['paciente', 'medico', 'estado', 'tipoCita'])->get()
+            'data' => $query->get()
         ]);
     }
 
     public function store(StoreCitaRequest $request)
     {
+        // Calcular hora_fin (30 minutos después de hora_inicio)
+        $horaInicio = \Carbon\Carbon::createFromFormat('H:i', $request->hora_inicio);
+        $horaFin = $horaInicio->copy()->addMinutes(30)->format('H:i');
+
         // Find or create 'Agendada' state
-        $estado = Estado::firstOrCreate(['nombre_estado' => 'Agendada']);
+        $estado = \App\Models\Estado::firstOrCreate(['nombre_estado' => 'Agendada']);
 
         // Create the appointment
         $cita = Cita::create([
@@ -34,8 +45,8 @@ class CitaController extends Controller
             'motivo' => $request->motivo,
             'tipo_cita_id' => $request->tipo_cita_id,
             'id_estado' => $estado->id_estado,
-            'hora_inicio' => null,
-            'hora_fin' => null,
+            'hora_inicio' => $request->hora_inicio,
+            'hora_fin' => $horaFin,
         ]);
 
         // Get patient's email to send the confirmation

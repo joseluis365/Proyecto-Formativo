@@ -14,8 +14,8 @@ class AdminUsuarioSeeder extends Seeder
         Usuario::updateOrCreate(
             ['documento' => 100000001],
             [
-                'nombre' => 'Admin',
-                'apellido' => 'Principal',
+                'primer_nombre' => 'Admin',
+                'primer_apellido' => 'Principal',
                 'email' => 'madarazeduchiha@gmail.com',
                 'telefono' => '3001111111',
                 'direccion' => 'Calle Admin',

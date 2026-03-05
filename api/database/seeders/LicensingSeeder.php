@@ -17,17 +17,7 @@ class LicensingSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        // 1. Roles
-        DB::table('rol')->insertOrIgnore([
-            ['id_rol' => 1, 'tipo_usu' => 'Super Admin'],
-            ['id_rol' => 2, 'tipo_usu' => 'Admin'],
-            ['id_rol' => 3, 'tipo_usu' => 'personal Administrativo'],
-            ['id_rol' => 4, 'tipo_usu' => 'Medico'],
-            ['id_rol' => 5, 'tipo_usu' => 'Paciente'],
-            ['id_rol' => 6, 'tipo_usu' => 'Farmaceutico'],
-        ]);
-
-        // 2. Estados
+        // 1. Estados
         DB::table('estado')->insertOrIgnore([
             ['id_estado' => 1, 'nombre_estado' => 'Activo'],
             ['id_estado' => 2, 'nombre_estado' => 'Inactivo'],
@@ -35,6 +25,16 @@ class LicensingSeeder extends Seeder
             ['id_estado' => 4, 'nombre_estado' => 'Expira Pronto'],
             ['id_estado' => 5, 'nombre_estado' => 'Licencia Expirada'],
             ['id_estado' => 6, 'nombre_estado' => 'Licencia Bloqueada'],
+        ]);
+
+        // 2. Roles
+        DB::table('rol')->insertOrIgnore([
+            ['id_rol' => 1, 'tipo_usu' => 'Super Admin'],
+            ['id_rol' => 2, 'tipo_usu' => 'Admin'],
+            ['id_rol' => 3, 'tipo_usu' => 'personal Administrativo'],
+            ['id_rol' => 4, 'tipo_usu' => 'Medico'],
+            ['id_rol' => 5, 'tipo_usu' => 'Paciente'],
+            ['id_rol' => 6, 'tipo_usu' => 'Farmaceutico'],
         ]);
 
         // 3. Departamentos
