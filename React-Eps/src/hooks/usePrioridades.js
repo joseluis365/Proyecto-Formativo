@@ -10,8 +10,9 @@ export default function usePrioridades() {
             setLoading(true);
             try {
                 const response = await api.get("/prioridades");
-                const data = Array.isArray(response) ? response : response?.data || [];
-                setPrioridades(data.map(item => ({
+                // El interceptor ya devuelve el body. Como es paginado, los datos están en response.data
+                const list = response.data || [];
+                setPrioridades(list.map(item => ({
                     value: item.id_prioridad,
                     label: item.prioridad
                 })));

@@ -81,7 +81,7 @@ export default function IconInput({
 
             <div className="relative">
                 {icon && (
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
+                    <span className={`material-symbols-outlined absolute left-4 text-[#4c669a] text-xl ${type === 'textarea' ? 'top-4' : 'top-1/2 -translate-y-1/2'}`}>
                         {icon}
                     </span>
                 )}
@@ -90,11 +90,17 @@ export default function IconInput({
                     <select {...commonProps}>
                         <option key="placeholder" value="">{placeholder || 'Seleccione una opción'}</option>
                         {options?.map((opt, index) => (
-                            <option key={opt.value || index} value={opt.value}>
+                            <option key={opt.value || index} value={opt.value} disabled={opt.disabled}>
                                 {opt.label}
                             </option>
                         ))}
                     </select>
+                ) : type === 'textarea' ? (
+                    <textarea
+                        {...commonProps}
+                        rows={props.rows || 3}
+                        className={`${commonProps.className} !h-auto py-3 min-h-[120px]`}
+                    />
                 ) : (
                     <input {...commonProps} type={currentType} />
                 )}

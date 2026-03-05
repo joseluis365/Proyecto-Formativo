@@ -18,6 +18,9 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
     const baseDate = new Date(today.getFullYear(), today.getMonth() + currentMonthOffset, 1);
 
     // Generar datos para el mes 1 y mes 2
+    const handleNext = () => setCurrentMonthOffset(prev => Math.min(2, prev + 1));
+    const handlePrev = () => setCurrentMonthOffset(prev => Math.max(0, prev - 1));
+
     const renderMonth = (offsetFromBase) => {
         const targetDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + offsetFromBase, 1);
         const year = targetDate.getFullYear();
@@ -27,6 +30,9 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
 
         const blanks = Array.from({ length: firstDay }, (_, i) => i);
         const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+        const twoMonthsFromNow = new Date();
+        twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2);
 
         return (
             <div key={`${year}-${month}`} className="mb-6">
@@ -46,20 +52,24 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
                     ))}
                     {days.map(day => {
                         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const dateObj = new Date(year, month, day);
                         const isSelected = selectedDate === dateStr;
                         const isToday = new Date().toISOString().split('T')[0] === dateStr;
-                        const isPast = new Date(dateStr) < new Date(new Date().setHours(0, 0, 0, 0));
+
+                        const isPast = dateObj < new Date(new Date().setHours(0, 0, 0, 0));
+                        const isTooFar = dateObj > twoMonthsFromNow;
+                        const isDisabled = isPast || isTooFar;
 
                         return (
                             <button
                                 key={day}
-                                onClick={() => !isPast && onDateSelect(dateStr)}
-                                disabled={isPast}
+                                onClick={() => !isDisabled && onDateSelect(dateStr)}
+                                disabled={isDisabled}
                                 className={`
                                     flex items-center justify-center size-8 sm:size-10 rounded-full text-sm mx-auto transition-colors
-                                    ${isPast ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'cursor-pointer'}
+                                    ${isDisabled ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'cursor-pointer'}
                                     ${isSelected ? 'bg-primary text-white font-bold shadow-md' : ''}
-                                    ${!isSelected && !isPast ? 'text-gray-700 dark:text-gray-200 hover:bg-primary/10 dark:hover:bg-primary/20' : ''}
+                                    ${!isSelected && !isDisabled ? 'text-gray-700 dark:text-gray-200 hover:bg-primary/10 dark:hover:bg-primary/20' : ''}
                                     ${isToday && !isSelected ? 'border-2 border-primary text-primary font-bold' : ''}
                                 `}
                             >
@@ -71,9 +81,6 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
             </div>
         );
     };
-
-    const handleNext = () => setCurrentMonthOffset(prev => prev + 1);
-    const handlePrev = () => setCurrentMonthOffset(prev => Math.max(0, prev - 1));
 
     return (
         <div className="w-full">
