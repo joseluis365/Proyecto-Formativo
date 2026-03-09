@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\DepartamentoController;
 use App\Http\Controllers\Api\CiudadController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\EstadoController;
+use App\Http\Controllers\Api\AtencionMedicaController;
 use App\Http\Controllers\ReportController;
 
 /*
@@ -116,6 +117,13 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::put('/cita/{id}', 'update');
         Route::delete('/cita/{id}', 'destroy');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ATENCIÓN MÉDICA
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/cita/{id}/atender', [AtencionMedicaController::class, 'atender']);
 
     /*
     |--------------------------------------------------------------------------

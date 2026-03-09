@@ -49,6 +49,13 @@ import Ciudades from "./Pages/Admin/Configuracion/Ciudades"
 import Roles from "./Pages/Admin/Configuracion/Roles"
 import Estados from "./Pages/Admin/Configuracion/Estados"
 
+// Portal Paciente
+import PatientLayout from "./layouts/PatientLayout"
+import IndexPaciente from "./pages/Paciente/IndexPaciente"
+import AgendarCita from "./pages/Paciente/AgendarCita"
+import MisCitas from "./pages/Paciente/MisCitas"
+import HistorialPaciente from "./pages/Paciente/HistorialPaciente"
+
 export default function App() {
   // Global Dark Mode Initialization
   useEffect(() => {
@@ -78,6 +85,13 @@ export default function App() {
         </Route>
       </Route>
 
+      {/* Portal Paciente */}
+      <Route element={<PatientLayout />}>
+        <Route path="/paciente" element={<IndexPaciente />} />
+        <Route path="/paciente/agendar" element={<AgendarCita />} />
+        <Route path="/paciente/citas" element={<MisCitas />} />
+        <Route path="/paciente/historial" element={<HistorialPaciente />} />
+      </Route>
 
       <Route element={<IndexLayout />}>
         <Route path="/" element={<Index />} />

@@ -22,7 +22,7 @@ export default function AgendaCitas() {
     const [preselectedSlot, setPreselectedSlot] = useState(null);
 
     // Uso del hook de citas
-    const { citas: rawCitas, loading: loadingCitas, cancelCita, fetchCitas } = useCitas(selectedDate);
+    const { citas: rawCitas, loading: loadingCitas, cancelCita, fetchCitas } = useCitas({ fecha: selectedDate });
 
     // Filtros UI
     const [search, setSearch] = useState("");

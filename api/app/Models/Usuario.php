@@ -101,4 +101,8 @@ class Usuario extends Authenticatable
             $this->attributes['contrasena'] = Hash::make($value);
         }
     }
+    public function historialClinico()
+    {
+        return $this->hasOne(HistorialClinico::class, 'id_paciente', 'documento');
+    }
 }

@@ -39,4 +39,8 @@ class Cita extends Model
     {
         return $this->belongsTo(TipoCita::class, 'tipo_cita_id', 'id_tipo_cita');
     }
+    public function historialDetalle()
+    {
+        return $this->hasOne(HistorialDetalle::class, 'id_cita', 'id_cita');
+    }
 }

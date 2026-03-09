@@ -4,23 +4,28 @@ import Swal from "sweetalert2";
 
 /**
  * Hook para la gestión de citas médicas siguiendo la arquitectura del proyecto.
- * @param {string} selectedDate - Fecha seleccionada en formato YYYY-MM-DD para filtrado automático.
+ * @param {Object} filters - Objeto con filtros: { fecha, doc_paciente, doc_medico }
  */
-export default function useCitas(selectedDate) {
+export default function useCitas(filters = {}) {
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const { fecha, doc_paciente, doc_medico } = filters;
+
     /**
-     * Obtiene las citas del servidor.
-     * Soporta filtrado por fecha si el backend lo permite (requerimiento: GET /citas?fecha=)
+     * Obtiene las citas del servidor aplicando los filtros activos.
      */
     const fetchCitas = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
             const response = await api.get("/citas", {
-                params: { fecha: selectedDate }
+                params: {
+                    fecha,
+                    doc_paciente,
+                    doc_medico
+                }
             });
 
             // Estructura consistente con otros hooks del proyecto
@@ -29,18 +34,16 @@ export default function useCitas(selectedDate) {
         } catch (err) {
             const msg = err.response?.data?.message || "Error al cargar las citas.";
             setError(msg);
-            console.error(`Error en useCitas (${selectedDate}):`, err);
+            console.error("Error en useCitas:", err);
         } finally {
             setLoading(false);
         }
-    }, [selectedDate]);
+    }, [fecha, doc_paciente, doc_medico]);
 
-    // Refresco automático cuando cambia la fecha de la agenda
+    // Refresco automático cuando cambian los criterios de filtrado
     useEffect(() => {
-        if (selectedDate) {
-            fetchCitas();
-        }
-    }, [fetchCitas, selectedDate]);
+        fetchCitas();
+    }, [fetchCitas]);
 
     /**
      * Crea una nueva cita (POST /cita)

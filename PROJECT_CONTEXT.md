@@ -1,4 +1,4 @@
-Stack Tecnológico
+Stack Tecnológico – Proyecto EPS (Actualizado 2026 – Estado Final)
 🔹 Backend
 
 Laravel 12
@@ -17,68 +17,133 @@ FormRequest (uso casi total, estructura consolidada)
 
 Servicios desacoplados (inicio de arquitectura ReportService)
 
-Configuración extensible vía config/*.php (nuevo patrón para reportes)
+Configuración extensible vía config/*.php (patrón para reportes dinámicos)
+
+Mailable para citas (CitaAgendadaMailable)
+
+Sistema de autenticación dual
+
+Autenticación soportada:
+
+Usuario
+
+SuperAdmin
 
 🔹 Frontend
 
-React + React Router v6
+Vite + React
 
-Arquitectura con Layouts anidados (<Outlet />)
+React Router v6
 
-Separación estricta Admin / SuperAdmin
+Tailwind CSS (UI Design System)
 
-axios.js para Admin
+Framer Motion para animaciones
 
-superadminAxios.js para SuperAdmin
+Arquitectura basada en componentes reutilizables
 
-Hooks reutilizables (useTableData, hooks por entidad)
+Data Driven UI (formularios y tablas configurables)
 
-framer-motion para animaciones UI
+Arquitectura de carpetas
+src/
+ ├─ pages
+ │   ├─ Admin
+ │   ├─ SuperAdmin
+ │   └─ Paciente
+ ├─ layouts
+ ├─ components
+ ├─ hooks
+ ├─ Api
+ └─ assets
+Componentes base del sistema
 
-Módulo Gestión Interna consolidado
+Form.jsx
 
-Módulo Reportes en arquitectura profesional escalable
+FormWithIcons.jsx
+
+DataTable.jsx
+
+AppointmentCard.jsx
+
+CalendarAgenda.jsx
+
+ViewCitaModal.jsx
+
+🔹 Hooks Dinámicos
+
+useCitas
+
+useReports
+
+useTableData
+
+hooks de catálogos (usePrioridades, useEspecialidades, etc.)
+
+useMedicosDisponibles
+
+Cliente API
+
+axios.js → Admin / Médico / Paciente
+
+superadminAxios.js → SuperAdmin
 
 🏗 Arquitectura General
 🔹 Backend
 
-Separación clara MVC
+Arquitectura MVC clara y escalable.
+
+Características principales:
 
 Soft delete lógico mediante id_estado
 
-Seeders estructurados, idempotentes y portables
+Seeders idempotentes y portables
 
-Secuencias PostgreSQL sincronizadas dentro de Seeders (no en migraciones)
+Secuencias PostgreSQL sincronizadas en Seeders
 
-Middleware de licencia aplicado a rutas protegidas
+Middleware licencia.activa aplicado a rutas protegidas
 
-Contratos JSON estandarizados con API Resources
+Respuestas JSON mediante API Resources
 
-Inicio de arquitectura desacoplada para reportes:
-
+Arquitectura de reportes
 config/reportables.php
-
 ReportService
-
 ReportController
 
-⚠ Riesgo actual:
+Permite generar reportes configurables sin modificar controladores.
 
-Dependencia a PostgreSQL por uso de ILIKE (pendiente abstracción con Trait HasSearch)
+⚠ Riesgo actual
+
+Dependencia de PostgreSQL por uso de:
+
+ILIKE
+Plan de solución
+
+Implementar Trait:
+
+HasSearch
+
+para abstraer el motor de base de datos.
 
 🔹 Frontend
 
-Layouts jerárquicos:
+Arquitectura basada en layouts jerárquicos:
 
 DashboardLayout
-
 SuperAdminLayout
-
+PatientLayout
 IndexLayout
+LoginLayout
 
-Módulos implementados:
+Permite:
 
-Gestión Interna (CRUD completo):
+separación de roles
+
+navegación modular
+
+persistencia de UI
+
+🧩 Módulos Implementados
+Sistema Administrativo
+Gestión Interna (CRUD completos)
 
 Prioridades
 
@@ -100,186 +165,351 @@ Roles
 
 Estados
 
-Hook centralizado:
+Gestión de Usuarios
 
-useTableData para paginación, filtros y búsqueda
+CRUD completo para:
 
-Deuda técnica controlada:
+personal
 
-Duplicación parcial en modales CRUD
+médicos
 
-Algunos hooks aún no totalmente unificados
+usuarios
 
-Refactorización futura planificada, no urgente
+Validación centralizada mediante:
+
+FormRequest
+Sistema de Licenciamiento
+
+SuperAdmin controla:
+
+empresas
+
+licencias
+
+activación manual
+
+Sistema de Reportes
+
+Centro dinámico:
+
+/reportes
+
+Características:
+
+columnas dinámicas
+
+filtros
+
+exportación PDF
+
+📅 Sistema de Citas
+Backend
+
+Controlador:
+
+CitaController
+
+Endpoints principales:
+
+GET /api/citas
+POST /api/cita
+PUT /api/cita/{id}
+
+Características:
+
+cálculo automático de duración
+
+notificación por correo (CitaAgendadaMailable)
+
+Frontend
+Agenda Administrativa
+
+Archivo:
+
+AgendaCitas.jsx
+
+Características:
+
+calendario
+
+médicos colapsables
+
+citas por médico
+
+modales
+
+filtros por especialidad
+
+✔ Conectado al backend
+
+Agenda del Médico
+
+Archivo:
+
+AgendaMedico.jsx
+
+Estado actual:
+
+✔ Conectado al backend
+✔ Filtrado por doc_medico
+✔ Botón Atender
+
+🏥 Capa Clínica (Implementada)
+Modelo clínico
+Usuario (Paciente)
+        ↓
+HistorialClinico
+        ↓
+HistorialDetalle
+        ↓
+Remision
+Modelos implementados
+
+HistorialClinico
+
+HistorialDetalle
+
+Remision
+
+Examen
+
+Controlador clínico
+AtencionMedicaController
+
+Endpoint principal:
+
+POST /api/citas/{id}/atender
+
+Este endpoint:
+
+busca o crea HistorialClinico
+
+crea HistorialDetalle
+
+registra Remision
+
+cambia estado de cita a Atendida
+
+🩺 Atención Médica (Frontend)
+
+Componente:
+
+AtenderCitaModal.jsx
+
+Permite registrar:
+
+diagnóstico
+
+tratamiento
+
+observaciones
+
+remisiones
+
+Integraciones:
+
+react-hook-form
+
+SweetAlert2
+
+Framer Motion
+
+👤 Portal del Paciente (Implementado)
+Layout
+PatientLayout.jsx
+
+Sidebar simplificado:
+
+Inicio
+
+Agendar Cita
+
+Mis Citas
+
+Mi Historial
+
+Páginas
+src/pages/Paciente
+
+IndexPaciente.jsx
+
+AgendarCita.jsx
+
+MisCitas.jsx
+
+HistorialPaciente.jsx
+
+Funcionalidades
+
+Paciente puede:
+
+agendar citas
+
+ver citas activas
+
+cancelar citas
+
+consultar historial clínico
 
 🔐 Autenticación
 Usuario Normal
-
 POST /api/login
 
-Tabla: usuario
+Tabla:
 
-Campo: contrasena (mutator automático hash)
+usuario
 
-Sesión: localStorage
+Campo contraseña:
 
-Middleware: auth:sanctum + licencia.activa
+contrasena
 
+Sesión:
+
+localStorage
+
+Middleware:
+
+auth:sanctum
+licencia.activa
 SuperAdmin
-
 POST /api/superadmin/login
 
-Tabla: superadmin
+Tabla:
 
-Sesión: sessionStorage
+superadmin
 
-Flujo independiente
+Sesión:
 
-Axios independiente
+sessionStorage
 
-No comparte token con Admin normal
+Cliente API independiente.
 
 📏 Reglas Arquitectónicas Activas
 
-NO mezclar sesiones Admin y SuperAdmin.
+NO mezclar sesiones Admin / SuperAdmin / Paciente
 
-NO modificar UserFormConfig.js sin autorización.
+NO modificar UserFormConfig.js
 
-NO cambiar estructura de payload.
+NO cambiar estructura de payload
 
-NO asumir campos inexistentes.
+NO asumir columnas inexistentes
 
-NO cambiar nombres de columnas.
+NO cambiar nombres de columnas
 
-Respetar consistencia de id_estado.
+Mantener consistencia de id_estado
 
-Filtrar registros activos con id_estado = 1.
+Filtrar registros activos con:
 
-No introducir lógica de negocio en controladores.
+id_estado = 1
 
-Mantener compatibilidad total con migrate:fresh --seed.
+No introducir lógica de negocio en controladores
 
-No usar migraciones para sincronizar secuencias.
+Mantener compatibilidad con:
 
-Las secuencias se sincronizan dentro de Seeders.
+php artisan migrate:fresh --seed
+
+Las secuencias PostgreSQL se sincronizan solo en Seeders
 
 🧱 Estado Actual del Backend
 ✅ Fortalezas
 
-Middleware de licencia estable.
+Middleware de licencia estable
 
-Seeders completamente portables.
+Seeders portables
 
-Secuencias PostgreSQL sincronizadas correctamente.
+Secuencias sincronizadas
 
-Uso mayoritario de FormRequest.
+Uso mayoritario de FormRequest
 
-Soft delete homogéneo por id_estado.
+CRUD estandarizados
 
-CRUD estandarizados.
+Sistema de citas completo
 
-Arquitectura lista para escalar.
+Capa clínica completamente funcional
 
-Inicio de sistema profesional de reportes configurable.
+Arquitectura preparada para escalar
 
 ⚠ Riesgos Detectados
 
-Uso de ILIKE (dependencia PostgreSQL).
+Dependencia de ILIKE
 
-Hardcoding parcial de id_estado = 1.
+Hardcoding parcial de id_estado
 
-Algunos endpoints aún no usan Resource consistentemente.
+Algunos endpoints aún sin Resource
 
-Búsquedas no abstractas (pendiente Trait HasSearch).
+Búsquedas sin abstracción (HasSearch pendiente)
 
 🖥 Estado Actual del Frontend
 ✅ Fortalezas
 
-Rutas anidadas funcionales.
+UI moderna con Tailwind
 
-Layout persistente estable.
+Animaciones con Framer Motion
 
-Separación modular clara.
+Arquitectura de componentes reutilizables
 
-CRUD consistentes.
+Agenda administrativa funcional
 
-Módulo Gestión Interna consolidado.
+Agenda médica funcional
 
-Arquitectura preparada para módulo Reportes profesional.
+Atención clínica funcional
+
+Portal del paciente completo
+
+Hooks reutilizables bien estructurados
 
 ⚠ Deuda Técnica
 
-Duplicación en modales CRUD.
+Duplicación parcial de modales CRUD
 
-Unificación futura pendiente.
+Algunos hooks de catálogos aún no unificados
 
-Algunas inconsistencias menores en hooks de catálogos.
+Refactorización futura posible para optimizar layout compartidos
 
 🌱 Seeders Portables
 
-El sistema debe funcionar correctamente con:
+El sistema debe funcionar con:
 
 php artisan migrate:fresh --seed
 
-Y dejar automáticamente:
+y generar automáticamente:
 
 Empresa activa (id_estado = 1)
 
-Licencia activa con fechas válidas
+Licencia activa
 
-Usuario admin activo
+Usuario admin
 
-Estados base creados
+Estados base
 
-Roles base creados
+Roles base
 
 Secuencias sincronizadas
 
-Sin errores 23505
+Sin:
 
-Sin errores de FK
+errores 23505
 
-🎯 Nuevo Objetivo Arquitectónico (2026)
-Consolidación y Profesionalización
-🔹 Backend
+errores FK
 
-Implementar Trait HasSearch para eliminar dependencia ILIKE
+🏁 Estado Final del Sistema
+Módulo	Estado
+Licencias	✅
+Administración	✅
+Agenda	✅
+Atención médica	✅
+Remisiones	✅
+Portal paciente	✅
+Reportes	✅
 
-Estandarizar 100% API Resources
-
-Eliminar validaciones manuales en controllers
-
-Migrar hardcodes a constantes / Enums
-
-Implementar módulo Reportes configurable (Opción C)
-
-config/reportables.php
-
-ReportService
-
-Exportación PDF y Excel
-
-Mantener portabilidad total
-
-🔹 Frontend
-
-Implementar módulo Reportes profesional
-
-Filtros dinámicos
-
-Exportación PDF y Excel
-
-Mantener coherencia visual
-
-No romper formularios existentes
-
-Refactorización progresiva controlada
+Sistema clínico completo funcional.
 
 🏛 Principio Rector del Proyecto
 
 Primero estabilidad.
 Luego estandarización.
 Luego optimización.
+
 Nunca refactorizar sin diagnóstico completo.
 No parches temporales.
 Arquitectura limpia antes que rapidez.

@@ -16,10 +16,18 @@ class CitaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Cita::with(['paciente', 'medico', 'estado', 'tipoCita']);
+        $query = Cita::with(['paciente', 'medico', 'estado', 'tipoCita', 'historialDetalle']);
 
         if ($request->has('fecha')) {
             $query->where('fecha', $request->fecha);
+        }
+
+        if ($request->has('doc_paciente')) {
+            $query->where('doc_paciente', $request->doc_paciente);
+        }
+
+        if ($request->has('doc_medico')) {
+            $query->where('doc_medico', $request->doc_medico);
         }
 
         return response()->json([

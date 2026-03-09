@@ -1,69 +1,80 @@
 import DataTable from "../UI/DataTable";
 
 
-export default function ScheduleTable({ dates }) {
+export default function ScheduleTable({ appointments, onView, onAtender }) {
   const columns = [
     {
-      key: "time",
+      key: "hora_inicio",
       header: "HORA",
       render: (d) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {d.time}
+          {d.hora_inicio?.slice(0, 5) || "--:--"}
         </span>
       ),
     },
     {
-      key: "patient",
+      key: "paciente",
       header: "PACIENTE",
       render: (d) => (
         <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-          {d.patient}
+          {d.paciente ? `${d.paciente.primer_nombre} ${d.paciente.primer_apellido}` : "Paciente no encontrado"}
         </span>
       ),
     },
     {
-      key: "reason",
+      key: "motivo",
       header: "MOTIVO CONSULTA",
-      render: (d) => d.reason,
+      render: (d) => d.motivo || "No especificado",
     },
     {
-      key: "status",
+      key: "id_estado",
       header: "ESTADO",
-      render: (d) => (
-        <span
-          className={`px-2.5 py-1 text-xs font-semibold leading-none rounded-full ${
-            d.status === "Atendida"
-              ? "bg-green-100 text-green-800"
-              : d.status === "Cancelada"
-                ? "bg-soft-red/20 text-soft-red"
-                : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {d.status}
-        </span>
-      ),
+      render: (d) => {
+        const statusName = d.estado?.nombre_estado || "Pendiente";
+        return (
+          <span
+            className={`px-2.5 py-1 text-xs font-semibold leading-none rounded-full ${statusName === "Atendida"
+              ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+              : statusName === "Cancelada"
+                ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300"
+                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300"
+              }`}
+          >
+            {statusName}
+          </span>
+        );
+      },
     },
     {
       key: "actions",
-      header: "Opciones",
+      header: "Acciones",
       align: "center",
-      render: (d) => (
-        <div className="flex items-center justify-center gap-2">
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">visibility</span>
-          </button>
+      render: (d) => {
+        const isPending = d.estado?.nombre_estado === "Pendiente";
+        return (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => onView(d)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-primary transition-colors"
+              title="Ver detalles"
+            >
+              <span className="material-symbols-outlined text-base">visibility</span>
+            </button>
 
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">edit</span>
-          </button>
-
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">delete</span>
-          </button>
-        </div>
-      ),
+            {isPending && (
+              <button
+                onClick={() => onAtender(d)}
+                className="p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center"
+                title="Atender Paciente"
+              >
+                <span className="material-symbols-outlined text-base font-bold">medical_information</span>
+              </button>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
-  return <DataTable columns={columns} data={dates} />;
+  return <DataTable columns={columns} data={appointments} />;
 }
