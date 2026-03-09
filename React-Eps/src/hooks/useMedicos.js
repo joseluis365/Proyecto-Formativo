@@ -12,9 +12,9 @@ export default function useMedicos() {
         const fetchMedicos = async () => {
             setLoading(true);
             try {
-                // Rol 2 = Medico, Status 1 = Activo
+                // Rol 4 = Medico, Status 1 = Activo
                 const response = await api.get("/usuarios", {
-                    params: { id_rol: 2, status: 1, per_page: 100 }
+                    params: { id_rol: 4, status: 1, per_page: 100 }
                 });
 
                 // El interceptor ya devuelve response.data (que es el array de info paginada)

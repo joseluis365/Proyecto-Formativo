@@ -9,6 +9,7 @@ import MotionSpinner from "../../UI/Spinner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPacienteSchema } from "@/schemas/usuarioSchemas";
+import { ROLES } from "@/constants/roles";
 
 const initialUser = {
   documento: "",
@@ -24,7 +25,7 @@ const initialUser = {
   grupo_sanguineo: "",
   id_estado: 1,
   contrasena: "",
-  id_rol: 5,
+  id_rol: ROLES.PACIENTE,
 };
 
 export default function CreatePacienteModal({
@@ -49,7 +50,7 @@ export default function CreatePacienteModal({
     try {
       setSaving(true);
       const payload = {
-        id_rol: 5,
+        id_rol: ROLES.PACIENTE,
         documento: data.documento,
         primer_nombre: data.primer_nombre,
         segundo_nombre: data.segundo_nombre,
@@ -111,7 +112,7 @@ export default function CreatePacienteModal({
           </div>
         ) : (
           <Form
-            fields={getCreateUserFormConfig(5)}
+            fields={getCreateUserFormConfig(ROLES.PACIENTE)}
             register={register}
             handleSubmit={handleSubmit}
             onSubmit={onSubmit}

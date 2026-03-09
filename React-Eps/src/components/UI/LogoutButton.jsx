@@ -1,26 +1,19 @@
 import React from 'react';
-import api from '../../Api/superadminAxios';
+import api from '@/Api/axios';
 import { useNavigate } from 'react-router-dom';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // 1. Obtener el token de superadmin desde sessionStorage
-    const token = sessionStorage.getItem('superadmin_token');
-
     try {
-      // 2. Llamada al controlador de Laravel usando la instancia superadminAxios
-      await api.post('/superadmin/logout');
-
-      console.log("Sesión de SuperAdmin cerrada en el servidor");
+      await api.post('/logout');
     } catch (error) {
-      console.error("Error al cerrar sesión de SuperAdmin", error);
+      console.error("Error al cerrar sesión", error);
     } finally {
-      // 3. Limpiar sessionStorage y redirigir al login de SuperAdmin
-      sessionStorage.removeItem('superadmin_token');
-      sessionStorage.removeItem('superadmin_user');
-      navigate('/SuperAdmin-Login');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
     }
   };
 

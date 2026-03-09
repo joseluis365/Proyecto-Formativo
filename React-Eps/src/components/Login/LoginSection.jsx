@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema } from "../../schemas/authSchemas";
 import { handleApiErrors } from "../../utils/formHandlers";
+import { ROLES } from "@/constants/roles";
 
 export default function LoginSection() {
     const navigate = useNavigate();
@@ -45,10 +46,34 @@ export default function LoginSection() {
                 showConfirmButton: false
             });
 
-            if (user.id_rol === 1) {
-                navigate('/SuperAdmin-Dashboard');
-            } else {
-                navigate('/dashboard');
+            // Redirección basada en el rol del usuario
+            const rolId = Number(user.id_rol);
+
+            switch (rolId) {
+                case ROLES.SUPER_ADMIN:
+                    navigate('/SuperAdmin-Dashboard');
+                    break;
+
+                case ROLES.ADMIN:
+                case ROLES.PERSONAL_ADMINISTRATIVO:
+                    navigate('/dashboard');
+                    break;
+
+                case ROLES.MEDICO:
+                    navigate('/agenda-medico');
+                    break;
+
+                case ROLES.PACIENTE:
+                    navigate('/paciente');
+                    break;
+
+                case ROLES.FARMACEUTICO:
+                    navigate('/farmacia');
+                    break;
+
+                default:
+                    navigate('/dashboard');
+                    break;
             }
 
         } catch (error) {

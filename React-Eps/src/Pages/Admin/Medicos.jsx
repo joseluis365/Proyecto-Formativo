@@ -8,6 +8,7 @@ import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreateMedicoModal from "../../components/Modals/UserModal/CreateMedicoModal";
+import { ROLES } from "@/constants/roles";
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -48,7 +49,7 @@ export default function Medicos() {
       const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol: 4,
+          id_rol: ROLES.MEDICO,
           status: status || undefined,
         },
       });

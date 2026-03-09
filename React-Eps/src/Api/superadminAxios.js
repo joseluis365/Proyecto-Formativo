@@ -31,17 +31,14 @@ superAdminApi.interceptors.response.use(
         if (response) {
             switch (response.status) {
                 case 401:
-                    // Sesión SuperAdmin expirada o inválida
+                    // Sesión SuperAdmin expirada o inválida.
+                    // Solo limpiamos el storage — la navegación a /SuperAdmin-Login
+                    // la maneja SuperAdminRoute con <Navigate replace />.
+                    // No usamos window.location.href para evitar redirecciones globales
+                    // que afecten a otros roles (Admin, Paciente, etc.) durante el montaje
+                    // de componentes con React.StrictMode.
                     sessionStorage.removeItem("superadmin_token");
                     sessionStorage.removeItem("superadmin_user");
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Sesión Finalizada',
-                        text: 'Tu sesión como SuperAdmin ha expirado. Por favor, ingresa de nuevo.',
-                        confirmButtonColor: '#3085d6',
-                    }).then(() => {
-                        window.location.href = "/SuperAdmin-Login";
-                    });
                     break;
 
                 case 403:

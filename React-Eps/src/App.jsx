@@ -34,6 +34,9 @@ import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
 
 import { useEffect } from "react";
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
+import AdminRoute from "@/components/Routes/AdminRoute"
+import PatientRoute from "@/components/Routes/PatientRoute"
+import MedicoRoute from "@/components/Routes/MedicoRoute"
 
 // Configuración
 import ConfiguracionIndex from "./Pages/Admin/Configuracion/ConfiguracionIndex"
@@ -75,22 +78,31 @@ export default function App() {
       <Route path="/SuperAdmin-ResetPassword" element={<SuperAdminResetPassword />} />
       <Route path="/Pago" element={<Pago />} />
 
-      {/* Rutas Protegidas SuperAdmin */}
-      <Route element={<SuperAdminRoute />}>
+      {/* Rutas Protegidas SuperAdmin — Aisladas bajo prefijo para evitar colisiones con otros roles */}
+      <Route path="/SuperAdmin-*" element={<SuperAdminRoute />}>
         <Route element={<SuperAdminLayout />}>
-          <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
-          <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
-          <Route path="/SuperAdmin-Licencias" element={<SuperAdminLicencias />} />
-          <Route path="/SuperAdmin-Historial" element={<SuperAdminHistorial />} />
+          <Route path="Dashboard" element={<SuperAdminDashboard />} />
+          <Route path="Empresas" element={<SuperAdminEmpresas />} />
+          <Route path="Licencias" element={<SuperAdminLicencias />} />
+          <Route path="Historial" element={<SuperAdminHistorial />} />
         </Route>
       </Route>
 
-      {/* Portal Paciente */}
-      <Route element={<PatientLayout />}>
-        <Route path="/paciente" element={<IndexPaciente />} />
-        <Route path="/paciente/agendar" element={<AgendarCita />} />
-        <Route path="/paciente/citas" element={<MisCitas />} />
-        <Route path="/paciente/historial" element={<HistorialPaciente />} />
+      {/* Portal Paciente — Protegido por rol */}
+      <Route element={<PatientRoute />}>
+        <Route element={<PatientLayout />}>
+          <Route path="/paciente" element={<IndexPaciente />} />
+          <Route path="/paciente/agendar" element={<AgendarCita />} />
+          <Route path="/paciente/citas" element={<MisCitas />} />
+          <Route path="/paciente/historial" element={<HistorialPaciente />} />
+        </Route>
+      </Route>
+
+      {/* Portal Médico — Protegido por rol */}
+      <Route element={<MedicoRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/agenda-medico" element={<AgendaMedico />} />
+        </Route>
       </Route>
 
       <Route element={<IndexLayout />}>
@@ -105,30 +117,33 @@ export default function App() {
         <Route path="/code-verification" element={<VerifyCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
-      <Route element={<DashboardLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/usuarios/personal" element={<Personal />} />
-        <Route path="/usuarios/medicos" element={<Medicos />} />
-        <Route path="/usuarios/pacientes" element={<Pacientes />} />
-        <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
-        <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
-        <Route path="/citas/del-dia" element={<CitasDelDia />} />
-        <Route path="/citas/agenda" element={<AgendaCitas />} />
-        <Route path="/reportes" element={<Reportes />} />
+      {/* Panel Admin — Protegido por rol */}
+      <Route element={<AdminRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/usuarios/personal" element={<Personal />} />
+          <Route path="/usuarios/medicos" element={<Medicos />} />
+          <Route path="/usuarios/pacientes" element={<Pacientes />} />
+          <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
+          <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
+          <Route path="/citas/del-dia" element={<CitasDelDia />} />
+          <Route path="/citas/agenda" element={<AgendaCitas />} />
+          <Route path="/reportes" element={<Reportes />} />
 
-        {/* Configuración */}
-        <Route path="/configuracion" element={<ConfiguracionIndex />}>
-          <Route path="prioridades" element={<Prioridades />} />
-          <Route path="tipos-cita" element={<TiposCita />} />
-          <Route path="categorias-examen" element={<CategoriasExamen />} />
-          <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
-          <Route path="especialidades" element={<Especialidades />} />
-          <Route path="ubicaciones" element={<Ubicaciones />} />
-          <Route path="farmacias" element={<Farmacias />} />
-          <Route path="departamentos" element={<Departamentos />} />
-          <Route path="ciudades" element={<Ciudades />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="estados" element={<Estados />} />
+          {/* Configuración */}
+          <Route path="/configuracion" element={<ConfiguracionIndex />}>
+            <Route path="prioridades" element={<Prioridades />} />
+            <Route path="tipos-cita" element={<TiposCita />} />
+            <Route path="categorias-examen" element={<CategoriasExamen />} />
+            <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
+            <Route path="especialidades" element={<Especialidades />} />
+            <Route path="ubicaciones" element={<Ubicaciones />} />
+            <Route path="farmacias" element={<Farmacias />} />
+            <Route path="departamentos" element={<Departamentos />} />
+            <Route path="ciudades" element={<Ciudades />} />
+            <Route path="roles" element={<Roles />} />
+            <Route path="estados" element={<Estados />} />
+          </Route>
         </Route>
       </Route>
     </Routes>

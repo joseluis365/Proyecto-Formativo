@@ -11,6 +11,7 @@ import { handleApiErrors } from "@/utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "@/components/UI/BlueButton";
 import useEspecialidades from "@/hooks/useEspecialidades";
+import { ROLES } from "@/constants/roles";
 
 export default function CreateMedicoModal({
   onClose,
@@ -30,7 +31,7 @@ export default function CreateMedicoModal({
     reValidateMode: "onChange",
     defaultValues: {
       id_estado: 1,
-      id_rol: 4,
+      id_rol: ROLES.MEDICO,
       segundo_nombre: "",
       segundo_apellido: ""
     }
@@ -43,7 +44,7 @@ export default function CreateMedicoModal({
       // Inyección de rol Médico (4)
       const payload = {
         ...data,
-        id_rol: 4
+        id_rol: ROLES.MEDICO
       };
 
       await api.post(`/usuario`, payload);
@@ -68,7 +69,7 @@ export default function CreateMedicoModal({
   };
 
   const formConfig = {
-    fields: getCreateUserFormConfig(4, { id_especialidad: specialties })
+    fields: getCreateUserFormConfig(ROLES.MEDICO, { id_especialidad: specialties })
   };
 
   return (

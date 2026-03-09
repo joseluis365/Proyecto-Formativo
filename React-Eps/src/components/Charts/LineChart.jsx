@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import api from "../../Api/superadminAxios";
+import api from "../../Api/axios";
 import {
   LineChart,
   Line,

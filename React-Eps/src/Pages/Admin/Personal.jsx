@@ -8,6 +8,7 @@ import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreatePersonalModal from "../../components/Modals/UserModal/CreatePersonalModal";
+import { ROLES } from "@/constants/roles";
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -47,7 +48,7 @@ export default function Personal() {
       const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol: 3,
+          id_rol: ROLES.PERSONAL_ADMINISTRATIVO,
           status: status || undefined,
           page: currentPage,
         },
@@ -184,8 +185,8 @@ export default function Personal() {
                   key={i + 1}
                   onClick={() => setCurrentPage(i + 1)}
                   className={`px-3 py-1 rounded ${currentPage === i + 1
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
                     }`}
                 >
                   {i + 1}
