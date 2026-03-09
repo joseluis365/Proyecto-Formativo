@@ -31,7 +31,7 @@ class LicensingSeeder extends Seeder
         DB::table('rol')->insertOrIgnore([
             ['id_rol' => 1, 'tipo_usu' => 'Super Admin'],
             ['id_rol' => 2, 'tipo_usu' => 'Admin'],
-            ['id_rol' => 3, 'tipo_usu' => 'personal Administrativo'],
+            ['id_rol' => 3, 'tipo_usu' => 'Personal Administrativo'],
             ['id_rol' => 4, 'tipo_usu' => 'Medico'],
             ['id_rol' => 5, 'tipo_usu' => 'Paciente'],
             ['id_rol' => 6, 'tipo_usu' => 'Farmaceutico'],

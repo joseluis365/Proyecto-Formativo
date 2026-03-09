@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Constants\RolConstants;
 
 class UsuarioController extends Controller
 {
@@ -71,12 +72,8 @@ public function medicosDisponibles(Request $request)
     $fecha = $request->fecha;
     $hora = $request->hora;
 
-    // Buscamos el ID del rol Médico dinámicamente
-    $rolMedico = \App\Models\Rol::where('tipo_usu', 'MEDICO')->first();
-    if (!$rolMedico) return response()->json([]);
-
     $medicos = Usuario::with('especialidad')
-        ->where('id_rol', $rolMedico->id_rol)
+        ->where('id_rol', RolConstants::MEDICO)
         ->where('id_estado', 1) // Activo
         ->whereDoesntHave('medicoCitas', function ($query) use ($fecha, $hora) {
             $query->where('fecha', $fecha)

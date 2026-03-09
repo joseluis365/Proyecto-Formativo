@@ -13,6 +13,7 @@ use App\Models\EmpresaLicencia;
 use App\Http\Requests\StoreEmpresaRequest;
 use App\Events\SystemActivityEvent;
 use Illuminate\Validation\Rule;
+use App\Constants\RolConstants;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RegistroEmpresaContacto;
 use App\Mail\RegistroEmpresaRepresentante;
@@ -78,7 +79,7 @@ class RegistroEmpresaController extends Controller
                     'direccion' => $request->admin_direccion,
                     'contrasena' => $request->admin_password,
                     'nit' => $empresa->nit, 
-                    'id_rol' => 2, 
+                    'id_rol' => RolConstants::ADMIN,
                     'id_estado' => 1,
                 ]);
 

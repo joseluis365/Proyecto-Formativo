@@ -18,8 +18,8 @@ class UsuariosPruebaSeeder extends Seeder
     {
         // Obtener IDs de estados y roles por nombre para evitar hardcoding
         $estadoActivo = Estado::where('nombre_estado', 'Activa')->first();
-        $rolMedico = Rol::where('tipo_usu', 'MEDICO')->first();
-        $rolPaciente = Rol::where('tipo_usu', 'PACIENTE')->first();
+        $rolMedico = Rol::where('tipo_usu', 'Medico')->first();
+        $rolPaciente = Rol::where('tipo_usu', 'Paciente')->first();
 
         // Validar que existan los registros base antes de sembrar
         if (!$estadoActivo || !$rolMedico || !$rolPaciente) {

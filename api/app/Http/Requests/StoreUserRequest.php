@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueIgnoreCase;
+use App\Constants\RolConstants;
 
 class StoreUserRequest extends FormRequest
 {
@@ -40,11 +41,11 @@ class StoreUserRequest extends FormRequest
         ];
 
         switch ($this->id_rol) {
-            case 4:
+            case RolConstants::MEDICO:
                 $rules['registro_profesional'] = ['required', 'unique:usuario,registro_profesional', 'string', 'regex:/^[0-9]{5,15}$/', 'digits_between:5,15'];
                 $rules['id_especialidad'] = ['required', 'exists:especialidad,id_especialidad'];
                 break;
-            case 5:
+            case RolConstants::PACIENTE:
                 $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];
                 $rules['grupo_sanguineo'] = ['required', 'string', 'max:10', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'];
                 break;

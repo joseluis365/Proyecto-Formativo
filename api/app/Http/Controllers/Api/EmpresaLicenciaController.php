@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Constants\RolConstants;
 use App\Http\Requests\StoreEmpresaLicenciaRequest;
 use Carbon\Carbon;
 use App\Models\EmpresaLicencia;
@@ -19,7 +20,7 @@ class EmpresaLicenciaController extends Controller
     public function index(\Illuminate\Http\Request $request)
     {
         $query = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($q) {
-            $q->where('id_rol', 2);
+            $q->where('id_rol', RolConstants::ADMIN);
         }]);
 
         if ($request->filled('search')) {
@@ -143,7 +144,7 @@ class EmpresaLicenciaController extends Controller
     public function exportHistoryPdf(\Illuminate\Http\Request $request)
     {
         $query = EmpresaLicencia::with(['empresa', 'tipoLicencia', 'empresa.adminUser' => function ($q) {
-            $q->where('id_rol', 2);
+            $q->where('id_rol', RolConstants::ADMIN);
         }]);
 
         if ($request->filled('search')) {

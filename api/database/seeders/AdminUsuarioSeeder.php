@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Constants\RolConstants;
 
 class AdminUsuarioSeeder extends Seeder
 {
@@ -25,8 +26,8 @@ class AdminUsuarioSeeder extends Seeder
                 'contrasena' => Hash::make('adsoSENA123$'),
                 'registro_profesional' => null,
                 'nit' => '900123456-7',
-                'id_rol' => 1,
-                'id_estado' => 1,
+                'id_rol' => RolConstants::ADMIN,
+                'id_estado' => 2,
                 'id_especialidad' => null,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
