@@ -1,6 +1,4 @@
 export default function AppointmentCard({
-    patientName,
-    patientDoc,
     doctorName,
     specialty,
     time,
@@ -9,72 +7,88 @@ export default function AppointmentCard({
     onCancel
 }) {
     const STATUS_COLORS = {
-        Agendada: { text: "Agendada", classes: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-        Confirmada: { text: "Confirmada", classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-        Cancelada: { text: "Cancelada", classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
-        Atendida: { text: "Atendida", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400" },
+        Agendada: { text: "Programada", classes: "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200/50" },
+        Confirmada: { text: "Confirmada", classes: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400 border-green-200/50" },
+        Cancelada: { text: "Cancelada", classes: "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400 border-red-200/50" },
+        Atendida: { text: "Finalizada", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border-gray-200/50" },
+        Pendiente: { text: "Pendiente", classes: "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200/50" },
     };
 
-    const statusData = STATUS_COLORS[status] || { text: status || "Pendiente", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400" };
+    const statusData = STATUS_COLORS[status] || { text: status || "Pendiente", classes: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border-gray-200/50" };
+
+    // Limpiamos el nombre del médico de prefijos
+    const cleanDoctorName = doctorName?.split(' - ')[0].replace(/^(Dr|Dra|Doctor|Doctora)\.?\s*/i, '').trim();
 
     return (
-        <div className="relative w-full bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
-            {/* Estado */}
-            <span className={`absolute top-4 right-4 px-3 py-1 text-xs font-semibold rounded-full ${statusData.classes}`}>
-                {statusData.text}
-            </span>
+        <div className="group relative w-full bg-white dark:bg-gray-900 rounded-[2rem] border border-neutral-gray-border/10 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 p-6 overflow-hidden">
+            {/* Fondo decorativo sutil */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
 
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-4">
-                <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary">
-                    <span className="material-symbols-outlined text-3xl">
-                        person
-                    </span>
+            {/* Estado Badge */}
+            <div className="flex justify-between items-start mb-6 relative">
+                <div className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border ${statusData.classes}`}>
+                    {statusData.text}
+                </div>
+                <div className="flex gap-1">
+                    <div className="size-1.5 rounded-full bg-gray-200 dark:bg-gray-800"></div>
+                    <div className="size-1.5 rounded-full bg-gray-200 dark:bg-gray-800"></div>
+                </div>
+            </div>
+
+            {/* Profesional Info */}
+            <div className="flex items-center gap-5 mb-8 relative">
+                <div className="flex items-center justify-center size-16 rounded-2xl bg-primary/10 text-primary shadow-inner">
+                    <span className="material-symbols-outlined text-4xl">account_circle</span>
                 </div>
                 <div>
-                    <h2 className="text-gray-800 dark:text-gray-200 font-semibold text-lg line-clamp-1">
-                        {patientName}
+                    <h2 className="text-gray-900 dark:text-white font-black text-xl tracking-tight leading-tight mb-1">
+                        {cleanDoctorName}
                     </h2>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        CC: {patientDoc}
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] opacity-80">
+                        Médico General
                     </p>
                 </div>
             </div>
 
-            {/* Datos */}
-            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 space-y-4 mb-5 border border-gray-100 dark:border-gray-800">
-                <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-gray-400 text-xl mt-0.5">stethoscope</span>
-                    <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Médico Tratante</p>
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{doctorName}</p>
-                        <p className="text-xs text-primary dark:text-primary/80 mt-0.5">{specialty}</p>
+            {/* Horario y Fecha */}
+            <div className="grid grid-cols-2 gap-4 mb-8 relative">
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
+                    <div className="flex items-center gap-2 mb-1 text-gray-400">
+                        <span className="material-symbols-outlined text-sm">calendar_today</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">Fecha</span>
                     </div>
+                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                        {time.split(' | ')[0]}
+                    </p>
                 </div>
-
-                <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-gray-400 text-xl mt-0.5">schedule</span>
-                    <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Hora de la Cita</p>
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{time}</p>
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
+                    <div className="flex items-center gap-2 mb-1 text-gray-400">
+                        <span className="material-symbols-outlined text-sm">schedule</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">Horario</span>
                     </div>
+                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                        {time.split(' | ')[1]}
+                    </p>
                 </div>
             </div>
 
-            {/* Botones */}
-            <div className="flex gap-2">
+            {/* Acciones */}
+            <div className="flex gap-3 relative">
                 <button
                     onClick={onView}
-                    className="w-full py-2 text-sm font-semibold rounded-lg bg-primary text-white hover:bg-primary/90 transition cursor-pointer"
+                    className="flex-grow py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-gray-200 dark:shadow-none cursor-pointer flex items-center justify-center gap-2"
                 >
-                    Ver Detalles
+                    <span className="material-symbols-outlined text-base">visibility</span>
+                    Detalles
                 </button>
-                {status === "Agendada" && (
+
+                {(status === "Agendada" || status === "Pendiente") && (
                     <button
                         onClick={onCancel}
-                        className="w-full py-2 text-sm font-semibold rounded-lg bg-white dark:bg-gray-800 text-red-600 border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/20 transition cursor-pointer"
+                        className="py-4 px-6 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
+                        title="Cancelar Cita"
                     >
-                        Cancelar
+                        <span className="material-symbols-outlined text-xl">close</span>
                     </button>
                 )}
             </div>

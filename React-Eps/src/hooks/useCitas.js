@@ -11,7 +11,7 @@ export default function useCitas(filters = {}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const { fecha, doc_paciente, doc_medico } = filters;
+    const { fecha, doc_paciente, doc_medico, estado } = filters;
 
     /**
      * Obtiene las citas del servidor aplicando los filtros activos.
@@ -24,7 +24,8 @@ export default function useCitas(filters = {}) {
                 params: {
                     fecha,
                     doc_paciente,
-                    doc_medico
+                    doc_medico,
+                    estado
                 }
             });
 

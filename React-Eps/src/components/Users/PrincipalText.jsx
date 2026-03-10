@@ -5,8 +5,9 @@ export default function PrincipalText({ icon, text, number }) {
                 <span className="material-symbols-outlined text-3xl">{icon}</span>
             </div>
             <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{text} <span
-                    className="text-neutral-gray-text dark:text-gray-300 font-medium">(Total: {number})</span>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{text} {number !== undefined && (
+                    <span className="text-neutral-gray-text dark:text-gray-300 font-medium">(Total: {number})</span>
+                )}
                 </h2>
             </div>
         </div>

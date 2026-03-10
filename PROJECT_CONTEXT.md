@@ -1,5 +1,7 @@
-Stack Tecnológico – Proyecto EPS (Actualizado 2026 – Estado Final)
+Stack Tecnológico – Proyecto EPS (Actualizado 2026)
 🔹 Backend
+
+Framework
 
 Laravel 12
 
@@ -7,505 +9,342 @@ PostgreSQL
 
 Laravel Sanctum
 
+Arquitectura
+
 Arquitectura moderna (bootstrap/app.php)
 
 Middleware personalizado licencia.activa
 
-API Resources (uso mayoritario, en proceso de estandarización total)
+API Resources (uso mayoritario)
 
-FormRequest (uso casi total, estructura consolidada)
+FormRequest (estructura consolidada)
 
-Servicios desacoplados (inicio de arquitectura ReportService)
+Servicios desacoplados (inicio de ReportService)
 
-Configuración extensible vía config/*.php (patrón para reportes dinámicos)
+Configuración extensible vía config/*.php
 
-Mailable para citas (CitaAgendadaMailable)
+Sistema de Roles (Refactorizado)
 
-Sistema de autenticación dual
+Nuevo sistema centralizado de roles:
 
-Autenticación soportada:
+app/Constants/RolConstants.php
 
-Usuario
+Roles del sistema:
 
-SuperAdmin
+ID	Rol
+1	Super Admin
+2	Admin
+3	Personal Administrativo
+4	Medico
+5	Paciente
+6	Farmaceutico
 
+Todos los controladores ahora usan:
+
+RolConstants::ADMIN
+RolConstants::MEDICO
+RolConstants::PACIENTE
+
+Se eliminó completamente:
+
+where('id_rol', 2)
+case 4
+case 5
 🔹 Frontend
+
+Framework
 
 Vite + React
 
 React Router v6
 
-Tailwind CSS (UI Design System)
+Tailwind CSS
 
-Framer Motion para animaciones
+Framer Motion
 
-Arquitectura basada en componentes reutilizables
+Arquitectura
 
-Data Driven UI (formularios y tablas configurables)
-
-Arquitectura de carpetas
 src/
- ├─ pages
+ ├─ Pages
  │   ├─ Admin
  │   ├─ SuperAdmin
- │   └─ Paciente
+ │   ├─ Paciente
+ │   └─ Inicio
  ├─ layouts
  ├─ components
  ├─ hooks
  ├─ Api
+ ├─ constants
  └─ assets
-Componentes base del sistema
+🔐 Sistema de Autenticación
+Usuarios normales
 
-Form.jsx
+Storage:
 
-FormWithIcons.jsx
+localStorage
 
-DataTable.jsx
+Claves:
 
-AppointmentCard.jsx
+token
+user
 
-CalendarAgenda.jsx
+Axios interceptor:
 
-ViewCitaModal.jsx
+src/Api/axios.js
 
-🔹 Hooks Dinámicos
+Si recibe 401:
 
-useCitas
+localStorage.removeItem("token")
+localStorage.removeItem("user")
+window.location.href = "/login"
+Super Admin
 
-useReports
+Storage:
 
-useTableData
+sessionStorage
 
-hooks de catálogos (usePrioridades, useEspecialidades, etc.)
+Claves:
 
-useMedicosDisponibles
+superadmin_token
+superadmin_user
 
-Cliente API
+Cliente API separado:
 
-axios.js → Admin / Médico / Paciente
+src/Api/superadminAxios.js
+🛡 Sistema de Route Guards (Nuevo)
 
-superadminAxios.js → SuperAdmin
+Ubicación:
 
-🏗 Arquitectura General
-🔹 Backend
+src/components/Routes/
+SuperAdminRoute
 
-Arquitectura MVC clara y escalable.
+Protege:
 
-Características principales:
+/SuperAdmin-*
 
-Soft delete lógico mediante id_estado
+Usa:
 
-Seeders idempotentes y portables
+sessionStorage + API check-session
+AdminRoute
 
-Secuencias PostgreSQL sincronizadas en Seeders
+Protege:
 
-Middleware licencia.activa aplicado a rutas protegidas
-
-Respuestas JSON mediante API Resources
-
-Arquitectura de reportes
-config/reportables.php
-ReportService
-ReportController
-
-Permite generar reportes configurables sin modificar controladores.
-
-⚠ Riesgo actual
-
-Dependencia de PostgreSQL por uso de:
-
-ILIKE
-Plan de solución
-
-Implementar Trait:
-
-HasSearch
-
-para abstraer el motor de base de datos.
-
-🔹 Frontend
-
-Arquitectura basada en layouts jerárquicos:
-
-DashboardLayout
-SuperAdminLayout
-PatientLayout
-IndexLayout
-LoginLayout
-
-Permite:
-
-separación de roles
-
-navegación modular
-
-persistencia de UI
-
-🧩 Módulos Implementados
-Sistema Administrativo
-Gestión Interna (CRUD completos)
-
-Prioridades
-
-Tipos de Cita
-
-Categorías de Examen
-
-Categorías de Medicamento
-
-Especialidades
-
-Farmacias
-
-Departamentos
-
-Ciudades
-
-Roles
-
-Estados
-
-Gestión de Usuarios
-
-CRUD completo para:
-
-personal
-
-médicos
-
-usuarios
-
-Validación centralizada mediante:
-
-FormRequest
-Sistema de Licenciamiento
-
-SuperAdmin controla:
-
-empresas
-
-licencias
-
-activación manual
-
-Sistema de Reportes
-
-Centro dinámico:
-
+/dashboard
+/usuarios/*
+/citas/*
+/configuracion/*
 /reportes
 
-Características:
+Roles permitidos:
 
-columnas dinámicas
+ROLES.ADMIN
+ROLES.PERSONAL_ADMINISTRATIVO
+MedicoRoute
 
-filtros
+Protege:
 
-exportación PDF
+/agenda-medico
 
+Rol permitido:
+
+ROLES.MEDICO
+PatientRoute
+
+Protege:
+
+/paciente/*
+
+Rol permitido:
+
+ROLES.PACIENTE
+🧩 Sistema de Roles en Frontend
+
+Archivo:
+
+src/constants/roles.js
+
+Uso:
+
+ROLES.ADMIN
+ROLES.MEDICO
+ROLES.PACIENTE
+
+Se eliminaron todos los:
+
+id_rol: 4
+id_rol: 5
 📅 Sistema de Citas
 Backend
 
-Controlador:
+Controlador principal:
 
 CitaController
 
-Endpoints principales:
+Endpoints:
 
 GET /api/citas
 POST /api/cita
 PUT /api/cita/{id}
-
-Características:
-
-cálculo automático de duración
-
-notificación por correo (CitaAgendadaMailable)
-
+POST /api/citas/{id}/atender
 Frontend
-Agenda Administrativa
-
-Archivo:
-
+Agenda administrativa
 AgendaCitas.jsx
 
 Características:
 
-calendario
-
 médicos colapsables
+
+calendario
 
 citas por médico
 
 modales
 
-filtros por especialidad
+filtros
 
-✔ Conectado al backend
-
-Agenda del Médico
-
-Archivo:
-
+Agenda médico
 AgendaMedico.jsx
 
-Estado actual:
+Ahora:
 
-✔ Conectado al backend
-✔ Filtrado por doc_medico
-✔ Botón Atender
+usa useCitas
+
+filtra por doc_medico
+
+permite atender cita
 
 🏥 Capa Clínica (Implementada)
-Modelo clínico
-Usuario (Paciente)
-        ↓
-HistorialClinico
-        ↓
-HistorialDetalle
-        ↓
-Remision
-Modelos implementados
+
+Tablas:
+
+historial_clinico
+historial_detalle
+remision
+examen
+
+Modelos:
 
 HistorialClinico
-
 HistorialDetalle
-
 Remision
-
 Examen
 
-Controlador clínico
-AtencionMedicaController
-
-Endpoint principal:
+Endpoint clínico:
 
 POST /api/citas/{id}/atender
+👨‍⚕️ Atención Médica
 
-Este endpoint:
-
-busca o crea HistorialClinico
-
-crea HistorialDetalle
-
-registra Remision
-
-cambia estado de cita a Atendida
-
-🩺 Atención Médica (Frontend)
-
-Componente:
+Frontend:
 
 AtenderCitaModal.jsx
 
-Permite registrar:
+Campos:
 
-diagnóstico
+Diagnóstico
 
-tratamiento
+Tratamiento
 
-observaciones
+Observaciones
 
-remisiones
+Remisiones dinámicas
 
-Integraciones:
+👤 Portal del Paciente (Nuevo)
 
-react-hook-form
+Layout:
 
-SweetAlert2
-
-Framer Motion
-
-👤 Portal del Paciente (Implementado)
-Layout
 PatientLayout.jsx
 
-Sidebar simplificado:
+Páginas:
 
-Inicio
+/paciente
+/paciente/agendar
+/paciente/citas
+/paciente/historial
 
-Agendar Cita
+Funciones:
 
-Mis Citas
+agendar cita
 
-Mi Historial
+cancelar cita
 
-Páginas
-src/pages/Paciente
+ver historial clínico
 
-IndexPaciente.jsx
+🧱 Seeders Portables
 
-AgendarCita.jsx
-
-MisCitas.jsx
-
-HistorialPaciente.jsx
-
-Funcionalidades
-
-Paciente puede:
-
-agendar citas
-
-ver citas activas
-
-cancelar citas
-
-consultar historial clínico
-
-🔐 Autenticación
-Usuario Normal
-POST /api/login
-
-Tabla:
-
-usuario
-
-Campo contraseña:
-
-contrasena
-
-Sesión:
-
-localStorage
-
-Middleware:
-
-auth:sanctum
-licencia.activa
-SuperAdmin
-POST /api/superadmin/login
-
-Tabla:
-
-superadmin
-
-Sesión:
-
-sessionStorage
-
-Cliente API independiente.
-
-📏 Reglas Arquitectónicas Activas
-
-NO mezclar sesiones Admin / SuperAdmin / Paciente
-
-NO modificar UserFormConfig.js
-
-NO cambiar estructura de payload
-
-NO asumir columnas inexistentes
-
-NO cambiar nombres de columnas
-
-Mantener consistencia de id_estado
-
-Filtrar registros activos con:
-
-id_estado = 1
-
-No introducir lógica de negocio en controladores
-
-Mantener compatibilidad con:
+El sistema funciona con:
 
 php artisan migrate:fresh --seed
 
-Las secuencias PostgreSQL se sincronizan solo en Seeders
+Genera automáticamente:
 
-🧱 Estado Actual del Backend
-✅ Fortalezas
+Seeder	Resultado
+RolSeeder	roles del sistema
+EstadoSeeder	estados
+EmpresaSeeder	empresa base
+EmpresaLicenciaSeeder	licencia activa
+AdminUsuarioSeeder	usuario ADMIN
+SuperadminSeeder	usuario SUPER ADMIN
+UsuariosPruebaSeeder	usuarios de prueba
+⚠ Riesgos Técnicos Detectados
 
-Middleware de licencia estable
+Backend:
 
-Seeders portables
+dependencia PostgreSQL por ILIKE
 
-Secuencias sincronizadas
+algunos endpoints aún sin Resource
 
-Uso mayoritario de FormRequest
+Frontend:
 
-CRUD estandarizados
+duplicación de modales CRUD
 
-Sistema de citas completo
+algunos hooks aún no unificados
 
-Capa clínica completamente funcional
+🎯 Estado Actual del Proyecto
+Backend
 
-Arquitectura preparada para escalar
+✔ Sistema de licencias
+✔ Sistema de citas
+✔ Capa clínica
+✔ Remisiones
+✔ Sistema de roles refactorizado
 
-⚠ Riesgos Detectados
+Frontend
 
-Dependencia de ILIKE
+✔ Panel Admin completo
+✔ Agenda administrativa
+✔ Agenda médico funcional
+✔ Portal paciente
+✔ Route Guards por rol
+✔ Redirecciones corregidas
 
-Hardcoding parcial de id_estado
+🏗 Arquitectura del Router (Final)
+<Routes>
 
-Algunos endpoints aún sin Resource
+  /login
+  /confirm-email
+  /reset-password
 
-Búsquedas sin abstracción (HasSearch pendiente)
+  <SuperAdminRoute>
+     /SuperAdmin-*
+  </SuperAdminRoute>
 
-🖥 Estado Actual del Frontend
-✅ Fortalezas
+  <AdminRoute>
+     /dashboard
+     /usuarios/*
+     /citas/*
+     /configuracion/*
+  </AdminRoute>
 
-UI moderna con Tailwind
+  <MedicoRoute>
+     /agenda-medico
+  </MedicoRoute>
 
-Animaciones con Framer Motion
+  <PatientRoute>
+     /paciente/*
+  </PatientRoute>
 
-Arquitectura de componentes reutilizables
-
-Agenda administrativa funcional
-
-Agenda médica funcional
-
-Atención clínica funcional
-
-Portal del paciente completo
-
-Hooks reutilizables bien estructurados
-
-⚠ Deuda Técnica
-
-Duplicación parcial de modales CRUD
-
-Algunos hooks de catálogos aún no unificados
-
-Refactorización futura posible para optimizar layout compartidos
-
-🌱 Seeders Portables
-
-El sistema debe funcionar con:
-
-php artisan migrate:fresh --seed
-
-y generar automáticamente:
-
-Empresa activa (id_estado = 1)
-
-Licencia activa
-
-Usuario admin
-
-Estados base
-
-Roles base
-
-Secuencias sincronizadas
-
-Sin:
-
-errores 23505
-
-errores FK
-
-🏁 Estado Final del Sistema
-Módulo	Estado
-Licencias	✅
-Administración	✅
-Agenda	✅
-Atención médica	✅
-Remisiones	✅
-Portal paciente	✅
-Reportes	✅
-
-Sistema clínico completo funcional.
-
+</Routes>
 🏛 Principio Rector del Proyecto
-
 Primero estabilidad.
 Luego estandarización.
 Luego optimización.

@@ -54,10 +54,11 @@ import Estados from "./Pages/Admin/Configuracion/Estados"
 
 // Portal Paciente
 import PatientLayout from "./layouts/PatientLayout"
-import IndexPaciente from "./pages/Paciente/IndexPaciente"
-import AgendarCita from "./pages/Paciente/AgendarCita"
-import MisCitas from "./pages/Paciente/MisCitas"
-import HistorialPaciente from "./pages/Paciente/HistorialPaciente"
+import IndexPaciente from "./Pages/Paciente/IndexPaciente"
+import AgendarCita from "./Pages/Paciente/AgendarCita"
+import MisCitas from "./Pages/Paciente/MisCitas"
+import HistorialPaciente from "./Pages/Paciente/HistorialPaciente"
+import PerfilPaciente from "./Pages/Paciente/PerfilPaciente"
 
 export default function App() {
   // Global Dark Mode Initialization
@@ -95,6 +96,7 @@ export default function App() {
           <Route path="/paciente/agendar" element={<AgendarCita />} />
           <Route path="/paciente/citas" element={<MisCitas />} />
           <Route path="/paciente/historial" element={<HistorialPaciente />} />
+          <Route path="/paciente/perfil" element={<PerfilPaciente />} />
         </Route>
       </Route>
 

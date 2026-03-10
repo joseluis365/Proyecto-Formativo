@@ -116,10 +116,7 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
 
             <div className="overflow-hidden">
                 <div className="transition-transform duration-300 ease-in-out">
-                    {/* Renderizamos el mes actual (según el offset) y el siguiente */}
                     {renderMonth(0)}
-                    <hr className="my-4 border-gray-200 dark:border-gray-800" />
-                    {renderMonth(1)}
                 </div>
             </div>
         </div>

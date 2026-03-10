@@ -11,22 +11,29 @@ export default function MisCitas() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const [viewingCita, setViewingCita] = useState(null);
 
-    // Obtenemos todas las citas
-    const { citas, loading, cancelCita } = useCitas();
+    // Obtenemos solo las citas de este paciente mediante el filtro de servidor
+    const { citas, loading, cancelCita } = useCitas({ doc_paciente: user.documento });
 
     useEffect(() => {
         setTitle("Mis Citas");
         setSubtitle("Gestiona tus citas médicas agendadas.");
     }, [setTitle, setSubtitle]);
 
-    // Filtramos las citas activas del paciente
+    // Filtramos y ordenamos las citas por proximidad
     const misCitasActivas = useMemo(() => {
         if (!citas) return [];
-        return citas.filter(c =>
-            c.doc_paciente === user.documento &&
-            (c.estado?.nombre_estado === "Agendada" || c.estado?.nombre_estado === "Pendiente")
-        );
-    }, [citas, user.documento]);
+        return citas
+            .filter(c =>
+                c.estado?.nombre_estado === "Agendada" ||
+                c.estado?.nombre_estado === "Pendiente" ||
+                c.estado?.nombre_estado === "Confirmada"
+            )
+            .sort((a, b) => {
+                const dateTimeA = new Date(`${a.fecha}T${a.hora_inicio}`);
+                const dateTimeB = new Date(`${b.fecha}T${b.hora_inicio}`);
+                return dateTimeA - dateTimeB;
+            });
+    }, [citas]);
 
     return (
         <div className="space-y-8">
