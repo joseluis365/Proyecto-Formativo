@@ -31,6 +31,7 @@ const statusOptions = [
 export default function Reportes() {
     const { setTitle, setSubtitle } = useLayout();
     const [entity, setEntity] = useState("usuario");
+    const [roles, setRoles] = useState([]);
 
     const {
         data,
@@ -44,6 +45,8 @@ export default function Reportes() {
         setSearch,
         idEstado,
         setIdEstado,
+        idRol,
+        setIdRol,
         dateFrom,
         setDateFrom,
         dateTo,
@@ -55,6 +58,14 @@ export default function Reportes() {
         setSubtitle("Genera informes detallados seleccionando la entidad deseada.");
     }, [setTitle, setSubtitle]);
 
+    // Cargar roles para el filtro de usuarios (excepto SuperAdmin)
+    useEffect(() => {
+        api.get("/configuracion/roles", { params: { per_page: 100 } }).then(res => {
+            const list = Array.isArray(res) ? res : (res?.data || []);
+            setRoles(list.filter(r => !r.tipo_usu?.toLowerCase().includes("super")));
+        }).catch(() => setRoles([]));
+    }, []);
+
     /**
      * Maneja la exportación del reporte actual a formato PDF.
      * Mantiene los filtros de búsqueda, estado y fechas aplicados.
@@ -64,6 +75,7 @@ export default function Reportes() {
             const params = new URLSearchParams();
             if (search) params.append("search", search);
             if (idEstado) params.append("id_estado", idEstado);
+            if (idRol) params.append("id_rol", idRol);
             if (dateFrom) params.append("date_from", dateFrom);
             if (dateTo) params.append("date_to", dateTo);
 
@@ -71,8 +83,8 @@ export default function Reportes() {
                 responseType: 'blob'
             });
 
-            // Crear un objeto URL para el blob y descargarlo/abrirlo
-            const blob = new Blob([response.data], { type: 'application/pdf' });
+            // El interceptor de Axios ya devuelve response.data, que en este caso es el Blob directamente
+            const blob = new Blob([response], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
 
             const link = document.createElement('a');
@@ -184,6 +196,32 @@ export default function Reportes() {
                                 <span className="hidden sm:inline">Exportar PDF</span>
                             </button>
                         )}
+                        {/* Filtro por Rol — solo visible en entidad 'usuario' */}
+                        <AnimatePresence>
+                            {entity === "usuario" && (
+                                <motion.div
+                                    key="rol-filter"
+                                    initial={{ opacity: 0, width: 0 }}
+                                    animate={{ opacity: 1, width: "auto" }}
+                                    exit={{ opacity: 0, width: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="relative">
+                                        <select
+                                            value={idRol}
+                                            onChange={(e) => { setIdRol(e.target.value); setPage(1); }}
+                                            className="appearance-none w-full bg-gray-50 dark:bg-gray-800 border border-neutral-gray-border/50 dark:border-gray-700 rounded-lg shadow-sm py-2.5 pl-4 pr-10 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-shadow duration-200 dark:text-white"
+                                        >
+                                            <option value="" className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5">Todos los roles</option>
+                                            {roles.map(r => (
+                                                <option key={r.id_rol} value={r.id_rol} className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5">{r.tipo_usu}</option>
+                                            ))}
+                                        </select>
+                                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none">expand_more</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         <Filter
                             value={idEstado}
                             onChange={setIdEstado}
@@ -248,7 +286,7 @@ export default function Reportes() {
                                 <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-700 mb-4 block">query_stats</span>
                                 <p className="text-gray-500 dark:text-gray-400 font-medium">No se encontraron resultados para los criterios seleccionados.</p>
                                 <button
-                                    onClick={() => { setSearch(""); setIdEstado(""); setDateFrom(""); setDateTo(""); }}
+                                    onClick={() => { setSearch(""); setIdEstado(""); setIdRol(""); setDateFrom(""); setDateTo(""); }}
                                     className="mt-4 text-primary text-sm font-semibold hover:underline"
                                 >
                                     Limpiar filtros

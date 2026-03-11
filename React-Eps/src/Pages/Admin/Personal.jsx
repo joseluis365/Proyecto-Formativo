@@ -59,8 +59,8 @@ export default function Personal() {
       setLastPage(res.last_page || 1);
 
     } catch (err) {
-      console.error("Error cargando usuarios:", err);
-      setError("No se pudieron cargar los usuarios"); // ❌ error controlado
+      console.error("Error cargando personal:", err);
+      setError("No se pudieron cargar el personal"); // ❌ error controlado
       setUsers([]);
     } finally {
       setLoading(false);
@@ -209,7 +209,7 @@ export default function Personal() {
           <CreatePersonalModal
             onClose={() => setCreating(false)}
             onSuccess={fetchUsers}
-          />
+          /> 
         )}
       </AnimatePresence>
     </div>

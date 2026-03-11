@@ -56,8 +56,8 @@ export default function Medicos() {
       setUsers(res.data || []);
       setTotalUsersByRol(res.totalPorRol || 0);
     } catch (err) {
-      console.error("Error cargando usuarios:", err);
-      setError("No se pudieron cargar los usuarios"); // ❌ error controlado
+      console.error("Error cargando medicos:", err);
+      setError("No se pudieron cargar los medicos"); // ❌ error controlado
       setUsers([]);
     } finally {
       setLoading(false);

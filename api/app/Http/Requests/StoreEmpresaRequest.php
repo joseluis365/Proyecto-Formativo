@@ -33,7 +33,7 @@ class StoreEmpresaRequest extends FormRequest
             ],
             'direccion' => ['required', 'string', 'min:8', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'max:150', 'unique:empresa,direccion'],
             'documento_representante' => ['required', 'regex:/^[1-9][0-9]*$/', 'numeric', 'digits_between:7,10', 'unique:empresa,documento_representante'],
-            'nombre_representante' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
+            'nombre_representante' => ['required', 'string', 'min:3', 'max:50', 'regex:/^(?!.*\s{2,})(?!^\s)(?!.*\s$)[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
             'telefono_representante' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:empresa,telefono_representante'],
             'email_representante' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('empresa', 'email_representante')],
             'id_estado' => ['required', 'exists:estado,id_estado'],
@@ -54,7 +54,7 @@ class StoreEmpresaRequest extends FormRequest
         return [
             'nit.required' => 'El NIT es obligatorio',
             'nit.unique' => 'Esta empresa ya tiene un registro',
-            'nit.regex' => 'El NIT debe tener 9 numeros, un guion y 1 numero de verificación en el formato correcto (ejemplo: 900123456-7)',
+            'nit.regex' => 'El NIT debe tener 9 números (sin empezar por 0), un guion y 1 dígito de verificación en el formato correcto (ejemplo: 900123456-7)',
             'nit.digits_between' => 'El NIT debe tener entre 10 y 12 caracteres',
 
             'nombre.required' => 'El nombre de la Empresa es obligatorio',
@@ -96,13 +96,13 @@ class StoreEmpresaRequest extends FormRequest
             'documento_representante.required' => 'El documento del representante es obligatorio',
             'documento_representante.unique' => 'Este documento ya está registrado',
             'documento_representante.digits_between' => 'El documento debe tener entre 7 y 10 digitos',
-            'documento_representante.regex' => 'El documento debe tener solo numeros sin espacios ni puntos',
+            'documento_representante.regex' => 'El documento debe tener solo números y no empezar por 0',
             'documento_representante.numeric' => 'El documento debe ser un número',
 
             'nombre_representante.required' => 'El nombre del representante es obligatorio',
             'nombre_representante.min' => 'El nombre del representante debe tener al menos 3 caracteres',
             'nombre_representante.max' => 'El nombre del representante debe tener como maximo 50 caracteres',
-            'nombre_representante.regex' => 'El nombre del representante debe tener solo letras sin espacios dobles',
+            'nombre_representante.regex' => 'El nombre del representante debe tener solo letras y no debe contener dobles espacios ni espacios al inicio o final',
 
             'telefono_representante.required' => 'El telefono del representante es obligatorio',
             'telefono_representante.digits' => 'El telefono debe tener exactamente 10 digitos',
@@ -140,7 +140,7 @@ class StoreEmpresaRequest extends FormRequest
             'admin_documento.numeric' => 'El documento debe ser un número',
             'admin_documento.unique' => 'Este documento ya está registrado',
             'admin_documento.digits_between' => 'El documento debe tener entre 7 y 10 digitos',
-            'admin_documento.regex' => 'El documento debe tener solo numeros sin espacios ni puntos',
+            'admin_documento.regex' => 'El documento debe tener solo números y no empezar por 0',
 
             'admin_email.required' => 'El correo del administrador es obligatorio',
             'admin_email.unique' => 'Este correo ya existe',

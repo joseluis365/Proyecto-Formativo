@@ -3,7 +3,7 @@ import { z } from "zod";
 export const empresaSchema = z.object({
     nit: z.string()
         .min(1, "El NIT es obligatorio")
-        .regex(/^[1-9][0-9]{8}-[0-9]$/, "El NIT debe tener 9 numeros, un guion y 1 numero de verificación en el formato correcto (ejemplo: 900123456-7)"),
+        .regex(/^[1-9][0-9]{8}-[0-9]$/, "El NIT debe tener 9 números (sin empezar por 0), un guion y 1 dígito de verificación en el formato correcto (ejemplo: 900123456-7)"),
 
     nombre: z.string()
         .min(3, "El nombre de la empresa debe tener al menos 3 caracteres")
@@ -28,14 +28,14 @@ export const empresaSchema = z.object({
     id_ciudad: z.string().min(1, "La ciudad es obligatoria"),
 
     documento_representante: z.coerce.string()
-        .min(7, "El documento debe tener entre 7 y 10 digitos")
-        .max(10, "El documento debe tener entre 7 y 10 digitos")
-        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
+        .min(7, "El documento debe tener entre 7 y 10 dígitos")
+        .max(10, "El documento debe tener entre 7 y 10 dígitos")
+        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo números y no empezar por 0"),
 
     nombre_representante: z.string()
         .min(3, "El nombre del representante debe tener al menos 3 caracteres")
         .max(50, "El nombre del representante debe tener como maximo 50 caracteres")
-        .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:\s[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/, "El nombre del representante debe tener solo letras sin espacios dobles"),
+        .regex(/^(?!.*\s{2,})(?!^\s)(?!.*\s$)[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, "El nombre del representante debe tener solo letras y no debe contener dobles espacios ni espacios al inicio o final"),
 
     telefono_representante: z.coerce.string()
         .length(10, "El telefono debe tener exactamente 10 digitos")
@@ -72,9 +72,9 @@ export const empresaSchema = z.object({
 
     admin_documento: z.coerce.string()
         .min(1, "El documento del administrador es obligatorio")
-        .min(7, "El documento debe tener entre 7 y 10 digitos")
-        .max(10, "El documento debe tener entre 7 y 10 digitos")
-        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo numeros sin espacios ni puntos"),
+        .min(7, "El documento debe tener entre 7 y 10 dígitos")
+        .max(10, "El documento debe tener entre 7 y 10 dígitos")
+        .regex(/^[1-9][0-9]*$/, "El documento debe tener solo números y no empezar por 0"),
 
     admin_email: z.string()
         .min(1, "El correo del administrador es obligatorio")
@@ -95,5 +95,16 @@ export const empresaSchema = z.object({
     admin_password: z.string()
         .min(8, "La contraseña del administrador debe tener al menos 8 caracteres")
         .max(25, "La contraseña del administrador debe tener como maximo 25 caracteres")
-        .regex(/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/, "La contraseña del administrador debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial"),
+        .regex(/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/, "La contraseña del administrador debe tener al menos una mayúscula, una minúscula, un número y un carácter especial"),
+
+    admin_password_confirmation: z.string()
+        .min(1, "Reescribe la contraseña para confirmarla")
+}).superRefine((val, ctx) => {
+    if (val.admin_password !== val.admin_password_confirmation) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Las contraseñas no coinciden",
+            path: ["admin_password_confirmation"]
+        });
+    }
 });

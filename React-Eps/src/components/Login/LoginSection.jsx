@@ -6,7 +6,7 @@ import BlueButton from "../UI/BlueButton";
 import CheckBox from "../UI/CheckBox";
 import api from "../../Api/axios";
 import Swal from 'sweetalert2';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema } from "../../schemas/authSchemas";
@@ -15,6 +15,24 @@ import { handleApiErrors } from "../../utils/formHandlers";
 export default function LoginSection() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    // Guard: si ya hay sesión activa, redirigir al dashboard correcto
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
+        if (token && userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                if (user.id_rol === 1) navigate('/SuperAdmin-Dashboard', { replace: true });
+                else if (user.id_rol === 6) navigate('/farmacia/dashboard', { replace: true });
+                else navigate('/dashboard', { replace: true });
+            } catch (e) {
+                navigate('/dashboard', { replace: true });
+            }
+        } else if (token) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [navigate]);
 
     const {
         register,
@@ -29,8 +47,8 @@ export default function LoginSection() {
         setLoading(true);
 
         try {
-            // El interceptor devuelve directamente response.data.data
-            const loginData = await api.post('/login', data);
+            // skipGlobalHandler: true → evita que el interceptor global muestre Swal propio
+            const loginData = await api.post('/login', data, { skipGlobalHandler: true });
 
             const { access_token, user } = loginData;
 
@@ -47,15 +65,31 @@ export default function LoginSection() {
 
             if (user.id_rol === 1) {
                 navigate('/SuperAdmin-Dashboard');
+            } else if (user.id_rol === 6) {
+                navigate('/farmacia/dashboard');
             } else {
                 navigate('/dashboard');
             }
 
         } catch (error) {
-            // handleApiErrors procesa errores 422 automáticamente
-            if (!handleApiErrors(error, setError)) {
-                // El interceptor global ya maneja 401, 403 y 500 con Swal.
-                // Aquí solo capturamos errores que no fueron manejados globalmente o lógica específica.
+            const status = error.response?.status;
+            const backendMessage = error.response?.data?.message;
+
+            if (status === 401) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Credenciales incorrectas',
+                    text: 'El correo o la contraseña son incorrectos. Por favor, verifica e intenta de nuevo.',
+                    confirmButtonColor: '#3085d6',
+                });
+            } else if (status === 403) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acceso restringido',
+                    text: backendMessage || 'Tu empresa no tiene una licencia activa. Contacta al administrador del sistema.',
+                    confirmButtonColor: '#d33',
+                });
+            } else if (!handleApiErrors(error, setError)) {
                 console.error("Login unexpected error:", error);
             }
         } finally {

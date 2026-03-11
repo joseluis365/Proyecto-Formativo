@@ -8,6 +8,7 @@ import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
 import { updateEmpresaSchema } from "../../../schemas/updateEmpresaSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Swal from "sweetalert2";
 
 export default function EditEmpresaModal({
     empresaData,
@@ -21,7 +22,9 @@ export default function EditEmpresaModal({
         handleSubmit,
         setError,
         reset,
-        formState: { errors },
+        watch,
+        trigger,
+        formState: { errors, touchedFields },
     } = useForm({
         resolver: zodResolver(updateEmpresaSchema),
         defaultValues: empresaData || {},
@@ -40,10 +43,34 @@ export default function EditEmpresaModal({
         }
     }, [errors]);
 
+    const adminPassword = watch("admin_password");
+    const adminPasswordConfirmation = watch("admin_password_confirmation");
+
+    // Forzar validación cruzada solo si alguno de los campos ya fue tocado
+    useEffect(() => {
+        if (touchedFields.admin_password || touchedFields.admin_password_confirmation) {
+            trigger(["admin_password", "admin_password_confirmation"]);
+        }
+    }, [adminPassword, adminPasswordConfirmation, touchedFields, trigger]);
+
+    const handleInvalid = (validationErrors) => {
+        console.error("Form is INVALID, cannot submit. Errors:", validationErrors);
+        const firstError = Object.values(validationErrors)[0];
+        Swal.fire({
+            icon: 'warning',
+            title: 'Formulario incompleto',
+            text: firstError?.message || 'Verifica los campos marcados en rojo.',
+            confirmButtonColor: '#3085d6',
+            toast: true,
+            position: 'top-end',
+            timer: 4000,
+            showConfirmButton: false,
+        });
+    };
+
     const handleUpdate = async (data) => {
         try {
             setSaving(true);
-            // Aseguramos que id_estado esté presente ya que el backend lo requiere como obligatorio
             const payload = {
                 ...data,
                 id_estado: data.id_estado ?? empresaData.id_estado
@@ -52,13 +79,15 @@ export default function EditEmpresaModal({
             if (!payload.admin_password || payload.admin_password.trim() === "") {
                 delete payload.admin_password;
                 delete payload.admin_password_confirmation;
+            } else {
+                // Si hay contraseña, nos aseguramos de enviar también la confirmación
+                payload.admin_password_confirmation = data.admin_password_confirmation;
             }
 
             console.log("Enviando actualización para NIT:", empresaData.nit, "Payload:", payload);
 
             await superAdminApi.put(`/superadmin/empresa/${empresaData.nit}`, payload);
 
-            const Swal = (await import("sweetalert2")).default;
             await Swal.fire({
                 icon: 'success',
                 title: 'Empresa Actualizada',
@@ -82,8 +111,13 @@ export default function EditEmpresaModal({
                         message: backendErrors[key][0],
                     });
                 });
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Revisa los campos',
+                    text: 'Hay errores de validación en el formulario.',
+                    confirmButtonColor: '#3085d6',
+                });
             } else {
-                const Swal = (await import("sweetalert2")).default;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -114,6 +148,7 @@ export default function EditEmpresaModal({
                     errors={errors}
                     handleSubmit={handleSubmit}
                     onSubmit={handleUpdate}
+                    onInvalid={handleInvalid}
                 >
                     <div className="flex mt-10 justify-end gap-10">
                         <button
@@ -131,3 +166,5 @@ export default function EditEmpresaModal({
         </BaseModal>
     );
 }
+
+

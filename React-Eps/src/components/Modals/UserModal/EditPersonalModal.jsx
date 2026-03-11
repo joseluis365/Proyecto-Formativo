@@ -5,7 +5,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
-import { getEditUserFormConfig } from "../../../UserFormConfig";
+import { getEditUserSections } from "../../../UserFormConfig";
 import { updatePersonalSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
@@ -32,23 +32,18 @@ export default function EditPersonalModal({
     reValidateMode: "onChange"
   });
 
-  // Carga de datos iniciales
   useEffect(() => {
     if (!userId) return;
 
     const fetchUser = async () => {
       try {
         setLoading(true);
-        // El interceptor ya devuelve res.data.data
         const userData = await api.get(`/usuario/${userId}`);
 
-        // Saneamiento de datos para el formulario
-        // Si el backend envía null en los campos opcionales, los pasamos a string vacío
         reset({
           ...userData,
           segundo_nombre: userData.segundo_nombre || "",
           segundo_apellido: userData.segundo_apellido || "",
-          contrasena: "" // No cargamos la contraseña por seguridad
         });
       } catch (error) {
         console.error("Error al cargar usuario:", error);
@@ -60,17 +55,10 @@ export default function EditPersonalModal({
 
     fetchUser();
   }, [userId, reset, onClose]);
+
   const onSubmit = async (data) => {
     try {
-      setSaving(true);
-
-      // Limpieza de datos: si la contraseña está vacía, no la enviamos para no sobreescribirla
-      const payload = { ...data };
-      if (!payload.contrasena) {
-        delete payload.contrasena;
-      }
-
-      await api.put(`/usuario/${userId}`, payload);
+      await api.put(`/usuario/${userId}`, data);
 
       Swal.fire({
         icon: 'success',
@@ -91,9 +79,7 @@ export default function EditPersonalModal({
     }
   };
 
-  const formConfig = {
-    fields: getEditUserFormConfig(3) // Rol 3: Personal
-  };
+  const sections = getEditUserSections(3);
 
   return (
     <BaseModal>
@@ -106,7 +92,7 @@ export default function EditPersonalModal({
           </div>
         ) : (
           <FormWithIcons
-            config={formConfig}
+            sections={sections}
             register={register}
             errors={errors}
             handleSubmit={handleSubmit}
@@ -128,3 +114,4 @@ export default function EditPersonalModal({
     </BaseModal>
   );
 }
+

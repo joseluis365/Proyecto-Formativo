@@ -5,18 +5,18 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
-import { getCreateUserFormConfig } from "../../../UserFormConfig";
+import { getCreateUserSections } from "../../../UserFormConfig";
 import { createPersonalSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
+
 export default function CreatePersonalModal({
   onClose,
   onSuccess,
 }) {
   const [saving, setSaving] = useState(false);
 
-  // Configuración del formulario con RHF y Zod
   const {
     register,
     handleSubmit,
@@ -37,11 +37,9 @@ export default function CreatePersonalModal({
   const onSubmit = async (data) => {
     try {
       setSaving(true);
-      // Inyección de rol administrativo (3)
-      const payload = {
-        ...data,
-        id_rol: 3
-      };
+
+      const { confirm_contrasena, ...payload } = data;
+      payload.id_rol = 3;
 
       await api.post(`/usuario`, payload);
 
@@ -58,25 +56,20 @@ export default function CreatePersonalModal({
       });
 
     } catch (error) {
-      // Los errores 401/403/500 son manejados por el interceptor global.
-      // Aquí manejamos errores de validación 422.
       handleApiErrors(error, setError);
     } finally {
       setSaving(false);
     }
   };
 
-  // Obtenemos la configuración de campos para el rol 3 (Personal)
-  const formConfig = {
-    fields: getCreateUserFormConfig(3)
-  };
+  const sections = getCreateUserSections(3);
 
   return (
     <BaseModal>
       <ModalHeader icon="person_add" title="CREAR USUARIO ADMINISTRATIVO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
         <FormWithIcons
-          config={formConfig}
+          sections={sections}
           register={register}
           errors={errors}
           handleSubmit={handleSubmit}
@@ -97,3 +90,4 @@ export default function CreatePersonalModal({
     </BaseModal>
   );
 }
+

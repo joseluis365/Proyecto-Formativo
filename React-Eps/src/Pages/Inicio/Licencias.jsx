@@ -17,9 +17,9 @@ export default function Licencias() {
             id_estado: 1,
           }
         }); // Tu ruta de Laravel
-        
+
         // Laravel Resource devuelve los datos dentro de una propiedad 'data'
-        setPlans(response.data.data);
+        setPlans(response.data || []);
       } catch (error) {
         setError("No se pudieron cargar las licencias");
         setPlans([]);
@@ -50,10 +50,9 @@ export default function Licencias() {
             <div
               key={plan.id}
               className={`relative bg-white dark:bg-gray-600 rounded-2xl border shadow-sm p-6 flex flex-col justify-between
-                ${
-                  plan.popular
-                    ? "border-blue-600 shadow-md"
-                    : "border-gray-200 dark:border-gray-400"
+                ${plan.popular
+                  ? "border-blue-600 shadow-md"
+                  : "border-gray-200 dark:border-gray-400"
                 }
               `}
             >
@@ -90,8 +89,8 @@ export default function Licencias() {
                 <button
                   onClick={() => navigate("/pago", { state: { plan: plan } })} // Aquí conectarás al Checkout
                   className={`w-full py-3 rounded-xl cursor-pointer font-semibold transition
-                    ${plan.popular 
-                      ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    ${plan.popular
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
                       : "border border-blue-600 dark:bg-blue-600/50 text-blue-600 dark:text-gray-200 hover:bg-blue-50 dark:hover:text-white dark:hover:bg-primary/70"}
                   `}
                 >

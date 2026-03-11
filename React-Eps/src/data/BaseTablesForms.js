@@ -35,6 +35,7 @@ export const formCiudad = {
             type: "number",
             placeholder: "Ej: 11001",
             required: true,
+            onlyNumbers: true,
         },
         {
             name: "nombre",
@@ -65,6 +66,7 @@ export const formDepartamento = {
             type: "number",
             placeholder: "Ej: 11",
             required: true,
+            onlyNumbers: true,
         },
         {
             name: "nombre",
@@ -85,8 +87,9 @@ export const formFarmacia = {
             label: "NIT",
             icon: "badge",
             type: "text",
-            placeholder: "Ej: 900.123.456-1",
+            placeholder: "Ej: 900123456-7",
             required: true,
+            onlyNumbers: true,
         },
         {
             name: "nombre",
@@ -95,7 +98,6 @@ export const formFarmacia = {
             type: "text",
             placeholder: "Nombre de la farmacia",
             required: true,
-            onlyLetters: true,
         },
         {
             name: "direccion",
@@ -110,6 +112,7 @@ export const formFarmacia = {
             icon: "phone",
             type: "text",
             placeholder: "300 123 4567",
+            onlyNumbers: true,
         },
         {
             name: "email",
@@ -124,6 +127,7 @@ export const formFarmacia = {
             icon: "person",
             type: "text",
             placeholder: "Responsable de la farmacia",
+            onlyLetters: true,
         },
         {
             name: "horario_apertura",

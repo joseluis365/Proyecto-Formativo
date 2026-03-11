@@ -10,6 +10,7 @@ use App\Http\Requests\StoreCitaRequest;
 use App\Http\Requests\UpdateCitaRequest;
 use App\Mail\CitaAgendadaMailable;
 use Illuminate\Support\Facades\Mail;
+use App\Events\SystemActivityEvent;
 
 class CitaController extends Controller
 {
@@ -29,13 +30,13 @@ class CitaController extends Controller
         // Create the appointment
         $cita = Cita::create([
             'doc_paciente' => $request->doc_paciente,
-            'doc_medico' => $request->doc_medico,
-            'fecha' => $request->fecha,
-            'motivo' => $request->motivo,
+            'doc_medico'   => $request->doc_medico,
+            'fecha'        => $request->fecha,
+            'motivo'       => $request->motivo,
             'tipo_cita_id' => $request->tipo_cita_id,
-            'id_estado' => $estado->id_estado,
-            'hora_inicio' => null,
-            'hora_fin' => null,
+            'id_estado'    => $estado->id_estado,
+            'hora_inicio'  => null,
+            'hora_fin'     => null,
         ]);
 
         // Get patient's email to send the confirmation
@@ -44,9 +45,20 @@ class CitaController extends Controller
             Mail::to($paciente->email)->send(new CitaAgendadaMailable($cita));
         }
 
+        $nombrePaciente = $paciente
+            ? trim($paciente->primer_nombre . ' ' . $paciente->primer_apellido)
+            : $request->doc_paciente;
+
+        event(new SystemActivityEvent(
+            "Cita agendada: {$nombrePaciente} — {$cita->fecha}",
+            'teal',
+            'event_available',
+            'admin-feed'
+        ));
+
         return response()->json([
             'message' => 'Cita agendada correctamente y notificación enviada',
-            'data' => $cita
+            'data'    => $cita
         ], 201);
     }
 
@@ -62,9 +74,16 @@ class CitaController extends Controller
 
         $cita->update($request->validated());
 
+        event(new SystemActivityEvent(
+            "Cita actualizada — fecha: {$cita->fecha}",
+            'orange',
+            'edit_calendar',
+            'admin-feed'
+        ));
+
         return response()->json([
             'message' => 'Cita actualizada correctamente',
-            'data' => $cita
+            'data'    => $cita
         ]);
     }
 
@@ -78,7 +97,15 @@ class CitaController extends Controller
             ], 404);
         }
 
+        $fechaCita = $cita->fecha;
         $cita->delete();
+
+        event(new SystemActivityEvent(
+            "Cita cancelada — fecha: {$fechaCita}",
+            'red',
+            'event_busy',
+            'admin-feed'
+        ));
 
         return response()->json([
             'message' => 'Cita eliminada correctamente'

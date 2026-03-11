@@ -41,6 +41,7 @@ export default function CreateEmpresaModal({
         admin_telefono: "",
         admin_direccion: "",
         admin_password: "",
+        admin_password_confirmation: "",
         id_departamento: "",
         id_ciudad: "",
     };
@@ -51,7 +52,8 @@ export default function CreateEmpresaModal({
         setError,
         setValue,
         watch,
-        formState: { errors },
+        trigger,
+        formState: { errors, touchedFields },
     } = useForm({
         resolver: zodResolver(empresaSchema),
         defaultValues: initialEmpresa,
@@ -61,6 +63,15 @@ export default function CreateEmpresaModal({
     });
 
     const selectedDepto = watch("id_departamento");
+    const adminPassword = watch("admin_password");
+    const adminPasswordConfirmation = watch("admin_password_confirmation");
+
+    // Forzar validación cruzada solo si alguno de los campos ya fue tocado
+    useEffect(() => {
+        if (touchedFields.admin_password || touchedFields.admin_password_confirmation) {
+            trigger(["admin_password", "admin_password_confirmation"]);
+        }
+    }, [adminPassword, adminPasswordConfirmation, touchedFields, trigger]);
 
     useEffect(() => {
         superAdminApi.get('/departamentos')

@@ -118,7 +118,7 @@ export default function SuperAdminRecoveryCode() {
         try {
             const response = await api.post("/superadmin/verify-recovery-code", { email: data.email, code: data.code });
 
-            if (response.status === 200) {
+            if (response) {
                 sessionStorage.setItem("recovery_code", data.code);
                 Swal.fire({
                     icon: "success",

@@ -21,7 +21,7 @@ export default function Ubicaciones() {
     const fetchDepartamentos = async () => {
         try {
             const response = await api.get("/departamentos");
-            setDepartamentos(response.data);
+            setDepartamentos(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Error fetching departamentos:", error);
         } finally {
@@ -33,7 +33,7 @@ export default function Ubicaciones() {
         setLoadingCiudades(true);
         try {
             const response = await api.get(`/ciudades/${deptoId}`);
-            setCiudades(response.data);
+            setCiudades(Array.isArray(response) ? response : response?.data || []);
         } catch (error) {
             console.error("Error fetching ciudades:", error);
             setCiudades([]);

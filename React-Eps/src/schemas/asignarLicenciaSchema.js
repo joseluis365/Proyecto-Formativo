@@ -1,19 +1,22 @@
 import { z } from "zod";
 
 export const asignarLicenciaSchema = z.object({
-    nit: z.string()
-        .min(1, "Debe ingresar el NIT de la empresa."),
-
-    id_tipo_licencia: z.union([z.string(), z.number()])
-        .refine(val => /^[1-9]+$/.test(val.toString()), "El tipo de licencia debe ser un número valido."),
+    licencia_id: z.union([z.string(), z.number()])
+        .refine(val => {
+            if (val === "" || val === null || val === undefined) return false;
+            return /^[0-9]+$/.test(val.toString());
+        }, "Debe seleccionar un plan."),
 
     precio: z.union([z.string(), z.number()])
-        .refine(val => !isNaN(parseFloat(val)) && isFinite(val), "El precio debe ser numérico.")
-        .transform(val => parseFloat(val)),
-
-    duracion_meses: z.union([z.string(), z.number()])
-        .refine(val => Number.isInteger(Number(val)), "La duración debe ser un número entero.")
-        .transform(val => parseInt(val, 10)),
+        .refine(val => {
+            if (val === "" || val === null || val === undefined) return false;
+            const strVal = String(val);
+            // Permitir números y caracteres del formato de moneda ($, coma, punto, espacios)
+            if (!/^[\$\s\.\,\d\xA0\u202F]+$/.test(strVal)) return false;
+            const num = parseFloat(strVal.replace(/[^\d]/g, ''));
+            return !isNaN(num) && num >= 0 && num <= 99999999;
+        }, "Debe tener formato de moneda y no superar los $ 99.999.999.")
+        .transform(val => parseFloat(String(val).replace(/[^\d]/g, ''))),
 
     fecha_inicio: z.string()
         .min(1, "Debe ingresar la fecha de inicio.")

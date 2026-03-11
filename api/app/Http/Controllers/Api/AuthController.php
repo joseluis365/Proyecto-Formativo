@@ -82,6 +82,20 @@ class AuthController extends Controller
     }
 
     /**
+     * Retorna el usuario autenticado con sus relaciones
+     */
+    public function me(Request $request)
+    {
+        $user = $request->user()->load(['rol', 'empresa', 'especialidad', 'farmacia']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario autenticado',
+            'data' => $user
+        ]);
+    }
+
+    /**
      * Cerrar sesión
      */
     public function logout(Request $request)

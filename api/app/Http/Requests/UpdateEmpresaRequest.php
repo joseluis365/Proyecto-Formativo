@@ -39,6 +39,7 @@ class UpdateEmpresaRequest extends FormRequest
             'admin_segundo_apellido' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
             'admin_telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10'],
             'admin_direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150'],
+            'admin_password' => ['nullable', 'min:8', 'max:25', 'confirmed', 'regex:/^(?=.*[a-záéíóúñ])(?=.*[A-ZÁÉÍÓÚÑ])(?=.*\d)(?=.*[^A-Za-zÁÉÍÓÚáéíóúÑñ\d]).{8,}$/'],
         ];
 
         if ($adminIdx) {
@@ -158,8 +159,12 @@ class UpdateEmpresaRequest extends FormRequest
 
             'admin_direccion.required' => 'La direccion del administrador es obligatoria',
             'admin_direccion.min' => 'La direccion debe tener al menos 8 caracteres',
-            'admin_direccion.max' => 'La direccion debe tener como maximo 150 caracteres',
             'admin_direccion.regex' => 'La dirección debe contener letras y números, y puede incluir #, -, . o ,.',
+
+            'admin_password.min' => 'La contraseña del administrador debe tener al menos 8 caracteres',
+            'admin_password.max' => 'La contraseña del administrador no puede superar los 25 caracteres',
+            'admin_password.confirmed' => 'La confirmación de la contraseña no coincide',
+            'admin_password.regex' => 'La contraseña del administrador debe tener al menos una mayúscula, una minúscula, un número y un carácter especial',
         ];
     }
 }

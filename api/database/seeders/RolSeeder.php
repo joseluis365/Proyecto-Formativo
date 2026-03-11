@@ -10,11 +10,12 @@ class RolSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            ['id_rol' => 1, 'tipo_usu' => 'ADMIN'],
-            ['id_rol' => 2, 'tipo_usu' => 'MEDICO'],
-            ['id_rol' => 3, 'tipo_usu' => 'PERSONAL_ADMINISTRATIVO'],
-            ['id_rol' => 4, 'tipo_usu' => 'PACIENTE'],
-            ['id_rol' => 5, 'tipo_usu' => 'FARMACEUTICO'],
+            ['id_rol' => 1, 'tipo_usu' => 'Super Admin'],
+            ['id_rol' => 2, 'tipo_usu' => 'Admin'],
+            ['id_rol' => 3, 'tipo_usu' => 'Personal Administrativo'],
+            ['id_rol' => 4, 'tipo_usu' => 'Medico'],
+            ['id_rol' => 5, 'tipo_usu' => 'Paciente'],
+            ['id_rol' => 6, 'tipo_usu' => 'Farmaceutico'],
         ];
 
         foreach ($roles as $rol) {

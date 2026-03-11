@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom"
 import DashboardLayout from "./layouts/AdminLayout"
 import Personal from "./Pages/Admin/Personal"
+import Farmaceutico from "./Pages/Admin/Farmaceutico"
 import Dashboard from "./Pages/Admin/Dashboard"
 import Medicos from "./Pages/Admin/Medicos"
 import Pacientes from "./Pages/Admin/Pacientes"
@@ -32,8 +33,28 @@ import SuperAdminForgotPassword from "./Pages/SuperAdmin/SuperAdminForgotPasswor
 import SuperAdminRecoveryCode from "./Pages/SuperAdmin/SuperAdminRecoveryCode"
 import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
 
+import UserLayout from "./layouts/UserLayout"
+import UserDashboard from "./Pages/User/Dashboard"
+import UserCitas from "./Pages/User/Citas"
+import UserMedicamentos from "./Pages/User/Medicamentos"
+import UserPerfil from "./Pages/User/Perfil"
+
 import { useEffect } from "react";
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
+import AuthRoute from "./components/Routes/AuthRoute"
+import AdminRoute from "./components/Routes/AdminRoute"
+
+// Perfil compartido
+import Perfil from "./Pages/Perfil"
+
+// Layout Farmacia
+import FarmaciaLayout from "./layouts/FarmaciaLayout"
+import FarmaciaRoute from "./components/Routes/FarmaciaRoute"
+import FarmaciaDashboard from "./Pages/Farmacia/Dashboard"
+import FarmaciaInventario from "./Pages/Farmacia/Inventario"
+import FarmaciaMedicamentos from "./Pages/Farmacia/Medicamentos"
+import FarmaciaMovimientos from "./Pages/Farmacia/Movimientos"
+import FarmaciaReportes from "./Pages/Farmacia/Reportes"
 
 // Configuración
 import ConfiguracionIndex from "./Pages/Admin/Configuracion/ConfiguracionIndex"
@@ -68,7 +89,7 @@ export default function App() {
       <Route path="/SuperAdmin-ResetPassword" element={<SuperAdminResetPassword />} />
       <Route path="/Pago" element={<Pago />} />
 
-      {/* Rutas Protegidas SuperAdmin */}
+      {/* Rutas Protegidas SuperAdmin (sessionStorage — independiente) */}
       <Route element={<SuperAdminRoute />}>
         <Route element={<SuperAdminLayout />}>
           <Route path="/SuperAdmin-Dashboard" element={<SuperAdminDashboard />} />
@@ -78,7 +99,7 @@ export default function App() {
         </Route>
       </Route>
 
-
+      {/* Rutas Públicas */}
       <Route element={<IndexLayout />}>
         <Route path="/" element={<Index />} />
         <Route path="/Contactenos" element={<Contactenos />} />
@@ -91,32 +112,65 @@ export default function App() {
         <Route path="/code-verification" element={<VerifyCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
-      <Route element={<DashboardLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/usuarios/personal" element={<Personal />} />
-        <Route path="/usuarios/medicos" element={<Medicos />} />
-        <Route path="/usuarios/pacientes" element={<Pacientes />} />
-        <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
-        <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
-        <Route path="/citas/del-dia" element={<CitasDelDia />} />
-        <Route path="/citas/agenda" element={<AgendaCitas />} />
-        <Route path="/reportes" element={<Reportes />} />
 
-        {/* Configuración */}
-        <Route path="/configuracion" element={<ConfiguracionIndex />}>
-          <Route path="prioridades" element={<Prioridades />} />
-          <Route path="tipos-cita" element={<TiposCita />} />
-          <Route path="categorias-examen" element={<CategoriasExamen />} />
-          <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
-          <Route path="especialidades" element={<Especialidades />} />
-          <Route path="ubicaciones" element={<Ubicaciones />} />
-          <Route path="farmacias" element={<Farmacias />} />
-          <Route path="departamentos" element={<Departamentos />} />
-          <Route path="ciudades" element={<Ciudades />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="estados" element={<Estados />} />
+      {/* ── RUTAS PROTEGIDAS — TODOS LOS USUARIOS (localStorage) ── */}
+      <Route element={<AuthRoute />}>
+
+        {/* Layout del Paciente/User */}
+        <Route element={<UserLayout />}>
+          <Route path="/Usuarios-Dashboard" element={<UserDashboard />} />
+          <Route path="/Usuarios-Citas" element={<UserCitas />} />
+          <Route path="/Usuarios-Medicamentos" element={<UserMedicamentos />} />
+          <Route path="/Usuarios-Perfil" element={<UserPerfil />} />
         </Route>
+
+        {/* Layout del Farmacéutico */}
+        <Route element={<FarmaciaRoute />}>
+          <Route element={<FarmaciaLayout />}>
+            <Route path="/farmacia/perfil" element={<Perfil />} />
+            <Route path="/farmacia/dashboard" element={<FarmaciaDashboard />} />
+            <Route path="/farmacia/inventario" element={<FarmaciaInventario />} />
+            <Route path="/farmacia/medicamentos" element={<FarmaciaMedicamentos />} />
+            <Route path="/farmacia/movimientos" element={<FarmaciaMovimientos />} />
+            <Route path="/farmacia/reportes" element={<FarmaciaReportes />} />
+          </Route>
+        </Route>
+
+        {/* Layout del Admin (sidebar) — incluyendo /Perfil compartido */}
+        <Route element={<AdminRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/Perfil" element={<Perfil />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/usuarios/personal" element={<Personal />} />
+            <Route path="/usuarios/medicos" element={<Medicos />} />
+            <Route path="/usuarios/pacientes" element={<Pacientes />} />
+            <Route path="/usuarios/farmaceuticos" element={<Farmaceutico />} />
+            <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
+            <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
+            <Route path="/citas/del-dia" element={<CitasDelDia />} />
+            <Route path="/citas/agenda" element={<AgendaCitas />} />
+            <Route path="/reportes" element={<Reportes />} />
+
+            {/* Configuración */}
+            <Route path="/configuracion" element={<ConfiguracionIndex />}>
+              <Route path="prioridades" element={<Prioridades />} />
+              <Route path="tipos-cita" element={<TiposCita />} />
+              <Route path="categorias-examen" element={<CategoriasExamen />} />
+              <Route path="categorias-medicamento" element={<CategoriasMedicamento />} />
+              <Route path="especialidades" element={<Especialidades />} />
+              <Route path="ubicaciones" element={<Ubicaciones />} />
+              <Route path="farmacias" element={<Farmacias />} />
+              <Route path="departamentos" element={<Departamentos />} />
+              <Route path="ciudades" element={<Ciudades />} />
+              <Route path="roles" element={<Roles />} />
+              <Route path="estados" element={<Estados />} />
+            </Route>
+          </Route>
+        </Route>
+
       </Route>
+      {/* ─────────────────────────────────────────────────────────── */}
+
     </Routes>
   )
 }

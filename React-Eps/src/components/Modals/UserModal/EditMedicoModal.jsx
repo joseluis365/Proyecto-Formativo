@@ -5,7 +5,7 @@ import api from "../../../Api/axios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
-import { getEditUserFormConfig } from "../../../UserFormConfig";
+import { getEditUserSections } from "../../../UserFormConfig";
 import { updateMedicoSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
@@ -20,7 +20,7 @@ export default function EditMedicoModal({
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { specialties } = useEspecialidades();
+  const { specialties, loading: loadingSpecialties } = useEspecialidades();
 
   const {
     register,
@@ -34,24 +34,18 @@ export default function EditMedicoModal({
     reValidateMode: "onChange"
   });
 
-  // Nota: Para la edición de médicos necesitamos un esquema que permita contrasena opcional.
-  // Pero userSchema.js ya tiene una estructura. Vamos a usar un ajuste inline o importar uno específico.
-  // Por ahora lo ajusto para que la contraseña no sea obligatoria en edición.
-
   useEffect(() => {
     if (!userId) return;
 
     const fetchUser = async () => {
       try {
         setLoading(true);
-        // El interceptor ya devuelve res.data.data
         const userData = await api.get(`/usuario/${userId}`);
 
         reset({
           ...userData,
           segundo_nombre: userData.segundo_nombre || "",
           segundo_apellido: userData.segundo_apellido || "",
-          contrasena: ""
         });
       } catch (error) {
         console.error("Error al cargar médico:", error);
@@ -66,15 +60,7 @@ export default function EditMedicoModal({
 
   const onSubmit = async (data) => {
     try {
-      setSaving(true);
-      const payload = { ...data };
-
-      // No enviamos contraseña si está vacía
-      if (!payload.contrasena) {
-        delete payload.contrasena;
-      }
-
-      await api.put(`/usuario/${userId}`, payload);
+      await api.put(`/usuario/${userId}`, data);
 
       Swal.fire({
         icon: 'success',
@@ -95,9 +81,7 @@ export default function EditMedicoModal({
     }
   };
 
-  const formConfig = {
-    fields: getEditUserFormConfig(4, { id_especialidad: specialties })
-  };
+  const sections = getEditUserSections(4, { id_especialidad: specialties });
 
   return (
     <BaseModal>
@@ -110,7 +94,7 @@ export default function EditMedicoModal({
           </div>
         ) : (
           <FormWithIcons
-            config={formConfig}
+            sections={sections}
             register={register}
             errors={errors}
             handleSubmit={handleSubmit}
@@ -122,7 +106,7 @@ export default function EditMedicoModal({
                   text="Actualizar Cambios"
                   icon="published_with_changes"
                   type="submit"
-                  loading={saving}
+                  loading={saving || loadingSpecialties}
                 />
               </div>
             </div>
@@ -132,3 +116,4 @@ export default function EditMedicoModal({
     </BaseModal>
   );
 }
+

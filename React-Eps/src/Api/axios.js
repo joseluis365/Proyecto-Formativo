@@ -31,27 +31,32 @@ api.interceptors.response.use(
     if (response) {
       switch (response.status) {
         case 401:
-          // Sesión expirada o inválida
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          Swal.fire({
-            icon: 'warning',
-            title: 'Sesión Finalizada',
-            text: 'Tu sesión ha expirado o no es válida. Por favor, ingresa de nuevo.',
-            confirmButtonColor: '#3085d6',
-          }).then(() => {
-            window.location.href = "/login";
-          });
+          // Solo actuar como "sesión finalizada" si el usuario YA tenía un token guardado.
+          // Si no hay token, es un intento de login fallido: se maneja localmente en LoginSection.
+          if (localStorage.getItem("token")) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sesión Finalizada',
+              text: 'Tu sesión ha expirado o no es válida. Por favor, ingresa de nuevo.',
+              confirmButtonColor: '#3085d6',
+            }).then(() => {
+              window.location.href = "/login";
+            });
+          }
           break;
 
         case 403:
-          // Acceso prohibido (ej: Problemas de licencia)
-          Swal.fire({
-            icon: 'error',
-            title: 'Acceso Denegado',
-            text: response.data?.message || 'No tienes permisos para realizar esta acción o hay problemas con la licencia de tu empresa.',
-            confirmButtonColor: '#d33',
-          });
+          // Acceso prohibido — solo mostrar si la solicitud no maneja sus propios errores
+          if (!error.config?.skipGlobalHandler) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Acceso Denegado',
+              text: response.data?.message || 'No tienes permisos para realizar esta acción o hay problemas con la licencia de tu empresa.',
+              confirmButtonColor: '#d33',
+            });
+          }
           break;
 
         case 500:

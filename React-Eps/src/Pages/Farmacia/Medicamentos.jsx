@@ -1,0 +1,269 @@
+import { useEffect, useState, useCallback } from "react";
+import { useLayout } from "../../LayoutContext";
+import PrincipalText from "../../components/Users/PrincipalText";
+import Input from "../../components/UI/Input";
+import DataTable from "../../components/UI/DataTable";
+import TableSkeleton from "../../components/UI/TableSkeleton";
+import api from "../../Api/axios";
+import Swal from "sweetalert2";
+
+export default function Medicamentos() {
+    const { setTitle, setSubtitle } = useLayout();
+    const [search, setSearch] = useState("");
+    const [filtroForma, setFiltroForma] = useState("");
+    const [filtroConcentracion, setFiltroConcentracion] = useState("");
+    const [presentaciones, setPresentaciones] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [lastPage, setLastPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
+    const [categorias, setCategorias] = useState([]);
+    const [concentraciones, setConcentraciones] = useState([]);
+    const [formas, setFormas] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [form, setForm] = useState({
+        nombre: "", descripcion: "", id_categoria: "",
+        id_concentracion: "", id_forma_farmaceutica: ""
+    });
+
+    useEffect(() => {
+        setTitle("Catálogo de Medicamentos");
+        setSubtitle("Lista de medicamentos registrados en el sistema.");
+    }, [setTitle, setSubtitle]);
+
+    const fetchSelects = async () => {
+        const [cat, conc, forma] = await Promise.all([
+            api.get("/farmacia/categorias"),
+            api.get("/farmacia/concentraciones"),
+            api.get("/farmacia/formas-farmaceuticas"),
+        ]);
+        setCategorias(cat.data ?? []);
+        setConcentraciones(conc.data ?? []);
+        setFormas(forma.data ?? []);
+    };
+
+    useEffect(() => { fetchSelects(); }, []);
+
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = { page };
+            if (search.trim()) params.search = search.trim();
+            if (filtroForma) params.id_forma = filtroForma;
+            if (filtroConcentracion) params.id_concentracion = filtroConcentracion;
+
+            const res = await api.get("/farmacia/medicamentos", { params });
+            setPresentaciones(res.data ?? []);
+            setTotal(res.total ?? 0);
+            setLastPage(res.last_page ?? 1);
+        } finally {
+            setLoading(false);
+            setInitialLoad(false);
+        }
+    }, [page, search, filtroForma, filtroConcentracion]);
+
+    useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            await api.post("/farmacia/medicamento", form);
+            Swal.fire({ icon: "success", title: "Medicamento creado", timer: 1500, showConfirmButton: false });
+            setShowModal(false);
+            setForm({ nombre: "", descripcion: "", id_categoria: "", id_concentracion: "", id_forma_farmaceutica: "" });
+            fetchData();
+        } catch (error) {
+            Swal.fire({ icon: "error", title: "Error al guardar", text: error.response?.data?.message || "Ocurrió un error" });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const columns = [
+        {
+            key: "nombre",
+            header: "Medicamento",
+            render: (row) => (
+                <div className="flex items-center gap-3">
+                    <div className="size-9 rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-sm">folder</span>
+                    </div>
+                    <div>
+                        <p className="font-bold text-gray-900 dark:text-white">{row.nombre}</p>
+                        <p className="text-xs text-gray-500">{row.categoria}</p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: "concentracion",
+            header: "Concentración",
+            render: (row) => <span className="text-sm text-gray-700 dark:text-gray-300">{row.concentracion}</span>,
+        },
+        {
+            key: "forma",
+            header: "Forma",
+            render: (row) => <span className="text-sm text-gray-700 dark:text-gray-300">{row.forma}</span>,
+        },
+        {
+            key: "acciones",
+            header: "Acciones",
+            align: "center",
+            render: (row) => (
+                <div className="flex justify-center gap-2">
+                    <button
+                        className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                        title="Ver detalles"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">visibility</span>
+                    </button>
+                    <button
+                        className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                        title="Editar medicamento"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
+    return (
+        <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
+                <PrincipalText icon="medication" text="Medicamentos Registrados" number={total} />
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-3 font-bold text-sm transition-all flex items-center gap-2 group shadow-lg shadow-primary/20"
+                >
+                    Registrar Nuevo
+                    <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">add</span>
+                </button>
+            </div>
+
+            <div className="mb-6 flex flex-wrap gap-4 items-center">
+                <div className="lg:w-sm md:w-1/2 flex-1 min-w-[200px]">
+                    <Input
+                        placeholder="Buscar por nombre o concentración..."
+                        icon="search"
+                        value={search}
+                        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                    />
+                </div>
+                <div className="flex gap-4">
+                    <select
+                        value={filtroForma}
+                        onChange={(e) => { setFiltroForma(e.target.value); setPage(1); }}
+                        className="w-40 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 text-gray-700 dark:text-gray-300 font-medium"
+                    >
+                        <option value="">Todas las Formas</option>
+                        {formas.map(f => <option key={f.id_forma} value={f.id_forma}>{f.forma_farmaceutica}</option>)}
+                    </select>
+                    <select
+                        value={filtroConcentracion}
+                        onChange={(e) => { setFiltroConcentracion(e.target.value); setPage(1); }}
+                        className="w-40 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 text-gray-700 dark:text-gray-300 font-medium"
+                    >
+                        <option value="">Todas las Concentraciones</option>
+                        {concentraciones.map(c => <option key={c.id_concentracion} value={c.id_concentracion}>{c.concentracion}</option>)}
+                    </select>
+                </div>
+            </div>
+
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
+                {initialLoad ? (
+                    <TableSkeleton rows={8} cols={5} />
+                ) : presentaciones.length === 0 ? (
+                    <div className="py-16 text-center text-gray-400 dark:text-gray-600">
+                        <span className="material-symbols-outlined text-4xl mb-2 block">medication_liquid</span>
+                        No se encontraron medicamentos
+                    </div>
+                ) : (
+                    <div className={`transition-opacity duration-200 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+                        <DataTable columns={columns} data={presentaciones} />
+                    </div>
+                )}
+            </div>
+
+            {/* Paginación */}
+            {!initialLoad && lastPage > 1 && (
+                <div className="flex justify-center gap-3 mt-6">
+                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
+                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        ← Anterior
+                    </button>
+                    <span className="px-4 py-2 text-sm text-gray-500 flex items-center">Página {page} de {lastPage}</span>
+                    <button disabled={page >= lastPage} onClick={() => setPage(p => p + 1)}
+                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        Siguiente →
+                    </button>
+                </div>
+            )}
+
+            {/* Modal nuevo medicamento */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-8">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-primary">medication</span>
+                            Nuevo Medicamento
+                        </h3>
+                        <form onSubmit={handleSave} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Nombre del medicamento *</label>
+                                <input required value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
+                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                                    placeholder="Ej: Acetaminofén" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Categoría *</label>
+                                <select required value={form.id_categoria} onChange={e => setForm(f => ({ ...f, id_categoria: e.target.value }))}
+                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                    <option value="">Seleccionar categoría</option>
+                                    {categorias.map(c => <option key={c.id_categoria} value={c.id_categoria}>{c.categoria}</option>)}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Concentración *</label>
+                                    <select required value={form.id_concentracion} onChange={e => setForm(f => ({ ...f, id_concentracion: e.target.value }))}
+                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                        <option value="">Seleccionar</option>
+                                        {concentraciones.map(c => <option key={c.id_concentracion} value={c.id_concentracion}>{c.concentracion}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Forma farmacéutica *</label>
+                                    <select required value={form.id_forma_farmaceutica} onChange={e => setForm(f => ({ ...f, id_forma_farmaceutica: e.target.value }))}
+                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                        <option value="">Seleccionar</option>
+                                        {formas.map(f => <option key={f.id_forma} value={f.id_forma}>{f.forma_farmaceutica}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
+                                <textarea rows={2} value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
+                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                                    placeholder="Descripción opcional..." />
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button type="button" onClick={() => setShowModal(false)}
+                                    className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                    Cancelar
+                                </button>
+                                <button type="submit" disabled={saving}
+                                    className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                                    {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Guardar</>}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

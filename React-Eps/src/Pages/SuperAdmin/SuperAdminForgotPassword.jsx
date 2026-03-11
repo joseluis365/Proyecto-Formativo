@@ -27,19 +27,27 @@ export default function SuperAdminForgotPassword() {
         try {
             const response = await api.post("/superadmin/forgot-password", { email: data.email });
 
-            if (response.status === 200) {
+            if (response) {
                 sessionStorage.setItem("recovery_email", data.email);
                 sessionStorage.setItem("recovery_timer_end", Date.now() + 30000);
-                if (response.data?.available_attempts !== undefined) {
-                    sessionStorage.setItem("recovery_attempts", response.data.available_attempts);
+
+                // Extraer 'available_attempts' si viene directamente en response o en response.data
+                const attempts = response.available_attempts !== undefined
+                    ? response.available_attempts
+                    : response.data?.available_attempts;
+
+                if (attempts !== undefined) {
+                    sessionStorage.setItem("recovery_attempts", attempts);
                 }
+
                 Swal.fire({
                     icon: "success",
                     title: "Código enviado",
-                    text: "Código de verificación enviado a tu correo",
+                    text: "Código de recuperación enviado a tu correo exitosamente",
                     timer: 1500,
                     showConfirmButton: false,
                 });
+
                 navigate("/SuperAdmin-RecoveryCode");
             }
         } catch (error) {

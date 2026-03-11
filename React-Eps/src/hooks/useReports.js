@@ -16,6 +16,7 @@ const useReports = (entity) => {
     // Filtros
     const [search, setSearch] = useState("");
     const [idEstado, setIdEstado] = useState("");
+    const [idRol, setIdRol] = useState("");
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
 
@@ -32,6 +33,7 @@ const useReports = (entity) => {
         setMeta(null);
         setSearch("");
         setIdEstado("");
+        setIdRol("");
         setDateFrom("");
         setDateTo("");
         setPage(1);
@@ -51,21 +53,24 @@ const useReports = (entity) => {
                 params: {
                     search: search || undefined,
                     id_estado: idEstado || undefined,
+                    id_rol: idRol || undefined,
                     date_from: dateFrom || undefined,
                     date_to: dateTo || undefined,
                     page: page,
                 },
             });
 
-            const { data: paginator, meta: reportMeta } = response.data;
+            // El interceptor de Axios ya devuelve response.data,
+            // así que 'response' ES directamente el objeto payload completo.
+            const { data: paginator, meta: reportMeta } = response;
 
             // Guardar registros y metadatos (columnas, título, etc.)
-            setData(paginator.data || []);
+            setData(paginator?.data || []);
             setMeta(reportMeta);
 
             // Actualizar estados de paginación
-            setLastPage(paginator.last_page || 1);
-            setTotal(paginator.total || 0);
+            setLastPage(paginator?.last_page || 1);
+            setTotal(paginator?.total || 0);
 
         } catch (err) {
             console.error(`Error en useReports (${entity}):`, err);
@@ -74,7 +79,7 @@ const useReports = (entity) => {
         } finally {
             setLoading(false);
         }
-    }, [entity, search, idEstado, dateFrom, dateTo, page]);
+    }, [entity, search, idEstado, idRol, dateFrom, dateTo, page]);
 
     // Ejecutar fetch cuando cambian los filtros relevantes
     useEffect(() => {
@@ -99,6 +104,8 @@ const useReports = (entity) => {
         setSearch,
         idEstado,
         setIdEstado,
+        idRol,
+        setIdRol,
         dateFrom,
         setDateFrom,
         dateTo,

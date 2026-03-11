@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Events\SystemActivityEvent;
 
 class UsuarioController extends Controller
 {
@@ -72,9 +73,15 @@ class UsuarioController extends Controller
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
-        // No se hashea aquí: el modelo tiene un mutator setContrasenaAttribute
-        // que hashea la contraseña automáticamente al asignarla
         $user = Usuario::create($data);
+
+        $nombreCompleto = trim($user->primer_nombre . ' ' . $user->primer_apellido);
+        event(new SystemActivityEvent(
+            "Usuario creado: {$nombreCompleto}",
+            'blue',
+            'person_add',
+            'admin-feed'
+        ));
 
         return response()->json([
             'message' => 'Usuario creado correctamente',
@@ -92,6 +99,14 @@ class UsuarioController extends Controller
         unset($data['contrasena']);
 
         $user->update($data);
+
+        $nombreCompleto = trim($user->primer_nombre . ' ' . $user->primer_apellido);
+        event(new SystemActivityEvent(
+            "Usuario editado: {$nombreCompleto}",
+            'orange',
+            'manage_accounts',
+            'admin-feed'
+        ));
 
         return response()->json([
             'message' => 'Usuario actualizado correctamente',
@@ -118,7 +133,16 @@ class UsuarioController extends Controller
     // 📌 ELIMINAR
     public function destroy($id)
     {
-        Usuario::findOrFail($id)->delete();
+        $user = Usuario::findOrFail($id);
+        $nombreCompleto = trim($user->primer_nombre . ' ' . $user->primer_apellido);
+        $user->delete();
+
+        event(new SystemActivityEvent(
+            "Usuario eliminado: {$nombreCompleto}",
+            'red',
+            'person_remove',
+            'admin-feed'
+        ));
 
         return response()->json([
             'message' => 'Usuario eliminado'

@@ -54,6 +54,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/usuarios/personal" label="Personal" />
                 <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
                 <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
+                <SidebarSubItem to="/usuarios/farmaceuticos" label="Farmaceuticos" />
               </SidebarDropdown>
               <SidebarDropdown icon="calendar_month" label="Citas" basePath="/citas">
                 <SidebarSubItem to="/citas/del-dia" label="Citas del Día" />

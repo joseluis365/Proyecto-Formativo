@@ -5,7 +5,11 @@ import { AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../Api/axios";
 
-export default function PersonalTable({ users, fetchUsers }) {
+export default function PersonalTable({
+  users,
+  fetchUsers,
+  editModal: EditModalComp = EditPersonalModal
+}) {
   const [editingUserId, setEditingUserId] = useState(null);
 
   // Cambiar estado (activo/inactivo)
@@ -96,14 +100,12 @@ export default function PersonalTable({ users, fetchUsers }) {
     },
   ];
 
-
-
   return (
     <>
       <DataTable columns={columns} data={users} />
       <AnimatePresence>
         {editingUserId && (
-          <EditPersonalModal
+          <EditModalComp
             userId={editingUserId}
             onClose={closeEdit}
             onSuccess={fetchUsers}
@@ -113,3 +115,4 @@ export default function PersonalTable({ users, fetchUsers }) {
     </>
   );
 }
+

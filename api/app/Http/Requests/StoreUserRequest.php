@@ -48,6 +48,9 @@ class StoreUserRequest extends FormRequest
                 $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];
                 $rules['grupo_sanguineo'] = ['required', 'string', 'max:10', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'];
                 break;
+            case 6:
+                $rules['id_farmacia'] = ['required', 'exists:farmacia,nit'];
+                break;
         }
 
 

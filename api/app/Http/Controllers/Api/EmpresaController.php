@@ -209,13 +209,18 @@ public function update(UpdateEmpresaRequest $request, $id)
 
     return DB::transaction(function () use ($empresa, $adminIdx, $data, $request) {
         
-        // Actualizar empresa
-        $empresaData = collect($data)->except(['admin_primer_nombre', 'admin_segundo_nombre', 'admin_primer_apellido', 'admin_segundo_apellido', 'admin_email', 'admin_documento', 'admin_telefono', 'admin_direccion'])->toArray();
+        // Actualizar empresa (remover sólo campos de admin, permitiendo nombre y documento_representante)
+        $empresaData = collect($data)->except([
+            'admin_primer_nombre', 'admin_segundo_nombre', 'admin_primer_apellido', 
+            'admin_segundo_apellido', 'admin_email', 'admin_documento', 'admin_telefono', 
+            'admin_direccion', 'admin_password', 'admin_password_confirmation'
+        ])->toArray();
         $empresa->update($empresaData);
 
         // Actualizar usuario administrador
         if ($adminIdx) {
             $adminUpdateCalls = [];
+            if ($request->filled('admin_documento')) $adminUpdateCalls['documento'] = strip_tags($request->admin_documento);
             if ($request->filled('admin_primer_nombre')) $adminUpdateCalls['primer_nombre'] = strip_tags($request->admin_primer_nombre);
             if ($request->filled('admin_segundo_nombre')) $adminUpdateCalls['segundo_nombre'] = strip_tags($request->admin_segundo_nombre);
             if ($request->filled('admin_primer_apellido')) $adminUpdateCalls['primer_apellido'] = strip_tags($request->admin_primer_apellido);
@@ -223,6 +228,10 @@ public function update(UpdateEmpresaRequest $request, $id)
             if ($request->filled('admin_email')) $adminUpdateCalls['email'] = strip_tags($request->admin_email);
             if ($request->filled('admin_telefono')) $adminUpdateCalls['telefono'] = strip_tags($request->admin_telefono);
             if ($request->filled('admin_direccion')) $adminUpdateCalls['direccion'] = strip_tags($request->admin_direccion);
+            
+            if ($request->filled('admin_password')) {
+                $adminUpdateCalls['contrasena'] = Hash::make($request->admin_password);
+            }
 
             if (!empty($adminUpdateCalls)) {
                 $adminIdx->update($adminUpdateCalls);

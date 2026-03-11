@@ -57,10 +57,10 @@ export default function Especialidades() {
                     page: currentPage
                 }
             });
-            setData(response.data.data);
-            setCurrentPage(response.data.meta.current_page);
-            setLastPage(response.data.meta.last_page);
-            setTotal(response.data.meta.total);
+            setData(response.data);
+            setCurrentPage(response.meta.current_page);
+            setLastPage(response.meta.last_page);
+            setTotal(response.meta.total);
         } catch (error) {
             console.error("Error fetching especialidades:", error);
         } finally {

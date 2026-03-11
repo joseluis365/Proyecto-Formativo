@@ -110,7 +110,7 @@ export default function SuperAdminHeader() {
                     {/* HEADER MENU */}
                     <div className="flex justify-between items-center text-gray-800 dark:text-gray-100">
                         <h3 className="text-lg font-bold">Menú</h3>
-                        <button onClick={closeMenu} className="text-2xl hover:text-gray-600 dark:hover:text-gray-300">
+                        <button onClick={closeMenu} className="text-2xl cursor-pointer hover:text-gray-600 dark:hover:text-gray-300">
                             ✕
                         </button>
                     </div>
@@ -126,7 +126,7 @@ export default function SuperAdminHeader() {
                     <div className="flex-1 mt-4">
                         <button
                             onClick={toggleDarkMode}
-                            className="flex items-center gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                            className="flex items-center cursor-pointer gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none"
                         >
                             <span className="material-symbols-outlined text-[20px]">
                                 {isDarkMode ? 'dark_mode' : 'light_mode'}

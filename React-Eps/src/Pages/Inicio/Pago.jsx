@@ -32,7 +32,7 @@ export default function Pago() {
   const [ciudades, setCiudades] = useState([]);
 
   useEffect(() => {
-    api.get('/departamentos').then(res => setDepartamentos(res.data)).catch(console.error);
+    api.get('/departamentos').then(res => setDepartamentos(Array.isArray(res) ? res : res?.data || [])).catch(console.error);
   }, []);
 
   const fields = createEmpresaFormConfig[1];
@@ -55,7 +55,8 @@ export default function Pago() {
     setError,
     setValue,
     watch,
-    formState: { errors, isValid },
+    trigger,
+    formState: { errors, isValid, touchedFields },
   } = useForm({
     resolver: zodResolver(empresaSchema),
     mode: "onChange",
@@ -64,6 +65,16 @@ export default function Pago() {
   const selectedDepto = watch("id_departamento");
   const selectedCiudad = watch("id_ciudad");
 
+  const adminPassword = watch("admin_password");
+  const adminPasswordConfirmation = watch("admin_password_confirmation");
+
+  // Forzar validación cruzada solo si alguno de los campos ya fue tocado
+  useEffect(() => {
+    if (touchedFields.admin_password || touchedFields.admin_password_confirmation) {
+      trigger(["admin_password", "admin_password_confirmation"]);
+    }
+  }, [adminPassword, adminPasswordConfirmation, touchedFields, trigger]);
+
   useEffect(() => {
     console.log("Form Errors:", errors);
     console.log("Is Form Valid:", isValid);
@@ -71,48 +82,73 @@ export default function Pago() {
 
 
   const handleCardChange = (name, value) => {
-    let formattedValue = value;
+    let formattedValue;
     if (name === 'number') {
-      formattedValue = value.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim().substring(0, 19);
+      // Solo dígitos, agrupados en bloques de 4
+      const digits = value.replace(/\D/g, '').substring(0, 16);
+      formattedValue = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
     } else if (name === 'expiry') {
-      formattedValue = value.replace(/\//g, '').replace(/(\d{2})/, '$1/').substring(0, 5);
+      // Solo dígitos, auto-slash MM/AA
+      const digits = value.replace(/\D/g, '').substring(0, 4);
+      formattedValue = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
     } else if (name === 'cvc') {
-      formattedValue = value.replace(/\D/g, '').substring(0, 4);
+      // Solo 3 dígitos
+      formattedValue = value.replace(/\D/g, '').substring(0, 3);
+    } else {
+      formattedValue = value;
     }
 
     setCardData(prev => ({ ...prev, [name]: formattedValue }));
-    if (cardErrors[name]) {
-      setCardErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+
+    // Validación en tiempo real
+    const newErrors = { ...cardErrors };
+    if (name === 'number') {
+      const digits = formattedValue.replace(/\s/g, '');
+      if (!digits) newErrors.number = "Número requerido";
+      else if (digits.length < 13 || !isLuhnValid(digits)) newErrors.number = "Número de tarjeta inválido";
+      else delete newErrors.number;
+    } else if (name === 'expiry') {
+      if (!formattedValue) { newErrors.expiry = "Requerido"; }
+      else if (!/^\d{2}\/\d{2}$/.test(formattedValue)) { newErrors.expiry = "Formato MM/AA"; }
+      else {
+        const [mm, aa] = formattedValue.split('/').map(Number);
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = parseInt(now.getFullYear().toString().slice(-2));
+        if (mm < 1 || mm > 12) newErrors.expiry = "Mes inválido";
+        else if (aa < currentYear || (aa === currentYear && mm < currentMonth)) newErrors.expiry = "Tarjeta expirada";
+        else delete newErrors.expiry;
+      }
+    } else if (name === 'cvc') {
+      if (!formattedValue) newErrors.cvc = "Requerido";
+      else if (!/^\d{3}$/.test(formattedValue)) newErrors.cvc = "El CVC debe tener 3 dígitos";
+      else delete newErrors.cvc;
     }
+    setCardErrors(newErrors);
+  };
+
+  // Algoritmo de Luhn
+  const isLuhnValid = (num) => {
+    let sum = 0;
+    let shouldDouble = false;
+    for (let i = num.length - 1; i >= 0; i--) {
+      let digit = parseInt(num[i]);
+      if (shouldDouble) {
+        if ((digit *= 2) > 9) digit -= 9;
+      }
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
   };
 
   const validateCard = () => {
     const errors = {};
     const { number, expiry, cvc } = cardData;
+    const digits = number.replace(/\s/g, '');
 
-    // Luhn Algorithm
-    const isLuhnValid = (num) => {
-      let sum = 0;
-      let shouldDouble = false;
-      const digits = num.replace(/\s/g, '');
-      if (digits.length < 13) return false;
-      for (let i = digits.length - 1; i >= 0; i--) {
-        let digit = parseInt(digits[i]);
-        if (shouldDouble) {
-          if ((digit *= 2) > 9) digit -= 9;
-        }
-        sum += digit;
-        shouldDouble = !shouldDouble;
-      }
-      return sum % 10 === 0;
-    };
-
-    if (!number) errors.number = "Número requerido";
-    else if (!isLuhnValid(number)) errors.number = "Número de tarjeta inválido";
+    if (!digits) errors.number = "Número requerido";
+    else if (!isLuhnValid(digits)) errors.number = "Número de tarjeta inválido";
 
     if (!expiry) errors.expiry = "Requerido";
     else if (!/^\d{2}\/\d{2}$/.test(expiry)) errors.expiry = "Formato MM/AA";
@@ -126,7 +162,7 @@ export default function Pago() {
     }
 
     if (!cvc) errors.cvc = "Requerido";
-    else if (!/^\d{3,4}$/.test(cvc)) errors.cvc = "CVC inválido";
+    else if (!/^\d{3}$/.test(cvc)) errors.cvc = "El CVC debe tener exactamente 3 dígitos";
 
     setCardErrors(errors);
     return Object.keys(errors).length === 0;
@@ -250,7 +286,7 @@ export default function Pago() {
         </div>
         {error && <span className="text-red-500 text-xs">{error.message}</span>}
       </div>
-    )
+    ),
   };
 
   // Efecto para cargar ciudades cuando cambia el departamento
@@ -259,7 +295,7 @@ export default function Pago() {
       setCiudades([]);
       setValue("id_ciudad", "");
       api.get(`/ciudades/${selectedDepto}`)
-        .then(res => setCiudades(res.data))
+        .then(res => setCiudades(Array.isArray(res) ? res : res?.data || []))
         .catch(console.error);
     } else {
       setCiudades([]);

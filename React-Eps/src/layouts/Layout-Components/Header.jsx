@@ -1,4 +1,23 @@
+import { Link } from "react-router-dom";
+import AdminLogoutButton from "../../components/UI/AdminLogoutButton";
+import { useEffect, useState } from "react";
+
 export default function Header({ onMenuClick, title, subtitle }) {
+    const [profilePath, setProfilePath] = useState("/Perfil");
+
+    useEffect(() => {
+        try {
+            const userStr = localStorage.getItem("user");
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                if (user.id_rol === 6) {
+                    setProfilePath("/farmacia/perfil");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }, []);
     return (
         <header className="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-neutral-gray-border/20 dark:border-gray-800 px-8 py-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
             <button
@@ -15,7 +34,7 @@ export default function Header({ onMenuClick, title, subtitle }) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
                 <button
                     className="flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
                     <span className="material-symbols-outlined">notifications</span>
@@ -24,10 +43,18 @@ export default function Header({ onMenuClick, title, subtitle }) {
                     className="flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400">
                     <span className="material-symbols-outlined">help</span>
                 </button>
-                <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    data-alt="User avatar"
-                    style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEQSpvUyANgw_hVpC1GFciTJM9thLELV7GFk5CBpXT-doHMOMro-aVrIgD1MECliv2UiZashGDcNaN2lqYpPta_wCSNcPZnYhbb8xriJtDhXpaX9f1yk_D08wbKpZspIR_-rynBmi5zt_F4QYwiX9a6R_B4sEgw4B6K7dArfs7_QkrtyzsG4lOgD4wl7djRiF5Nj5XQX4WAXPja4hKOuK0Ls0pLu2ubbdIqNiL5XAlf7tDAXeNJO5kF6_u4Whxh6F5w7r6upC0v3_v")' }}>
-                </div>
+                {/* Botón de Perfil */}
+                <Link
+                    to={profilePath}
+                    title="Mi Perfil"
+                    className="flex items-center justify-center rounded-full size-10 bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                >
+                    <span className="material-symbols-outlined">account_circle</span>
+                </Link>
+                {/* Botón de Cerrar Sesión */}
+                <AdminLogoutButton
+                    className="flex items-center justify-center rounded-full size-10 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-gray-400 hover:text-red-500"
+                />
             </div>
         </header>
     )

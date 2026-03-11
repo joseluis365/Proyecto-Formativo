@@ -51,6 +51,7 @@ class Usuario extends Authenticatable
         'id_estado',
         'registro_profesional',
         'id_especialidad',
+        'id_farmacia',
     ];
 
     protected $hidden = [
@@ -86,6 +87,11 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
     }
 
+    public function farmacia()
+    {
+        return $this->belongsTo(Farmacia::class, 'id_farmacia', 'nit');
+    }
+
     /**
      * 🔒 Mutator automático para encriptar contraseña
      * Evita que alguien olvide hacer Hash::make()
@@ -93,7 +99,12 @@ class Usuario extends Authenticatable
     public function setContrasenaAttribute($value)
     {
         if (!empty($value)) {
-            $this->attributes['contrasena'] = Hash::make($value);
+            // Verifica si el valor yá es un hash válido de Laravel para evitar doble hash
+            if (Hash::info($value)['algoName'] !== 'unknown' && !Hash::needsRehash($value)) {
+                $this->attributes['contrasena'] = $value;
+            } else {
+                $this->attributes['contrasena'] = Hash::make($value);
+            }
         }
     }
 }

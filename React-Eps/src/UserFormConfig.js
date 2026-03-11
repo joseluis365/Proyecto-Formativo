@@ -1,92 +1,149 @@
+// ======================
+// CAMPOS INDIVIDUALES
+// ======================
+const personalFields = [
+  { name: "documento", label: "Documento", type: "number", icon: "badge" },
+  { name: "primer_nombre", label: "Primer Nombre", type: "text", icon: "person" },
+  { name: "segundo_nombre", label: "Segundo Nombre", type: "text", icon: "person" },
+  { name: "primer_apellido", label: "Primer Apellido", type: "text", icon: "person" },
+  { name: "segundo_apellido", label: "Segundo Apellido", type: "text", icon: "person" },
+  { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", icon: "calendar_today" },
+];
+
+const contactFields = [
+  { name: "email", label: "Correo", type: "email", icon: "email" },
+  { name: "telefono", label: "Teléfono", type: "number", icon: "call" },
+  { name: "direccion", label: "Dirección", type: "text", icon: "location_on" },
+];
+
+const patientSpecificFields = [
+  { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], icon: "wc" },
+  { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], icon: "bloodtype" },
+];
+
+const doctorSpecificFields = [
+  { name: "registro_profesional", label: "Registro Profesional", type: "number", icon: "verified" },
+  { name: "id_especialidad", label: "Especialidad", type: "select", icon: "medical_services" },
+];
+
+const pharmacistSpecificFields = [
+  { name: "id_farmacia", label: "Farmacia", type: "select", icon: "local_pharmacy" },
+];
+
 /**
- * Configuración de campos para formularios de usuarios.
- * Alineado con userSchema.js y con el contrato del backend.
+ * Genera las secciones para CREACIÓN
  */
+export function getCreateUserSections(id_rol, dynamicOptions = {}) {
+  const sections = [];
 
-// Configuración Base para Edición
-export const editUserFormConfig = [
-  { name: "documento", label: "Documento", type: "number", readOnly: true, icon: "badge" },
-  { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false, icon: "person" },
-  { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false, icon: "person" },
-  { name: "primer_apellido", label: "Primer Apellido", type: "text", readOnly: false, icon: "person" },
-  { name: "segundo_apellido", label: "Segundo Apellido", type: "text", readOnly: false, icon: "person" },
-  { name: "email", label: "Correo", type: "email", readOnly: false, icon: "email" },
-  { name: "telefono", label: "Telefono", type: "number", readOnly: false, icon: "call" },
-  { name: "direccion", label: "Direccion", type: "text", readOnly: false, icon: "location_on" },
-  { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", readOnly: false, icon: "calendar_today" },
-  { name: "contrasena", label: "Contraseña", type: "password", readOnly: true, icon: "lock" },
-  { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false, icon: "toggle_on" },
-];
+  // 1. Información Personal
+  const personalSectionFields = [...personalFields];
+  if (id_rol === 5) personalSectionFields.push(...patientSpecificFields);
 
-// Configuración Específica por Rol para Edición
-export const roleSpecificEditConfig = {
-  4: [ // Medico
-    { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: true, icon: "verified" },
-    { name: "id_especialidad", label: "Especialidad", type: "select", readOnly: false, icon: "medical_services" },
-  ],
-  5: [ // Paciente
-    { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], readOnly: false, icon: "wc" },
-    { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false, icon: "bloodtype" },
-  ],
-};
+  sections.push({
+    title: "Información Personal",
+    fields: personalSectionFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
+  });
 
-// Configuración Base para Creación
-export const createUserFormConfig = [
-  { name: "documento", label: "Documento", type: "number", readOnly: false, icon: "badge" },
-  { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false, icon: "person" },
-  { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false, icon: "person" },
-  { name: "primer_apellido", label: "Primer Apellido", type: "text", readOnly: false, icon: "person" },
-  { name: "segundo_apellido", label: "Segundo Apellido", type: "text", readOnly: false, icon: "person" },
-  { name: "email", label: "Correo", type: "email", readOnly: false, icon: "email" },
-  { name: "telefono", label: "Telefono", type: "number", readOnly: false, icon: "call" },
-  { name: "direccion", label: "Direccion", type: "text", readOnly: false, icon: "location_on" },
-  { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", readOnly: false, icon: "calendar_today" },
-  { name: "contrasena", label: "Contraseña", type: "password", readOnly: false, icon: "lock" },
-  { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], readOnly: false, icon: "toggle_on" },
-];
+  // 2. Información de Contacto
+  sections.push({
+    title: "Información de Contacto",
+    fields: contactFields.map(f => ({ ...f, readOnly: false }))
+  });
 
-// Configuración Específica por Rol para Creación
-export const roleSpecificConfig = {
-  4: [ // Medico
-    { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: false, icon: "verified" },
-    { name: "id_especialidad", label: "Especialidad", type: "select", icon: "medical_services" },
-  ],
-  5: [ // Paciente
-    { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], readOnly: false, icon: "wc" },
-    { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false, icon: "bloodtype" },
-  ],
-};
+  // 3. Secciones Específicas
+  if (id_rol === 4) {
+    sections.push({
+      title: "Información Profesional",
+      fields: doctorSpecificFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
+    });
+  } else if (id_rol === 6) {
+    sections.push({
+      title: "Información Laboral",
+      fields: pharmacistSpecificFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
+    });
+  }
+
+  // 4. Credenciales
+  sections.push({
+    title: "Credenciales",
+    fields: [
+      { name: "contrasena", label: "Contraseña", type: "password", icon: "lock", readOnly: false },
+      { name: "confirm_contrasena", label: "Confirmar Contraseña", type: "password", icon: "lock_reset", readOnly: false },
+      { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], icon: "toggle_on", readOnly: false },
+    ]
+  });
+
+  return sections;
+}
 
 /**
- * Genera la configuración completa para creación basada en el rol.
+ * Genera las secciones para EDICIÓN
+ */
+export function getEditUserSections(id_rol, dynamicOptions = {}) {
+  const sections = [];
+
+  // 1. Información Personal
+  const personalSectionFields = [...personalFields];
+  if (id_rol === 5) personalSectionFields.push(...patientSpecificFields);
+
+  sections.push({
+    title: "Información Personal",
+    fields: personalSectionFields.map(f => ({
+      ...f,
+      readOnly: f.name === "documento",
+      options: dynamicOptions[f.name] || f.options
+    }))
+  });
+
+  // 2. Información de Contacto
+  sections.push({
+    title: "Información de Contacto",
+    fields: contactFields.map(f => ({ ...f, readOnly: false }))
+  });
+
+  // 3. Secciones Específicas
+  if (id_rol === 4) {
+    sections.push({
+      title: "Información Profesional",
+      fields: doctorSpecificFields.map(f => ({
+        ...f,
+        readOnly: f.name === "registro_profesional",
+        options: dynamicOptions[f.name] || f.options
+      }))
+    });
+  } else if (id_rol === 6) {
+    sections.push({
+      title: "Información Laboral",
+      fields: pharmacistSpecificFields.map(f => ({
+        ...f,
+        readOnly: false,
+        options: dynamicOptions[f.name] || f.options
+      }))
+    });
+  }
+
+  // 4. Estado del usuario (sin contraseña en edición)
+  sections.push({
+    title: "Credenciales",
+    fields: [
+      { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], icon: "toggle_on", readOnly: false },
+    ]
+  });
+
+  return sections;
+}
+
+/**
+ * COMPATIBILIDAD: Formulario plano (sin secciones)
  */
 export function getCreateUserFormConfig(id_rol, dynamicOptions = {}) {
-  const config = [
-    ...createUserFormConfig,
-    ...(roleSpecificConfig[id_rol] || [])
-  ];
-
-  return config.map(field => {
-    if (dynamicOptions[field.name]) {
-      return { ...field, options: dynamicOptions[field.name] };
-    }
-    return field;
-  });
+  const sections = getCreateUserSections(id_rol, dynamicOptions);
+  return sections.flatMap(s => s.fields);
 }
 
-/**
- * Genera la configuración completa para edición basada en el rol.
- */
 export function getEditUserFormConfig(id_rol, dynamicOptions = {}) {
-  const config = [
-    ...editUserFormConfig,
-    ...(roleSpecificEditConfig[id_rol] || [])
-  ];
-
-  return config.map(field => {
-    if (dynamicOptions[field.name]) {
-      return { ...field, options: dynamicOptions[field.name] };
-    }
-    return field;
-  });
+  const sections = getEditUserSections(id_rol, dynamicOptions);
+  return sections.flatMap(s => s.fields);
 }
+

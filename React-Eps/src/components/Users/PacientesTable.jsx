@@ -96,8 +96,12 @@ export default function PacientesTable({ users, fetchUsers }) {
             to={`/usuarios/pacientes/info-paciente/${u.documento}`}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-primary font-semibold"
           >
-            Ver info
+            <span className="material-symbols-outlined text-base">visibility</span>
           </Link>
+
+          <button onClick={() => setEditingUserId(u.documento)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <span className="material-symbols-outlined text-base">edit</span>
+          </button>
 
           <button onClick={() => handleToggleStatus(u)}
             className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">

@@ -25,6 +25,15 @@ use App\Http\Controllers\Api\CiudadController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\EstadoController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Api\AdminDashboardController;
+// Farmacia módulo
+use App\Http\Controllers\Api\MedicamentoController;
+use App\Http\Controllers\Api\InventarioFarmaciaController;
+use App\Http\Controllers\Api\MovimientoInventarioController;
+use App\Http\Controllers\Api\RecetaFarmaciaController;
+use App\Http\Controllers\Api\DispensacionController;
+use App\Http\Controllers\Api\FarmaciaDashboardController;
+use App\Http\Controllers\Api\FarmaciaReportesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +74,8 @@ Route::get('/licencia/{id}', [LicenciaController::class, 'show']);
 Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
-    return Activity::latest()
+    return Activity::where('channel_name', $channel)
+        ->latest()
         ->take(5)
         ->get()
         ->map(function ($activity) {
@@ -86,6 +96,41 @@ Route::get('/recent-activity/{channelName}', function ($channel) {
 */
 
 Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | SESIÓN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD ADMIN — ESTADÍSTICAS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/admin/dashboard/citas-semana', function () {
+        $days = [];
+        $today = \Carbon\Carbon::now();
+
+        // Generar los 7 días: desde hace 6 días hasta hoy
+        for ($i = 6; $i >= 0; $i--) {
+            $day = $today->copy()->subDays($i);
+            $days[] = [
+                'date'  => $day->toDateString(),
+                'dia'   => $day->locale('es')->isoFormat('ddd'), // Lun, Mar, ...
+                'total' => \App\Models\Cita::whereDate('fecha', $day->toDateString())->count(),
+            ];
+        }
+
+        return response()->json(['data' => $days]);
+    });
+
+    Route::get('/admin/dashboard/stats', [AdminDashboardController::class, 'getStats']);
+
 
     /*
     |--------------------------------------------------------------------------
@@ -243,6 +288,49 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::get('/configuracion/estados', 'index');
         Route::post('/estados', 'store');
         Route::put('/estados/{id_estado}', 'update');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | MÓDULO FARMACIA — CATÁLOGO
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('farmacia')->group(function () {
+        // Catálogo de medicamentos (presentaciones)
+        Route::get('/medicamentos', [MedicamentoController::class, 'index']);
+        Route::post('/medicamento', [MedicamentoController::class, 'store']);
+        Route::post('/medicamento/{id_medicamento}/presentacion', [MedicamentoController::class, 'storePresentacion']);
+        Route::put('/medicamento/{id}/estado', [MedicamentoController::class, 'toggleEstado']);
+        Route::get('/medicamentos/disponibilidad', [MedicamentoController::class, 'disponibilidad']);
+
+        // Selects
+        Route::get('/categorias', [MedicamentoController::class, 'categorias']);
+        Route::get('/concentraciones', [MedicamentoController::class, 'concentraciones']);
+        Route::get('/formas-farmaceuticas', [MedicamentoController::class, 'formasFarmaceuticas']);
+
+        // Inventario
+        Route::get('/inventario', [InventarioFarmaciaController::class, 'index']);
+        Route::post('/inventario/entrada', [InventarioFarmaciaController::class, 'registrarEntrada']);
+
+        // Movimientos
+        Route::get('/movimientos', [MovimientoInventarioController::class, 'index']);
+        Route::post('/movimientos/salida', [MovimientoInventarioController::class, 'registrarSalida']);
+
+        // Recetas pendientes para esta farmacia
+        Route::get('/recetas-pendientes', [RecetaFarmaciaController::class, 'index']);
+        Route::get('/receta/{id}', [RecetaFarmaciaController::class, 'show']);
+
+        // Dispensación
+        Route::post('/dispensar', [DispensacionController::class, 'dispensar']);
+        Route::get('/dispensaciones', [DispensacionController::class, 'index']);
+
+        // Dashboard
+        Route::get('/dashboard/stats', [FarmaciaDashboardController::class, 'stats']);
+
+        // Reportes
+        Route::get('/reportes/{entity}', [FarmaciaReportesController::class, 'index']);
+        Route::get('/reportes/{entity}/export', [FarmaciaReportesController::class, 'export']);
     });
 
     /*

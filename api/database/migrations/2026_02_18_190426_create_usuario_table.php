@@ -11,8 +11,10 @@ return new class extends Migration
     {
         Schema::create('usuario', function (Blueprint $table) {
             $table->unsignedBigInteger('documento')->primary();
-            $table->string('nombre', 50)->nullable();
-            $table->string('apellido', 50)->nullable();
+            $table->string('primer_nombre', 50)->nullable();
+            $table->string('segundo_nombre', 50)->nullable();
+            $table->string('primer_apellido', 50)->nullable();
+            $table->string('segundo_apellido', 50)->nullable();
             $table->string('email', 100)->nullable()->unique();
             $table->string('telefono', 30)->nullable();
             $table->string('direccion', 150)->nullable();
@@ -21,12 +23,14 @@ return new class extends Migration
             $table->string('grupo_sanguineo', 3)->nullable();
             $table->string('contrasena', 500);
             $table->string('registro_profesional', 50)->nullable();
+            $table->unsignedBigInteger('id_especialidad')->nullable();
+            $table->unsignedBigInteger('id_farmacia')->nullable();
             $table->string('nit', 20);
             $table->unsignedBigInteger('id_rol');
             $table->unsignedBigInteger('id_estado');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
-            $table->unsignedBigInteger('id_especialidad')->nullable();
+            
 
             // Foreign Keys
             $table->foreign('nit')
@@ -47,6 +51,11 @@ return new class extends Migration
             $table->foreign('id_especialidad')
                   ->references('id_especialidad')
                   ->on('especialidad')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_farmacia')
+                  ->references('nit')
+                  ->on('farmacia')
                   ->onDelete('restrict');
         });
 

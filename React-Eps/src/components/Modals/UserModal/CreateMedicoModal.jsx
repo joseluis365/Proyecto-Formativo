@@ -5,7 +5,7 @@ import api from "@/Api/axios";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import FormWithIcons from "@/components/UI/FormWithIcons";
-import { getCreateUserFormConfig } from "@/UserFormConfig";
+import { getCreateUserSections } from "@/UserFormConfig";
 import { createMedicoSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "@/utils/formHandlers";
 import Swal from 'sweetalert2';
@@ -40,11 +40,8 @@ export default function CreateMedicoModal({
     try {
       setSaving(true);
 
-      // Inyección de rol Médico (4)
-      const payload = {
-        ...data,
-        id_rol: 4
-      };
+      const { confirm_contrasena, ...payload } = data;
+      payload.id_rol = 4;
 
       await api.post(`/usuario`, payload);
 
@@ -67,16 +64,14 @@ export default function CreateMedicoModal({
     }
   };
 
-  const formConfig = {
-    fields: getCreateUserFormConfig(4, { id_especialidad: specialties })
-  };
+  const sections = getCreateUserSections(4, { id_especialidad: specialties });
 
   return (
     <BaseModal>
       <ModalHeader icon="medical_services" title="CREAR MÉDICO" onClose={onClose} />
       <div className="p-6 flex-1 overflow-y-auto">
         <FormWithIcons
-          config={formConfig}
+          sections={sections}
           register={register}
           errors={errors}
           handleSubmit={handleSubmit}
@@ -97,3 +92,4 @@ export default function CreateMedicoModal({
     </BaseModal>
   );
 }
+

@@ -17,7 +17,8 @@ export default function IconInput({
     readOnly,
     required,
     options, // Soporte para opciones de select
-    onlyLetters, // Restricción física de caracteres
+    onlyLetters, // Restricción física: solo letras
+    onlyNumbers, // Restricción física: solo números (y guion para NIT)
     value,
     onChangeHandler,
     ...props
@@ -31,7 +32,7 @@ export default function IconInput({
     const handleInput = (e) => {
         if (onlyLetters) {
             let value = e.target.value;
-            // Solo letras (incluyento acentos y ñ) y un solo espacio
+            // Solo letras (incluyendo acentos y ñ) y un solo espacio
             value = value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
             // Eliminar dobles espacios
             value = value.replace(/\s{2,}/g, " ");
@@ -41,8 +42,35 @@ export default function IconInput({
             }
         }
 
+        if (onlyNumbers) {
+            let value = e.target.value;
+            // Permite dígitos y un guion (para NITs como 900123456-7)
+            value = value.replace(/[^0-9-]/g, "");
+            if (e.target.value !== value) {
+                e.target.value = value;
+            }
+        }
+
         // Propagar el evento original si existe en props
         if (props.onInput) props.onInput(e);
+    };
+
+    const handleKeyDown = (e) => {
+        if (onlyLetters) {
+            // Bloquear dígitos físicamente
+            if (/^\d$/.test(e.key)) e.preventDefault();
+        }
+        if (onlyNumbers) {
+            // Permitir: dígitos, guion, teclas de control (Backspace, Delete, Tab, flechas, Ctrl/Cmd)
+            const allowed = /^[0-9-]$/.test(e.key);
+            const isControl = [
+                'Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'
+            ].includes(e.key);
+            const isCopyPaste = (e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase());
+            if (!allowed && !isControl && !isCopyPaste) e.preventDefault();
+        }
+
+        if (props.onKeyDown) props.onKeyDown(e);
     };
 
     const isPasswordType = type === 'password';
@@ -66,6 +94,7 @@ export default function IconInput({
         autoComplete,
         className: `${baseClasses} ${statusClasses} ${isPasswordType ? 'pr-12' : 'pr-4'} ${isSelectType ? 'appearance-none pr-10' : ''}`,
         onInput: handleInput,
+        onKeyDown: handleKeyDown,
         ...(!register && value !== undefined ? { value } : {}),
         ...(!register && onChangeHandler ? { onChange: (e) => onChangeHandler(name, e.target.value) } : {}),
         ...props
@@ -89,7 +118,7 @@ export default function IconInput({
                 {isSelectType ? (
                     <select {...commonProps}>
                         <option key="placeholder" value="">{placeholder || 'Seleccione una opción'}</option>
-                        {options?.map((opt, index) => (
+                        {(options || []).map((opt, index) => (
                             <option key={opt.value || index} value={opt.value}>
                                 {opt.label}
                             </option>

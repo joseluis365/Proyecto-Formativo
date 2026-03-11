@@ -165,6 +165,11 @@ class ReportService
             $query->where('id_estado', $params['id_estado']);
         }
 
+        // Filtro por id_rol (específico para usuarios)
+        if (!empty($params['id_rol'])) {
+            $query->where('id_rol', $params['id_rol']);
+        }
+
         // Filtro por rango de fechas (solo si el modelo tiene timestamps)
         if (($config['has_timestamps'] ?? false) && !empty($params['date_from']) && !empty($params['date_to'])) {
             $query->whereBetween('created_at', [$params['date_from'], $params['date_to']]);

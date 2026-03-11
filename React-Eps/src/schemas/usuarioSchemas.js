@@ -69,47 +69,62 @@ export const baseUserSchema = z.object({
 });
 
 // ======================
-// MEDICO SCHEMAS
+// HELPERS
 // ======================
-export const createMedicoSchema = baseUserSchema.extend({
+const creationPasswordValidation = {
     contrasena: z.string()
         .min(1, "La contraseña es obligatoria")
         .min(8, "La contraseña debe tener al menos 8 caracteres")
         .max(25, "La contraseña debe tener como maximo 25 caracteres")
         .regex(passwordRegex, "La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial"),
+    confirm_contrasena: z.string()
+        .min(1, "Debe confirmar la contraseña")
+};
+
+const withPasswordConfirmation = (schema) => schema.superRefine(({ confirm_contrasena, contrasena }, ctx) => {
+    if (confirm_contrasena !== contrasena) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Las contraseñas no coinciden",
+            path: ["confirm_contrasena"],
+        });
+    }
+});
+
+// ======================
+// MEDICO SCHEMAS
+// ======================
+export const createMedicoSchema = withPasswordConfirmation(baseUserSchema.extend({
+    ...creationPasswordValidation,
     registro_profesional: z.coerce.string()
         .min(1, "El registro profesional es obligatorio")
         .min(5, "El registro profesional debe tener entre 5 y 15 digitos")
         .max(15, "El registro profesional debe tener entre 5 y 15 digitos")
         .regex(registroProfesionalRegex, "El registro profesional debe ser maximo de 15 digitos numericos sin espacios ni puntos"),
     id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria")
-});
+}));
 
 export const updateMedicoSchema = baseUserSchema.extend({
     registro_profesional: z.coerce.string()
         .min(1, "El registro profesional es obligatorio")
-        .min(1, "El registro profesional debe tener maximo 10 digitos")
-        .max(10, "El registro profesional debe tener maximo 10 digitos")
-        .regex(/^\d{1,10}$/, "El registro profesional debe ser maximo de 10 digitos"),
-    id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria")
+        .min(5, "El registro profesional debe tener entre 5 y 15 digitos")
+        .max(15, "El registro profesional debe tener entre 5 y 15 digitos")
+        .regex(registroProfesionalRegex, "El registro profesional debe ser maximo de 15 digitos numericos sin espacios ni puntos"),
+    id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria"),
 });
 
 // ======================
 // PACIENTE SCHEMAS
 // ======================
-export const createPacienteSchema = baseUserSchema.extend({
-    contrasena: z.string()
-        .min(1, "La contraseña es obligatoria")
-        .min(8, "La contraseña debe tener al menos 8 caracteres")
-        .max(25, "La contraseña debe tener como maximo 25 caracteres")
-        .regex(passwordRegex, "La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial"),
+export const createPacienteSchema = withPasswordConfirmation(baseUserSchema.extend({
+    ...creationPasswordValidation,
     sexo: z.string()
         .min(1, "El sexo del paciente es obligatorio")
         .refine(val => ["Masculino", "Femenino"].includes(val), "El sexo debe ser Masculino o Femenino"),
     grupo_sanguineo: z.string()
         .min(1, "El grupo sanguineo es obligatorio")
         .refine(val => ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].includes(val), "El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-")
-});
+}));
 
 export const updatePacienteSchema = baseUserSchema.extend({
     sexo: z.string()
@@ -117,18 +132,26 @@ export const updatePacienteSchema = baseUserSchema.extend({
         .refine(val => ["Masculino", "Femenino"].includes(val), "El sexo debe ser Masculino o Femenino"),
     grupo_sanguineo: z.string()
         .min(1, "El grupo sanguineo es obligatorio")
-        .refine(val => ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].includes(val), "El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-")
+        .refine(val => ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].includes(val), "El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-"),
 });
 
 // ======================
 // PERSONAL SCHEMAS
 // ======================
-export const createPersonalSchema = baseUserSchema.extend({
-    contrasena: z.string()
-        .min(1, "La contraseña es obligatoria")
-        .min(8, "La contraseña debe tener al menos 8 caracteres")
-        .max(25, "La contraseña debe tener como maximo 25 caracteres")
-        .regex(passwordRegex, "La contraseña debe tener al menos una mayuscula, una minuscula, un numero y un caracter especial"),
-});
+export const createPersonalSchema = withPasswordConfirmation(baseUserSchema.extend({
+    ...creationPasswordValidation,
+}));
 
 export const updatePersonalSchema = baseUserSchema;
+
+// ======================
+// FARMACEUTICO SCHEMAS
+// ======================
+export const createFarmaceuticoSchema = withPasswordConfirmation(baseUserSchema.extend({
+    ...creationPasswordValidation,
+    id_farmacia: z.coerce.string().min(1, "La farmacia es obligatoria"),
+}));
+
+export const updateFarmaceuticoSchema = baseUserSchema.extend({
+    id_farmacia: z.coerce.string().min(1, "La farmacia es obligatoria"),
+});

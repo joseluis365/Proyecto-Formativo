@@ -53,7 +53,7 @@ export default function SuperAdminResetPassword() {
                 password_confirmation: data.password_confirmation
             });
 
-            if (response.status === 200) {
+            if (response) {
                 Swal.fire({
                     icon: "success",
                     title: "Éxito",
