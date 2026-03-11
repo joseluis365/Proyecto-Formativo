@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\MovimientoInventario;
 use App\Models\LoteMedicamento;
 use App\Models\InventarioFarmacia;
+use App\Http\Requests\Farmacia\StoreSalidaManualRequest;
 use Illuminate\Support\Facades\DB;
 
 class MovimientoInventarioController extends Controller
@@ -99,19 +100,16 @@ class MovimientoInventarioController extends Controller
     /**
      * Registrar una salida manual de inventario (sin receta, por ej: ajuste o pérdida).
      */
-    public function registrarSalida(Request $request)
+    public function registrarSalida(StoreSalidaManualRequest $request)
     {
-        $request->validate([
-            'id_lote'  => 'required|integer|exists:lote_medicamento,id_lote',
-            'cantidad' => 'required|integer|min:1',
-            'motivo'   => 'required|string|max:200',
-        ]);
-
         $user  = $request->user();
         $lote  = LoteMedicamento::findOrFail($request->id_lote);
 
         if ($lote->stock_actual < $request->cantidad) {
-            return response()->json(['message' => 'Stock insuficiente en el lote seleccionado'], 422);
+            return response()->json([
+                'message' => 'Validación fallida',
+                'errors' => ['cantidad' => ['Stock insuficiente en el lote seleccionado']]
+            ], 422);
         }
 
         DB::transaction(function () use ($request, $user, $lote) {

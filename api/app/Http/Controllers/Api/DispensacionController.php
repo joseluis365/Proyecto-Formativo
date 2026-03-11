@@ -9,6 +9,7 @@ use App\Models\RecetaDetalle;
 use App\Models\LoteMedicamento;
 use App\Models\InventarioFarmacia;
 use App\Models\MovimientoInventario;
+use App\Http\Requests\Farmacia\StoreDispensacionRequest;
 use Illuminate\Support\Facades\DB;
 
 class DispensacionController extends Controller
@@ -23,13 +24,8 @@ class DispensacionController extends Controller
      * 4. Crea la dispensación.
      * 5. Crea el movimiento de inventario tipo Salida vinculado a la dispensación.
      */
-    public function dispensar(Request $request)
+    public function dispensar(StoreDispensacionRequest $request)
     {
-        $request->validate([
-            'id_detalle_receta' => 'required|integer|exists:receta_detalle,id_detalle_receta',
-            'cantidad'          => 'required|integer|min:1',
-        ]);
-
         $user = $request->user();
         $farmacia = \App\Models\Farmacia::where('nit_empresa', $user->nit)
             ->orWhere('nit', $user->nit)

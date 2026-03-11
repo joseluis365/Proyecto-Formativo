@@ -6,6 +6,10 @@ import Input from "../../components/UI/Input";
 import DataTable from "../../components/UI/DataTable";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import SearchableSelect from "../../components/UI/SearchableSelect";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { entradaInventarioSchema, salidaInventarioSchema } from "../../utils/validations/farmaciaSchemas";
+import { preventDoubleSpaces, normalizeText } from "../../utils/textUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
@@ -38,8 +42,30 @@ export default function Movimientos() {
     const [saving, setSaving] = useState(false);
     const [presentaciones, setPresentaciones] = useState([]);
     const [lotes, setLotes] = useState([]);
-    const [formEntrada, setFormEntrada] = useState({ id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" });
-    const [formSalida, setFormSalida] = useState({ id_lote: "", cantidad: "", motivo: "" });
+
+    const {
+        register: registerEntrada,
+        handleSubmit: handleSubmitEntrada,
+        control: controlEntrada,
+        formState: { errors: errorsEntrada },
+        reset: resetEntrada
+    } = useForm({
+        resolver: zodResolver(entradaInventarioSchema),
+        mode: "onChange",
+        defaultValues: { id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" }
+    });
+
+    const {
+        register: registerSalida,
+        handleSubmit: handleSubmitSalida,
+        control: controlSalida,
+        formState: { errors: errorsSalida },
+        reset: resetSalida
+    } = useForm({
+        resolver: zodResolver(salidaInventarioSchema),
+        mode: "onChange",
+        defaultValues: { id_lote: "", cantidad: "", motivo: "" }
+    });
 
     const location = useLocation();
 
@@ -89,32 +115,56 @@ export default function Movimientos() {
         setShowDetailsModal(true);
     };
 
-    const handleRegistrarEntrada = async (e) => {
-        e.preventDefault();
+    const handleRegistrarEntrada = async (data) => {
         setSaving(true);
         try {
-            await api.post("/farmacia/inventario/entrada", formEntrada);
+            await api.post("/farmacia/inventario/entrada", data);
             Swal.fire({ icon: "success", title: "Entrada registrada", timer: 1500, showConfirmButton: false });
             setShowEntradaModal(false);
-            setFormEntrada({ id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" });
+            resetEntrada();
             fetchMovimientos();
+        } catch (err) {
+            if (err.response?.status === 422) {
+                const msgs = Object.values(err.response.data.errors).flat().join('\n');
+                Swal.fire({ icon: "error", title: "Error de Validación", text: msgs });
+            } else {
+                Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || "Error desconocido" });
+            }
         } finally {
             setSaving(false);
         }
     };
 
-    const handleRegistrarSalida = async (e) => {
-        e.preventDefault();
+    const handleValidationErrors = (errors) => {
+        const errorMessages = Object.values(errors).map(err => err.message).join('\n');
+        Swal.fire({ icon: "warning", title: "Datos incompletos o inválidos", text: errorMessages });
+    };
+
+    const handleRegistrarSalida = async (data) => {
+        const loteSeleccionado = lotes.find(l => String(l.lote_id) === String(data.id_lote));
+        if (loteSeleccionado && Number(data.cantidad) > Number(loteSeleccionado.stock_actual)) {
+            Swal.fire({
+                icon: "warning",
+                title: "Stock Insuficiente",
+                text: `La cantidad a retirar (${data.cantidad}) excede el stock actual (${loteSeleccionado.stock_actual}) de este lote.`
+            });
+            return;
+        }
+
         setSaving(true);
         try {
-            await api.post("/farmacia/movimientos/salida", formSalida);
+            await api.post("/farmacia/movimientos/salida", data);
             Swal.fire({ icon: "success", title: "Salida registrada", timer: 1500, showConfirmButton: false });
             setShowSalidaModal(false);
-            setFormSalida({ id_lote: "", cantidad: "", motivo: "" });
+            resetSalida();
             fetchMovimientos();
         } catch (err) {
-            const msg = err?.response?.data?.message;
-            if (msg) Swal.fire({ icon: "error", title: "Error", text: msg });
+            if (err.response?.status === 422) {
+                const msgs = Object.values(err.response.data.errors).flat().join('\n');
+                Swal.fire({ icon: "error", title: "Error de Validación", text: msgs });
+            } else {
+                Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || "Error desconocido" });
+            }
         } finally {
             setSaving(false);
         }
@@ -312,40 +362,64 @@ export default function Movimientos() {
                             <span className="material-symbols-outlined text-green-600">add_box</span>
                             Registrar Entrada
                         </h3>
-                        <form onSubmit={handleRegistrarEntrada} className="space-y-4">
+                        <form onSubmit={handleSubmitEntrada(handleRegistrarEntrada, handleValidationErrors)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Medicamento *</label>
-                                <SearchableSelect
-                                    required
-                                    value={formEntrada.id_presentacion}
-                                    onChange={val => setFormEntrada(f => ({ ...f, id_presentacion: val }))}
-                                    placeholder="Seleccionar medicamento..."
-                                    options={presentaciones.map(p => ({
-                                        value: p.id_presentacion,
-                                        label: `${p.nombre} ${p.concentracion} (${p.forma})`
-                                    }))}
+                                <Controller
+                                    name="id_presentacion"
+                                    control={controlEntrada}
+                                    render={({ field }) => (
+                                        <SearchableSelect
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="Seleccionar medicamento..."
+                                            options={presentaciones.map(p => ({
+                                                value: p.id_presentacion,
+                                                label: `${p.nombre} ${p.concentracion} (${p.forma})`
+                                            }))}
+                                        />
+                                    )}
                                 />
+                                {errorsEntrada.id_presentacion && <p className="text-red-500 text-xs mt-1">{errorsEntrada.id_presentacion.message}</p>}
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
-                                    <input type="number" min="1" required value={formEntrada.cantidad} onChange={e => setFormEntrada(f => ({ ...f, cantidad: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                                    <input type="number" min="1" {...registerEntrada("cantidad")}
+                                        className={`w-full border ${errorsEntrada.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                    {errorsEntrada.cantidad && <p className="text-red-500 text-xs mt-1">{errorsEntrada.cantidad.message}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Vencimiento *</label>
-                                    <input type="date" required min={new Date().toISOString().split("T")[0]} value={formEntrada.fecha_vencimiento} onChange={e => setFormEntrada(f => ({ ...f, fecha_vencimiento: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                                    <input type="date" min={new Date().toISOString().split("T")[0]} {...registerEntrada("fecha_vencimiento")}
+                                        className={`w-full border ${errorsEntrada.fecha_vencimiento ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                    {errorsEntrada.fecha_vencimiento && <p className="text-red-500 text-xs mt-1">{errorsEntrada.fecha_vencimiento.message}</p>}
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Motivo</label>
-                                <input value={formEntrada.motivo} onChange={e => setFormEntrada(f => ({ ...f, motivo: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                                    placeholder="Ej: Compra a proveedor" />
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Motivo *</label>
+                                <Controller
+                                    name="motivo"
+                                    control={controlEntrada}
+                                    render={({ field }) => (
+                                        <input
+                                            {...field}
+                                            list="motivos-entrada"
+                                            onChange={(e) => field.onChange(normalizeText(preventDoubleSpaces(e.target.value)))}
+                                            className={`w-full border ${errorsEntrada.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            placeholder="Ej: Compra a proveedor..."
+                                        />
+                                    )}
+                                />
+                                <datalist id="motivos-entrada">
+                                    <option value="Reponer stock" />
+                                    <option value="Compra para reserva" />
+                                    <option value="Ajuste positivo de inventario" />
+                                </datalist>
+                                {errorsEntrada.motivo && <p className="text-red-500 text-xs mt-1">{errorsEntrada.motivo.message}</p>}
                             </div>
                             <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={() => setShowEntradaModal(false)} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
+                                <button type="button" onClick={() => { setShowEntradaModal(false); resetEntrada(); }} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
                                 <button type="submit" disabled={saving} className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
                                     {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Registrar</>}
                                 </button>
@@ -363,33 +437,57 @@ export default function Movimientos() {
                             <span className="material-symbols-outlined text-red-600">indeterminate_check_box</span>
                             Registrar Salida Manual
                         </h3>
-                        <form onSubmit={handleRegistrarSalida} className="space-y-4">
+                        <form onSubmit={handleSubmitSalida(handleRegistrarSalida, handleValidationErrors)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Lote / Medicamento *</label>
-                                <SearchableSelect
-                                    required
-                                    value={formSalida.id_lote}
-                                    onChange={val => setFormSalida(f => ({ ...f, id_lote: val }))}
-                                    placeholder="Seleccionar producto del inventario..."
-                                    options={lotes.map(l => ({
-                                        value: l.lote_id,
-                                        label: `${l.nombre} (${l.forma}) — Stock: ${l.stock_actual} — Lote #${l.lote_id}`
-                                    }))}
+                                <Controller
+                                    name="id_lote"
+                                    control={controlSalida}
+                                    render={({ field }) => (
+                                        <SearchableSelect
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="Seleccionar producto del inventario..."
+                                            options={lotes.map(l => ({
+                                                value: l.lote_id,
+                                                label: `${l.nombre} (${l.forma}) — Stock: ${l.stock_actual} — Lote #${l.lote_id}`
+                                            }))}
+                                        />
+                                    )}
                                 />
+                                {errorsSalida.id_lote && <p className="text-red-500 text-xs mt-1">{errorsSalida.id_lote.message}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
-                                <input type="number" min="1" required value={formSalida.cantidad} onChange={e => setFormSalida(f => ({ ...f, cantidad: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                                <input type="number" min="1" {...registerSalida("cantidad")}
+                                    className={`w-full border ${errorsSalida.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                {errorsSalida.cantidad && <p className="text-red-500 text-xs mt-1">{errorsSalida.cantidad.message}</p>}
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Motivo *</label>
-                                <input required value={formSalida.motivo} onChange={e => setFormSalida(f => ({ ...f, motivo: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                                    placeholder="Ej: Ajuste por pérdida, devolución..." />
+                                <Controller
+                                    name="motivo"
+                                    control={controlSalida}
+                                    render={({ field }) => (
+                                        <input
+                                            {...field}
+                                            list="motivos-salida"
+                                            onChange={(e) => field.onChange(normalizeText(preventDoubleSpaces(e.target.value)))}
+                                            className={`w-full border ${errorsSalida.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            placeholder="Ej: Lote vencido, Pérdida..."
+                                        />
+                                    )}
+                                />
+                                <datalist id="motivos-salida">
+                                    <option value="Lote vencido" />
+                                    <option value="Pérdida" />
+                                    <option value="Ajuste por inventario" />
+                                    <option value="Devolución a proveedor" />
+                                </datalist>
+                                {errorsSalida.motivo && <p className="text-red-500 text-xs mt-1">{errorsSalida.motivo.message}</p>}
                             </div>
                             <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={() => setShowSalidaModal(false)} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
+                                <button type="button" onClick={() => { setShowSalidaModal(false); resetSalida(); }} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
                                 <button type="submit" disabled={saving} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
                                     {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Registrar</>}
                                 </button>

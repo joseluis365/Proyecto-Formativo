@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\InventarioFarmacia;
 use App\Models\LoteMedicamento;
 use App\Models\MovimientoInventario;
+use App\Http\Requests\Farmacia\StoreMovimientoInventarioRequest;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -127,15 +128,8 @@ class InventarioFarmaciaController extends Controller
      * Registra una entrada de medicamento (nuevo lote).
      * Crea o actualiza el inventario general y registra el movimiento.
      */
-    public function registrarEntrada(Request $request)
+    public function registrarEntrada(StoreMovimientoInventarioRequest $request)
     {
-        $request->validate([
-            'id_presentacion'  => 'required|integer|exists:presentacion_medicamento,id_presentacion',
-            'cantidad'         => 'required|integer|min:1',
-            'fecha_vencimiento'=> 'required|date|after:today',
-            'motivo'           => 'nullable|string|max:200',
-        ]);
-
         $user = $request->user();
         $farmacia = \App\Models\Farmacia::where('nit_empresa', $user->nit)
             ->orWhere('nit', $user->nit)

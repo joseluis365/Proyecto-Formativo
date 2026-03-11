@@ -6,6 +6,10 @@ import Input from "../../components/UI/Input";
 import DataTable from "../../components/UI/DataTable";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import SearchableSelect from "../../components/UI/SearchableSelect";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { entradaInventarioSchema } from "../../utils/validations/farmaciaSchemas";
+import { preventDoubleSpaces, normalizeText } from "../../utils/textUtils";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
 
@@ -28,7 +32,12 @@ export default function Inventario() {
     const [presentaciones, setPresentaciones] = useState([]);
     const [formas, setFormas] = useState([]);
     const [concentraciones, setConcentraciones] = useState([]);
-    const [form, setForm] = useState({ id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" });
+
+    const { register, handleSubmit, control, formState: { errors }, reset } = useForm({
+        resolver: zodResolver(entradaInventarioSchema),
+        mode: "onChange",
+        defaultValues: { id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" }
+    });
 
     useEffect(() => {
         setTitle("Inventario de Farmacia");
@@ -82,18 +91,33 @@ export default function Inventario() {
         setShowModal(true);
     };
 
-    const handleRegistrarEntrada = async (e) => {
-        e.preventDefault();
+    const handleRegistrarEntrada = async (data) => {
         setSaving(true);
         try {
-            await api.post("/farmacia/inventario/entrada", form);
+            await api.post("/farmacia/inventario/entrada", data);
             Swal.fire({ icon: "success", title: "Entrada registrada", timer: 1500, showConfirmButton: false });
             setShowModal(false);
-            setForm({ id_presentacion: "", cantidad: "", fecha_vencimiento: "", motivo: "" });
+            reset();
             fetchInventario();
+        } catch (error) {
+            if (error.response?.status === 422) {
+                const msgs = Object.values(error.response.data.errors).flat().join('\n');
+                Swal.fire({ icon: "error", title: "Error de Validación", text: msgs });
+            } else {
+                Swal.fire({ icon: "error", title: "Error", text: error.response?.data?.message || "Error desconocido" });
+            }
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleValidationErrors = (errors) => {
+        const errorMessages = Object.values(errors).map(err => err.message).join('\n');
+        Swal.fire({
+            icon: "warning",
+            title: "Datos incompletos o inválidos",
+            text: errorMessages
+        });
     };
 
     const estadoConfig = {
@@ -262,41 +286,68 @@ export default function Inventario() {
                             <span className="material-symbols-outlined text-green-600">add_box</span>
                             Registrar Entrada de Medicamento
                         </h3>
-                        <form onSubmit={handleRegistrarEntrada} className="space-y-4">
+                        <form onSubmit={handleSubmit(handleRegistrarEntrada, handleValidationErrors)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Medicamento (presentación) *</label>
-                                <SearchableSelect
-                                    required
-                                    value={form.id_presentacion}
-                                    onChange={val => setForm(f => ({ ...f, id_presentacion: val }))}
-                                    placeholder="Seleccionar medicamento..."
-                                    options={presentaciones.map(p => ({
-                                        value: p.id_presentacion,
-                                        label: `${p.nombre} ${p.concentracion} (${p.forma})`
-                                    }))}
+                                <Controller
+                                    name="id_presentacion"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <SearchableSelect
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            placeholder="Seleccionar medicamento..."
+                                            options={presentaciones.map(p => ({
+                                                value: p.id_presentacion,
+                                                label: `${p.nombre} ${p.concentracion} (${p.forma})`
+                                            }))}
+                                        />
+                                    )}
                                 />
+                                {errors.id_presentacion && <p className="text-red-500 text-xs mt-1">{errors.id_presentacion.message}</p>}
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
-                                    <input type="number" min="1" required value={form.cantidad} onChange={e => setForm(f => ({ ...f, cantidad: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                                    <input type="number" min="1" {...register("cantidad")}
+                                        className={`w-full border ${errors.cantidad ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
                                         placeholder="0" />
+                                    {errors.cantidad && <p className="text-red-500 text-xs mt-1">{errors.cantidad.message}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Fecha vencimiento *</label>
-                                    <input type="date" required min={new Date().toISOString().split("T")[0]} value={form.fecha_vencimiento} onChange={e => setForm(f => ({ ...f, fecha_vencimiento: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                                    <input type="date" min={new Date().toISOString().split("T")[0]} {...register("fecha_vencimiento")}
+                                        className={`w-full border ${errors.fecha_vencimiento ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                    {errors.fecha_vencimiento && <p className="text-red-500 text-xs mt-1">{errors.fecha_vencimiento.message}</p>}
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Motivo / Observación</label>
-                                <input value={form.motivo} onChange={e => setForm(f => ({ ...f, motivo: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                                    placeholder="Ej: Compra a proveedor XYZ" />
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Motivo / Observación *</label>
+                                <Controller
+                                    name="motivo"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            {...field}
+                                            list="motivos-entrada"
+                                            onChange={(e) => {
+                                                const cleaned = preventDoubleSpaces(e.target.value);
+                                                field.onChange(normalizeText(cleaned));
+                                            }}
+                                            className={`w-full border ${errors.motivo ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            placeholder="Ej: Reponer stock, Compra para reserva..."
+                                        />
+                                    )}
+                                />
+                                <datalist id="motivos-entrada">
+                                    <option value="Reponer stock" />
+                                    <option value="Compra para reserva" />
+                                    <option value="Ajuste positivo de inventario" />
+                                </datalist>
+                                {errors.motivo && <p className="text-red-500 text-xs mt-1">{errors.motivo.message}</p>}
                             </div>
                             <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={() => setShowModal(false)}
+                                <button type="button" onClick={() => { setShowModal(false); reset(); }}
                                     className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                     Cancelar
                                 </button>

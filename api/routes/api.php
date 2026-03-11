@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\EstadoController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\ContactoController;
 // Farmacia módulo
 use App\Http\Controllers\Api\MedicamentoController;
 use App\Http\Controllers\Api\InventarioFarmaciaController;
@@ -72,6 +73,7 @@ Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudade
 Route::get('/licencias', [LicenciaController::class, 'index']);
 Route::get('/licencia/{id}', [LicenciaController::class, 'show']);
 Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
+Route::post('/contacto', [ContactoController::class, 'send']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
     return Activity::where('channel_name', $channel)
