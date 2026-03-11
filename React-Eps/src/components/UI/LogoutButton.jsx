@@ -21,11 +21,10 @@ const LogoutButton = () => {
     <button
       type="button"
       onClick={handleLogout}
-      className="w-10 h-10 flex items-center justify-center rounded-full 
-        bg-primary text-white hover:bg-primary/90 
-        transition cursor-pointer"
+      className="flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+      title="Cerrar sesión"
     >
-      <span className="material-symbols-outlined text-2xl">
+      <span className="material-symbols-outlined">
         logout
       </span>
     </button>

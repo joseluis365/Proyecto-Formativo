@@ -14,10 +14,10 @@ export default function ThemeToggle() {
     return (
         <button
             onClick={toggleDarkMode}
-            className="size-12 rounded-2xl bg-white dark:bg-gray-800 border border-neutral-gray-border/10 flex items-center justify-center text-gray-500 hover:text-primary transition-all shadow-sm group active:scale-95 transition-all shadow-sm"
+            className="flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
             title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
         >
-            <span className="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">
+            <span className="material-symbols-outlined">
                 {isDarkMode ? 'dark_mode' : 'light_mode'}
             </span>
         </button>
