@@ -8,6 +8,7 @@ use App\Models\Estado;
 use App\Models\Usuario;
 use App\Http\Requests\StoreCitaRequest;
 use App\Http\Requests\UpdateCitaRequest;
+use App\Http\Requests\ReagendarCitaRequest;
 use App\Mail\CitaAgendadaMailable;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
@@ -101,6 +102,86 @@ class CitaController extends Controller
 
         return response()->json([
             'message' => 'Cita eliminada correctamente'
+        ]);
+    }
+
+    /**
+     * Reagenda una cita: solo actualiza fecha y hora_inicio.
+     * El médico y el motivo se mantienen intactos.
+     *
+     * PUT /api/citas/{id}/reagendar
+     */
+    public function reagendar(ReagendarCitaRequest $request, $id)
+    {
+        $cita = Cita::find($id);
+
+        if (!$cita) {
+            return response()->json([
+                'message' => 'Cita no encontrada.'
+            ], 404);
+        }
+
+        // Solo se permite reagendar citas en estado "Agendada" o "Pendiente"
+        $estadosPermitidos = Estado::whereIn('nombre_estado', ['Agendada', 'Pendiente'])
+            ->pluck('id_estado')
+            ->toArray();
+
+        if (!in_array($cita->id_estado, $estadosPermitidos)) {
+            return response()->json([
+                'message' => 'Solo se pueden reagendar citas en estado Agendada o Pendiente.'
+            ], 422);
+        }
+
+        // Recalcular hora_fin (30 min después)
+        $horaInicio = \Carbon\Carbon::createFromFormat('H:i', $request->hora_inicio);
+        $horaFin    = $horaInicio->copy()->addMinutes(30)->format('H:i');
+
+        $cita->update([
+            'fecha'       => $request->fecha,
+            'hora_inicio' => $request->hora_inicio,
+            'hora_fin'    => $horaFin,
+        ]);
+
+        // Recargar relaciones para la respuesta
+        $cita->load(['paciente', 'medico', 'estado', 'tipoCita']);
+
+        return response()->json([
+            'message' => 'Cita reagendada correctamente.',
+            'data'    => $cita,
+        ]);
+    }
+    /**
+     * Marca una cita como "No Asistió".
+     *
+     * PATCH /api/cita/{id}/no-asistio
+     */
+    public function noAsistio(int $id)
+    {
+        $cita = Cita::find($id);
+
+        if (!$cita) {
+            return response()->json(['message' => 'Cita no encontrada.'], 404);
+        }
+
+        // Solo se permite marcar como "No Asistió" si estaba Agendada o Pendiente
+        $estadosPermitidos = \App\Models\Estado::whereIn('nombre_estado', ['Agendada', 'Pendiente'])
+            ->pluck('id_estado')
+            ->toArray();
+
+        if (!in_array($cita->id_estado, $estadosPermitidos)) {
+            return response()->json([
+                'message' => 'Solo se pueden marcar como "No Asistió" citas Agendadas o Pendientes.'
+            ], 422);
+        }
+
+        // Cambiar estado a "No Asistió"
+        $estadoNoAsistio = \App\Models\Estado::firstOrCreate(['nombre_estado' => 'No Asistió']);
+        
+        $cita->update(['id_estado' => $estadoNoAsistio->id_estado]);
+
+        return response()->json([
+            'message' => 'Cita marcada como "No Asistió".',
+            'data' => $cita->load(['paciente', 'medico', 'estado'])
         ]);
     }
 }

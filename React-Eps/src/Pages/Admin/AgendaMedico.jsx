@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useLayout } from "../../LayoutContext";
 import DoctorInfo from "../../components/DoctorSchedule/DoctorInfo";
 import SearchBar from "../../components/DoctorSchedule/SearchBar";
@@ -17,19 +17,16 @@ export default function AgendaMedico() {
     const [viewingCita, setViewingCita] = useState(null);
     const [atendiendoCita, setAtendiendoCita] = useState(null);
 
-    // Conexión real con el hook useCitas
-    const { citas, loading, fetchCitas } = useCitas({ fecha: selectedDate });
+    // Filtro en servidor por médico autenticado y fecha — sin filtrado client-side
+    const { citas: citasDelMedico, loading, fetchCitas } = useCitas({
+        fecha: selectedDate,
+        doc_medico: user.documento,
+    });
 
     useEffect(() => {
         setTitle("Agenda Médica");
         setSubtitle("Gestión de citas y atención de pacientes.");
     }, [setTitle, setSubtitle]);
-
-    // Filtrado automático por el médico autenticado
-    const citasDelMedico = useMemo(() => {
-        if (!citas || !user.documento) return [];
-        return citas.filter(c => c.doc_medico === user.documento);
-    }, [citas, user.documento]);
 
     return (
         <div className="space-y-8">

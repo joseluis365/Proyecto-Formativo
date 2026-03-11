@@ -18,6 +18,11 @@ class Cita extends Model
         'motivo',
         'tipo_cita_id',
         'id_estado',
+        'recordatorio_enviado',
+    ];
+
+    protected $casts = [
+        'recordatorio_enviado' => 'boolean',
     ];
 
     public function paciente()

@@ -60,7 +60,7 @@ export default function LoginSection() {
                     break;
 
                 case ROLES.MEDICO:
-                    navigate('/agenda-medico');
+                    navigate('/medico/agenda');
                     break;
 
                 case ROLES.PACIENTE:

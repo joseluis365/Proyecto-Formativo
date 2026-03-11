@@ -25,8 +25,8 @@ const LogoutButton = () => {
         bg-primary text-white hover:bg-primary/90 
         transition cursor-pointer"
     >
-      <span className="material-symbols-outlined text-3xl">
-        person
+      <span className="material-symbols-outlined text-2xl">
+        logout
       </span>
     </button>
   );

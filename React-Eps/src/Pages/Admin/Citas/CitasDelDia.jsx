@@ -1,41 +1,23 @@
-import { useEffect, useState } from 'react';
-import api from "../../../Api/axios";
+import { useEffect } from 'react';
 import { useLayout } from "../../../LayoutContext";
 import AppointmentCard from "../../../components/Citas/AppointmentCard";
 import PrincipalText from "../../../components/Users/PrincipalText";
+import TableSkeleton from "../../../components/UI/TableSkeleton";
+import useCitas from "../../../hooks/useCitas";
 
 export default function CitasDelDia() {
     const { setTitle, setSubtitle } = useLayout();
-    const [citas, setCitas] = useState([]);
-    const [loading, setLoading] = useState(false);
+
+    // Fecha de hoy en formato YYYY-MM-DD para el filtro de servidor
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // ✅ Usa el hook universal con filtro de fecha — sin api.get directo
+    const { citas, loading } = useCitas({ fecha: todayStr });
 
     useEffect(() => {
         setTitle("Citas del Día");
         setSubtitle("Visualiza las citas agendadas para hoy.");
     }, [setTitle, setSubtitle]);
-
-    const fetchCitasDelDia = async () => {
-        try {
-            setLoading(true);
-            const res = await api.get("/citas");
-
-            // Filtrar por citas de hoy
-            const todayStr = new Date().toISOString().split('T')[0];
-            const citasHoy = (res.data || []).filter(cita => cita.fecha === todayStr);
-
-            setCitas(citasHoy);
-        } catch (error) {
-            console.error("Error cargando citas del día:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchCitasDelDia();
-    }, []);
-
-    const totalCitas = citas.length;
 
     return (
         <div className="w-full bg-white dark:bg-gray-900 rounded-xl p-8">
@@ -43,14 +25,12 @@ export default function CitasDelDia() {
                 <PrincipalText
                     icon="today"
                     text={`Hoy, ${new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`}
-                    number={totalCitas}
+                    number={citas.length}
                 />
             </div>
 
             {loading ? (
-                <div className="flex justify-center p-12">
-                    <span className="material-symbols-outlined animate-spin text-4xl text-primary">autorenew</span>
-                </div>
+                <TableSkeleton rows={4} columns={5} />
             ) : citas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
                     <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">event_busy</span>
@@ -65,7 +45,7 @@ export default function CitasDelDia() {
                             patientName={`${cita.paciente?.primer_nombre || ''} ${cita.paciente?.primer_apellido || ''}`.trim() || 'No asignado'}
                             patientDoc={cita.paciente?.documento}
                             doctorName={`Dr. ${cita.medico?.primer_nombre || ''} ${cita.medico?.primer_apellido || ''}`.trim() || 'General'}
-                            specialty={cita.tipoCita?.nombre || "General"}
+                            specialty={cita.tipoCita?.tipo || "General"}
                             time={cita.hora_inicio ? cita.hora_inicio.slice(0, 5) : "Por definir"}
                             status={cita.estado?.nombre_estado || "Pendiente"}
                             onView={() => console.log('view', cita.id_cita)}

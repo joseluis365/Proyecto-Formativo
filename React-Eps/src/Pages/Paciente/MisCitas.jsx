@@ -3,16 +3,19 @@ import { useLayout } from "../../LayoutContext";
 import useCitas from "../../hooks/useCitas";
 import AppointmentCard from "../../components/Citas/AppointmentCard";
 import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
+import ReagendarCitaModal from "../../components/Modals/CitaModal/ReagendarCitaModal";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function MisCitas() {
     const { setTitle, setSubtitle } = useLayout();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const [viewingCita, setViewingCita] = useState(null);
+
+    const [viewingCita, setViewingCita]         = useState(null);
+    const [reagendandoCita, setReagendandoCita] = useState(null);
 
     // Obtenemos solo las citas de este paciente mediante el filtro de servidor
-    const { citas, loading, cancelCita } = useCitas({ doc_paciente: user.documento });
+    const { citas, loading, cancelCita, reagendarCita } = useCitas({ doc_paciente: user.documento });
 
     useEffect(() => {
         setTitle("Mis Citas");
@@ -83,16 +86,27 @@ export default function MisCitas() {
                                 status={cita.estado?.nombre_estado}
                                 onView={() => setViewingCita(cita)}
                                 onCancel={() => cancelCita(cita.id_cita)}
+                                onReschedule={() => setReagendandoCita(cita)}
                             />
                         ))}
                     </motion.div>
                 )}
             </AnimatePresence>
 
+            {/* Modal: Ver detalle */}
             <ViewCitaModal
                 isOpen={!!viewingCita}
                 onClose={() => setViewingCita(null)}
                 cita={viewingCita}
+            />
+
+            {/* Modal: Reagendar */}
+            <ReagendarCitaModal
+                isOpen={!!reagendandoCita}
+                onClose={() => setReagendandoCita(null)}
+                cita={reagendandoCita}
+                onConfirm={reagendarCita}
+                loading={loading}
             />
         </div>
     );

@@ -1,10 +1,16 @@
 import { Routes, Route } from "react-router-dom"
 import DashboardLayout from "./layouts/AdminLayout"
+import DoctorLayout from "./layouts/DoctorLayout"
 import Personal from "./Pages/Admin/Personal"
 import Dashboard from "./Pages/Admin/Dashboard"
 import Medicos from "./Pages/Admin/Medicos"
 import Pacientes from "./Pages/Admin/Pacientes"
 import AgendaMedico from "./Pages/Admin/AgendaMedico"
+// Portal Médico — páginas propias
+import AgendaMedicoPD from "./Pages/Medico/AgendaMedico"
+import MisPacientesPD from "./Pages/Medico/MisPacientes"
+import PerfilMedicoPD from "./Pages/Medico/PerfilMedico"
+import HistorialPacienteMedicoPD from "./Pages/Medico/HistorialPacienteMedico"
 import InfoPaciente from "./Pages/Admin/InfoPaciente"
 import Reportes from "./Pages/Admin/Reportes/Reportes"
 import CitasDelDia from "./Pages/Admin/Citas/CitasDelDia"
@@ -100,10 +106,12 @@ export default function App() {
         </Route>
       </Route>
 
-      {/* Portal Médico — Protegido por rol */}
       <Route element={<MedicoRoute />}>
-        <Route element={<DashboardLayout />}>
-          <Route path="/agenda-medico" element={<AgendaMedico />} />
+        <Route element={<DoctorLayout />}>
+          <Route path="/medico/agenda"    element={<AgendaMedicoPD />} />
+          <Route path="/medico/pacientes" element={<MisPacientesPD />} />
+          <Route path="/medico/pacientes/historial/:doc" element={<HistorialPacienteMedicoPD />} />
+          <Route path="/medico/perfil"    element={<PerfilMedicoPD />} />
         </Route>
       </Route>
 

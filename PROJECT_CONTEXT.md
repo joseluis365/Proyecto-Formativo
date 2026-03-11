@@ -1,6 +1,5 @@
 Stack Tecnológico – Proyecto EPS (Actualizado 2026)
 🔹 Backend
-
 Framework
 
 Laravel 12
@@ -11,26 +10,29 @@ Laravel Sanctum
 
 Arquitectura
 
-Arquitectura moderna (bootstrap/app.php)
+Arquitectura moderna basada en:
+
+bootstrap/app.php
+
+Incluye:
 
 Middleware personalizado licencia.activa
 
-API Resources (uso mayoritario)
+Uso mayoritario de API Resources
 
-FormRequest (estructura consolidada)
+FormRequest consolidado para validaciones
 
 Servicios desacoplados (inicio de ReportService)
 
-Configuración extensible vía config/*.php
+Configuración extensible mediante:
 
+config/*.php
 Sistema de Roles (Refactorizado)
 
-Nuevo sistema centralizado de roles:
+Sistema centralizado de roles:
 
 app/Constants/RolConstants.php
-
-Roles del sistema:
-
+Roles del sistema
 ID	Rol
 1	Super Admin
 2	Admin
@@ -39,19 +41,53 @@ ID	Rol
 5	Paciente
 6	Farmaceutico
 
-Todos los controladores ahora usan:
+Uso en controladores:
 
 RolConstants::ADMIN
 RolConstants::MEDICO
 RolConstants::PACIENTE
 
-Se eliminó completamente:
+Eliminado completamente:
 
 where('id_rol', 2)
 case 4
 case 5
-🔹 Frontend
+Sistema de Recordatorios Automáticos (Nuevo)
 
+Implementado sistema de recordatorios automáticos de citas.
+
+Componente principal
+app/Console/Commands/SendAppointmentReminders.php
+Funcionamiento
+
+Cada día a las 08:00 AM el sistema:
+
+Busca citas con fecha mañana
+
+Filtra estado Agendada
+
+Crea notificación interna
+
+Envía email recordatorio (opcional)
+
+Idempotencia implementada
+
+Campo agregado a tabla cita:
+
+recordatorio_enviado
+
+Esto evita envío duplicado de recordatorios si el scheduler se ejecuta múltiples veces.
+
+Scheduler
+
+Configurado en:
+
+routes/console.php
+
+Expresión cron:
+
+0 8 * * *
+🔹 Frontend
 Framework
 
 Vite + React
@@ -63,7 +99,6 @@ Tailwind CSS
 Framer Motion
 
 Arquitectura
-
 src/
  ├─ Pages
  │   ├─ Admin
@@ -88,7 +123,7 @@ Claves:
 token
 user
 
-Axios interceptor:
+Interceptor:
 
 src/Api/axios.js
 
@@ -111,7 +146,7 @@ superadmin_user
 Cliente API separado:
 
 src/Api/superadminAxios.js
-🛡 Sistema de Route Guards (Nuevo)
+🛡 Sistema de Route Guards
 
 Ubicación:
 
@@ -169,7 +204,7 @@ ROLES.ADMIN
 ROLES.MEDICO
 ROLES.PACIENTE
 
-Se eliminaron todos los:
+Eliminados completamente:
 
 id_rol: 4
 id_rol: 5
@@ -180,11 +215,12 @@ Controlador principal:
 
 CitaController
 
-Endpoints:
+Endpoints principales:
 
 GET /api/citas
 POST /api/cita
 PUT /api/cita/{id}
+PUT /api/citas/{id}/reagendar
 POST /api/citas/{id}/atender
 Frontend
 Agenda administrativa
@@ -205,7 +241,7 @@ filtros
 Agenda médico
 AgendaMedico.jsx
 
-Ahora:
+Características:
 
 usa useCitas
 
@@ -213,7 +249,7 @@ filtra por doc_medico
 
 permite atender cita
 
-🏥 Capa Clínica (Implementada)
+🏥 Capa Clínica
 
 Tablas:
 
@@ -238,7 +274,7 @@ Frontend:
 
 AtenderCitaModal.jsx
 
-Campos:
+Campos clínicos:
 
 Diagnóstico
 
@@ -248,34 +284,74 @@ Observaciones
 
 Remisiones dinámicas
 
-👤 Portal del Paciente (Nuevo)
+👤 Portal del Paciente
 
-Layout:
+Layout principal:
 
 PatientLayout.jsx
 
-Páginas:
+Rutas:
 
 /paciente
 /paciente/agendar
 /paciente/citas
 /paciente/historial
+/paciente/perfil
+Funcionalidades
 
-Funciones:
+El paciente puede:
 
 agendar cita
-
+reagendar cita
 cancelar cita
+ver historial médico
+editar perfil
+Wizard de Agendamiento
 
-ver historial clínico
+Flujo:
 
+Fecha
+Hora
+Profesional
+Motivo
+Confirmar
+
+Optimizado para móvil y con scroll mínimo.
+
+Historial Médico
+
+Refactorizado a Timeline médica interactiva.
+
+Cada consulta muestra:
+
+Diagnóstico
+Tratamiento
+Observaciones
+Remisiones
+Exámenes
+Notificaciones
+
+Sistema de notificaciones internas para:
+
+recordatorios de citas
+eventos clínicos
+🌙 Experiencia de Usuario
+
+Portal incluye:
+
+Modo oscuro / claro
+Wizard de agendamiento
+Timeline clínica
+Notificaciones
+Perfil editable
+Diseño responsive
 🧱 Seeders Portables
 
 El sistema funciona con:
 
 php artisan migrate:fresh --seed
 
-Genera automáticamente:
+Seeders principales:
 
 Seeder	Resultado
 RolSeeder	roles del sistema
@@ -286,18 +362,17 @@ AdminUsuarioSeeder	usuario ADMIN
 SuperadminSeeder	usuario SUPER ADMIN
 UsuariosPruebaSeeder	usuarios de prueba
 ⚠ Riesgos Técnicos Detectados
+Backend
 
-Backend:
+Dependencia de PostgreSQL por ILIKE
 
-dependencia PostgreSQL por ILIKE
+Algunos endpoints aún sin API Resource
 
-algunos endpoints aún sin Resource
+Frontend
 
-Frontend:
+Duplicación de algunos modales CRUD
 
-duplicación de modales CRUD
-
-algunos hooks aún no unificados
+Algunos hooks aún no unificados
 
 🎯 Estado Actual del Proyecto
 Backend
@@ -307,13 +382,14 @@ Backend
 ✔ Capa clínica
 ✔ Remisiones
 ✔ Sistema de roles refactorizado
+✔ Recordatorios automáticos de citas
 
 Frontend
 
 ✔ Panel Admin completo
 ✔ Agenda administrativa
 ✔ Agenda médico funcional
-✔ Portal paciente
+✔ Portal paciente completo
 ✔ Route Guards por rol
 ✔ Redirecciones corregidas
 
@@ -349,6 +425,10 @@ Primero estabilidad.
 Luego estandarización.
 Luego optimización.
 
-Nunca refactorizar sin diagnóstico completo.
-No parches temporales.
-Arquitectura limpia antes que rapidez.
+Reglas del proyecto:
+
+Nunca refactorizar sin diagnóstico completo
+
+No parches temporales
+
+Arquitectura limpia antes que rapidez

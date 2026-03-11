@@ -4,7 +4,8 @@ export default function AppointmentCard({
     time,
     status,
     onView,
-    onCancel
+    onCancel,
+    onReschedule
 }) {
     const STATUS_COLORS = {
         Agendada: { text: "Programada", classes: "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200/50" },
@@ -83,13 +84,25 @@ export default function AppointmentCard({
                 </button>
 
                 {(status === "Agendada" || status === "Pendiente") && (
-                    <button
-                        onClick={onCancel}
-                        className="py-4 px-6 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
-                        title="Cancelar Cita"
-                    >
-                        <span className="material-symbols-outlined text-xl">close</span>
-                    </button>
+                    <>
+                        {/* Botón Reagendar */}
+                        <button
+                            onClick={onReschedule}
+                            className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer flex items-center justify-center"
+                            title="Reagendar Cita"
+                        >
+                            <span className="material-symbols-outlined text-xl">event_repeat</span>
+                        </button>
+
+                        {/* Botón Cancelar */}
+                        <button
+                            onClick={onCancel}
+                            className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
+                            title="Cancelar Cita"
+                        >
+                            <span className="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </>
                 )}
             </div>
         </div>

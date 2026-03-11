@@ -13,13 +13,23 @@ class HistorialDetalle extends Model
     protected $primaryKey = 'id_detalle';
 
     protected $fillable = [
+        // Campos originales — no se eliminan
         'id_historial',
         'id_cita',
-        'diagnostico',
-        'tratamiento',
+        'diagnostico',       // SOAP A (Assessment)
+        'tratamiento',       // SOAP P (Plan)
         'notas_medicas',
         'observaciones',
+        // Campos SOAP nuevos
+        'subjetivo',         // SOAP S — anamnesis del paciente
+        'signos_vitales',    // SOAP O — signos vitales (JSON)
     ];
+
+    protected $casts = [
+        'signos_vitales' => 'array', // PostgreSQL JSONB → PHP array automáticamente
+    ];
+
+    // ── Relaciones ────────────────────────────────────────────────────────────
 
     public function historial()
     {
