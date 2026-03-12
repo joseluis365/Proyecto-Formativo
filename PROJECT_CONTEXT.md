@@ -1,168 +1,218 @@
-Stack Tecnológico – Proyecto EPS (Actualizado 2026)
-🔹 Backend
-Framework
+# Proyecto EPS — Contexto Técnico (2026)
 
-Laravel 12
+## Stack Tecnológico
 
-PostgreSQL
+### Backend
+- Laravel 12
+- PostgreSQL
+- Laravel Sanctum
 
-Laravel Sanctum
-
-Arquitectura
-
-Arquitectura moderna basada en:
+Arquitectura basada en:
 
 bootstrap/app.php
 
 Incluye:
 
-Middleware personalizado licencia.activa
+- Middleware `licencia.activa`
+- API Resources (uso mayoritario)
+- FormRequest consolidado
+- Servicios desacoplados (`ReportService`)
+- Configuración extensible vía `config/*.php`
 
-Uso mayoritario de API Resources
+---
 
-FormRequest consolidado para validaciones
+# Sistema de Roles
 
-Servicios desacoplados (inicio de ReportService)
-
-Configuración extensible mediante:
-
-config/*.php
-Sistema de Roles (Refactorizado)
-
-Sistema centralizado de roles:
+Archivo:
 
 app/Constants/RolConstants.php
-Roles del sistema
-ID	Rol
-1	Super Admin
-2	Admin
-3	Personal Administrativo
-4	Medico
-5	Paciente
-6	Farmaceutico
 
-Uso en controladores:
+| ID | Rol |
+|----|-----|
+|1|Super Admin|
+|2|Admin|
+|3|Personal Administrativo|
+|4|Medico|
+|5|Paciente|
+|6|Farmaceutico|
+
+Uso en backend:
+
 
 RolConstants::ADMIN
 RolConstants::MEDICO
 RolConstants::PACIENTE
 
-Eliminado completamente:
 
-where('id_rol', 2)
-case 4
-case 5
-Sistema de Recordatorios Automáticos (Nuevo)
+Frontend:
 
-Implementado sistema de recordatorios automáticos de citas.
 
-Componente principal
+src/constants/roles.js
+
+
+Magic numbers eliminados.
+
+---
+
+# Sistema de Citas
+
+Controlador:
+
+
+CitaController
+
+
+Endpoints:
+
+
+GET /api/citas
+POST /api/cita
+PUT /api/cita/{id}
+PUT /api/citas/{id}/reagendar
+POST /api/citas/{id}/atender
+
+
+---
+
+# Capa Clínica
+
+Tablas:
+
+
+historial_clinico
+historial_detalle
+remision
+examen
+
+
+Modelos:
+
+
+HistorialClinico
+HistorialDetalle
+Remision
+Examen
+
+
+---
+
+# Recordatorios Automáticos
+
+Comando:
+
+
 app/Console/Commands/SendAppointmentReminders.php
-Funcionamiento
 
-Cada día a las 08:00 AM el sistema:
 
-Busca citas con fecha mañana
+Cron:
 
-Filtra estado Agendada
 
-Crea notificación interna
+0 8 * * *
 
-Envía email recordatorio (opcional)
 
-Idempotencia implementada
+Campo en tabla cita:
 
-Campo agregado a tabla cita:
 
 recordatorio_enviado
 
-Esto evita envío duplicado de recordatorios si el scheduler se ejecuta múltiples veces.
 
-Scheduler
+Previene envíos duplicados.
 
-Configurado en:
+---
 
-routes/console.php
+# Frontend
 
-Expresión cron:
+Stack:
 
-0 8 * * *
-🔹 Frontend
-Framework
+- React
+- Vite
+- React Router v6
+- Tailwind
+- Framer Motion
 
-Vite + React
+Estructura:
 
-React Router v6
 
-Tailwind CSS
+src
+├ Pages
+├ layouts
+├ components
+├ hooks
+├ Api
+├ constants
+└ assets
 
-Framer Motion
 
-Arquitectura
-src/
- ├─ Pages
- │   ├─ Admin
- │   ├─ SuperAdmin
- │   ├─ Paciente
- │   └─ Inicio
- ├─ layouts
- ├─ components
- ├─ hooks
- ├─ Api
- ├─ constants
- └─ assets
-🔐 Sistema de Autenticación
-Usuarios normales
+---
+
+# Autenticación
+
+### Usuarios normales
 
 Storage:
 
+
 localStorage
 
+
 Claves:
+
 
 token
 user
 
+
 Interceptor:
+
 
 src/Api/axios.js
 
-Si recibe 401:
 
-localStorage.removeItem("token")
-localStorage.removeItem("user")
-window.location.href = "/login"
-Super Admin
+---
+
+### Super Admin
 
 Storage:
 
+
 sessionStorage
 
+
 Claves:
+
 
 superadmin_token
 superadmin_user
 
-Cliente API separado:
+
+Cliente API:
+
 
 src/Api/superadminAxios.js
-🛡 Sistema de Route Guards
+
+
+---
+
+# Route Guards
 
 Ubicación:
 
-src/components/Routes/
-SuperAdminRoute
+
+src/components/Routes
+
+
+### SuperAdminRoute
 
 Protege:
+
 
 /SuperAdmin-*
 
-Usa:
 
-sessionStorage + API check-session
-AdminRoute
+### AdminRoute
 
 Protege:
+
 
 /dashboard
 /usuarios/*
@@ -170,265 +220,134 @@ Protege:
 /configuracion/*
 /reportes
 
-Roles permitidos:
 
-ROLES.ADMIN
-ROLES.PERSONAL_ADMINISTRATIVO
-MedicoRoute
+Roles:
+
+
+ADMIN
+PERSONAL_ADMINISTRATIVO
+
+
+### MedicoRoute
 
 Protege:
+
 
 /agenda-medico
 
-Rol permitido:
 
-ROLES.MEDICO
-PatientRoute
+Rol:
+
+
+MEDICO
+
+
+### PatientRoute
 
 Protege:
 
+
 /paciente/*
 
-Rol permitido:
 
-ROLES.PACIENTE
-🧩 Sistema de Roles en Frontend
+Rol:
 
-Archivo:
 
-src/constants/roles.js
+PACIENTE
 
-Uso:
 
-ROLES.ADMIN
-ROLES.MEDICO
-ROLES.PACIENTE
+---
 
-Eliminados completamente:
+# Portal del Paciente
 
-id_rol: 4
-id_rol: 5
-📅 Sistema de Citas
-Backend
+Layout:
 
-Controlador principal:
-
-CitaController
-
-Endpoints principales:
-
-GET /api/citas
-POST /api/cita
-PUT /api/cita/{id}
-PUT /api/citas/{id}/reagendar
-POST /api/citas/{id}/atender
-Frontend
-Agenda administrativa
-AgendaCitas.jsx
-
-Características:
-
-médicos colapsables
-
-calendario
-
-citas por médico
-
-modales
-
-filtros
-
-Agenda médico
-AgendaMedico.jsx
-
-Características:
-
-usa useCitas
-
-filtra por doc_medico
-
-permite atender cita
-
-🏥 Capa Clínica
-
-Tablas:
-
-historial_clinico
-historial_detalle
-remision
-examen
-
-Modelos:
-
-HistorialClinico
-HistorialDetalle
-Remision
-Examen
-
-Endpoint clínico:
-
-POST /api/citas/{id}/atender
-👨‍⚕️ Atención Médica
-
-Frontend:
-
-AtenderCitaModal.jsx
-
-Campos clínicos:
-
-Diagnóstico
-
-Tratamiento
-
-Observaciones
-
-Remisiones dinámicas
-
-👤 Portal del Paciente
-
-Layout principal:
 
 PatientLayout.jsx
 
+
 Rutas:
+
 
 /paciente
 /paciente/agendar
 /paciente/citas
 /paciente/historial
 /paciente/perfil
-Funcionalidades
 
-El paciente puede:
 
-agendar cita
-reagendar cita
-cancelar cita
-ver historial médico
-editar perfil
-Wizard de Agendamiento
+Funcionalidades:
 
-Flujo:
+- Agendar cita
+- Reagendar
+- Cancelar
+- Historial clínico
+- Perfil editable
 
-Fecha
-Hora
-Profesional
-Motivo
-Confirmar
+---
 
-Optimizado para móvil y con scroll mínimo.
+# Experiencia de Usuario
 
-Historial Médico
+Incluye:
 
-Refactorizado a Timeline médica interactiva.
+- Modo oscuro / claro
+- Wizard de agendamiento
+- Timeline clínica
+- Notificaciones
+- Diseño responsive
 
-Cada consulta muestra:
+---
 
-Diagnóstico
-Tratamiento
-Observaciones
-Remisiones
-Exámenes
-Notificaciones
+# Seeders
 
-Sistema de notificaciones internas para:
+Sistema portable con:
 
-recordatorios de citas
-eventos clínicos
-🌙 Experiencia de Usuario
-
-Portal incluye:
-
-Modo oscuro / claro
-Wizard de agendamiento
-Timeline clínica
-Notificaciones
-Perfil editable
-Diseño responsive
-🧱 Seeders Portables
-
-El sistema funciona con:
 
 php artisan migrate:fresh --seed
 
-Seeders principales:
 
-Seeder	Resultado
-RolSeeder	roles del sistema
-EstadoSeeder	estados
-EmpresaSeeder	empresa base
-EmpresaLicenciaSeeder	licencia activa
-AdminUsuarioSeeder	usuario ADMIN
-SuperadminSeeder	usuario SUPER ADMIN
-UsuariosPruebaSeeder	usuarios de prueba
-⚠ Riesgos Técnicos Detectados
-Backend
+Seeders:
 
-Dependencia de PostgreSQL por ILIKE
+- RolSeeder
+- EstadoSeeder
+- EmpresaSeeder
+- EmpresaLicenciaSeeder
+- AdminUsuarioSeeder
+- SuperadminSeeder
+- UsuariosPruebaSeeder
 
-Algunos endpoints aún sin API Resource
+---
 
-Frontend
+# Estado Actual del Proyecto
 
-Duplicación de algunos modales CRUD
+Backend:
 
-Algunos hooks aún no unificados
+✔ Licencias  
+✔ Citas  
+✔ Capa clínica  
+✔ Remisiones  
+✔ Roles refactorizados  
+✔ Recordatorios automáticos
 
-🎯 Estado Actual del Proyecto
-Backend
+Frontend:
 
-✔ Sistema de licencias
-✔ Sistema de citas
-✔ Capa clínica
-✔ Remisiones
-✔ Sistema de roles refactorizado
-✔ Recordatorios automáticos de citas
-
-Frontend
-
-✔ Panel Admin completo
-✔ Agenda administrativa
-✔ Agenda médico funcional
-✔ Portal paciente completo
-✔ Route Guards por rol
+✔ Panel Admin completo  
+✔ Agenda administrativa  
+✔ Agenda médico funcional  
+✔ Portal paciente completo  
+✔ Guards por rol  
 ✔ Redirecciones corregidas
 
-🏗 Arquitectura del Router (Final)
-<Routes>
+---
 
-  /login
-  /confirm-email
-  /reset-password
+# Principio Rector
 
-  <SuperAdminRoute>
-     /SuperAdmin-*
-  </SuperAdminRoute>
-
-  <AdminRoute>
-     /dashboard
-     /usuarios/*
-     /citas/*
-     /configuracion/*
-  </AdminRoute>
-
-  <MedicoRoute>
-     /agenda-medico
-  </MedicoRoute>
-
-  <PatientRoute>
-     /paciente/*
-  </PatientRoute>
-
-</Routes>
-🏛 Principio Rector del Proyecto
-Primero estabilidad.
-Luego estandarización.
+Primero estabilidad.  
+Luego estandarización.  
 Luego optimización.
 
-Reglas del proyecto:
+Reglas:
 
-Nunca refactorizar sin diagnóstico completo
-
-No parches temporales
-
-Arquitectura limpia antes que rapidez
+- Nunca refactorizar sin diagnóstico completo
+- No parches temporales
+- Arquitectura limpia antes que rapidez
