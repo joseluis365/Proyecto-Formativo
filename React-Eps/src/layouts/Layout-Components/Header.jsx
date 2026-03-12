@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/UI/ThemeToggle";
 import LogoutButton from "@/components/UI/LogoutButton";
 
@@ -36,11 +36,12 @@ export default function Header({ onMenuClick, title, subtitle, children }) {
                     <span className="material-symbols-outlined">notifications</span>
                 </button>
                 <ThemeToggle />
-                <div 
-                    onClick={() => navigate(user.rol?.id_rol === 3 ? '/paciente/perfil' : '/medico/perfil')}
-                    className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all shadow-sm"
-                    data-alt="User avatar"
-                    style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEQSpvUyANgw_hVpC1GFciTJM9thLELV7GFk5CBpXT-doHMOMro-aVrIgD1MECliv2UiZashGDcNaN2lqYpPta_wCSNcPZnYhbb8xriJtDhXpaX9f1yk_D08wbKpZspIR_-rynBmi5zt_F4QYwiX9a6R_B4sEgw4B6K7dArfs7_QkrtyzsG4lOgD4wl7djRiF5Nj5XQX4WAXPja4hKOuK0Ls0pLu2ubbdIqNiL5XAlf7tDAXeNJO5kF6_u4Whxh6F5w7r6upC0v3_v")' }}>
+                <div
+                    onClick={() => navigate(user.rol?.id_rol === 4 ? '/paciente/perfil' : '/medico/perfil')}
+                    title="Mi Perfil"
+                    className="flex items-center justify-center rounded-full size-10 bg-primary/10 hover:bg-primary/20 text-primary transition-colors cursor-pointer"
+                >
+                    <span className="material-symbols-outlined">account_circle</span>
                 </div>
                 <LogoutButton />
             </div>

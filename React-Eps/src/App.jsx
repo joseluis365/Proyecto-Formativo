@@ -9,7 +9,7 @@ import AgendaMedico from "./Pages/Admin/AgendaMedico"
 // Portal Médico — páginas propias
 import AgendaMedicoPD from "./Pages/Medico/AgendaMedico"
 import MisPacientesPD from "./Pages/Medico/MisPacientes"
-import PerfilMedicoPD from "./Pages/Medico/PerfilMedico"
+import Perfil from "./Pages/Perfil"
 import HistorialPacienteMedicoPD from "./Pages/Medico/HistorialPacienteMedico"
 import InfoPaciente from "./Pages/Admin/InfoPaciente"
 import Reportes from "./Pages/Admin/Reportes/Reportes"
@@ -102,16 +102,16 @@ export default function App() {
           <Route path="/paciente/agendar" element={<AgendarCita />} />
           <Route path="/paciente/citas" element={<MisCitas />} />
           <Route path="/paciente/historial" element={<HistorialPaciente />} />
-          <Route path="/paciente/perfil" element={<PerfilPaciente />} />
+          <Route path="/paciente/perfil" element={<Perfil />} />
         </Route>
       </Route>
 
       <Route element={<MedicoRoute />}>
         <Route element={<DoctorLayout />}>
-          <Route path="/medico/agenda"    element={<AgendaMedicoPD />} />
+          <Route path="/medico/agenda" element={<AgendaMedicoPD />} />
           <Route path="/medico/pacientes" element={<MisPacientesPD />} />
           <Route path="/medico/pacientes/historial/:doc" element={<HistorialPacienteMedicoPD />} />
-          <Route path="/medico/perfil"    element={<PerfilMedicoPD />} />
+          <Route path="/medico/perfil" element={<Perfil />} />
         </Route>
       </Route>
 
@@ -139,6 +139,7 @@ export default function App() {
           <Route path="/citas/del-dia" element={<CitasDelDia />} />
           <Route path="/citas/agenda" element={<AgendaCitas />} />
           <Route path="/reportes" element={<Reportes />} />
+          <Route path="/admin/perfil" element={<Perfil />} />
 
           {/* Configuración */}
           <Route path="/configuracion" element={<ConfiguracionIndex />}>

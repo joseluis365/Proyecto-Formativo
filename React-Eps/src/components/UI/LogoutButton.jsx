@@ -2,7 +2,7 @@ import React from 'react';
 import api from '@/Api/axios';
 import { useNavigate } from 'react-router-dom';
 
-const LogoutButton = () => {
+const LogoutButton = ({ className, showText = false }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -21,12 +21,13 @@ const LogoutButton = () => {
     <button
       type="button"
       onClick={handleLogout}
-      className="flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
+      className={className || "flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"}
       title="Cerrar sesión"
     >
       <span className="material-symbols-outlined">
         logout
       </span>
+      {showText && <span>Cerrar Sesión</span>}
     </button>
   );
 };
