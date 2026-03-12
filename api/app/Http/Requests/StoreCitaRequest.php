@@ -46,8 +46,8 @@ class StoreCitaRequest extends FormRequest
                     // Validar colisiones
                     $exists = \App\Models\Cita::where('doc_medico', $this->doc_medico)
                         ->where('fecha', $this->fecha)
-                        ->where('hora_inicio', $value)
-                        ->where('id_estado', '!=', 4) // No cancelada
+                        ->where('hora_inicio', $value . ':00')
+                        ->where('id_estado', '!=', \App\Models\Estado::where('nombre_estado', 'Cancelada')->value('id_estado')) // No cancelada
                         ->exists();
 
                     if ($exists) {

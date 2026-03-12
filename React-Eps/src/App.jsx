@@ -8,6 +8,7 @@ import Pacientes from "./Pages/Admin/Pacientes"
 import AgendaMedico from "./Pages/Admin/AgendaMedico"
 // Portal Médico — páginas propias
 import AgendaMedicoPD from "./Pages/Medico/AgendaMedico"
+import ConsultaMedicaPD from "./Pages/Medico/ConsultaMedica"
 import MisPacientesPD from "./Pages/Medico/MisPacientes"
 import Perfil from "./Pages/Perfil"
 import HistorialPacienteMedicoPD from "./Pages/Medico/HistorialPacienteMedico"
@@ -109,6 +110,7 @@ export default function App() {
       <Route element={<MedicoRoute />}>
         <Route element={<DoctorLayout />}>
           <Route path="/medico/agenda" element={<AgendaMedicoPD />} />
+          <Route path="/medico/consulta/:id" element={<ConsultaMedicaPD />} />
           <Route path="/medico/pacientes" element={<MisPacientesPD />} />
           <Route path="/medico/pacientes/historial/:doc" element={<HistorialPacienteMedicoPD />} />
           <Route path="/medico/perfil" element={<Perfil />} />

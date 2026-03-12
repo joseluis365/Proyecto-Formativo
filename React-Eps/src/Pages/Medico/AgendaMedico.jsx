@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
 import DoctorInfo from "../../components/DoctorSchedule/DoctorInfo";
 import ScheduleTable from "../../components/DoctorSchedule/ScheduleTable";
 import CalendarSelector from "../../components/Medico/CalendarSelector";
 import useCitas from "../../hooks/useCitas";
 import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
-import AtenderCitaModal from "../../components/Modals/AtenderCitaModal";
+
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
@@ -36,7 +37,7 @@ export default function AgendaMedico() {
     );
 
     const [viewingCita, setViewingCita]     = useState(null);
-    const [atendiendoCita, setAtendiendoCita] = useState(null);
+    const navigate = useNavigate();
 
     // useCitas refetch automático al cambiar selectedDate (dependencia del hook)
     const { citas, loading, fetchCitas } = useCitas({
@@ -156,7 +157,7 @@ export default function AgendaMedico() {
                                     <ScheduleTable
                                         appointments={citas}
                                         onView={(cita) => setViewingCita(cita)}
-                                        onAtender={(cita) => setAtendiendoCita(cita)}
+                                        onAtender={(cita) => window.open(`/medico/consulta/${cita.id_cita}`, "_blank", "noopener,noreferrer")}
                                         onNoAsistio={handleNoAsistio}
                                     />
                                 </motion.div>
@@ -181,14 +182,7 @@ export default function AgendaMedico() {
                 cita={viewingCita}
             />
 
-            {atendiendoCita && (
-                <AtenderCitaModal
-                    isOpen={!!atendiendoCita}
-                    onClose={() => setAtendiendoCita(null)}
-                    cita={atendiendoCita}
-                    onSuccess={fetchCitas}
-                />
-            )}
+
         </div>
     );
 }

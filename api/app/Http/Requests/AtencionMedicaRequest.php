@@ -40,8 +40,8 @@ class AtencionMedicaRequest extends FormRequest
             'observaciones'   => 'nullable|string|max:3000',
 
             // ── Remisiones — opcionales ───────────────────────────────────────
-            'remisiones'                       => 'nullable|array',
-            'remisiones.*.tipo_remision'       => 'required|string|in:cita,examen',
+            'remisiones'                       => ['nullable', 'array'],
+            'remisiones.*.tipo_remision'       => 'required_with:remisiones|string|in:cita,examen',
             'remisiones.*.id_especialidad'     => [
                 'nullable',
                 Rule::exists('especialidad', 'id_especialidad'),
@@ -51,7 +51,10 @@ class AtencionMedicaRequest extends FormRequest
                 Rule::exists('examen', 'id_examen'),
             ],
             'remisiones.*.id_prioridad'        => 'nullable|exists:prioridad,id_prioridad',
-            'remisiones.*.notas'               => 'required|string|max:1000',
+            'remisiones.*.notas'               => 'required_with:remisiones|string|max:1000',
+            'remisiones.*.fecha'               => 'required_with:remisiones|date|after_or_equal:today',
+            'remisiones.*.hora_inicio'         => 'required_with:remisiones|date_format:H:i',
+            'remisiones.*.doc_medico'          => 'nullable|exists:usuario,documento',
         ];
     }
 
@@ -73,11 +76,46 @@ class AtencionMedicaRequest extends FormRequest
                     );
                 }
 
+                if ($tipo === 'cita' && empty($rem['doc_medico'])) {
+                    $v->errors()->add(
+                        "remisiones.{$i}.doc_medico",
+                        'El médico especialista es obligatorio para remisión de tipo "cita".'
+                    );
+                }
+
                 if ($tipo === 'examen' && empty($rem['id_examen'])) {
                     $v->errors()->add(
                         "remisiones.{$i}.id_examen",
                         'El examen es obligatorio para remisión de tipo "examen".'
                     );
+                }
+
+                // Check collisions and time logic for all events
+                if (!empty($rem['hora_inicio']) && !empty($rem['fecha'])) {
+                    $hora = \Carbon\Carbon::createFromFormat('H:i', $rem['hora_inicio']);
+                    $inicioMinimo = \Carbon\Carbon::createFromFormat('H:i', '08:00');
+                    $inicioMaximo = \Carbon\Carbon::createFromFormat('H:i', '17:00');
+
+                    if ($hora->lt($inicioMinimo) || $hora->gt($inicioMaximo)) {
+                        $v->errors()->add("remisiones.{$i}.hora_inicio", 'El horario de inicio debe estar entre las 08:00 y las 17:00.');
+                    }
+
+                    if (!in_array($hora->minute, [0, 30])) {
+                        $v->errors()->add("remisiones.{$i}.hora_inicio", 'Las citas solo pueden programarse en intervalos de 30 minutos (ej. :00 o :30).');
+                    }
+
+                    // Check colisions for doctor if provided
+                    if (!empty($rem['doc_medico'])) {
+                        $exists = \App\Models\Cita::where('doc_medico', $rem['doc_medico'])
+                            ->where('fecha', $rem['fecha'])
+                            ->where('hora_inicio', $rem['hora_inicio'] . ':00')
+                            ->where('id_estado', '!=', \App\Models\Estado::where('nombre_estado', 'Cancelada')->value('id_estado'))
+                            ->exists();
+
+                        if ($exists) {
+                            $v->errors()->add("remisiones.{$i}.hora_inicio", 'El médico ya tiene una cita en ese horario.');
+                        }
+                    }
                 }
             }
         });

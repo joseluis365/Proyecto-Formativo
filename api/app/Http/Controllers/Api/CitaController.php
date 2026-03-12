@@ -17,7 +17,7 @@ class CitaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Cita::with(['paciente', 'medico', 'estado', 'tipoCita', 'historialDetalle']);
+        $query = Cita::with(['paciente', 'medico', 'estado', 'tipoCita', 'historialDetalle', 'especialidad', 'examen']);
 
         if ($request->has('fecha')) {
             $query->where('fecha', $request->fecha);
@@ -34,6 +34,37 @@ class CitaController extends Controller
         return response()->json([
             'message' => 'Citas obtenidas correctamente',
             'data' => $query->get()
+        ]);
+    }
+
+    public function show($id)
+    {
+        $cita = Cita::with([
+            'paciente', 
+            'medico', 
+            'estado', 
+            'tipoCita', 
+            'historialDetalle.remisiones',
+            'especialidad',
+            'examen'
+        ])->find($id);
+
+        if (!$cita) {
+            return response()->json([
+                'message' => 'Cita no encontrada'
+            ], 404);
+        }
+
+        // Anexar remisiones de forma directa (plana) para compatibilidad con el frontend
+        if ($cita->historialDetalle) {
+            $cita->remisiones = $cita->historialDetalle->remisiones;
+        } else {
+            $cita->remisiones = [];
+        }
+
+        return response()->json([
+            'message' => 'Cita obtenida correctamente',
+            'data' => $cita
         ]);
     }
 

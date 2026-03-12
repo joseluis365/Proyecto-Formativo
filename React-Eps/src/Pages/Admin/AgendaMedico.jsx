@@ -5,7 +5,6 @@ import SearchBar from "../../components/DoctorSchedule/SearchBar";
 import ScheduleTable from "../../components/DoctorSchedule/ScheduleTable";
 import useCitas from "../../hooks/useCitas";
 import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
-import AtenderCitaModal from "../../components/Modals/AtenderCitaModal";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,7 +14,6 @@ export default function AgendaMedico() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [viewingCita, setViewingCita] = useState(null);
-    const [atendiendoCita, setAtendiendoCita] = useState(null);
 
     // Filtro en servidor por médico autenticado y fecha — sin filtrado client-side
     const { citas: citasDelMedico, loading, fetchCitas } = useCitas({
@@ -69,11 +67,11 @@ export default function AgendaMedico() {
                                     <p className="text-gray-500 dark:text-gray-400 font-medium font-outfit uppercase tracking-wider">No tienes citas agendadas para hoy.</p>
                                 </div>
                             ) : (
-                                <ScheduleTable
-                                    appointments={citasDelMedico}
-                                    onView={(cita) => setViewingCita(cita)}
-                                    onAtender={(cita) => setAtendiendoCita(cita)}
-                                />
+                                    <ScheduleTable
+                                        appointments={citasDelMedico}
+                                        onView={(cita) => setViewingCita(cita)}
+                                        onAtender={() => {}}
+                                    />
                             )}
                         </motion.div>
                     )}
@@ -86,16 +84,6 @@ export default function AgendaMedico() {
                 onClose={() => setViewingCita(null)}
                 cita={viewingCita}
             />
-
-            {/* Modal de Atención Médica */}
-            {atendiendoCita && (
-                <AtenderCitaModal
-                    isOpen={!!atendiendoCita}
-                    onClose={() => setAtendiendoCita(null)}
-                    cita={atendiendoCita}
-                    onSuccess={fetchCitas}
-                />
-            )}
         </div>
     );
 }

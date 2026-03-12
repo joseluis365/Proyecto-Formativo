@@ -55,16 +55,11 @@ class AtencionMedicaController extends Controller
             ], 403);
         }
 
-        // ── GUARDIA 3: Resolver estados dinámicamente (sin hardcode ni firstOrCreate) ──
-        $estadoAtendida = Estado::where('nombre_estado', 'Atendida')->first();
-        if (! $estadoAtendida) {
-            return response()->json([
-                'message' => 'Estado "Atendida" no encontrado. Ejecute EstadoSeeder.',
-            ], 500);
-        }
+        // ── GUARDIA 3: Resolver estados dinámicamente (FirstOrCreate) ──
+        $estadoAtendida = Estado::firstOrCreate(['nombre_estado' => 'Atendida']);
 
         // Estado "Activa" para remisiones — resuelto una vez fuera de la transacción
-        $estadoActivaId = Estado::where('nombre_estado', 'Activa')->value('id_estado');
+        $estadoActivaId = Estado::firstOrCreate(['nombre_estado' => 'Activa'])->id_estado;
 
         // ── TRANSACCIÓN — todo o nada ─────────────────────────────────────────
         return DB::transaction(function () use ($cita, $request, $estadoAtendida, $estadoActivaId) {
@@ -94,7 +89,10 @@ class AtencionMedicaController extends Controller
                 'observaciones' => $request->observaciones,
             ]);
 
-            // ── 3. Remisiones — opcionales ────────────────────────────────────
+            // ── 3. Remisiones — opcionales y Citas futuras ────────────────────
+            // Ahora si nacen con fecha, deben ser Agendadas para aparecer en las agendas.
+            $estadoAgendada = Estado::firstOrCreate(['nombre_estado' => 'Agendada']);
+
             foreach ($request->remisiones ?? [] as $remData) {
                 Remision::create([
                     'id_detalle_cita' => $detalle->id_detalle,
@@ -105,6 +103,23 @@ class AtencionMedicaController extends Controller
                     'notas'           => $remData['notas'],
                     // Estado resuelto dinámicamente — sin hardcode
                     'id_estado'       => $estadoActivaId,
+                ]);
+
+                // Generar Cita a futuro para que el paciente las pueda agendar o gestionar
+                $horaInicio = \Carbon\Carbon::createFromFormat('H:i', $remData['hora_inicio']);
+                $horaFin = $horaInicio->copy()->addMinutes(30)->format('H:i');
+
+                Cita::create([
+                    'doc_paciente' => $cita->doc_paciente,
+                    'tipo_evento' => $remData['tipo_remision'] === 'cita' ? 'remision' : 'examen',
+                    'doc_medico' => $remData['tipo_remision'] === 'cita' ? ($remData['doc_medico'] ?? null) : null,
+                    'id_especialidad' => $remData['tipo_remision'] === 'cita' ? ($remData['id_especialidad'] ?? null) : null,
+                    'id_examen' => $remData['tipo_remision'] === 'examen' ? ($remData['id_examen'] ?? null) : null,
+                    'fecha' => $remData['fecha'],
+                    'hora_inicio' => $remData['hora_inicio'],
+                    'hora_fin' => $horaFin,
+                    'id_estado' => $estadoAgendada->id_estado, // si ya tiene fecha y hora debería ser "Agendada", no Pendiente. O puede ser la lógica predefinida. Las citas normales nacen 'Agendada'.
+                    'motivo' => substr($remData['notas'], 0, 255), // Guardamos parte de las notas como motivo si se requiere
                 ]);
             }
 

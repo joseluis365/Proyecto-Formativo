@@ -50,7 +50,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
       header: "Acciones",
       align: "center",
       render: (d) => {
-        const isPending = d.estado?.nombre_estado === "Pendiente";
+        const isPending = d.estado?.nombre_estado === "Agendada";
         return (
           <div className="flex items-center justify-center gap-2">
             <button

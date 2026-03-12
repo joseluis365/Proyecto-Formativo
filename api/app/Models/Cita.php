@@ -19,6 +19,9 @@ class Cita extends Model
         'tipo_cita_id',
         'id_estado',
         'recordatorio_enviado',
+        'tipo_evento',
+        'id_especialidad',
+        'id_examen',
     ];
 
     protected $casts = [
@@ -47,5 +50,15 @@ class Cita extends Model
     public function historialDetalle()
     {
         return $this->hasOne(HistorialDetalle::class, 'id_cita', 'id_cita');
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
+    }
+
+    public function examen()
+    {
+        return $this->belongsTo(Examen::class, 'id_examen', 'id_examen');
     }
 }

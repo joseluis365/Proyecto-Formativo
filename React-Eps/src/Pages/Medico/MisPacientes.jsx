@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
-import useHistorial from "../../hooks/useHistorial";
+import api from "../../Api/axios";
+import { ROLES } from "../../constants/roles";
 import DataTable from "../../components/UI/DataTable";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
@@ -10,13 +11,29 @@ import { motion } from "framer-motion";
 export default function MisPacientes() {
     const navigate = useNavigate();
     const { setTitle, setSubtitle } = useLayout();
-    const { pacientes, loading, fetchMisPacientes } = useHistorial();
+    const [pacientes, setPacientes] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchPacientes = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get("/usuarios", {
+                params: { id_rol: ROLES.PACIENTE, per_page: 500, status: 1 }
+            });
+            const data = response.data?.data || response.data || [];
+            setPacientes(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Error al cargar pacientes", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        setTitle("Mis Pacientes");
-        setSubtitle("Lista de pacientes que has atendido recientemente.");
-        fetchMisPacientes();
-    }, [setTitle, setSubtitle, fetchMisPacientes]);
+        setTitle("Pacientes del Sistema");
+        setSubtitle("Lista de todos los pacientes registrados en la EPS.");
+        fetchPacientes();
+    }, [setTitle, setSubtitle]);
 
     const columns = [
         {
@@ -72,7 +89,7 @@ export default function MisPacientes() {
                 <div className="mb-8">
                     <PrincipalText
                         icon="groups"
-                        text="Pacientes en Seguimiento"
+                        text="Pacientes Registrados"
                         number={pacientes.length}
                     />
                 </div>
@@ -85,7 +102,7 @@ export default function MisPacientes() {
                             person_search
                         </span>
                         <p className="text-gray-500 dark:text-gray-400 font-medium">
-                            Aún no has registrado atenciones para ningún paciente.
+                            No hay pacientes registrados en el sistema.
                         </p>
                     </div>
                 ) : (

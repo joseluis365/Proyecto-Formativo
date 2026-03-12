@@ -26,18 +26,23 @@ export default function HistorialPaciente() {
         return citas
             .filter(c => c.estado?.nombre_estado === "Atendida")
             .sort((a, b) => {
-                const dateA = new Date(`${a.fecha}T${a.hora_inicio}`);
-                const dateB = new Date(`${b.fecha}T${b.hora_inicio}`);
-                return dateB - dateA;
+                // String localeCompare is safer for ISO dates than new Date parsing
+                const dateTimeA = `${a.fecha}T${a.hora_inicio || '00:00:00'}`;
+                const dateTimeB = `${b.fecha}T${b.hora_inicio || '00:00:00'}`;
+                return dateTimeB.localeCompare(dateTimeA);
             })
             .map(c => {
                 const doctorRaw = `${c.medico?.primer_nombre} ${c.medico?.primer_apellido}`;
                 // Limpiar nombre del médico
                 const doctorClean = doctorRaw.replace(/^(Dr|Dra|Doctor|Doctora)\.?\s*/i, '').trim();
 
+                // Fix timezone by parsing split parts
+                const [year, month, day] = c.fecha.split('-').map(Number);
+                const safeDate = new Date(year, month - 1, day);
+
                 return {
                     id: c.id_cita,
-                    fecha: new Date(c.fecha).toLocaleDateString('es-ES', {
+                    fecha: safeDate.toLocaleDateString('es-ES', {
                         year: 'numeric', month: 'long', day: 'numeric'
                     }),
                     hora: c.hora_inicio?.slice(0, 5),

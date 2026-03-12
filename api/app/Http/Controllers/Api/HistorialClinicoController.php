@@ -19,6 +19,9 @@ class HistorialClinicoController extends Controller
     {
         $user = auth()->user();
         
+        // El paciente puede ver su propio historial
+        if ((string)$user->documento === (string)$docPaciente) return;
+
         // El SuperAdmin (rol 1) y Admin (rol 2) tienen acceso total (opcional según requerimiento)
         if (in_array($user->id_rol, [1, 2])) return;
 

@@ -49,7 +49,7 @@ export default function PatientSidebar({ isOpen, onClose }) {
                         <div className="flex flex-col gap-2">
                             <SidebarItem to="/paciente" icon="home" label="Inicio" onClick={onClose} />
                             <SidebarItem to="/paciente/agendar" icon="add_circle" label="Agendar Cita" onClick={onClose} />
-                            <SidebarItem to="/paciente/citas" icon="calendar_month" label="Mis Citas" onClick={onClose} />
+                            <SidebarItem to="/paciente/citas" icon="calendar_month" label="Citas y Exámenes" onClick={onClose} />
                             <SidebarItem to="/paciente/historial" icon="history" label="Mi Historial" onClick={onClose} />
                         </div>
                     </nav>

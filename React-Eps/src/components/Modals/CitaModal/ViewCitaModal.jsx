@@ -6,8 +6,8 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
     if (!isOpen || !cita) return null;
 
     const patientName = `${cita.paciente?.primer_nombre || ''} ${cita.paciente?.primer_apellido || ''}`;
-    const doctorName = `Dr. ${cita.medico?.primer_nombre || ''} ${cita.medico?.primer_apellido || ''}`;
-    const specialty = cita.tipoCita?.tipo || "Consulta General";
+    const doctorName = cita.medico ? `Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}` : "Por Asignar";
+    const specialty = cita.tipo_evento === 'remision' ? `Remisión a Especialista` : cita.tipo_evento === 'examen' ? `Orden de Examen` : (cita.tipoCita?.tipo || "Consulta General");
     const status = cita.estado?.nombre_estado || "Pendiente";
 
     return (
@@ -65,15 +65,15 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
-                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.fecha}</p>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.fecha || 'Sin fecha agendada'}</p>
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Hora Inicio</p>
-                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.hora_inicio?.slice(0, 5)}</p>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.hora_inicio?.slice(0, 5) || '--:--'}</p>
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">Hora Fin</p>
-                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.hora_fin?.slice(0, 5)}</p>
+                                <p className="font-semibold text-gray-800 dark:text-gray-200">{cita.hora_fin?.slice(0, 5) || '--:--'}</p>
                             </div>
                         </div>
                     </div>

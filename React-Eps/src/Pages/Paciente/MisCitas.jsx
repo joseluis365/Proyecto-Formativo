@@ -18,8 +18,8 @@ export default function MisCitas() {
     const { citas, loading, cancelCita, reagendarCita } = useCitas({ doc_paciente: user.documento });
 
     useEffect(() => {
-        setTitle("Mis Citas");
-        setSubtitle("Gestiona tus citas médicas agendadas.");
+        setTitle("Citas y Exámenes");
+        setSubtitle("Gestiona tus citas médicas y exámenes clínicos agendados.");
     }, [setTitle, setSubtitle]);
 
     // Filtramos y ordenamos las citas por proximidad
@@ -32,9 +32,9 @@ export default function MisCitas() {
                 c.estado?.nombre_estado === "Confirmada"
             )
             .sort((a, b) => {
-                const dateTimeA = new Date(`${a.fecha}T${a.hora_inicio}`);
-                const dateTimeB = new Date(`${b.fecha}T${b.hora_inicio}`);
-                return dateTimeA - dateTimeB;
+                const dateA = a.fecha ? new Date(`${a.fecha}T${a.hora_inicio || '00:00'}`) : new Date(8640000000000000); // Mueve a futuro lejano si no tiene fecha
+                const dateB = b.fecha ? new Date(`${b.fecha}T${b.hora_inicio || '00:00'}`) : new Date(8640000000000000);
+                return dateA - dateB;
             });
     }, [citas]);
 
@@ -43,8 +43,8 @@ export default function MisCitas() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <PrincipalText
                     icon="calendar_month"
-                    text="Próximas Citas"
-                    subtext="Estas son tus citas pendientes por atención."
+                    text="Próximas Citas y Exámenes"
+                    subtext="Estas son tus gestiones pendientes por atención."
                     number={misCitasActivas.length}
                 />
             </div>
@@ -80,9 +80,13 @@ export default function MisCitas() {
                             <AppointmentCard
                                 key={cita.id_cita}
                                 patientName={`${cita.paciente?.primer_nombre} ${cita.paciente?.primer_apellido}`}
-                                doctorName={`Dr. ${cita.medico?.primer_nombre} ${cita.medico?.primer_apellido}`}
-                                specialty={cita.tipoCita?.tipo || "Consulta General"}
-                                time={`${cita.fecha} | ${cita.hora_inicio?.slice(0, 5)}`}
+                                doctorName={cita.medico ? `Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}` : "Por Asignar"}
+                                specialty={
+                                    cita.tipo_evento === 'remision' ? `Remisión a Especialista` :
+                                    cita.tipo_evento === 'examen' ? `Orden de Examen` :
+                                    (cita.tipoCita?.tipo || "Consulta General")
+                                }
+                                time={cita.fecha ? `${cita.fecha} | ${cita.hora_inicio?.slice(0, 5) || '--:--'}` : 'Sin fecha agendada | --:--'}
                                 status={cita.estado?.nombre_estado}
                                 onView={() => setViewingCita(cita)}
                                 onCancel={() => cancelCita(cita.id_cita)}

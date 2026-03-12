@@ -1,4 +1,4 @@
-﻿import SidebarItem from "./SidebarItem";
+import SidebarItem from "./SidebarItem";
 
 export default function DoctorSidebar({ isOpen, onClose }) {
     return (
@@ -57,15 +57,10 @@ export default function DoctorSidebar({ isOpen, onClose }) {
                             <SidebarItem
                                 to="/medico/pacientes"
                                 icon="group"
-                                label="Mis Pacientes"
+                                label="Pacientes"
                                 onClick={onClose}
                             />
-                            <SidebarItem
-                                to="/medico/perfil"
-                                icon="person"
-                                label="Mi Perfil"
-                                onClick={onClose}
-                            />
+
                         </div>
                     </nav>
                 </div>
