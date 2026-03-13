@@ -20,14 +20,14 @@ class AtencionMedicaRequest extends FormRequest
 
             // ── SOAP O — Objetivo: signos vitales (JSON) ──────────────────────
             'signos_vitales'                   => 'nullable|array',
-            'signos_vitales.ta_sistolica'      => 'nullable|numeric|between:60,250',
+            'signos_vitales.ta_sistolica'      => 'nullable|numeric|between:70,250',
             'signos_vitales.ta_diastolica'     => 'nullable|numeric|between:40,150',
-            'signos_vitales.fc'                => 'nullable|numeric|between:30,250',
+            'signos_vitales.fc'                => 'nullable|numeric|between:30,220',
             'signos_vitales.fr'                => 'nullable|numeric|between:8,60',
             'signos_vitales.temperatura'       => 'nullable|numeric|between:30,45',
-            'signos_vitales.peso'              => 'nullable|numeric|between:1,300',
+            'signos_vitales.peso'              => 'nullable|numeric|between:1,400',
             'signos_vitales.talla'             => 'nullable|numeric|between:0.3,2.5',
-            'signos_vitales.saturacion_o2'     => 'nullable|numeric|between:70,100',
+            'signos_vitales.saturacion_o2'     => 'nullable|numeric|between:50,100',
 
             // ── SOAP A — Análisis/Diagnóstico ─────────────────────────────────
             'diagnostico'     => 'required|string|max:3000',

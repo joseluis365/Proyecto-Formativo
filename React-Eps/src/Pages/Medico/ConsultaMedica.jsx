@@ -17,12 +17,21 @@ const TEXTAREA_BASE =
 const SELECT_BASE =
     "w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors";
 
-function RemisionRow({ index, field, register, control, remove, specialties, prioridades, medicos }) {
+const ErrorMsg = ({ error }) => {
+    if (!error) return null;
+    return (
+        <span className="text-red-500 text-[10px] font-bold mt-1 block animate-pulse">
+            {error.message}
+        </span>
+    );
+};
+
+function RemisionRow({ index, field, register, control, remove, specialties, prioridades, medicos, errors }) {
     const tipo = useWatch({ control, name: `remisiones.${index}.tipo_remision` });
     const selectedEspecialidad = useWatch({ control, name: `remisiones.${index}.id_especialidad` });
 
     // Filtrar médicos según la especialidad seleccionada (si el backend lo soporta; si no, todos los médicos servirán de fallback)
-    const medicosFiltrados = medicos.filter(m => 
+    const medicosFiltrados = medicos.filter(m =>
         !selectedEspecialidad || String(m.especialidad?.id_especialidad) === String(selectedEspecialidad) || String(m.id_especialidad) === String(selectedEspecialidad)
     );
 
@@ -87,15 +96,16 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                                     </label>
                                     <select
                                         {...register(`remisiones.${index}.id_especialidad`, {
-                                            required: "Seleccione una especialidad",
+                                            required: tipo === "cita" ? "La especialidad es obligatoria" : false,
                                         })}
-                                        className={SELECT_BASE}
+                                        className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.id_especialidad ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                                     >
                                         <option value="">Seleccionar especialidad...</option>
                                         {specialties.map(s => (
                                             <option key={s.value} value={s.value}>{s.label}</option>
                                         ))}
                                     </select>
+                                    <ErrorMsg error={errors?.remisiones?.[index]?.id_especialidad} />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
@@ -104,9 +114,9 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                                     </label>
                                     <select
                                         {...register(`remisiones.${index}.doc_medico`, {
-                                            required: "Seleccione un médico especialista",
+                                            required: tipo === "cita" ? "Debe asignar un médico" : false,
                                         })}
-                                        className={SELECT_BASE}
+                                        className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.doc_medico ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                                     >
                                         <option value="">Cualquier profesional disponible</option>
                                         {medicosFiltrados.map(m => (
@@ -115,6 +125,7 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                                             </option>
                                         ))}
                                     </select>
+                                    <ErrorMsg error={errors?.remisiones?.[index]?.doc_medico} />
                                 </div>
                             </div>
                         </>
@@ -127,12 +138,13 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                                 </label>
                                 <input
                                     {...register(`remisiones.${index}.id_examen`, {
-                                        required: "Especifique el examen a realizar",
+                                        required: tipo === "examen" ? "El nombre del examen es obligatorio" : false,
                                     })}
                                     type="text"
                                     placeholder="Nombre o código del examen"
-                                    className={SELECT_BASE}
+                                    className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.id_examen ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                                 />
+                                <ErrorMsg error={errors?.remisiones?.[index]?.id_examen} />
                             </div>
                         </>
                     )}
@@ -146,11 +158,15 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                             <span className="text-red-500">*</span>
                         </label>
                         <input
-                            {...register(`remisiones.${index}.fecha`, { required: "La fecha es obligatoria" })}
+                            {...register(`remisiones.${index}.fecha`, {
+                                required: "La fecha es obligatoria",
+                                min: { value: new Date().toISOString().split("T")[0], message: "La fecha no puede ser anterior a hoy" }
+                            })}
                             type="date"
                             min={new Date().toISOString().split("T")[0]}
-                            className={SELECT_BASE}
+                            className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.fecha ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                         />
+                        <ErrorMsg error={errors?.remisiones?.[index]?.fecha} />
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
@@ -159,7 +175,7 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                         </label>
                         <select
                             {...register(`remisiones.${index}.hora_inicio`, { required: "La hora es obligatoria" })}
-                            className={SELECT_BASE}
+                            className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.hora_inicio ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                         >
                             <option value="">Seleccione horario</option>
                             {Array.from({ length: 19 }).map((_, i) => {
@@ -169,6 +185,7 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                                 return <option key={val} value={val}>{val}</option>;
                             })}
                         </select>
+                        <ErrorMsg error={errors?.remisiones?.[index]?.hora_inicio} />
                     </div>
                 </div>
 
@@ -180,18 +197,31 @@ function RemisionRow({ index, field, register, control, remove, specialties, pri
                     <textarea
                         {...register(`remisiones.${index}.notas`, {
                             required: "La justificación es obligatoria",
+                            minLength: { value: 5, message: "Mínimo 5 caracteres" }
                         })}
                         rows={2}
                         placeholder="Motivo de la remisión..."
-                        className={TEXTAREA_BASE}
+                        className={`${TEXTAREA_BASE} ${errors?.remisiones?.[index]?.notas ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                     />
+                    <ErrorMsg error={errors?.remisiones?.[index]?.notas} />
                 </div>
             </div>
         </motion.div>
     );
 }
 
-function SignosVitalesRow({ register, open }) {
+function SignosVitalesRow({ register, open, errors }) {
+    const signs = [
+        { name: "ta_sistolica", label: "TA Sistólica", placeholder: "mmHg", min: 70, max: 250 },
+        { name: "ta_diastolica", label: "TA Diastólica", placeholder: "mmHg", min: 40, max: 150 },
+        { name: "fc", label: "F. Cardiaca", placeholder: "lpm", min: 30, max: 220 },
+        { name: "fr", label: "F. Respirat.", placeholder: "rpm", min: 8, max: 60 },
+        { name: "temperatura", label: "Temperatura", placeholder: "°C", min: 30, max: 45 },
+        { name: "peso", label: "Peso", placeholder: "kg", min: 1, max: 400 },
+        { name: "talla", label: "Talla", placeholder: "cm", min: 30, max: 250 },
+        { name: "saturacion_o2", label: "SpO₂ (%)", placeholder: "%", min: 50, max: 100 },
+    ];
+
     return (
         <AnimatePresence>
             {open && (
@@ -203,31 +233,33 @@ function SignosVitalesRow({ register, open }) {
                     className="overflow-hidden"
                 >
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3">
-                        {[
-                            { name: "ta_sistolica",  label: "TA Sistólica",  placeholder: "mmHg" },
-                            { name: "ta_diastolica", label: "TA Diastólica", placeholder: "mmHg" },
-                            { name: "fc",            label: "FC",            placeholder: "lpm" },
-                            { name: "fr",            label: "FR",            placeholder: "rpm" },
-                            { name: "temperatura",   label: "Temperatura",   placeholder: "°C" },
-                            { name: "peso",          label: "Peso",          placeholder: "kg" },
-                            { name: "talla",         label: "Talla",         placeholder: "m" },
-                            { name: "saturacion_o2", label: "SpO₂",          placeholder: "%" },
-                        ].map(({ name, label, placeholder }) => (
-                            <div key={name} className="space-y-1">
-                                <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                                    {label}
-                                </label>
-                                <input
-                                    {...register(`signos_vitales.${name}`, {
-                                        setValueAs: v => v === "" ? undefined : parseFloat(v),
-                                    })}
-                                    type="number"
-                                    step="0.1"
-                                    placeholder={placeholder}
-                                    className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/40"
-                                />
-                            </div>
-                        ))}
+                        {signs.map(({ name, label, placeholder, min, max }) => {
+                            const error = errors?.signos_vitales?.[name];
+                            return (
+                                <div key={name} className="space-y-1">
+                                    <label className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                                        {label}
+                                    </label>
+                                    <input
+                                        {...register(`signos_vitales.${name}`, {
+                                            valueAsNumber: true,
+                                            min: { value: min, message: `Mín ${min}` },
+                                            max: { value: max, message: `Máx ${max}` },
+                                        })}
+                                        type="number"
+                                        step="0.1"
+                                        placeholder={placeholder}
+                                        className={`w-full p-2 rounded-lg border bg-white dark:bg-gray-800 dark:text-white text-sm text-center focus:outline-none focus:ring-2 transition-colors
+                                            ${error
+                                                ? 'border-red-500 ring-1 ring-red-500/20'
+                                                : 'border-gray-200 dark:border-gray-700 focus:ring-primary/40'
+                                            }
+                                        `}
+                                    />
+                                    <ErrorMsg error={error} />
+                                </div>
+                            );
+                        })}
                     </div>
                 </motion.div>
             )}
@@ -236,15 +268,15 @@ function SignosVitalesRow({ register, open }) {
 }
 
 const TABS = [
-    { id: "soap",       icon: "clinical_notes",  label: "SOAP Clínico"  },
-    { id: "remisiones", icon: "outpatient",       label: "Remisiones"    },
+    { id: "soap", icon: "clinical_notes", label: "SOAP Clínico" },
+    { id: "remisiones", icon: "outpatient", label: "Remisiones" },
 ];
 
 export default function ConsultaMedica() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { setTitle, setSubtitle } = useLayout();
-    
+
     const [cita, setCita] = useState({
         paciente: {},
         historial: {},
@@ -252,13 +284,13 @@ export default function ConsultaMedica() {
         tipoCita: {}
     });
     const [loadingCita, setLoadingCita] = useState(true);
-    
+
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("soap");
     const [signosOpen, setSignosOpen] = useState(false);
 
     const { specialties } = useEspecialidades();
-    const { prioridades }  = usePrioridades();
+    const { prioridades } = usePrioridades();
     const { medicos } = useMedicos();
 
     const {
@@ -284,12 +316,12 @@ export default function ConsultaMedica() {
     useEffect(() => {
         setTitle("Consulta Médica");
         setSubtitle("Atención clínica para el paciente");
-        
+
         const fetchCita = async () => {
             try {
                 const response = await api.get(`/cita/${id}`);
                 const dataRaw = response.data || response || {};
-                
+
                 setCita({
                     paciente: dataRaw.paciente || {},
                     historial: dataRaw.historial || {},
@@ -311,19 +343,25 @@ export default function ConsultaMedica() {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
+            // Limpiar signos vitales y convertir Talla de cm a metros para el backend
             const signosLimpios = Object.fromEntries(
-                Object.entries(data.signos_vitales ?? {}).filter(([, v]) => v !== undefined && v !== "")
+                Object.entries(data.signos_vitales ?? {})
+                    .map(([k, v]) => {
+                        if (k === 'talla' && v) return [k, v / 100]; // cm -> m
+                        return [k, v];
+                    })
+                    .filter(([, v]) => v !== undefined && v !== null && !isNaN(v))
             );
 
             const payload = {
-                subjetivo:      data.subjetivo      || undefined,
+                subjetivo: data.subjetivo || undefined,
                 signos_vitales: Object.keys(signosLimpios).length > 0 ? signosLimpios : undefined,
-                diagnostico:    data.diagnostico,
-                tratamiento:    data.tratamiento,
-                observaciones:  data.observaciones  || undefined,
-                notas_medicas:  data.notas_medicas  || undefined,
-                remisiones:     data.remisiones     || [],
-                medicamentos:   [],
+                diagnostico: data.diagnostico,
+                tratamiento: data.tratamiento,
+                observaciones: data.observaciones || undefined,
+                notas_medicas: data.notas_medicas || undefined,
+                remisiones: data.remisiones || [],
+                medicamentos: [],
             };
 
             await api.post(`/cita/${id}/atender`, payload);
@@ -347,7 +385,7 @@ export default function ConsultaMedica() {
                 icon: isIdempotencia ? "warning" : "error",
                 confirmButtonColor: isIdempotencia ? "#F59E0B" : "#EF4444",
             });
-            if(isIdempotencia) navigate("/medico/agenda");
+            if (isIdempotencia) navigate("/medico/agenda");
         } finally {
             setLoading(false);
         }
@@ -366,7 +404,7 @@ export default function ConsultaMedica() {
 
     return (
         <div className="max-w-4xl mx-auto flex flex-col min-h-full">
-            <button 
+            <button
                 onClick={() => navigate('/medico/agenda')}
                 className="flex items-center gap-2 text-primary font-bold hover:underline mb-4 cursor-pointer w-fit"
             >
@@ -379,7 +417,7 @@ export default function ConsultaMedica() {
                     <span className="material-symbols-outlined text-primary text-3xl">stethoscope</span>
                     Atender: {pacienteNombre}
                 </h1>
-                
+
                 <button
                     type="button"
                     onClick={() => navigate(`/medico/pacientes/historial/${cita.paciente?.documento}`)}
@@ -448,7 +486,7 @@ export default function ConsultaMedica() {
                                         </span>
                                     </button>
                                     <div className="px-4 pb-4">
-                                        <SignosVitalesRow register={register} open={signosOpen} />
+                                        <SignosVitalesRow register={register} open={signosOpen} errors={errors} />
                                     </div>
                                 </div>
 
@@ -465,7 +503,15 @@ export default function ConsultaMedica() {
                                         <span className="size-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-black">A</span>
                                         Diagnóstico <span className="text-xs text-red-500">*</span>
                                     </label>
-                                    <textarea {...register("diagnostico", { required: "El diagnóstico es obligatorio" })} rows={4} className={TEXTAREA_BASE} />
+                                    <textarea
+                                        {...register("diagnostico", {
+                                            required: "El diagnóstico clínico es obligatorio",
+                                            minLength: { value: 5, message: "El diagnóstico debe tener al menos 5 caracteres" }
+                                        })}
+                                        rows={4}
+                                        className={`${TEXTAREA_BASE} ${errors.diagnostico ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
+                                    />
+                                    <ErrorMsg error={errors.diagnostico} />
                                 </div>
 
                                 <div className="space-y-1.5">
@@ -473,7 +519,15 @@ export default function ConsultaMedica() {
                                         <span className="size-5 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-black">P</span>
                                         Tratamiento y Plan <span className="text-xs text-red-500">*</span>
                                     </label>
-                                    <textarea {...register("tratamiento", { required: "El tratamiento es obligatorio" })} rows={4} className={TEXTAREA_BASE} />
+                                    <textarea
+                                        {...register("tratamiento", {
+                                            required: "El tratamiento sugerido es obligatorio",
+                                            minLength: { value: 5, message: "El tratamiento debe tener al menos 5 caracteres" }
+                                        })}
+                                        rows={4}
+                                        className={`${TEXTAREA_BASE} ${errors.tratamiento ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
+                                    />
+                                    <ErrorMsg error={errors.tratamiento} />
                                 </div>
                             </div>
                         )}
@@ -493,7 +547,18 @@ export default function ConsultaMedica() {
 
                                 <AnimatePresence>
                                     {fields.map((field, index) => (
-                                        <RemisionRow key={field.id} index={index} field={field} register={register} control={control} remove={remove} specialties={specialties} prioridades={prioridades} medicos={medicos} />
+                                        <RemisionRow
+                                            key={field.id}
+                                            index={index}
+                                            field={field}
+                                            register={register}
+                                            control={control}
+                                            remove={remove}
+                                            specialties={specialties}
+                                            prioridades={prioridades}
+                                            medicos={medicos}
+                                            errors={errors}
+                                        />
                                     ))}
                                 </AnimatePresence>
 

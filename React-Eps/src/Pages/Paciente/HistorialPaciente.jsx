@@ -40,6 +40,8 @@ export default function HistorialPaciente() {
                 const [year, month, day] = c.fecha.split('-').map(Number);
                 const safeDate = new Date(year, month - 1, day);
 
+                const detail = c.historial_detalle || c.historialDetalle;
+
                 return {
                     id: c.id_cita,
                     fecha: safeDate.toLocaleDateString('es-ES', {
@@ -48,10 +50,10 @@ export default function HistorialPaciente() {
                     hora: c.hora_inicio?.slice(0, 5),
                     medico: doctorClean,
                     especialidad: c.tipoCita?.tipo || "Consulta General",
-                    diagnostico: c.historialDetalle?.diagnostico || "Sin registro",
-                    tratamiento: c.historialDetalle?.tratamiento || "Sin registro",
-                    observaciones: c.historialDetalle?.observaciones || c.historialDetalle?.notas_medicas || "Sin observaciones adicionales",
-                    remisiones: c.historialDetalle?.remisiones || []
+                    diagnostico: detail?.diagnostico || "Sin registro",
+                    tratamiento: detail?.tratamiento || "Sin registro",
+                    observaciones: detail?.observaciones || detail?.notas_medicas || "Sin observaciones adicionales",
+                    remisiones: detail?.remisiones || []
                 };
             });
     }, [citas]);
@@ -167,14 +169,7 @@ export default function HistorialPaciente() {
                                     </div>
                                 </div>
 
-                                {atencion.observaciones && (
-                                    <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-3 block">Observaciones Médicas</h4>
-                                        <p className="text-gray-500 dark:text-gray-500 text-xs italic leading-relaxed">
-                                            "{atencion.observaciones}"
-                                        </p>
-                                    </div>
-                                )}
+
                             </div>
                         </motion.div>
                     ))}
