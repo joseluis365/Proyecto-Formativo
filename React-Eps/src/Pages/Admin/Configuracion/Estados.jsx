@@ -77,11 +77,16 @@ export default function Estados() {
         }
     ];
 
+    // Requisito: No mostrar estados relacionados con licencias (ids 3, 4, 5, 6)
+    const filteredData = data.filter(item => ![3, 4, 5, 6].includes(item.id_estado));
+
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="settings_accessibility" text="Gestión de Estados" number={total} />
-                <BlueButton text="Nuevo Estado" icon="add" onClick={handleCreate} />
+                <PrincipalText icon="settings_accessibility" text="Gestión de Estados" number={total - (data.length - filteredData.length)} />
+                <div className="w-sl">
+                    <BlueButton text="Nuevo Estado" icon="add" onClick={handleCreate} />
+                </div>
             </div>
 
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
@@ -107,7 +112,7 @@ export default function Estados() {
                     </motion.div>
                 )}
 
-                {!loading && data.length === 0 && (
+                {!loading && filteredData.length === 0 && (
                     <motion.div
                         key="empty"
                         initial={{ opacity: 0 }}
@@ -118,7 +123,7 @@ export default function Estados() {
                     </motion.div>
                 )}
 
-                {data.length > 0 && (
+                {filteredData.length > 0 && (
                     <motion.div
                         key="data"
                         animate={{ opacity: loading ? 0.6 : 1 }}
@@ -127,7 +132,7 @@ export default function Estados() {
                         <div className="bg-white dark:bg-gray-800 border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm overflow-x-auto rounded-lg">
                             <DataTable
                                 columns={columns}
-                                data={data}
+                                data={filteredData}
                             />
                         </div>
 
@@ -146,7 +151,7 @@ export default function Estados() {
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors flex-shrink-0 ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}

@@ -1,4 +1,4 @@
-import SidebarDropdown from "./SidebarDropdown";
+﻿import SidebarDropdown from "./SidebarDropdown";
 import SidebarItem from "./SidebarItem";
 import SidebarSubItem from "./SidebarSubItem";
 
@@ -55,7 +55,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
                 <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
               </SidebarDropdown>
-              <SidebarItem to="/citas" icon="calendar_month" label="Citas" />
+              <SidebarDropdown icon="calendar_month" label="Citas" basePath="/citas">
+                <SidebarSubItem to="/citas/del-dia" label="Citas del Día" />
+                <SidebarSubItem to="/citas/agenda" label="Agenda de Citas" />
+              </SidebarDropdown>
               <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
               <SidebarDropdown icon="settings" label="Gestión Interna" basePath="/configuracion">
                 <SidebarSubItem to="/configuracion/prioridades" label="Prioridades" />

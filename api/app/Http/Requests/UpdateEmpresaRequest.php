@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Rules\UniqueIgnoreCase;
+use App\Constants\RolConstants;
 
 class UpdateEmpresaRequest extends FormRequest
 {
@@ -18,7 +19,7 @@ class UpdateEmpresaRequest extends FormRequest
         $id = $this->route('id') ?? $this->route('empresa'); 
         
         $adminIdx = \App\Models\Usuario::where('nit', $id)
-                    ->where('id_rol', 2)
+                    ->where('id_rol', RolConstants::ADMIN)
                     ->first();
 
         $rules = [

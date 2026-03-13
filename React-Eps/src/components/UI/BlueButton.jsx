@@ -28,7 +28,7 @@ export default function BlueButton({
         <>
           {/* Spinner */}
           <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          <span>Guardando...</span>
+          <span>{text === "Actualizar Cambios" || text === "Actualizar" ? "Actualizando..." : "Guardando..."}</span>
         </>
       ) : (
         <>

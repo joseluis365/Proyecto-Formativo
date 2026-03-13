@@ -23,7 +23,7 @@ export default function DepartamentoModal({ isOpen, onClose, onSuccess, editData
     } = useForm({
         resolver: zodResolver(departamentoSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             codigo_DANE: "",
@@ -111,11 +111,12 @@ export default function DepartamentoModal({ isOpen, onClose, onSuccess, editData
                     handleSubmit={handleSubmit}
                     onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Guardar"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

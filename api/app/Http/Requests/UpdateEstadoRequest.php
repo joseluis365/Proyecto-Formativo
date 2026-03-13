@@ -13,7 +13,7 @@ class UpdateEstadoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $id = $this->route('id');
+        $id = $this->route('id_estado');
         return $id >= 7;
     }
 
@@ -24,7 +24,7 @@ class UpdateEstadoRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('id');
+        $id = $this->route('id_estado');
 
         return [
             'nombre_estado' => ['required', 'string', 'max:50', new UniqueIgnoreCase('estado', 'nombre_estado', $id, 'id_estado')]

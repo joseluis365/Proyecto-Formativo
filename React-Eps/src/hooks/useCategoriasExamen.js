@@ -12,7 +12,7 @@ export default function useCategoriasExamen() {
                 const response = await api.get("/categorias-examen", {
                     params: { id_estado: 1 }
                 });
-                const data = response.data.data || [];
+                const data = Array.isArray(response) ? response : response?.data || [];
                 setCategorias(data.map(item => ({
                     value: item.id_categoria_examen,
                     label: item.categoria

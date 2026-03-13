@@ -80,11 +80,11 @@ export default function SuperAdminVerify() {
       }
 
       // ✅ Autenticación completa - Guardar Token
-      if (result.access_token) {
-        sessionStorage.setItem("superadmin_token", result.access_token);
+      if (result.data && result.data.access_token) {
+        sessionStorage.setItem("superadmin_token", result.data.access_token);
         // Opcional: Guardar usuario si se devuelve
-        if (result.user) {
-          sessionStorage.setItem("superadmin_user", JSON.stringify(result.user));
+        if (result.data.user) {
+          sessionStorage.setItem("superadmin_user", JSON.stringify(result.data.user));
         }
       }
 

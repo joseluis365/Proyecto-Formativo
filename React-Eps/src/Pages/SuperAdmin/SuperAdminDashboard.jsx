@@ -20,8 +20,8 @@ export default function SuperAdminDashboard() {
           superAdminApi.get('/superadmin/dashboard-stats')
         ]);
 
-        setActivities(activityRes.data);
-        setStats(statsRes.data);
+        setActivities(activityRes || []);
+        setStats(statsRes || []);
         setLoading(false);
       } catch (error) {
         console.error("Error loading dashboard data:", error);

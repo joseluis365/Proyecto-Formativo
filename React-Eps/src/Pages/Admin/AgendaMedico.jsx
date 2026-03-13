@@ -1,48 +1,89 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLayout } from "../../LayoutContext";
 import DoctorInfo from "../../components/DoctorSchedule/DoctorInfo";
 import SearchBar from "../../components/DoctorSchedule/SearchBar";
 import ScheduleTable from "../../components/DoctorSchedule/ScheduleTable";
-
-const mockDates = [
-    {
-        time: "08:00",
-        patient: "Juan Pérez",
-        reason: "Consulta de seguimiento",
-        status: "Atendida",
-    },
-    {
-        time: "09:00",
-        patient: "María López",
-        reason: "Consulta de seguimiento",
-        status: "Cancelada",
-    },
-    {
-        time: "10:00",
-        patient: "Pedro Rodríguez",
-        reason: "Consulta de seguimiento",
-        status: "Pendiente",
-    },
-];
+import useCitas from "../../hooks/useCitas";
+import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
+import TableSkeleton from "../../components/UI/TableSkeleton";
+import PrincipalText from "../../components/Users/PrincipalText";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function AgendaMedico() {
     const { setTitle, setSubtitle } = useLayout();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [viewingCita, setViewingCita] = useState(null);
+
+    // Filtro en servidor por médico autenticado y fecha — sin filtrado client-side
+    const { citas: citasDelMedico, loading, fetchCitas } = useCitas({
+        fecha: selectedDate,
+        doc_medico: user.documento,
+    });
+
     useEffect(() => {
-        setTitle("Agenda Medico");
-        setSubtitle("Gestión de agenda de medicos");
-    }, []);
+        setTitle("Agenda Médica");
+        setSubtitle("Gestión de citas y atención de pacientes.");
+    }, [setTitle, setSubtitle]);
+
     return (
-        <div>
-            <div className="mb-8">
-                <DoctorInfo name="Carlos Ramirez" specialty="Cardiología" office="302" status="ACTIVO" />
+        <div className="space-y-8">
+            {/* Información del Médico */}
+            <DoctorInfo
+                name={`${user.primer_nombre} ${user.primer_apellido} `}
+                specialty={user.especialidad?.especialidad || "Especialista"}
+                office={user.consultorio || "Consultorio 1"}
+                status={user.id_estado === 1 ? "ACTIVO" : "INACTIVO"}
+            />
+
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-neutral-gray-border/10 dark:border-gray-800">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <PrincipalText
+                        icon="calendar_today"
+                        text={`Citas de Hoy – ${new Date(selectedDate).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })} `}
+                        number={citasDelMedico.length}
+                    />
+                </div>
+
+                <AnimatePresence mode="wait">
+                    {loading ? (
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <TableSkeleton rows={5} columns={5} />
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="content"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                        >
+                            {citasDelMedico.length === 0 ? (
+                                <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/20 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+                                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">event_busy</span>
+                                    <p className="text-gray-500 dark:text-gray-400 font-medium font-outfit uppercase tracking-wider">No tienes citas agendadas para hoy.</p>
+                                </div>
+                            ) : (
+                                    <ScheduleTable
+                                        appointments={citasDelMedico}
+                                        onView={(cita) => setViewingCita(cita)}
+                                        onAtender={() => {}}
+                                    />
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-            <SearchBar />
-            <div className="flex items-center gap-3 mb-4">
-                <span className="material-symbols-outlined text-primary-green">event_note</span>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Agenda del día – Viernes, 27 de Octubre
-                    2023</h3>
-            </div>
-            <ScheduleTable dates={mockDates} />
+
+            {/* Reutilización del Modal de Detalles */}
+            <ViewCitaModal
+                isOpen={!!viewingCita}
+                onClose={() => setViewingCita(null)}
+                cita={viewingCita}
+            />
         </div>
-    )
+    );
 }

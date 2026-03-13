@@ -1,5 +1,6 @@
+Proyecto EPS — Contexto Técnico (Actualizado 2026)
 Stack Tecnológico
-🔹 Backend
+Backend
 
 Laravel 12
 
@@ -7,279 +8,398 @@ PostgreSQL
 
 Laravel Sanctum
 
-Arquitectura moderna (bootstrap/app.php)
+Arquitectura basada en:
 
-Middleware personalizado licencia.activa
+bootstrap/app.php
 
-API Resources (uso mayoritario, en proceso de estandarización total)
+Incluye:
 
-FormRequest (uso casi total, estructura consolidada)
+Middleware licencia.activa
 
-Servicios desacoplados (inicio de arquitectura ReportService)
+API Resources (uso mayoritario)
 
-Configuración extensible vía config/*.php (nuevo patrón para reportes)
+FormRequest consolidado
 
-🔹 Frontend
+Servicios desacoplados (ReportService)
 
-React + React Router v6
+Configuración extensible vía config/*.php
 
-Arquitectura con Layouts anidados (<Outlet />)
+Sistema de Roles
 
-Separación estricta Admin / SuperAdmin
+Archivo:
 
-axios.js para Admin
+app/Constants/RolConstants.php
+ID	Rol
+1	Super Admin
+2	Admin
+3	Personal Administrativo
+4	Medico
+5	Paciente
+6	Farmaceutico
 
-superadminAxios.js para SuperAdmin
+Uso en backend:
 
-Hooks reutilizables (useTableData, hooks por entidad)
+RolConstants::ADMIN
+RolConstants::MEDICO
+RolConstants::PACIENTE
 
-framer-motion para animaciones UI
+Frontend:
 
-Módulo Gestión Interna consolidado
+src/constants/roles.js
 
-Módulo Reportes en arquitectura profesional escalable
+Magic numbers eliminados completamente.
 
-🏗 Arquitectura General
-🔹 Backend
+Sistema de Citas
 
-Separación clara MVC
+Controlador:
 
-Soft delete lógico mediante id_estado
+CitaController
 
-Seeders estructurados, idempotentes y portables
+Endpoints:
 
-Secuencias PostgreSQL sincronizadas dentro de Seeders (no en migraciones)
-
-Middleware de licencia aplicado a rutas protegidas
-
-Contratos JSON estandarizados con API Resources
-
-Inicio de arquitectura desacoplada para reportes:
-
-config/reportables.php
-
-ReportService
-
-ReportController
-
-⚠ Riesgo actual:
-
-Dependencia a PostgreSQL por uso de ILIKE (pendiente abstracción con Trait HasSearch)
-
-🔹 Frontend
-
-Layouts jerárquicos:
-
-DashboardLayout
-
-SuperAdminLayout
-
-IndexLayout
-
-Módulos implementados:
-
-Gestión Interna (CRUD completo):
-
-Prioridades
-
+GET /api/citas
+GET /api/cita/{id}
+POST /api/cita
+PUT /api/cita/{id}
+PUT /api/citas/{id}/reagendar
+POST /api/citas/{id}/atender
+PATCH /api/cita/{id}/no-asistio
 Tipos de Cita
 
-Categorías de Examen
+Tabla:
 
-Categorías de Medicamento
+tipo_cita
 
-Especialidades
+Campos principales:
 
-Farmacias
+id_tipo_cita
+tipo
 
-Departamentos
+Seeder:
 
-Ciudades
+TipoCitaSeeder
 
-Roles
+Uso en frontend mediante hook:
 
-Estados
+useTiposCita.js
 
-Hook centralizado:
+Payload esperado para crear citas:
 
-useTableData para paginación, filtros y búsqueda
+id_tipo_cita
 
-Deuda técnica controlada:
+Mapeo backend:
 
-Duplicación parcial en modales CRUD
+'tipo_cita_id' => $request->id_tipo_cita
+Tipos de Evento Clínico
 
-Algunos hooks aún no totalmente unificados
+La tabla cita ahora funciona como evento clínico unificado.
 
-Refactorización futura planificada, no urgente
+Campo:
 
-🔐 Autenticación
-Usuario Normal
+tipo_evento
 
-POST /api/login
+Valores posibles:
 
-Tabla: usuario
+Tipo	Descripción
+consulta	cita normal
+remision	cita con especialista
+examen	orden de laboratorio
 
-Campo: contrasena (mutator automático hash)
+Esto permite que remisiones y exámenes se integren al sistema de agenda.
 
-Sesión: localStorage
+Flujo Clínico
 
-Middleware: auth:sanctum + licencia.activa
+Flujo principal del sistema:
 
-SuperAdmin
+Paciente agenda cita
+        ↓
+Médico revisa agenda
+        ↓
+Médico atiende consulta
+        ↓
+Registro SOAP
+        ↓
+Opcional:
+  - Remisiones
+  - Exámenes
+        ↓
+Sistema genera nuevas citas
+        ↓
+Paciente visualiza:
+"Citas y Exámenes"
+Atención Médica
 
-POST /api/superadmin/login
+Vista clínica:
 
-Tabla: superadmin
+/medico/consulta/:id
 
-Sesión: sessionStorage
+Características:
 
-Flujo independiente
+Apertura en nueva pestaña desde agenda
 
-Axios independiente
+Registro clínico SOAP
 
-No comparte token con Admin normal
+Campos:
 
-📏 Reglas Arquitectónicas Activas
+Campo	Obligatorio
+Subjetivo	opcional
+Diagnóstico	obligatorio
+Tratamiento	obligatorio
+Observaciones	opcional
 
-NO mezclar sesiones Admin y SuperAdmin.
+Remisiones y exámenes son opcionales.
 
-NO modificar UserFormConfig.js sin autorización.
+Endpoint utilizado:
 
-NO cambiar estructura de payload.
+POST /api/citas/{id}/atender
 
-NO asumir campos inexistentes.
+Controlador:
 
-NO cambiar nombres de columnas.
+AtencionMedicaController
+Capa Clínica
 
-Respetar consistencia de id_estado.
+Tablas:
 
-Filtrar registros activos con id_estado = 1.
+historial_clinico
+historial_detalle
+remision
+examen
 
-No introducir lógica de negocio en controladores.
+Modelos:
 
-Mantener compatibilidad total con migrate:fresh --seed.
+HistorialClinico
+HistorialDetalle
+Remision
+Examen
 
-No usar migraciones para sincronizar secuencias.
+Restricciones importantes:
 
-Las secuencias se sincronizan dentro de Seeders.
+historial_detalle.id_cita UNIQUE
 
-🧱 Estado Actual del Backend
-✅ Fortalezas
+Un solo registro clínico por cita
 
-Middleware de licencia estable.
+Acceso a Historial Clínico
 
-Seeders completamente portables.
+Controlador:
 
-Secuencias PostgreSQL sincronizadas correctamente.
+HistorialClinicoController
 
-Uso mayoritario de FormRequest.
+Reglas de acceso:
 
-Soft delete homogéneo por id_estado.
+Rol	Acceso
+Paciente	solo su historial
+Médico	historial de cualquier paciente
+Admin	acceso total
 
-CRUD estandarizados.
+Implementación:
 
-Arquitectura lista para escalar.
+if ($user->id_rol === RolConstants::MEDICO) {
+    return;
+}
+Recordatorios Automáticos
 
-Inicio de sistema profesional de reportes configurable.
+Comando:
 
-⚠ Riesgos Detectados
+app/Console/Commands/SendAppointmentReminders.php
 
-Uso de ILIKE (dependencia PostgreSQL).
+Cron:
 
-Hardcoding parcial de id_estado = 1.
+0 8 * * *
 
-Algunos endpoints aún no usan Resource consistentemente.
+Campo en tabla cita:
 
-Búsquedas no abstractas (pendiente Trait HasSearch).
+recordatorio_enviado
 
-🖥 Estado Actual del Frontend
-✅ Fortalezas
+Previene envío duplicado de recordatorios.
 
-Rutas anidadas funcionales.
+Frontend
 
-Layout persistente estable.
+Stack:
 
-Separación modular clara.
+React
 
-CRUD consistentes.
+Vite
 
-Módulo Gestión Interna consolidado.
+React Router v6
 
-Arquitectura preparada para módulo Reportes profesional.
+Tailwind CSS
 
-⚠ Deuda Técnica
+Framer Motion
 
-Duplicación en modales CRUD.
+Estructura:
 
-Unificación futura pendiente.
+src
+├ Pages
+├ layouts
+├ components
+├ hooks
+├ Api
+├ constants
+└ assets
+Autenticación
+Usuarios normales
 
-Algunas inconsistencias menores en hooks de catálogos.
+Storage:
 
-🌱 Seeders Portables
+localStorage
 
-El sistema debe funcionar correctamente con:
+Claves:
+
+token
+user
+
+Interceptor:
+
+src/Api/axios.js
+Super Admin
+
+Storage:
+
+sessionStorage
+
+Claves:
+
+superadmin_token
+superadmin_user
+
+Cliente API:
+
+src/Api/superadminAxios.js
+Route Guards
+
+Ubicación:
+
+src/components/Routes
+SuperAdminRoute
+
+Protege:
+
+/SuperAdmin-*
+AdminRoute
+
+Protege:
+
+/dashboard
+/usuarios/*
+/citas/*
+/configuracion/*
+/reportes
+
+Roles:
+
+ADMIN
+PERSONAL_ADMINISTRATIVO
+MedicoRoute
+
+Protege:
+
+/agenda-medico
+/medico/*
+
+Rol:
+
+MEDICO
+PatientRoute
+
+Protege:
+
+/paciente/*
+
+Rol:
+
+PACIENTE
+Portal del Paciente
+
+Layout:
+
+PatientLayout.jsx
+
+Rutas:
+
+/paciente
+/paciente/agendar
+/paciente/citas
+/paciente/historial
+/paciente/perfil
+
+Sección principal:
+
+Citas y Exámenes
+
+Muestra:
+
+Consultas agendadas
+
+Remisiones
+
+Exámenes
+
+Estado de cada evento
+
+Experiencia de Usuario
+
+Incluye:
+
+Modo oscuro / claro
+
+Wizard de agendamiento
+
+Timeline clínica
+
+Notificaciones
+
+Diseño responsive
+
+Seeders
+
+Sistema portable con:
 
 php artisan migrate:fresh --seed
 
-Y dejar automáticamente:
+Seeders:
 
-Empresa activa (id_estado = 1)
+RolSeeder
+EstadoSeeder
+TipoCitaSeeder
+EmpresaSeeder
+EmpresaLicenciaSeeder
+AdminUsuarioSeeder
+SuperadminSeeder
+UsuariosPruebaSeeder
+Estado Actual del Proyecto
 
-Licencia activa con fechas válidas
+Backend:
 
-Usuario admin activo
+✔ Licencias
+✔ Citas
+✔ Tipos de cita
+✔ Capa clínica
+✔ Remisiones
+✔ Exámenes
+✔ Historial clínico
+✔ Roles refactorizados
+✔ Recordatorios automáticos
 
-Estados base creados
+Frontend:
 
-Roles base creados
+✔ Panel Admin completo
+✔ Agenda administrativa
+✔ Agenda médico funcional
+✔ Consulta médica avanzada
+✔ Portal paciente completo
+✔ Guardas por rol
+✔ Redirecciones corregidas
 
-Secuencias sincronizadas
-
-Sin errores 23505
-
-Sin errores de FK
-
-🎯 Nuevo Objetivo Arquitectónico (2026)
-Consolidación y Profesionalización
-🔹 Backend
-
-Implementar Trait HasSearch para eliminar dependencia ILIKE
-
-Estandarizar 100% API Resources
-
-Eliminar validaciones manuales en controllers
-
-Migrar hardcodes a constantes / Enums
-
-Implementar módulo Reportes configurable (Opción C)
-
-config/reportables.php
-
-ReportService
-
-Exportación PDF y Excel
-
-Mantener portabilidad total
-
-🔹 Frontend
-
-Implementar módulo Reportes profesional
-
-Filtros dinámicos
-
-Exportación PDF y Excel
-
-Mantener coherencia visual
-
-No romper formularios existentes
-
-Refactorización progresiva controlada
-
-🏛 Principio Rector del Proyecto
+Principio Rector
 
 Primero estabilidad.
 Luego estandarización.
 Luego optimización.
-Nunca refactorizar sin diagnóstico completo.
-No parches temporales.
-Arquitectura limpia antes que rapidez.
+
+Reglas del proyecto:
+
+Nunca refactorizar sin diagnóstico completo
+
+No parches temporales
+
+Arquitectura limpia antes que rapidez

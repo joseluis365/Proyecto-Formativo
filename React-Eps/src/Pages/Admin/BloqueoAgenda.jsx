@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/axios";
+import { ROLES } from "@/constants/roles";
 import { bloquearDia } from "../../Api/bloqueoAgenda";
 import { useLayout } from "../../LayoutContext";
 import PrincipalText from "../../components/Users/PrincipalText";
@@ -27,9 +28,9 @@ export default function BloqueoAgenda() {
     const fetchMedicos = async () => {
       try {
         const res = await api.get("/usuarios", {
-          params: { id_rol: 2 },
+          params: { id_rol: ROLES.MEDICO },
         });
-        setMedicos(res.data.data || res.data);
+        setMedicos(res.data || []);
       } catch (err) {
         console.error("Error cargando médicos:", err);
         setError("No se pudieron cargar los médicos.");

@@ -6,11 +6,11 @@ import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
 import { getCreateUserFormConfig } from "../../../UserFormConfig";
-import { createPersonalSchema } from "../../../schemas/userSchema";
+import { createPersonalSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
-
+import { ROLES } from "@/constants/roles";
 export default function CreatePersonalModal({
   onClose,
   onSuccess,
@@ -25,8 +25,11 @@ export default function CreatePersonalModal({
     formState: { errors }
   } = useForm({
     resolver: zodResolver(createPersonalSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       id_estado: 1,
+      id_rol: ROLES.PERSONAL_ADMINISTRATIVO,
       segundo_nombre: "",
       segundo_apellido: ""
     }
@@ -35,11 +38,10 @@ export default function CreatePersonalModal({
   const onSubmit = async (data) => {
     try {
       setSaving(true);
-
       // Inyección de rol administrativo (3)
       const payload = {
         ...data,
-        id_rol: 3
+        id_rol: ROLES.PERSONAL_ADMINISTRATIVO
       };
 
       await api.post(`/usuario`, payload);
@@ -67,7 +69,7 @@ export default function CreatePersonalModal({
 
   // Obtenemos la configuración de campos para el rol 3 (Personal)
   const formConfig = {
-    fields: getCreateUserFormConfig(3)
+    fields: getCreateUserFormConfig(ROLES.PERSONAL_ADMINISTRATIVO)
   };
 
   return (
@@ -84,7 +86,7 @@ export default function CreatePersonalModal({
           <div className="flex mt-8 justify-end">
             <div className="w-full md:w-48">
               <BlueButton
-                text="Guardar Personal"
+                text="Guardar"
                 icon="save"
                 type="submit"
                 loading={saving}

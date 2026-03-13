@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\DepartamentoController;
 use App\Http\Controllers\Api\CiudadController;
 use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\EstadoController;
+use App\Http\Controllers\Api\AtencionMedicaController;
+use App\Http\Controllers\Api\HistorialClinicoController;
 use App\Http\Controllers\ReportController;
 
 /*
@@ -95,6 +97,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     Route::controller(UsuarioController::class)->group(function () {
         Route::get('/usuarios', 'index');
+        Route::get('/medicos-disponibles', 'medicosDisponibles');
         Route::get('/usuario/{id}', 'show');
         Route::post('/usuario', 'store');
         Route::put('/usuario/{id}', 'update');
@@ -114,7 +117,26 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/cita', 'store');
         Route::put('/cita/{id}', 'update');
         Route::delete('/cita/{id}', 'destroy');
+        Route::put('/citas/{id}/reagendar', 'reagendar');
+        Route::patch('/cita/{id}/no-asistio', 'noAsistio');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ATENCIÓN MÉDICA
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/cita/{id}/atender', [AtencionMedicaController::class, 'atender']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | HISTORIAL CLÍNICO Y PACIENTES (MÉDICO)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/medico/pacientes', [HistorialClinicoController::class, 'misPacientes']);
+    Route::get('/paciente/{doc}/historial', [HistorialClinicoController::class, 'show']);
+    Route::get('/paciente/{doc}/historial/detalles', [HistorialClinicoController::class, 'detalles']);
+    Route::put('/paciente/{doc}/historial', [HistorialClinicoController::class, 'updateAntecedentes']);
 
     /*
     |--------------------------------------------------------------------------

@@ -6,11 +6,12 @@ import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import FormWithIcons from "@/components/UI/FormWithIcons";
 import { getCreateUserFormConfig } from "@/UserFormConfig";
-import { medicoSchema } from "@/schemas/userSchema";
+import { createMedicoSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "@/utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "@/components/UI/BlueButton";
 import useEspecialidades from "@/hooks/useEspecialidades";
+import { ROLES } from "@/constants/roles";
 
 export default function CreateMedicoModal({
   onClose,
@@ -25,11 +26,12 @@ export default function CreateMedicoModal({
     setError,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(medicoSchema),
+    resolver: zodResolver(createMedicoSchema),
     mode: "onChange",
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
     defaultValues: {
       id_estado: 1,
+      id_rol: ROLES.MEDICO,
       segundo_nombre: "",
       segundo_apellido: ""
     }
@@ -42,7 +44,7 @@ export default function CreateMedicoModal({
       // Inyección de rol Médico (4)
       const payload = {
         ...data,
-        id_rol: 4
+        id_rol: ROLES.MEDICO
       };
 
       await api.post(`/usuario`, payload);
@@ -67,7 +69,7 @@ export default function CreateMedicoModal({
   };
 
   const formConfig = {
-    fields: getCreateUserFormConfig(4, { id_especialidad: specialties })
+    fields: getCreateUserFormConfig(ROLES.MEDICO, { id_especialidad: specialties })
   };
 
   return (
@@ -84,7 +86,7 @@ export default function CreateMedicoModal({
           <div className="flex mt-8 justify-end">
             <div className="w-full md:w-48">
               <BlueButton
-                text="Guardar Médico"
+                text="Guardar"
                 icon="save"
                 type="submit"
                 loading={saving || loadingSpecialties}

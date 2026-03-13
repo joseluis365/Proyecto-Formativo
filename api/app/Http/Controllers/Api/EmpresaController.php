@@ -11,6 +11,7 @@ use App\Http\Resources\EmpresaResource;
 use App\Events\SystemActivityEvent;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use App\Constants\RolConstants;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Artisan;
@@ -103,7 +104,7 @@ class EmpresaController extends Controller
                     'direccion' => strip_tags($data['admin_direccion']),
                     'contrasena' => Hash::make($data['admin_password']),
                     
-                    'id_rol' => 2,
+                    'id_rol' => RolConstants::ADMIN,
                     'id_estado' => 1,
                     'nit' => $empresa->nit,
                     'is_active' => true 
@@ -187,7 +188,7 @@ public function update(UpdateEmpresaRequest $request, $id)
     $empresa = Empresa::findOrFail($id);
 
     $adminIdx = \App\Models\Usuario::where('nit', $empresa->nit)
-                    ->where('id_rol', 2)
+                    ->where('id_rol', RolConstants::ADMIN)
                     ->first();
 
     $data = $request->validated();

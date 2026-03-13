@@ -23,7 +23,7 @@ export default function CategoriaMedicamentoModal({ isOpen, onClose, onSuccess, 
     } = useForm({
         resolver: zodResolver(categoriaMedicamentoSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             categoria: ""
@@ -78,11 +78,12 @@ export default function CategoriaMedicamentoModal({ isOpen, onClose, onSuccess, 
                     handleSubmit={handleSubmit}
                     onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Crear"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

@@ -25,7 +25,7 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
     } = useForm({
         resolver: zodResolver(ciudadSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             codigo_postal: "",
@@ -169,11 +169,12 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
                     onSubmit={handleFormSubmit}
                     errors={errors}
                     customRenderers={customRenderers}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Guardar"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

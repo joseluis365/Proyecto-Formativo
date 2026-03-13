@@ -47,7 +47,9 @@ export default function SuperAdminEmpresas() {
           id_estado: status || undefined,
         },
       });
-      const formattedData = res.data.data.map(company => ({
+      // La API devuelve { data: [...] }
+      const dataArray = res?.data || res || [];
+      const formattedData = dataArray.map(company => ({
         ...company,
         email: company.email_contacto,
         expiresAt: company.expiresAt || "Sin fecha de expiración",
@@ -84,7 +86,8 @@ export default function SuperAdminEmpresas() {
     const fetchLicencias = async () => {
       try {
         const res = await superAdminApi.get('/superadmin/licencias');
-        setLicencias(res.data.data || res.data);
+        // La API devuelve { total: X, data: [...] }
+        setLicencias(res?.data || res || []);
       } catch (err) {
         console.error("Error al cargar licencias:", err);
       }
@@ -135,7 +138,8 @@ export default function SuperAdminEmpresas() {
   const handleViewCompany = async (company) => {
     try {
       const res = await superAdminApi.get(`/superadmin/empresa/${company.nit}`);
-      setSelectedCompany(res.data);
+      // Show endpoint returns the object directly
+      setSelectedCompany(res?.data || res);
       setViewingCompany(true);
     } catch (error) {
       console.error("Error al obtener detalles:", error);
@@ -221,12 +225,14 @@ export default function SuperAdminEmpresas() {
 
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
-        <Input
-          placeholder="Buscar empresa (Nombre o NIT)"
-          icon="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="lg:w-md md:w-1/2">
+          <Input
+            placeholder="Buscar empresa (Nombre o NIT)"
+            icon="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         <Filter
           value={status}

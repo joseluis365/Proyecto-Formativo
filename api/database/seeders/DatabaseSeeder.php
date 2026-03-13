@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             EmpresaLicenciaSeeder::class,
             AdminUsuarioSeeder::class,
             SuperadminSeeder::class,
+            UsuariosPruebaSeeder::class,
+            TipoCitaSeeder::class,
         ]);
         
         // User::factory(10)->create();

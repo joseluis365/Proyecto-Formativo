@@ -23,7 +23,7 @@ export default function FarmaciaModal({ isOpen, onClose, onSuccess, editData = n
     } = useForm({
         resolver: zodResolver(farmaciaSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             nit: "",
@@ -164,11 +164,12 @@ export default function FarmaciaModal({ isOpen, onClose, onSuccess, editData = n
                     onSubmit={handleFormSubmit}
                     errors={errors}
                     customRenderers={customRenderers}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Guardar"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

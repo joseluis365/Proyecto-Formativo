@@ -23,7 +23,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, editData = null }
     } = useForm({
         resolver: zodResolver(rolSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             tipo_usu: "",
@@ -81,6 +81,7 @@ export default function RolModal({ isOpen, onClose, onSuccess, editData = null }
                     handleSubmit={handleSubmit}
                     onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     {isEdit && (
                         <div className="flex flex-col gap-1.5 pb-3">
@@ -103,8 +104,8 @@ export default function RolModal({ isOpen, onClose, onSuccess, editData = null }
 
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Crear"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

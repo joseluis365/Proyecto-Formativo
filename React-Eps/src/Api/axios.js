@@ -74,6 +74,11 @@ api.interceptors.response.use(
           console.error("API Error:", response.data?.message || error.message);
       }
     } else {
+      // Ignorar requests abortados por React Strict Mode / Cleanups
+      if (axios.isCancel(error) || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+        return Promise.reject(error);
+      }
+
       // Error de red o servidor caído
       Swal.fire({
         icon: 'error',

@@ -1,5 +1,6 @@
 import React from "react";
 import IconInput from "./IconInput";
+import Swal from "sweetalert2";
 
 export default function FormWithIcons({
     register,
@@ -9,8 +10,24 @@ export default function FormWithIcons({
     children,
     errors = {},
     handleSubmit,
-    onSubmit
+    onSubmit,
+    values,
+    onChange
 }) {
+    const onInvalid = (errs) => {
+        console.warn("Validation failed:", errs);
+        Swal.fire({
+            icon: 'warning',
+            title: 'Formulario incompleto',
+            text: 'Verifique los campos marcados en rojo antes de continuar.',
+            confirmButtonColor: '#3085d6',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    };
+
     const renderField = (field) => {
         if (customRenderers[field.name]) {
             return (
@@ -23,16 +40,22 @@ export default function FormWithIcons({
         return (
             <IconInput
                 {...field}
+                placeholder={field.placeholder || field.label}
                 key={field.name}
                 id={field.id || field.name}
-                error={errors[field.name]}
+                error={errors && errors[field.name] ? errors[field.name] : null}
                 register={register}
+                value={values ? values[field.name] : undefined}
+                onChangeHandler={onChange}
             />
         );
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <form
+            onSubmit={handleSubmit ? handleSubmit(onSubmit, onInvalid) : onSubmit}
+            className="flex flex-col gap-5"
+        >
             {sections && sections.length > 0 && (
                 sections.map((section, idx) => (
                     <div key={idx} className="space-y-4">

@@ -23,7 +23,7 @@ export default function EstadoModal({ isOpen, onClose, onSuccess, editData = nul
     } = useForm({
         resolver: zodResolver(estadoSchema),
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
         defaultValues: {
             nombre_estado: ""
@@ -106,11 +106,12 @@ export default function EstadoModal({ isOpen, onClose, onSuccess, editData = nul
                     handleSubmit={handleSubmit}
                     onSubmit={handleFormSubmit}
                     errors={errors}
+                    isEditing={isEdit}
                 >
                     <div className="flex justify-end pt-4">
                         <BlueButton
-                            text={isEdit ? "Actualizar" : "Guardar"}
-                            icon="save"
+                            text={isEdit ? "Actualizar Cambios" : "Guardar"}
+                            icon={isEdit ? "published_with_changes" : "save"}
                             type="submit"
                             loading={isSubmitting}
                         />

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Constants\RolConstants;
 
 class UsuarioController extends Controller
 {
@@ -41,7 +42,8 @@ class UsuarioController extends Controller
 }
 
 
-    $usuarios = $query->paginate(10);
+    $perPage = $request->input('per_page', 15);
+    $usuarios = $query->paginate($perPage);
 
     $totalPorRol = Usuario::where('id_rol', $request->id_rol)->count();
 
@@ -55,6 +57,37 @@ class UsuarioController extends Controller
         'per_page' => $usuarios->perPage()
 
     ]);
+}
+
+/**
+ * Obtiene médicos activos que no tengan cita en la fecha y hora proporcionada.
+ */
+public function medicosDisponibles(Request $request)
+{
+    $request->validate([
+        'fecha' => 'required|date',
+        'hora' => 'required|date_format:H:i',
+    ]);
+
+    $fecha = $request->fecha;
+    $hora = $request->hora;
+
+    $medicos = Usuario::with('especialidad')
+        ->where('id_rol', RolConstants::MEDICO)
+        ->where('id_estado', 1) // Activo
+        ->whereDoesntHave('medicoCitas', function ($query) use ($fecha, $hora) {
+            $query->where('fecha', $fecha)
+                  ->where('hora_inicio', $hora)
+                  ->where('id_estado', '!=', 4); // No cancelada (4 = Cancelada según seeder)
+        })
+        ->get();
+
+    return response()->json($medicos->map(function ($medico) {
+        return [
+            'value' => $medico->documento,
+            'label' => "Dr. {$medico->primer_nombre} {$medico->primer_apellido} - " . ($medico->especialidad->especialidad ?? 'Sin especialidad'),
+        ];
+    }));
 }
 
 
@@ -72,10 +105,8 @@ class UsuarioController extends Controller
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();
-        $data['contrasena'] = \Illuminate\Support\Facades\Hash::make($data['contrasena']);
-
-
-        
+        // No se hashea aquí: el modelo tiene un mutator setContrasenaAttribute
+        // que hashea la contraseña automáticamente al asignarla
         $user = Usuario::create($data);
 
         return response()->json([

@@ -6,6 +6,9 @@ import Form from "../../UI/Form";
 import { getEditUserFormConfig } from "../../../UserFormConfig";
 import Swal from 'sweetalert2';
 import MotionSpinner from "../../UI/Spinner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updatePacienteSchema } from "@/schemas/usuarioSchemas";
 
 
 export default function EditPacienteModal({
@@ -18,17 +21,29 @@ export default function EditPacienteModal({
   const [saving, setSaving] = useState(false);
   const [specialties, setSpecialties] = useState([]);
 
+  const {
+    register,
+    handleSubmit,
+    setError,
+    reset,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(updatePacienteSchema),
+    mode: "onChange"
+  });
+
 
   useEffect(() => {
     if (!userId) return;
 
     api.get(`/usuario/${userId}`).then((res) => {
-      setUser(res.data);
+      setUser(res);
+      reset(res);
       setLoading(false);
     });
   }, [userId]);
 
-  const handleUpdate = async (data) => {
+  const onSubmit = async (data) => {
     try {
       setSaving(true);
       await api.put(`/usuario/${userId}`, data);
@@ -44,12 +59,21 @@ export default function EditPacienteModal({
       });
 
     } catch (error) {
-      console.error("Error 422:", error.response?.data);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo actualizar el paciente.',
-      });
+      if (error.response?.status === 422) {
+        const backendErrors = error.response.data.errors;
+        Object.keys(backendErrors).forEach((key) => {
+          setError(key, {
+            type: "server",
+            message: backendErrors[key][0],
+          });
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo actualizar el paciente.',
+        });
+      }
     } finally {
       setSaving(false);
     }
@@ -65,11 +89,14 @@ export default function EditPacienteModal({
           </div>
         ) : (
           <Form
-            values={user}
             fields={getEditUserFormConfig(user.id_rol)}
-            onSubmit={handleUpdate}
+            register={register}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
             disabled={saving}
             loading={saving}
+            errors={errors}
+            isEditing={true}
           />
         )}
       </div>

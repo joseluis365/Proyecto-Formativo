@@ -49,7 +49,7 @@ export default function AssignLicenciaModal({
       fecha_fin: "",
     },
     mode: "onChange",
-    reValidateMode: "onBlur",
+    reValidateMode: "onChange",
     criteriaMode: "firstError",
   });
 

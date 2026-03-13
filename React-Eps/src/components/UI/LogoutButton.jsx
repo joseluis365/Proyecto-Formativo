@@ -1,26 +1,19 @@
 import React from 'react';
-import api from '../../Api/superadminAxios';
+import api from '@/Api/axios';
 import { useNavigate } from 'react-router-dom';
 
-const LogoutButton = () => {
+const LogoutButton = ({ className, showText = false }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // 1. Obtener el token de superadmin desde sessionStorage
-    const token = sessionStorage.getItem('superadmin_token');
-
     try {
-      // 2. Llamada al controlador de Laravel usando la instancia superadminAxios
-      await api.post('/superadmin/logout');
-
-      console.log("Sesión de SuperAdmin cerrada en el servidor");
+      await api.post('/logout');
     } catch (error) {
-      console.error("Error al cerrar sesión de SuperAdmin", error);
+      console.error("Error al cerrar sesión", error);
     } finally {
-      // 3. Limpiar sessionStorage y redirigir al login de SuperAdmin
-      sessionStorage.removeItem('superadmin_token');
-      sessionStorage.removeItem('superadmin_user');
-      navigate('/SuperAdmin-Login');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigate('/login');
     }
   };
 
@@ -28,13 +21,13 @@ const LogoutButton = () => {
     <button
       type="button"
       onClick={handleLogout}
-      className="w-10 h-10 flex items-center justify-center rounded-full 
-        bg-primary text-white hover:bg-primary/90 
-        transition cursor-pointer"
+      className={className || "flex items-center justify-center rounded-full size-10 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"}
+      title="Cerrar sesión"
     >
-      <span className="material-symbols-outlined text-3xl">
-        person
+      <span className="material-symbols-outlined">
+        logout
       </span>
+      {showText && <span>Cerrar Sesión</span>}
     </button>
   );
 };

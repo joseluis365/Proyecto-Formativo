@@ -6,7 +6,7 @@ import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
 import { getEditUserFormConfig } from "../../../UserFormConfig";
-import { editPersonalSchema } from "../../../schemas/userSchema";
+import { updatePersonalSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
@@ -27,7 +27,9 @@ export default function EditPersonalModal({
     setError,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(editPersonalSchema)
+    resolver: zodResolver(updatePersonalSchema),
+    mode: "onChange",
+    reValidateMode: "onChange"
   });
 
   // Carga de datos iniciales
@@ -58,7 +60,6 @@ export default function EditPersonalModal({
 
     fetchUser();
   }, [userId, reset, onClose]);
-
   const onSubmit = async (data) => {
     try {
       setSaving(true);

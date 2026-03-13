@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "../../../Api/superadminAxios";
+import superAdminApi from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
@@ -26,7 +26,7 @@ export default function EditEmpresaModal({
         resolver: zodResolver(updateEmpresaSchema),
         defaultValues: empresaData || {},
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
     });
 
@@ -34,19 +34,29 @@ export default function EditEmpresaModal({
         if (empresaData) reset(empresaData);
     }, [empresaData, reset]);
 
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            console.log("Validation errors in EditEmpresaModal:", errors);
+        }
+    }, [errors]);
+
     const handleUpdate = async (data) => {
         try {
             setSaving(true);
-            const payload = { ...data };
+            // Aseguramos que id_estado esté presente ya que el backend lo requiere como obligatorio
+            const payload = {
+                ...data,
+                id_estado: data.id_estado ?? empresaData.id_estado
+            };
 
             if (!payload.admin_password || payload.admin_password.trim() === "") {
                 delete payload.admin_password;
                 delete payload.admin_password_confirmation;
             }
 
-            console.log("Enviando actualización para NIT:", empresaData.nit);
+            console.log("Enviando actualización para NIT:", empresaData.nit, "Payload:", payload);
 
-            await axios.put(`/superadmin/empresa/${empresaData.nit}`, payload);
+            await superAdminApi.put(`/superadmin/empresa/${empresaData.nit}`, payload);
 
             const Swal = (await import("sweetalert2")).default;
             await Swal.fire({
@@ -111,8 +121,8 @@ export default function EditEmpresaModal({
                             disabled={saving}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2 transition-colors disabled:opacity-50"
                         >
-                            <span className="material-symbols-outlined">save</span>
-                            {saving ? "Guardando..." : "Guardar"}
+                            <span className="material-symbols-outlined">published_with_changes</span>
+                            {saving ? "Actualizando..." : "Actualizar Cambios"}
                         </button>
                     </div>
                 </FormWithIcons>

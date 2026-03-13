@@ -28,7 +28,7 @@ export default function EditLicenciaModal({
         resolver: zodResolver(updatePlanSchema),
         defaultValues: licenciaData || {},
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
     });
 

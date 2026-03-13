@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Superadmin;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Constants\RolConstants;
 
 class SuperadminSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class SuperadminSeeder extends Seeder
                 'nombre' => 'Super Admin',
                 'usuario' => 'madarazeduchiha',
                 'contrasena' => Hash::make('admin123'),
-                'id_rol' => 1,
+                'id_rol' => RolConstants::SUPER_ADMIN,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]

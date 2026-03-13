@@ -6,7 +6,7 @@ import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import FormWithIcons from "../../UI/FormWithIcons";
 import { getEditUserFormConfig } from "../../../UserFormConfig";
-import { editMedicoSchema } from "../../../schemas/userSchema";
+import { updateMedicoSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
@@ -29,9 +29,9 @@ export default function EditMedicoModal({
     setError,
     formState: { errors }
   } = useForm({
-    resolver: zodResolver(editMedicoSchema),
+    resolver: zodResolver(updateMedicoSchema),
     mode: "onChange",
-    reValidateMode: "onBlur"
+    reValidateMode: "onChange"
   });
 
   // Nota: Para la edición de médicos necesitamos un esquema que permita contrasena opcional.
@@ -119,8 +119,8 @@ export default function EditMedicoModal({
             <div className="flex mt-8 justify-end">
               <div className="w-full md:w-56">
                 <BlueButton
-                  text="Actualizar Médico"
-                  icon="how_to_reg"
+                  text="Actualizar Cambios"
+                  icon="published_with_changes"
                   type="submit"
                   loading={saving}
                 />

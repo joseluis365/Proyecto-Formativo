@@ -11,7 +11,9 @@ export default function Form({
   errors = {},
   showDeleteButton = false,
   onDelete,
+  isEditing = false,
 }) {
+  const [showPasswords, setShowPasswords] = useState({});
   const togglePasswordVisibility = (fieldName) => {
     setShowPasswords(prev => ({
       ...prev,
@@ -116,7 +118,12 @@ export default function Form({
           </button>
         )}
         <div className="w-50">
-          <BlueButton text="Guardar" icon="save" type="submit" loading={loading} />
+          <BlueButton
+            text={isEditing ? "Actualizar Cambios" : "Guardar"}
+            icon={isEditing ? "published_with_changes" : "save"}
+            type="submit"
+            loading={loading}
+          />
         </div>
 
       </div>

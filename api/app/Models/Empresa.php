@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Constants\RolConstants;
 
 class Empresa extends Model
 {
@@ -38,7 +39,7 @@ class Empresa extends Model
     public function adminUser()
     {
         return $this->hasOne(Usuario::class, 'nit', 'nit')
-            ->where('id_rol', 2) 
+            ->where('id_rol', RolConstants::ADMIN)
             ->latest(); 
     }
 

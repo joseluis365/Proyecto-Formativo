@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class HistorialDetalle extends Model
+{
+    use HasFactory;
+
+    protected $table = 'historial_detalle';
+    protected $primaryKey = 'id_detalle';
+
+    protected $fillable = [
+        // Campos originales — no se eliminan
+        'id_historial',
+        'id_cita',
+        'diagnostico',       // SOAP A (Assessment)
+        'tratamiento',       // SOAP P (Plan)
+        'notas_medicas',
+        'observaciones',
+        // Campos SOAP nuevos
+        'subjetivo',         // SOAP S — anamnesis del paciente
+        'signos_vitales',    // SOAP O — signos vitales (JSON)
+    ];
+
+    protected $casts = [
+        'signos_vitales' => 'array', // PostgreSQL JSONB → PHP array automáticamente
+    ];
+
+    // ── Relaciones ────────────────────────────────────────────────────────────
+
+    public function historial()
+    {
+        return $this->belongsTo(HistorialClinico::class, 'id_historial', 'id_historial');
+    }
+
+    public function cita()
+    {
+        return $this->belongsTo(Cita::class, 'id_cita', 'id_cita');
+    }
+
+    public function remisiones()
+    {
+        return $this->hasMany(Remision::class, 'id_detalle_cita', 'id_detalle');
+    }
+}

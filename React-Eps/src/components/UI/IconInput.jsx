@@ -18,6 +18,8 @@ export default function IconInput({
     required,
     options, // Soporte para opciones de select
     onlyLetters, // Restricción física de caracteres
+    value,
+    onChangeHandler,
     ...props
 }) {
     const [showPassword, setShowPassword] = useState(false);
@@ -55,14 +57,17 @@ export default function IconInput({
         : "border-[#cfd7e7] dark:border-white/30 focus:ring-2 focus:ring-primary/20";
 
     const commonProps = {
-        ...register(name), // Contiene name, onBlur, onChange, ref
+        ...(register ? register(name) : {}),
         id,
+        name,
         placeholder,
         readOnly,
         required,
         autoComplete,
         className: `${baseClasses} ${statusClasses} ${isPasswordType ? 'pr-12' : 'pr-4'} ${isSelectType ? 'appearance-none pr-10' : ''}`,
         onInput: handleInput,
+        ...(!register && value !== undefined ? { value } : {}),
+        ...(!register && onChangeHandler ? { onChange: (e) => onChangeHandler(name, e.target.value) } : {}),
         ...props
     };
 
@@ -76,24 +81,29 @@ export default function IconInput({
 
             <div className="relative">
                 {icon && (
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
+                    <span className={`material-symbols-outlined absolute left-4 text-[#4c669a] text-xl ${type === 'textarea' ? 'top-4' : 'top-1/2 -translate-y-1/2'}`}>
                         {icon}
                     </span>
                 )}
 
                 {isSelectType ? (
                     <select {...commonProps}>
-                        <option value="">{placeholder || 'Seleccione una opción'}</option>
-                        {options?.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
+                        <option key="placeholder" value="">{placeholder || 'Seleccione una opción'}</option>
+                        {options?.map((opt, index) => (
+                            <option key={opt.value || index} value={opt.value} disabled={opt.disabled}>
                                 {opt.label}
                             </option>
                         ))}
                     </select>
+                ) : type === 'textarea' ? (
+                    <textarea
+                        {...commonProps}
+                        rows={props.rows || 3}
+                        className={`${commonProps.className} !h-auto py-3 min-h-[120px]`}
+                    />
                 ) : (
                     <input {...commonProps} type={currentType} />
                 )}
-
                 {isPasswordType && (
                     <button
                         type="button"

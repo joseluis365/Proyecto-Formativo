@@ -8,6 +8,7 @@ import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreatePersonalModal from "../../components/Modals/UserModal/CreatePersonalModal";
+import { ROLES } from "@/constants/roles";
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -47,16 +48,16 @@ export default function Personal() {
       const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol: 3,
+          id_rol: ROLES.PERSONAL_ADMINISTRATIVO,
           status: status || undefined,
-          page: currentPage, 
+          page: currentPage,
         },
       });
 
-      setUsers(res.data.data);
-      setTotalUsersByRol(res.data.totalPorRol);
-      setCurrentPage(res.data.current_page);
-      setLastPage(res.data.last_page);
+      setUsers(res.data || []);
+      setTotalUsersByRol(res.totalPorRol || 0);
+      setCurrentPage(res.current_page || 1);
+      setLastPage(res.last_page || 1);
 
     } catch (err) {
       console.error("Error cargando usuarios:", err);
@@ -100,12 +101,14 @@ export default function Personal() {
 
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
-        <Input
-          placeholder="Buscar nombre o documento"
-          icon="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="lg:w-sm md:w-1/2 xs:w-full">
+          <Input
+            placeholder="Buscar nombre o documento"
+            icon="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         <Filter
           value={status}
@@ -166,40 +169,39 @@ export default function Personal() {
               fetchUsers={fetchUsers}
             />
 
-          <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-6">
               {/* Botón anterior */}
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => prev - 1)}
-              className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-            >
-              Anterior
-            </button>
-
-            {/* Números de página */}
-            {Array.from({ length: lastPage }, (_, i) => (
               <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 rounded ${
-                  currentPage === i + 1
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+              >
+                Anterior
+              </button>
+
+              {/* Números de página */}
+              {Array.from({ length: lastPage }, (_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 rounded ${currentPage === i + 1
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
+                    }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
 
-            {/* Botón siguiente */}
-            <button
-              disabled={currentPage === lastPage}
-              onClick={() => setCurrentPage((prev) => prev + 1)}
-              className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
+              {/* Botón siguiente */}
+              <button
+                disabled={currentPage === lastPage}
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
+              >
+                Siguiente
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

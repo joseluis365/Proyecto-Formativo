@@ -2,6 +2,7 @@
  * Configuración de campos para formularios de usuarios.
  * Alineado con userSchema.js y con el contrato del backend.
  */
+import { ROLES } from "@/constants/roles";
 
 // Configuración Base para Edición
 export const editUserFormConfig = [
@@ -20,11 +21,11 @@ export const editUserFormConfig = [
 
 // Configuración Específica por Rol para Edición
 export const roleSpecificEditConfig = {
-  4: [ // Medico
+  [ROLES.MEDICO]: [ // Medico
     { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: true, icon: "verified" },
     { name: "id_especialidad", label: "Especialidad", type: "select", readOnly: false, icon: "medical_services" },
   ],
-  5: [ // Paciente
+  [ROLES.PACIENTE]: [ // Paciente
     { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], readOnly: false, icon: "wc" },
     { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false, icon: "bloodtype" },
   ],
@@ -47,11 +48,11 @@ export const createUserFormConfig = [
 
 // Configuración Específica por Rol para Creación
 export const roleSpecificConfig = {
-  4: [ // Medico
+  [ROLES.MEDICO]: [ // Medico
     { name: "registro_profesional", label: "Registro Profesional", type: "number", readOnly: false, icon: "verified" },
     { name: "id_especialidad", label: "Especialidad", type: "select", icon: "medical_services" },
   ],
-  5: [ // Paciente
+  [ROLES.PACIENTE]: [ // Paciente
     { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], readOnly: false, icon: "wc" },
     { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], readOnly: false, icon: "bloodtype" },
   ],

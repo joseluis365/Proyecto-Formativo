@@ -42,7 +42,7 @@ export default function SuperAdminHistorial() {
                         id_estado: status || undefined,
                     }
                 });
-                setHistory(response.data);
+                setHistory(response?.data || response || []);
             } catch (err) {
                 console.error("Error fetching history:", err);
                 setError("No se pudo cargar el historial.");
@@ -107,8 +107,8 @@ export default function SuperAdminHistorial() {
             </div>
 
             {/* Filtros */}
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="flex-1">
+            <div className="flex flex-col justify-between md:flex-row gap-4 mb-6">
+                <div className="lg:w-md md:w-1/2">
                     <Input
                         placeholder="Buscar por NIT, ID de licencia o Nombre de empresa..."
                         icon="search"

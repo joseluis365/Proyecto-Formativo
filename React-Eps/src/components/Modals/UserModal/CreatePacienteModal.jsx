@@ -6,11 +6,17 @@ import Form from "../../UI/Form";
 import { getCreateUserFormConfig } from "../../../UserFormConfig";
 import Swal from 'sweetalert2';
 import MotionSpinner from "../../UI/Spinner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createPacienteSchema } from "@/schemas/usuarioSchemas";
+import { ROLES } from "@/constants/roles";
 
 const initialUser = {
   documento: "",
-  nombre: "",
-  apellido: "",
+  primer_nombre: "",
+  segundo_nombre: "",
+  primer_apellido: "",
+  segundo_apellido: "",
   email: "",
   telefono: "",
   direccion: "",
@@ -19,7 +25,7 @@ const initialUser = {
   grupo_sanguineo: "",
   id_estado: 1,
   contrasena: "",
-  id_rol: 5,
+  id_rol: ROLES.PACIENTE,
 };
 
 export default function CreatePacienteModal({
@@ -28,17 +34,28 @@ export default function CreatePacienteModal({
 }) {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
 
-  const handleCreate = async (data) => {
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(createPacienteSchema),
+    defaultValues: initialUser,
+    mode: "onChange"
+  });
+
+  const onSubmit = async (data) => {
     try {
       setSaving(true);
-      setErrors({});
       const payload = {
-        id_rol: 5,
+        id_rol: ROLES.PACIENTE,
         documento: data.documento,
-        nombre: data.nombre,
-        apellido: data.apellido,
+        primer_nombre: data.primer_nombre,
+        segundo_nombre: data.segundo_nombre,
+        primer_apellido: data.primer_apellido,
+        segundo_apellido: data.segundo_apellido,
         email: data.email,
         telefono: data.telefono,
         direccion: data.direccion,
@@ -64,13 +81,13 @@ export default function CreatePacienteModal({
 
     } catch (error) {
       if (error.response?.status === 422) {
-        setErrors(
-          Object.fromEntries(
-            Object.entries(error.response.data.errors).map(
-              ([key, value]) => [key, value[0]]
-            )
-          )
-        );
+        const backendErrors = error.response.data.errors;
+        Object.keys(backendErrors).forEach((key) => {
+          setError(key, {
+            type: "server",
+            message: backendErrors[key][0],
+          });
+        });
       } else {
         Swal.fire({
           icon: 'error',
@@ -95,9 +112,10 @@ export default function CreatePacienteModal({
           </div>
         ) : (
           <Form
-            values={initialUser}
-            fields={getCreateUserFormConfig(5)}
-            onSubmit={handleCreate}
+            fields={getCreateUserFormConfig(ROLES.PACIENTE)}
+            register={register}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
             disabled={saving}
             loading={saving}
             errors={errors}

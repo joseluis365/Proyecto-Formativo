@@ -8,6 +8,7 @@ import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreateMedicoModal from "../../components/Modals/UserModal/CreateMedicoModal";
+import { ROLES } from "@/constants/roles";
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -48,13 +49,13 @@ export default function Medicos() {
       const res = await api.get("/usuarios", {
         params: {
           search: debouncedSearch || undefined,
-          id_rol: 4,
+          id_rol: ROLES.MEDICO,
           status: status || undefined,
         },
       });
 
-      setUsers(res.data.data);
-      setTotalUsersByRol(res.data.totalPorRol);
+      setUsers(res.data || []);
+      setTotalUsersByRol(res.totalPorRol || 0);
     } catch (err) {
       console.error("Error cargando usuarios:", err);
       setError("No se pudieron cargar los usuarios"); // ❌ error controlado
@@ -98,12 +99,14 @@ export default function Medicos() {
 
       {/* FILTROS */}
       <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
-        <Input
-          placeholder="Buscar usuario"
-          icon="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="lg:w-sm md:w-1/2 xs:w-full">
+          <Input
+            placeholder="Buscar usuario"
+            icon="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         <Filter
           value={status}

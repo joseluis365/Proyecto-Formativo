@@ -37,7 +37,7 @@ export default function CreateLicenciaModal({
         resolver: zodResolver(planSchema),
         defaultValues: initialLicencia,
         mode: "onChange",
-        reValidateMode: "onBlur",
+        reValidateMode: "onChange",
         criteriaMode: "firstError",
     });
 
