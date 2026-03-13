@@ -1,5 +1,4 @@
 import axios from "axios";
-import Swal from "sweetalert2";
 
 const superAdminApi = axios.create({
     baseURL: "http://localhost:8000/api",
@@ -17,68 +16,13 @@ superAdminApi.interceptors.request.use((config) => {
 });
 
 superAdminApi.interceptors.response.use(
-    (response) => {
-        // Extracción automática del campo 'data' si existe la estructura estándar
-        if (response.data && typeof response.data.success !== "undefined") {
-            // Si el backend envió data: null (ej: Logout), devolvemos el objeto completo para no perder el mensaje
-            return response.data.data !== null ? response.data.data : response.data;
-        }
-        return response.data;
-    },
+    (response) => response,
     (error) => {
-        const { response } = error;
-
-        if (response) {
-            switch (response.status) {
-                case 401:
-                    // Sesión SuperAdmin expirada o inválida
-                    sessionStorage.removeItem("superadmin_token");
-                    sessionStorage.removeItem("superadmin_user");
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Sesión Finalizada',
-                        text: 'Tu sesión como SuperAdmin ha expirado. Por favor, ingresa de nuevo.',
-                        confirmButtonColor: '#3085d6',
-                    }).then(() => {
-                        window.location.href = "/SuperAdmin-Login";
-                    });
-                    break;
-
-                case 403:
-                    // Acceso prohibido (ej: Problemas de licencia de su empresa?) o permiso denegado.
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Acceso Denegado',
-                        text: response.data?.message || 'No tienes permisos para realizar esta acción.',
-                        confirmButtonColor: '#d33',
-                    });
-                    break;
-
-                case 500:
-                    // Error interno del servidor
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error del Servidor',
-                        text: 'Ha ocurrido un error inesperado al procesar la solicitud del SuperAdmin.',
-                        confirmButtonColor: '#d33',
-                    });
-                    break;
-
-                case 422:
-                    // Se espera manejo local por el componente (setError)
-                    break;
-
-                default:
-                    console.error("SuperAdmin API Error:", response.data?.message || error.message);
-            }
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error de Conexión',
-                text: 'Servidor desconectado o error de red.',
-            });
+        if (error.response && error.response.status === 401) {
+            sessionStorage.removeItem("superadmin_token");
+            sessionStorage.removeItem("superadmin_user");
+            window.location.href = "/SuperAdmin-Login";
         }
-
         return Promise.reject(error);
     }
 );
