@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 export const citaSchema = z.object({
     doc_paciente: z.string().min(1, "El paciente es requerido"),
     doc_medico: z.string().min(1, "El médico es requerido"),
-    tipo_cita_id: z.string().min(1, "El tipo de cita es requerido").or(z.number()),
+    id_tipo_cita: z.string().min(1, "El tipo de cita es requerido").or(z.number()),
     fecha: z.string()
         .min(1, "La fecha es requerida")
         .refine((val) => {

@@ -1,11 +1,12 @@
-# Proyecto EPS — Contexto Técnico (2026)
+Proyecto EPS — Contexto Técnico (Actualizado 2026)
+Stack Tecnológico
+Backend
 
-## Stack Tecnológico
+Laravel 12
 
-### Backend
-- Laravel 12
-- PostgreSQL
-- Laravel Sanctum
+PostgreSQL
+
+Laravel Sanctum
 
 Arquitectura basada en:
 
@@ -13,125 +14,219 @@ bootstrap/app.php
 
 Incluye:
 
-- Middleware `licencia.activa`
-- API Resources (uso mayoritario)
-- FormRequest consolidado
-- Servicios desacoplados (`ReportService`)
-- Configuración extensible vía `config/*.php`
+Middleware licencia.activa
 
----
+API Resources (uso mayoritario)
 
-# Sistema de Roles
+FormRequest consolidado
+
+Servicios desacoplados (ReportService)
+
+Configuración extensible vía config/*.php
+
+Sistema de Roles
 
 Archivo:
 
 app/Constants/RolConstants.php
-
-| ID | Rol |
-|----|-----|
-|1|Super Admin|
-|2|Admin|
-|3|Personal Administrativo|
-|4|Medico|
-|5|Paciente|
-|6|Farmaceutico|
+ID	Rol
+1	Super Admin
+2	Admin
+3	Personal Administrativo
+4	Medico
+5	Paciente
+6	Farmaceutico
 
 Uso en backend:
-
 
 RolConstants::ADMIN
 RolConstants::MEDICO
 RolConstants::PACIENTE
 
-
 Frontend:
-
 
 src/constants/roles.js
 
+Magic numbers eliminados completamente.
 
-Magic numbers eliminados.
-
----
-
-# Sistema de Citas
+Sistema de Citas
 
 Controlador:
 
-
 CitaController
-
 
 Endpoints:
 
-
 GET /api/citas
+GET /api/cita/{id}
 POST /api/cita
 PUT /api/cita/{id}
 PUT /api/citas/{id}/reagendar
 POST /api/citas/{id}/atender
+PATCH /api/cita/{id}/no-asistio
+Tipos de Cita
 
+Tabla:
 
----
+tipo_cita
 
-# Capa Clínica
+Campos principales:
+
+id_tipo_cita
+tipo
+
+Seeder:
+
+TipoCitaSeeder
+
+Uso en frontend mediante hook:
+
+useTiposCita.js
+
+Payload esperado para crear citas:
+
+id_tipo_cita
+
+Mapeo backend:
+
+'tipo_cita_id' => $request->id_tipo_cita
+Tipos de Evento Clínico
+
+La tabla cita ahora funciona como evento clínico unificado.
+
+Campo:
+
+tipo_evento
+
+Valores posibles:
+
+Tipo	Descripción
+consulta	cita normal
+remision	cita con especialista
+examen	orden de laboratorio
+
+Esto permite que remisiones y exámenes se integren al sistema de agenda.
+
+Flujo Clínico
+
+Flujo principal del sistema:
+
+Paciente agenda cita
+        ↓
+Médico revisa agenda
+        ↓
+Médico atiende consulta
+        ↓
+Registro SOAP
+        ↓
+Opcional:
+  - Remisiones
+  - Exámenes
+        ↓
+Sistema genera nuevas citas
+        ↓
+Paciente visualiza:
+"Citas y Exámenes"
+Atención Médica
+
+Vista clínica:
+
+/medico/consulta/:id
+
+Características:
+
+Apertura en nueva pestaña desde agenda
+
+Registro clínico SOAP
+
+Campos:
+
+Campo	Obligatorio
+Subjetivo	opcional
+Diagnóstico	obligatorio
+Tratamiento	obligatorio
+Observaciones	opcional
+
+Remisiones y exámenes son opcionales.
+
+Endpoint utilizado:
+
+POST /api/citas/{id}/atender
+
+Controlador:
+
+AtencionMedicaController
+Capa Clínica
 
 Tablas:
-
 
 historial_clinico
 historial_detalle
 remision
 examen
 
-
 Modelos:
-
 
 HistorialClinico
 HistorialDetalle
 Remision
 Examen
 
+Restricciones importantes:
 
----
+historial_detalle.id_cita UNIQUE
 
-# Recordatorios Automáticos
+Un solo registro clínico por cita
+
+Acceso a Historial Clínico
+
+Controlador:
+
+HistorialClinicoController
+
+Reglas de acceso:
+
+Rol	Acceso
+Paciente	solo su historial
+Médico	historial de cualquier paciente
+Admin	acceso total
+
+Implementación:
+
+if ($user->id_rol === RolConstants::MEDICO) {
+    return;
+}
+Recordatorios Automáticos
 
 Comando:
 
-
 app/Console/Commands/SendAppointmentReminders.php
-
 
 Cron:
 
-
 0 8 * * *
-
 
 Campo en tabla cita:
 
-
 recordatorio_enviado
 
+Previene envío duplicado de recordatorios.
 
-Previene envíos duplicados.
-
----
-
-# Frontend
+Frontend
 
 Stack:
 
-- React
-- Vite
-- React Router v6
-- Tailwind
-- Framer Motion
+React
+
+Vite
+
+React Router v6
+
+Tailwind CSS
+
+Framer Motion
 
 Estructura:
-
 
 src
 ├ Pages
@@ -141,78 +236,48 @@ src
 ├ Api
 ├ constants
 └ assets
-
-
----
-
-# Autenticación
-
-### Usuarios normales
+Autenticación
+Usuarios normales
 
 Storage:
 
-
 localStorage
 
-
 Claves:
-
 
 token
 user
 
-
 Interceptor:
 
-
 src/Api/axios.js
-
-
----
-
-### Super Admin
+Super Admin
 
 Storage:
 
-
 sessionStorage
 
-
 Claves:
-
 
 superadmin_token
 superadmin_user
 
-
 Cliente API:
 
-
 src/Api/superadminAxios.js
-
-
----
-
-# Route Guards
+Route Guards
 
 Ubicación:
 
-
 src/components/Routes
-
-
-### SuperAdminRoute
+SuperAdminRoute
 
 Protege:
-
 
 /SuperAdmin-*
-
-
-### AdminRoute
+AdminRoute
 
 Protege:
-
 
 /dashboard
 /usuarios/*
@@ -220,54 +285,36 @@ Protege:
 /configuracion/*
 /reportes
 
-
 Roles:
-
 
 ADMIN
 PERSONAL_ADMINISTRATIVO
-
-
-### MedicoRoute
+MedicoRoute
 
 Protege:
 
-
 /agenda-medico
-
+/medico/*
 
 Rol:
 
-
 MEDICO
-
-
-### PatientRoute
+PatientRoute
 
 Protege:
-
 
 /paciente/*
 
-
 Rol:
 
-
 PACIENTE
-
-
----
-
-# Portal del Paciente
+Portal del Paciente
 
 Layout:
 
-
 PatientLayout.jsx
 
-
 Rutas:
-
 
 /paciente
 /paciente/agendar
@@ -275,79 +322,84 @@ Rutas:
 /paciente/historial
 /paciente/perfil
 
+Sección principal:
 
-Funcionalidades:
+Citas y Exámenes
 
-- Agendar cita
-- Reagendar
-- Cancelar
-- Historial clínico
-- Perfil editable
+Muestra:
 
----
+Consultas agendadas
 
-# Experiencia de Usuario
+Remisiones
+
+Exámenes
+
+Estado de cada evento
+
+Experiencia de Usuario
 
 Incluye:
 
-- Modo oscuro / claro
-- Wizard de agendamiento
-- Timeline clínica
-- Notificaciones
-- Diseño responsive
+Modo oscuro / claro
 
----
+Wizard de agendamiento
 
-# Seeders
+Timeline clínica
+
+Notificaciones
+
+Diseño responsive
+
+Seeders
 
 Sistema portable con:
 
-
 php artisan migrate:fresh --seed
-
 
 Seeders:
 
-- RolSeeder
-- EstadoSeeder
-- EmpresaSeeder
-- EmpresaLicenciaSeeder
-- AdminUsuarioSeeder
-- SuperadminSeeder
-- UsuariosPruebaSeeder
-
----
-
-# Estado Actual del Proyecto
+RolSeeder
+EstadoSeeder
+TipoCitaSeeder
+EmpresaSeeder
+EmpresaLicenciaSeeder
+AdminUsuarioSeeder
+SuperadminSeeder
+UsuariosPruebaSeeder
+Estado Actual del Proyecto
 
 Backend:
 
-✔ Licencias  
-✔ Citas  
-✔ Capa clínica  
-✔ Remisiones  
-✔ Roles refactorizados  
+✔ Licencias
+✔ Citas
+✔ Tipos de cita
+✔ Capa clínica
+✔ Remisiones
+✔ Exámenes
+✔ Historial clínico
+✔ Roles refactorizados
 ✔ Recordatorios automáticos
 
 Frontend:
 
-✔ Panel Admin completo  
-✔ Agenda administrativa  
-✔ Agenda médico funcional  
-✔ Portal paciente completo  
-✔ Guards por rol  
+✔ Panel Admin completo
+✔ Agenda administrativa
+✔ Agenda médico funcional
+✔ Consulta médica avanzada
+✔ Portal paciente completo
+✔ Guardas por rol
 ✔ Redirecciones corregidas
 
----
+Principio Rector
 
-# Principio Rector
-
-Primero estabilidad.  
-Luego estandarización.  
+Primero estabilidad.
+Luego estandarización.
 Luego optimización.
 
-Reglas:
+Reglas del proyecto:
 
-- Nunca refactorizar sin diagnóstico completo
-- No parches temporales
-- Arquitectura limpia antes que rapidez
+Nunca refactorizar sin diagnóstico completo
+
+No parches temporales
+
+Arquitectura limpia antes que rapidez

@@ -13,6 +13,8 @@ export default function useTiposCita() {
                 // El interceptor ya devuelve el body. Como es paginado, los datos están en response.data
                 const list = response.data || [];
                 setTiposCita(list.map(item => ({
+                    id_tipo_cita: item.id_tipo_cita,
+                    nombre_tipo_cita: item.tipo,
                     value: item.id_tipo_cita,
                     label: item.tipo
                 })));

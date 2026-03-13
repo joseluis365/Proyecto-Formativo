@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useLayout } from "../../LayoutContext";
 import useMedicosDisponibles from "../../hooks/useMedicosDisponibles";
+import useTiposCita from "../../hooks/useTiposCita";
 import useCitas from "../../hooks/useCitas";
 import CalendarAgenda from "../../components/Citas/CalendarAgenda";
 import PrincipalText from "../../components/Users/PrincipalText";
@@ -24,9 +25,11 @@ export default function AgendarCita() {
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState("");
+    const [selectedTipoCita, setSelectedTipoCita] = useState(1);
     const [motivo, setMotivo] = useState("");
 
     const { medicos: medicosDisponibles, loading: loadingMedicos } = useMedicosDisponibles(selectedDate, selectedTime);
+    const { tiposCita } = useTiposCita();
     const { createCita, loading: creating } = useCitas();
 
     useEffect(() => {
@@ -58,7 +61,7 @@ export default function AgendarCita() {
         const data = {
             doc_paciente: String(user.documento || ""),
             doc_medico: String(selectedDoctor || ""),
-            tipo_cita_id: 1, // Por defecto Medicina General
+            id_tipo_cita: Number(selectedTipoCita),
             fecha: selectedDate,
             hora_inicio: selectedTime,
             motivo: motivo
@@ -69,6 +72,7 @@ export default function AgendarCita() {
             setSelectedDate("");
             setSelectedTime("");
             setSelectedDoctor("");
+            setSelectedTipoCita(1);
             setMotivo("");
             setCurrentStep(1);
         }
@@ -205,10 +209,21 @@ export default function AgendarCita() {
                             </div>
                         )}
 
-                        {/* Paso 4: Motivo */}
                         {currentStep === 4 && (
                             <div className="space-y-6 flex-grow">
-                                <PrincipalText icon="description" text="Añade un motivo (opcional)" />
+                                <PrincipalText icon="description" text="Añade un motivo y tipo de cita" />
+                                <select
+                                    className="w-full p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-transparent focus:ring-2 focus:ring-primary dark:text-white transition-all text-sm mb-4"
+                                    value={selectedTipoCita}
+                                    onChange={(e) => setSelectedTipoCita(e.target.value)}
+                                >
+                                    <option value="" disabled>Seleccione tipo de cita</option>
+                                    {tiposCita.map(tipo => (
+                                        <option key={tipo.id_tipo_cita} value={tipo.id_tipo_cita}>
+                                            {tipo.nombre_tipo_cita}
+                                        </option>
+                                    ))}
+                                </select>
                                 <textarea
                                     className="w-full p-5 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-transparent focus:ring-2 focus:ring-primary dark:text-white h-44 transition-all resize-none text-sm leading-relaxed"
                                     placeholder="¿Cuál es el motivo de tu consulta?"
@@ -247,7 +262,9 @@ export default function AgendarCita() {
                                             <p className="font-black text-gray-900 dark:text-white text-lg leading-tight">
                                                 {medicosDisponibles.find(m => m.value === selectedDoctor)?.label.split(' - ')[0].replace(/^(Dr|Dra|Doctor|Doctora)\.?\s*/i, '').trim()}
                                             </p>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">Médico General</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">
+                                                {tiposCita.find(t => t.id_tipo_cita == selectedTipoCita)?.nombre_tipo_cita || 'Médico General'}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

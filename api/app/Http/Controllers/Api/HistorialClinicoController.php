@@ -25,13 +25,10 @@ class HistorialClinicoController extends Controller
         // El SuperAdmin (rol 1) y Admin (rol 2) tienen acceso total (opcional según requerimiento)
         if (in_array($user->id_rol, [1, 2])) return;
 
-        $hasAppointment = \App\Models\Cita::where('doc_medico', $user->documento)
-            ->where('doc_paciente', $docPaciente)
-            ->exists();
+        // El médico puede ver cualquier historial según nuevo requerimiento
+        if ($user->id_rol === \App\Constants\RolConstants::MEDICO) return;
 
-        if (!$hasAppointment) {
-            abort(403, 'No tienes autorización para acceder al historial de este paciente. No existe vínculo clínico previo.');
-        }
+        abort(403, 'No tienes autorización para acceder al historial de este paciente.');
     }
 
     /**

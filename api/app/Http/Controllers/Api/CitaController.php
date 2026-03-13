@@ -83,7 +83,7 @@ class CitaController extends Controller
             'doc_medico' => $request->doc_medico,
             'fecha' => $request->fecha,
             'motivo' => $request->motivo,
-            'tipo_cita_id' => $request->tipo_cita_id,
+            'tipo_cita_id' => $request->id_tipo_cita,
             'id_estado' => $estado->id_estado,
             'hora_inicio' => $request->hora_inicio,
             'hora_fin' => $horaFin,

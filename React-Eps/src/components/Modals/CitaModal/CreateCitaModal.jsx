@@ -26,7 +26,7 @@ export default function CreateCitaModal({ isOpen, onClose, onSuccess, preselecte
         defaultValues: {
             doc_paciente: "",
             doc_medico: "",
-            tipo_cita_id: "",
+            id_tipo_cita: "",
             fecha: new Date().toISOString().split('T')[0],
             hora_inicio: "",
             motivo: ""
@@ -49,7 +49,7 @@ export default function CreateCitaModal({ isOpen, onClose, onSuccess, preselecte
                 reset({
                     doc_paciente: "",
                     doc_medico: preselectedData.doctor?.documento || "",
-                    tipo_cita_id: "",
+                    id_tipo_cita: "",
                     fecha: preselectedData.fecha || new Date().toISOString().split('T')[0],
                     hora_inicio: preselectedData.time || "",
                     motivo: ""
@@ -58,7 +58,7 @@ export default function CreateCitaModal({ isOpen, onClose, onSuccess, preselecte
                 reset({
                     doc_paciente: "",
                     doc_medico: "",
-                    tipo_cita_id: "",
+                    id_tipo_cita: "",
                     fecha: new Date().toISOString().split('T')[0],
                     hora_inicio: "",
                     motivo: ""
@@ -151,7 +151,7 @@ export default function CreateCitaModal({ isOpen, onClose, onSuccess, preselecte
                 placeholder: "Seleccione un paciente",
             },
             {
-                name: "tipo_cita_id",
+                name: "id_tipo_cita",
                 label: "5. Tipo de Cita",
                 icon: "event",
                 type: "select",

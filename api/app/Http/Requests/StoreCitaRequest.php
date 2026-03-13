@@ -56,7 +56,7 @@ class StoreCitaRequest extends FormRequest
                 }
             ],
             'motivo' => 'required|string|max:255',
-            'tipo_cita_id' => 'required|integer|exists:tipo_cita,id_tipo_cita',
+            'id_tipo_cita' => 'required|integer|exists:tipo_cita,id_tipo_cita',
         ];
     }
 }
