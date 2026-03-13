@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import DoctorsTable from "../../components/Users/DoctorsTable";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
@@ -18,6 +19,27 @@ const statusOptions = [
 export default function Medicos() {
   const { setTitle, setSubtitle } = useLayout();
 
+  useHelp({
+    title: "Gestión de Médicos",
+    description: "Administra el personal médico de la institución. Desde aquí puedes registrar nuevos profesionales, asignarles su especialidad, y controlar su acceso al sistema.",
+    sections: [
+      {
+        title: "Detalles del listado",
+        type: "list",
+        items: [
+          "Búsqueda: Encuentra a un médico específico por su documento o nombre completo.",
+          "Estado: Cambia la vista entre médicos activos e inactivos.",
+          "Especialidad: Podrás visualizar a qué área de la salud pertenece cada profesional registrado en la tabla."
+        ]
+      },
+      {
+        title: "Precaución al inactivar",
+        type: "warning",
+        content: "Si inactivas a un médico, este no podrá acceder al sistema, no podrá atender citas, y la agenda existente para ese profesional podría verse afectada si quedan pacientes asignados en el futuro."
+      }
+    ]
+  });
+
   useEffect(() => {
     setTitle("Medicos");
     setSubtitle("Gestión de los Médicos");
@@ -28,6 +50,8 @@ export default function Medicos() {
   const [search, setSearch] = useState("");
   const [id_rol, setId_rol] = useState(1);
   const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState(null);
@@ -50,11 +74,13 @@ export default function Medicos() {
           search: debouncedSearch || undefined,
           id_rol: 4,
           status: status || undefined,
+          page: page,
         },
       });
 
       setUsers(res.data || []);
       setTotalUsersByRol(res.totalPorRol || 0);
+      setLastPage(res.last_page || 1);
     } catch (err) {
       console.error("Error cargando medicos:", err);
       setError("No se pudieron cargar los medicos"); // ❌ error controlado
@@ -77,7 +103,12 @@ export default function Medicos() {
   // 🔹 Ejecutar cuando cambian filtros
   useEffect(() => {
     fetchUsers();
-  }, [debouncedSearch, id_rol, status]);
+  }, [debouncedSearch, id_rol, status, page]);
+
+  // Restablecer paginación si se busca o filtra
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, status]);
 
   console.log(users);
 
@@ -154,17 +185,51 @@ export default function Medicos() {
           </motion.div>
         )}
 
-        {/* ✅ DATA */}
-        {!error && users.length > 0 && (
+        {/* ✔️ CONTENIDO */}
+        {!loading && !error && users.length > 0 && (
           <motion.div
-            key="data"
-            animate={{ opacity: loading ? 0.6 : 1 }}
-            transition={{ duration: 0.2 }}
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            <DoctorsTable
-              users={users}
-              fetchUsers={fetchUsers}
-            />
+            <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
+              <DoctorsTable users={users} fetchUsers={fetchUsers} />
+            </div>
+
+            {/* Paginación */}
+            {lastPage > 1 && (
+              <div className="flex justify-center flex-wrap gap-2 mt-6">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Anterior
+                </button>
+                <div className="flex gap-1 overflow-x-auto">
+                  {Array.from({ length: lastPage }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${
+                        page === p
+                          ? "bg-primary text-white shadow-md shadow-primary/20"
+                          : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  disabled={page >= lastPage}
+                  onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

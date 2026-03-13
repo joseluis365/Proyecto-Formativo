@@ -54,7 +54,7 @@ export default function MapView({ width, height }) {
   }, [map]);
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyAjjN9E7g3PLFxl0QNwd2kaxXBJHOuyMFQ">
+    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
       <GoogleMap 
         mapContainerStyle={{ width: width, height: height }} 
         center={center} 

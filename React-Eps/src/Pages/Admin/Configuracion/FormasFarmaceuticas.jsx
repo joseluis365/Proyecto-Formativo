@@ -6,20 +6,13 @@ import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
 import Input from "@/components/UI/Input";
-import Filter from "@/components/UI/Filter";
 import TableSkeleton from "@/components/UI/TableSkeleton";
-import TipoCitaModal from "@/components/Modals/TipoCitaModal";
+import FormaFarmaceuticaModal from "@/components/Modals/FormaFarmaceuticaModal";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
 import useTableData from "@/hooks/useTableData";
 
-const statusOptions = [
-    { value: "", label: "Todos" },
-    { value: 1, label: "Activos" },
-    { value: 2, label: "Inactivos" },
-];
-
-export default function TiposCita() {
+export default function FormasFarmaceuticas() {
     const { setTitle, setSubtitle } = useLayout();
     const {
         data,
@@ -31,63 +24,60 @@ export default function TiposCita() {
         total,
         search,
         setSearch,
-        status,
-        setStatus,
         fetchData
-    } = useTableData("/tipos-cita");
+    } = useTableData("/configuracion/formas-farmaceuticas");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editData, setEditData] = useState(null);
 
     useEffect(() => {
-        setTitle("Tipos de Cita");
-        setSubtitle("Gestiona las modalidades de atención médica.");
+        setTitle("Formas Farmacéuticas");
+        setSubtitle("Gestiona las formas físicas o presentaciones de envasado.");
     }, []);
 
-    const handleToggleStatus = async (item) => {
-        if (item.id_estado === 1) {
-            const result = await Swal.fire({
-                title: "¿Inactivar tipo de cita?",
-                text: "Esta acción marcará el registro como inactivo.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Sí, inactivar",
-                cancelButtonText: "Cancelar"
-            });
-
-            if (result.isConfirmed) {
-                try {
-                    await api.delete(`/tipos-cita/${item.id_tipo_cita}`);
-                    Swal.fire("Inactivado", "El registro ha sido inactivado.", "success");
-                    fetchData();
-                } catch (error) {
-                    Swal.fire("Error", "No se pudo inactivar el registro.", "error");
-                }
+    useHelp({
+        title: "Formas Farmacéuticas",
+        description: "Administra las formas sólidas, líquidas o gaseosas en que se presentan los medicamentos (ej. Tableta, Jarabe, Inyección).",
+        sections: [
+            {
+                title: "Recomendación de Uso",
+                type: "tip",
+                content: "Centraliza los nombres para evitar redundancias, por ejemplo en lugar de tener 'Tableta' y 'Tabletas', mantén únicamente la terminología médica aprobada que se ajuste al vademécum de la institución."
             }
-        } else {
-            Swal.fire("Info", "La reactivación debe ser gestionada por soporte técnico.", "info");
+        ]
+    });
+
+    const handleDelete = async (item) => {
+        const result = await Swal.fire({
+            title: "¿Eliminar forma farmacéutica?",
+            text: "Esta acción borrará el registro permanentemente. Asegúrate de que no esté siendo usado en ninguna presentación.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await api.delete(`/configuracion/formas-farmaceuticas/${item.id_forma}`);
+                Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
+                fetchData();
+            } catch (error) {
+                Swal.fire("Error", "No se pudo eliminar el registro. Puede que esté en uso.", "error");
+            }
         }
     };
 
     const columns = [
         {
-            key: "tipo",
-            header: "Tipo de Cita",
-            render: (item) => <span className="font-semibold">{item.tipo}</span>
+            key: "id_forma",
+            header: "ID",
+            render: (item) => <span className="text-gray-500 font-mono text-xs">{item.id_forma}</span>
         },
         {
-            key: "id_estado",
-            header: "Estado",
-            render: (item) => (
-                <span
-                    className={`px-2.5 py-1 text-xs font-semibold rounded-full ${item.id_estado === 1
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-                        : "bg-red-100 text-red-800"
-                        }`}
-                >
-                    {item.id_estado === 1 ? "Activo" : "Inactivo"}
-                </span>
-            )
+            key: "forma_farmaceutica",
+            header: "Forma Farmacéutica",
+            render: (item) => <span className="font-semibold">{item.forma_farmaceutica}</span>
         },
         {
             key: "actions",
@@ -103,13 +93,11 @@ export default function TiposCita() {
                         <span className="material-symbols-outlined text-base">edit</span>
                     </button>
                     <button
-                        onClick={() => handleToggleStatus(item)}
+                        onClick={() => handleDelete(item)}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                        title={item.id_estado === 1 ? "Inactivar" : "Activar"}
+                        title="Eliminar"
                     >
-                        <span className="material-symbols-outlined text-base">
-                            {item.id_estado === 1 ? "visibility_off" : "visibility"}
-                        </span>
+                        <span className="material-symbols-outlined text-base">delete</span>
                     </button>
                 </div>
             )
@@ -119,9 +107,9 @@ export default function TiposCita() {
     return (
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="calendar_today" text="Gestión de Tipos de Cita" number={total} />
+                <PrincipalText icon="medication_liquid" text="Gestión de Formas Farmacéuticas" number={total} />
                 <div className="w-sl">
-                    <BlueButton text="Nuevo Tipo" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
+                    <BlueButton text="Nueva Forma" icon="add" onClick={() => { setEditData(null); setIsModalOpen(true); }} />
                 </div>
             </div>
 
@@ -134,12 +122,6 @@ export default function TiposCita() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <Filter
-                    value={status}
-                    onChange={setStatus}
-                    options={statusOptions}
-                    placeholder="Filtrar por estado"
-                />
             </div>
 
             <AnimatePresence mode="wait">
@@ -172,13 +154,9 @@ export default function TiposCita() {
                         transition={{ duration: 0.2 }}
                     >
                         <div className="bg-white dark:bg-gray-800 border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm overflow-x-auto">
-                            <DataTable
-                                columns={columns}
-                                data={data}
-                            />
+                            <DataTable columns={columns} data={data} />
                         </div>
 
-                        {/* Paginación */}
                         {lastPage > 1 && (
                             <div className="flex justify-center gap-2 mt-6">
                                 <button
@@ -188,12 +166,12 @@ export default function TiposCita() {
                                 >
                                     Anterior
                                 </button>
-                                <div className="flex gap-1">
+                                <div className="flex gap-1 overflow-x-auto max-w-[200px] md:max-w-none">
                                     {Array.from({ length: lastPage }, (_, i) => i + 1).map(p => (
                                         <button
                                             key={p}
                                             onClick={() => setPage(p)}
-                                            className={`px-4 py-2 rounded-lg transition-colors ${page === p
+                                            className={`px-4 py-2 rounded-lg transition-colors shrink-0 ${page === p
                                                 ? "bg-primary text-white font-bold"
                                                 : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 }`}
@@ -205,7 +183,7 @@ export default function TiposCita() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded- dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>
@@ -217,7 +195,7 @@ export default function TiposCita() {
 
             <AnimatePresence>
                 {isModalOpen && (
-                    <TipoCitaModal
+                    <FormaFarmaceuticaModal
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         onSuccess={fetchData}
@@ -228,4 +206,3 @@ export default function TiposCita() {
         </div>
     );
 }
-

@@ -1,13 +1,3 @@
-/**
- * ActionCard
- * Props:
- *   icon: string (material symbol name)
- *   title: string
- *   description: string
- *   bgColor: string (tailwind bg class, e.g. "bg-blue-50")
- *   iconColor: string (tailwind text class, e.g. "text-primary")
- *   onClick: () => void
- */
 export default function ActionCard({ icon, title, description, bgColor, iconColor, onClick }) {
     return (
         <button

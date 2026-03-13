@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import DataTable from "../../components/UI/DataTable";
@@ -15,7 +16,56 @@ import Swal from "sweetalert2";
 
 export default function Inventario() {
     const { setTitle, setSubtitle } = useLayout();
-    const location = useLocation();
+
+    useHelp({
+        title: "Inventario de Farmacia",
+        description: "Aquí puedes consultar el stock actual de todos los medicamentos, identificar productos próximos a vencer o con stock bajo, y registrar nuevas entradas al inventario.",
+        sections: [
+            {
+                title: "¿Qué puedes hacer aquí?",
+                type: "list",
+                items: [
+                    "Ver el stock actual de todos los medicamentos por lote (sistema FEFO).",
+                    "Filtrar por estado del stock (Normal, Bajo, Próximo a vencer, Vencido, Agotado).",
+                    "Filtrar por forma farmacéutica o concentración.",
+                    "Buscar un medicamento específico por nombre.",
+                    "Registrar una nueva entrada directamente desde esta pantalla.",
+                ]
+            },
+            {
+                title: "Significado de los estados de stock",
+                type: "list",
+                items: [
+                    "🟢 Normal — Stock suficiente y sin riesgo de vencimiento próximo.",
+                    "🟡 Bajo — Existencias reducidas. Considera reabastecer pronto.",
+                    "🟠 Próximo a vencer — El lote vence en menos de 30 días.",
+                    "🔴 Vencido / Crítico — El lote ya venció o el stock es crítico. Requiere acción inmediata.",
+                    "⚫ Agotado — No hay existencias disponibles de este medicamento.",
+                ]
+            },
+            {
+                title: "¿Qué es el sistema FEFO?",
+                type: "tip",
+                content: "FEFO significa First Expired, First Out (el primero en vencer es el primero en salir). El sistema muestra el lote con fecha de vencimiento más próxima para cada medicamento, garantizando que siempre se use primero el stock más antiguo."
+            },
+            {
+                title: "Cómo registrar una Entrada desde Inventario",
+                type: "steps",
+                items: [
+                    "Haz clic en el botón verde \"Registrar Entrada\".",
+                    "Selecciona el medicamento y la presentación.",
+                    "Ingresa la cantidad recibida y la fecha de vencimiento del nuevo lote.",
+                    "Escribe el motivo (ej: \"Reponer stock\") y guarda.",
+                ]
+            },
+            {
+                title: "Problemas comunes",
+                type: "warning",
+                content: "Si un medicamento aparece como \"Agotado\" pero esperabas ver stock, verifica que se hayan registrado las entradas correctamente en la pantalla de Movimientos. Los medicamentos vencidos deben retirarse mediante una Salida Manual en la sección de Movimientos."
+            },
+        ]
+    });
+
     const [search, setSearch] = useState("");
     const [filtroEstado, setFiltroEstado] = useState("");
     const [filtroForma, setFiltroForma] = useState("");
@@ -140,7 +190,7 @@ export default function Inventario() {
                     </div>
                     <div>
                         <p className="font-bold text-gray-900 dark:text-white">{row.nombre}</p>
-                        <p className="text-xs text-gray-500">{row.forma} • {row.categoria}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{row.forma} • {row.categoria}</p>
                     </div>
                 </div>
             ),
@@ -265,14 +315,35 @@ export default function Inventario() {
             </div>
 
             {lastPage > 1 && !initialLoad && (
-                <div className="flex justify-center gap-3 mt-6">
-                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex justify-center items-center gap-2 mt-8">
+                    <button
+                        disabled={page === 1}
+                        onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         ← Anterior
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-500">Página {page} de {lastPage}</span>
-                    <button disabled={page >= lastPage} onClick={() => setPage(p => p + 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+
+                    <div className="flex gap-1 overflow-x-auto max-w-[200px] sm:max-w-none">
+                        {Array.from({ length: lastPage }, (_, i) => i + 1).map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setPage(p)}
+                                className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${page === p
+                                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                                    : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    }`}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button
+                        disabled={page === lastPage}
+                        onClick={() => setPage(prev => Math.min(lastPage, prev + 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         Siguiente →
                     </button>
                 </div>
@@ -310,14 +381,14 @@ export default function Inventario() {
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
                                     <input type="number" min="1" {...register("cantidad")}
-                                        className={`w-full border ${errors.cantidad ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                        className={`w-full border ${errors.cantidad ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
                                         placeholder="0" />
                                     {errors.cantidad && <p className="text-red-500 text-xs mt-1">{errors.cantidad.message}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Fecha vencimiento *</label>
                                     <input type="date" min={new Date().toISOString().split("T")[0]} {...register("fecha_vencimiento")}
-                                        className={`w-full border ${errors.fecha_vencimiento ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                        className={`w-full border ${errors.fecha_vencimiento ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
                                     {errors.fecha_vencimiento && <p className="text-red-500 text-xs mt-1">{errors.fecha_vencimiento.message}</p>}
                                 </div>
                             </div>
@@ -334,7 +405,7 @@ export default function Inventario() {
                                                 const cleaned = preventDoubleSpaces(e.target.value);
                                                 field.onChange(normalizeText(cleaned));
                                             }}
-                                            className={`w-full border ${errors.motivo ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            className={`w-full border ${errors.motivo ? 'border-red-500 hover:border-red-600 focus:border-red-500 focus:ring-red-500/40' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
                                             placeholder="Ej: Reponer stock, Compra para reserva..."
                                         />
                                     )}

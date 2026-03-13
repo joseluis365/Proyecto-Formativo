@@ -2,12 +2,35 @@ import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { bloquearDia } from "../../Api/bloqueoAgenda";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function BloqueoAgenda() {
   const { setTitle, setSubtitle } = useLayout();
+
+  useHelp({
+    title: "Bloqueo de Agenda",
+    description: "Usa esta herramienta para inhabilitar un día de trabajo completo para un médico en particular. Entiéndelo como marcar un día como 'No Disponible' o 'Festivo' para un profesional.",
+    sections: [
+      {
+        title: "Cómo bloquear un día",
+        type: "steps",
+        items: [
+          "Selecciona el médico de la lista desplegable.",
+          "Elige la fecha exacta del bloqueo en el calendario desplegable.",
+          "Ingresa un motivo (ej. 'Vacaciones', 'Calamidad familiar', 'Congreso médico').",
+          "Haz clic en 'Bloquear Día'. A partir de ese momento, no se podrán agendar citas para ese doctor en esa fecha."
+        ]
+      },
+      {
+        title: "Importante",
+        type: "warning",
+        content: "Si el médico ya tenía citas agendadas para la fecha que vas a bloquear, deberás comunicarte con los pacientes para reagendarlas, ya que esta acción no mueve automáticamente las citas previas."
+      }
+    ]
+  });
 
   useEffect(() => {
     setTitle("Bloqueo de Agenda");

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -20,6 +21,28 @@ const statusOptions = [
 
 export default function CategoriasExamen() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Categorías de Examen",
+        description: "Administra los grandes grupos de exámenes de laboratorio o imágenes diagnósticas (ej. Hematología, Rayos X).",
+        sections: [
+            {
+                title: "Gestión básica",
+                type: "steps",
+                items: [
+                    "Añadir: Haz clic en 'Nueva Categoría' para agregar una clasificación.",
+                    "Editar: Usa el ícono del lápiz en la tabla.",
+                    "Inactivar: Clic al ojo para desactivar la categoría."
+                ]
+            },
+            {
+                title: "Recomendación de Uso",
+                type: "tip",
+                content: "Las categorías permiten agrupar fácilmente los exámenes en el sistema. Mantén descripciones claras y lo suficientemente abarcativas para no sobrecargar de categorías redundantes."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -183,7 +206,7 @@ export default function CategoriasExamen() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -204,7 +227,7 @@ export default function CategoriasExamen() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

@@ -1,11 +1,28 @@
 import { useEffect, useState } from 'react';
 import api from "../../../Api/axios";
 import { useLayout } from "../../../LayoutContext";
+import { useHelp } from "../../../hooks/useHelp";
 import AppointmentCard from "../../../components/Citas/AppointmentCard";
 import PrincipalText from "../../../components/Users/PrincipalText";
 
 export default function CitasDelDia() {
     const { setTitle, setSubtitle } = useLayout();
+    
+    useHelp({
+        title: "Citas del Día",
+        description: "Esta vista te ofrece un resumen rápido y enfocado exclusivamente en las citas programadas para el día de hoy.",
+        sections: [
+            {
+                title: "Utilidad",
+                type: "list",
+                items: [
+                    "A diferencia de la Agenda General, aquí no necesitas buscar la fecha actual: el sistema filtra todas las interacciones de hoy automáticamente.",
+                    "Ideal para que el personal de recepción o los médicos tengan un pantallazo de cómo estará su jornada de trabajo, sin distracciones de citas futuras o pasadas."
+                ]
+            }
+        ]
+    });
+
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);
 

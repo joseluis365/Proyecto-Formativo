@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -21,6 +22,19 @@ const statusOptions = [
 
 export default function Prioridades() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Niveles de Prioridad",
+        description: "Clasificaciones de urgencia para las citas o atenciones en el sistema (ej. Urgencia, Prioritario, Rutina).",
+        sections: [
+            {
+                title: "Impacto",
+                type: "tip",
+                content: "Las prioridades ayudan al personal médico o administrativo a saber qué citas o pacientes atender primero según el impacto vital o urgencia de la consulta."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -194,7 +208,7 @@ export default function Prioridades() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -215,7 +229,7 @@ export default function Prioridades() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

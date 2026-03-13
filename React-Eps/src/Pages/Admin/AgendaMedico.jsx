@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import DoctorInfo from "../../components/DoctorSchedule/DoctorInfo";
 import SearchBar from "../../components/DoctorSchedule/SearchBar";
 import ScheduleTable from "../../components/DoctorSchedule/ScheduleTable";
@@ -27,6 +28,22 @@ const mockDates = [
 
 export default function AgendaMedico() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Agenda de Médico",
+        description: "Esta vista te permite visualizar detalladamente el cronograma de un médico específico para la fecha seleccionada.",
+        sections: [
+            {
+                title: "Detalles",
+                type: "list",
+                items: [
+                    "Información superior: Muestra los datos del profesional (nombre, especialidad, consultorio).",
+                    "Horarios: Enumera los bloques de tiempo con el paciente asignado, el motivo de consulta y el estado actual (Atendida, Pendiente, Cancelada)."
+                ]
+            }
+        ]
+    });
+
     useEffect(() => {
         setTitle("Agenda Medico");
         setSubtitle("Gestión de agenda de medicos");

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import BarChartCitas from "../../components/Charts/BarChartCitas";
 import PieChartOrdenes from "../../components/Charts/PieChartOrdenes";
 import FeedPanel from "../../components/Dashboard/FeedPanel";
@@ -12,6 +13,26 @@ const CHANNEL_NAME = "admin-feed";
 
 export default function Dashboard() {
   const { setTitle, setSubtitle } = useLayout();
+
+  useHelp({
+    title: "Panel de Administración",
+    description: "Este es el panel principal de control. Ofrece una vista panorámica del rendimiento de la clínica a través de indicadores clave, gráficos y un registro de actividad reciente.",
+    sections: [
+      {
+        title: "Métricas Generales",
+        type: "list",
+        items: [
+          "Tarjetas superiores: Muestran el número total de pacientes, médicos, citas del día, etc., comparado con el periodo anterior.",
+          "Gráficos: Visualiza la distribución de citas en la semana y el volumen de órdenes médicas generadas."
+        ]
+      },
+      {
+        title: "Actividad Reciente",
+        type: "tip",
+        content: "El panel lateral derecho es un feed en tiempo real o histórico reciente. Muestra las últimas acciones importantes (como creaciones de usuarios o cancelaciones) para mantenerte informado al instante."
+      }
+    ]
+  });
 
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState([]);

@@ -230,6 +230,40 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — COMPONENTES MEDICAMENTOS
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(\App\Http\Controllers\Api\ConcentracionController::class)->group(function () {
+        Route::get('/configuracion/concentraciones', 'index');
+        Route::post('/configuracion/concentraciones', 'store');
+        Route::put('/configuracion/concentraciones/{id}', 'update');
+        Route::delete('/configuracion/concentraciones/{id}', 'destroy');
+    });
+
+    Route::controller(\App\Http\Controllers\Api\FormaFarmaceuticaController::class)->group(function () {
+        Route::get('/configuracion/formas-farmaceuticas', 'index');
+        Route::post('/configuracion/formas-farmaceuticas', 'store');
+        Route::put('/configuracion/formas-farmaceuticas/{id}', 'update');
+        Route::delete('/configuracion/formas-farmaceuticas/{id}', 'destroy');
+    });
+
+    Route::controller(\App\Http\Controllers\Api\AdminMedicamentoController::class)->group(function () {
+        Route::get('/configuracion/medicamentos', 'index');
+        Route::post('/configuracion/medicamentos', 'store');
+        Route::put('/configuracion/medicamentos/{id}', 'update');
+        Route::delete('/configuracion/medicamentos/{id}', 'destroy');
+    });
+
+    Route::controller(\App\Http\Controllers\Api\AdminPresentacionController::class)->group(function () {
+        Route::get('/configuracion/presentaciones', 'index');
+        Route::post('/configuracion/presentaciones', 'store');
+        Route::put('/configuracion/presentaciones/{id}', 'update');
+        Route::delete('/configuracion/presentaciones/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | CONFIGURACIÓN — ESPECIALIDADES (CRUD ADMIN)
     |--------------------------------------------------------------------------
     |*/

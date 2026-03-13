@@ -12,13 +12,13 @@ export default function SidebarFarmacia({ isOpen, onClose }) {
           fixed inset-0 bg-black/40 z-40 transition-opacity
           ${isOpen ? "opacity-100 lg:hidden" : "opacity-0 pointer-events-none lg:hidden"}
         `}
-            />
+            /> 
 
             <aside
                 className={`
           fixed lg:static top-0 left-0 z-50
           w-64 h-full shrink-0
-          bg-white dark:bg-gray-900/50
+          bg-white dark:bg-gray-800
           border-r border-neutral-gray-border/20 dark:border-gray-800
           flex flex-col
           transform transition-transform duration-300
@@ -49,7 +49,7 @@ export default function SidebarFarmacia({ isOpen, onClose }) {
                     {/* Nav */}
                     <nav className="mt-6 grow">
                         <div className="flex flex-col gap-2">
-                            <SidebarItem to="/farmacia/dashboard" icon="home" label="Inicio" onClick={onClose} />
+                            <SidebarItem  to="/farmacia/dashboard" icon="home" label="Inicio" onClick={onClose} />
                             <SidebarItem to="/farmacia/inventario" icon="inventory_2" label="Inventario" onClick={onClose} />
                             <SidebarItem to="/farmacia/medicamentos" icon="medication" label="Medicamentos" onClick={onClose} />
                             <SidebarItem to="/farmacia/movimientos" icon="swap_horiz" label="Movimientos" onClick={onClose} />

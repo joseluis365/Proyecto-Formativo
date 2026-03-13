@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -21,6 +22,27 @@ const statusOptions = [
 
 export default function Farmacias() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Sedes de Farmacia",
+        description: "Gestiona los puntos físicos de dispensación o farmacias asociadas a la empresa de salud.",
+        sections: [
+            {
+                title: "Opciones de la Tabla",
+                type: "list",
+                items: [
+                    "Ver Info: Abre un modal con todos los detalles de la farmacia (Teléfono, Dirección detallada, Responsable, etc.).",
+                    "Inactivar: Dar de baja una sede temporal o permanentemente."
+                ]
+            },
+            {
+                title: "Gestión de Sedes",
+                type: "tip",
+                content: "Si una sucursal cierra temporalmente o por reestructuración, cambia su estado a Inactivo garantizando que los prescriptores no sigan redirigiendo recetas hacia ella."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -190,7 +212,7 @@ export default function Farmacias() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -211,7 +233,7 @@ export default function Farmacias() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

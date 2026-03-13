@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import DataTable from "../../components/UI/DataTable";
@@ -9,6 +10,45 @@ import Swal from "sweetalert2";
 
 export default function Medicamentos() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Catálogo de Medicamentos",
+        description: "Este catálogo contiene todos los medicamentos registrados en el sistema con sus presentaciones (concentración + forma farmacéutica). Es la base que alimenta el inventario y los movimientos.",
+        sections: [
+            {
+                title: "¿Qué puedes hacer aquí?",
+                type: "list",
+                items: [
+                    "Consultar todos los medicamentos registrados y sus presentaciones.",
+                    "Registrar un nuevo medicamento con su categoría, concentración y forma farmacéutica.",
+                    "Buscar por nombre o concentración.",
+                    "Filtrar por forma farmacéutica (tabletas, jarabe, inyectable, etc.) o concentración.",
+                ]
+            },
+            {
+                title: "Diferencia entre Catálogo e Inventario",
+                type: "tip",
+                content: "El catálogo define QUÉ medicamentos existen. El inventario registra CUÁNTOS hay en físico. Un medicamento puede estar en el catálogo pero tener stock 0 en inventario. Para agregar existencias físicas, ve a la sección Inventario o Movimientos."
+            },
+            {
+                title: "Cómo registrar un nuevo medicamento",
+                type: "steps",
+                items: [
+                    "Haz clic en \"Registrar Nuevo\".",
+                    "Escribe el nombre del medicamento (ej: \"Acetaminofén\").",
+                    "Selecciona la categoría terapéutica.",
+                    "Selecciona la concentración (ej: \"500 mg\") y la forma farmacéutica (ej: \"Tableta\").",
+                    "Agrega una descripción opcional y haz clic en \"Guardar\".",
+                ]
+            },
+            {
+                title: "Problemas comunes",
+                type: "warning",
+                content: "Si el medicamento que buscas no aparece en el inventario ni en la lista de dispensación, primero debes crearlo aquí en el catálogo. Una vez creado, podrás registrar entradas de stock desde la pantalla de Movimientos o Inventario."
+            },
+        ]
+    });
+
     const [search, setSearch] = useState("");
     const [filtroForma, setFiltroForma] = useState("");
     const [filtroConcentracion, setFiltroConcentracion] = useState("");
@@ -93,7 +133,7 @@ export default function Medicamentos() {
                     </div>
                     <div>
                         <p className="font-bold text-gray-900 dark:text-white">{row.nombre}</p>
-                        <p className="text-xs text-gray-500">{row.categoria}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{row.categoria}</p>
                     </div>
                 </div>
             ),
@@ -190,14 +230,35 @@ export default function Medicamentos() {
 
             {/* Paginación */}
             {!initialLoad && lastPage > 1 && (
-                <div className="flex justify-center gap-3 mt-6">
-                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex justify-center items-center gap-2 mt-8">
+                    <button
+                        disabled={page === 1}
+                        onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         ← Anterior
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-500 flex items-center">Página {page} de {lastPage}</span>
-                    <button disabled={page >= lastPage} onClick={() => setPage(p => p + 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+
+                    <div className="flex gap-1 overflow-x-auto max-w-[200px] sm:max-w-none">
+                        {Array.from({ length: lastPage }, (_, i) => i + 1).map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setPage(p)}
+                                className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${page === p
+                                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                                    : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    }`}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button
+                        disabled={page === lastPage}
+                        onClick={() => setPage(prev => Math.min(lastPage, prev + 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         Siguiente →
                     </button>
                 </div>
@@ -215,13 +276,13 @@ export default function Medicamentos() {
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Nombre del medicamento *</label>
                                 <input required value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                                    className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40"
                                     placeholder="Ej: Acetaminofén" />
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Categoría *</label>
                                 <select required value={form.id_categoria} onChange={e => setForm(f => ({ ...f, id_categoria: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                    className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
                                     <option value="">Seleccionar categoría</option>
                                     {categorias.map(c => <option key={c.id_categoria} value={c.id_categoria}>{c.categoria}</option>)}
                                 </select>
@@ -230,7 +291,7 @@ export default function Medicamentos() {
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Concentración *</label>
                                     <select required value={form.id_concentracion} onChange={e => setForm(f => ({ ...f, id_concentracion: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                        className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
                                         <option value="">Seleccionar</option>
                                         {concentraciones.map(c => <option key={c.id_concentracion} value={c.id_concentracion}>{c.concentracion}</option>)}
                                     </select>
@@ -238,7 +299,7 @@ export default function Medicamentos() {
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Forma farmacéutica *</label>
                                     <select required value={form.id_forma_farmaceutica} onChange={e => setForm(f => ({ ...f, id_forma_farmaceutica: e.target.value }))}
-                                        className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
+                                        className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40">
                                         <option value="">Seleccionar</option>
                                         {formas.map(f => <option key={f.id_forma} value={f.id_forma}>{f.forma_farmaceutica}</option>)}
                                     </select>
@@ -247,7 +308,7 @@ export default function Medicamentos() {
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
                                 <textarea rows={2} value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))}
-                                    className="w-full border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+                                    className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
                                     placeholder="Descripción opcional..." />
                             </div>
                             <div className="flex gap-3 pt-2">

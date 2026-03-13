@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import Filter from "../../components/UI/Filter";
@@ -33,6 +34,37 @@ const tipoMovimientoOptions = [
 
 export default function Reportes() {
     const { setTitle, setSubtitle } = useLayout();
+    
+    useHelp({
+        title: "Reportes de Farmacia",
+        description: "Esta vista te permite generar, filtrar y exportar a PDF información de tres áreas clave: Inventario, Catálogo de Medicamentos y Movimientos.",
+        sections: [
+            {
+                title: "¿Qué tipo de reportes existen?",
+                type: "list",
+                items: [
+                    "Inventario: Muestra el estado actual del stock, forma farmacéutica y concentración de todo lo disponible.",
+                    "Catálogo: El listado maestro de todos los medicamentos registrados en el sistema, tengan stock activo o no.",
+                    "Movimientos: El historial detallado de qué salió, qué ingresó, las fechas y los responsables."
+                ]
+            },
+            {
+                title: "Cómo exportar un reporte a PDF",
+                type: "steps",
+                items: [
+                    "Selecciona el 'Tipo de reporte' en el desplegable superior derecho (ej. Historial de Movimientos).",
+                    "Aplica los filtros que necesites (buscar por medicamento, filtrar ingresos/salidas, filtrar estado).",
+                    "Haz clic en el botón 'Exportar PDF' de color rojo.",
+                    "El PDF se generará respetando exactamente los filtros que hayas aplicado en pantalla."
+                ]
+            },
+            {
+                title: "Consejo sobre la paginación",
+                type: "tip",
+                content: "Solo estás viendo una parte de los resultados por página. Sin embargo, al exportar a PDF, se incluirán todos los registros que cumplan con los filtros, no solamente los de la página actual."
+            }
+        ]
+    });
 
     // Global State
     const [entity, setEntity] = useState("inventario");
@@ -184,7 +216,7 @@ export default function Reportes() {
     }, [meta]);
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-xl">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-6">
             {/* Cabecera del Reporte */}
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText
@@ -335,7 +367,7 @@ export default function Reportes() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => Math.max(1, prev - 1))}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all"
                                 >
                                     <span className="material-symbols-outlined align-middle">chevron_left</span>
                                 </button>
@@ -358,7 +390,7 @@ export default function Reportes() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => Math.min(lastPage, prev + 1))}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all"
                                 >
                                     <span className="material-symbols-outlined align-middle">chevron_right</span>
                                 </button>

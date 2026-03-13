@@ -1,11 +1,32 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 
 export default function ConfiguracionIndex() {
     const { setTitle, setSubtitle } = useLayout();
     const location = useLocation();
     const isIndex = location.pathname === "/configuracion" || location.pathname === "/configuracion/";
+
+    useHelp({
+        title: "Panel de Configuración",
+        description: "Esta es el área donde se administran todos los catálogos y parámetros base del sistema. Todo lo que modifiques aquí afectará los menús desplegables y opciones en el resto de la aplicación.",
+        sections: [
+            {
+                title: "Estructura",
+                type: "list",
+                items: [
+                    "Aquí encontrarás sub-módulos como Tipos de Cita, Prioridades, Especialidades, Ubicaciones, y catálogos médicos/farmacéuticos.",
+                    "Haz clic en cualquier tarjeta para ingresar a la gestión específica de ese catálogo."
+                ]
+            },
+            {
+                title: "Buenas prácticas",
+                type: "warning",
+                content: "Ten mucha precaución al inactivar o editar registros base. Si inactivas una 'Especialidad', por ejemplo, los médicos asignados a ella o las citas relacionadas podrían presentar conflictos en el futuro."
+            }
+        ]
+    });
 
     useEffect(() => {
         setTitle("Configuración");
@@ -61,6 +82,34 @@ export default function ConfiguracionIndex() {
             icon: "local_pharmacy",
             to: "/configuracion/farmacias",
             color: "blue"
+        },
+        {
+            title: "Concentraciones",
+            description: "Administra los valores de concentración (mg, g, ml, etc).",
+            icon: "science",
+            to: "/configuracion/concentraciones",
+            color: "cyan"
+        },
+        {
+            title: "Formas Farmacéuticas",
+            description: "Gestiona las presentaciones físicas (Tableta, Jarabe, etc).",
+            icon: "medication_liquid",
+            to: "/configuracion/formas-farmaceuticas",
+            color: "indigo"
+        },
+        {
+            title: "Medicamentos",
+            description: "Catálogo maestro de medicamentos genéricos.",
+            icon: "vaccines",
+            to: "/configuracion/medicamentos",
+            color: "rose"
+        },
+        {
+            title: "Presentaciones",
+            description: "Combina el medicamento, concentración y forma.",
+            icon: "inventory_2",
+            to: "/configuracion/presentaciones",
+            color: "amber"
         }
     ];
 

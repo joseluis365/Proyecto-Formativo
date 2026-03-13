@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -21,6 +22,28 @@ const statusOptions = [
 
 export default function Ciudades() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Ciudades / Municipios",
+        description: "Catálogo maestro de ciudades soportadas por el sistema. Cada registro está atado a un departamento y a un código postal.",
+        sections: [
+            {
+                title: "Opciones Listado",
+                type: "list",
+                items: [
+                    "Búsqueda: Encuentra una ciudad por su nombre exacto o parte del nombre.",
+                    "Filtro: Muestra sólo las ciudades habilitadas para selección.",
+                    "Estado: Desactivar una ciudad impide que sea seleccionada en nuevos formularios de ubicación paciente o sede."
+                ]
+            },
+            {
+                title: "Gestión Territorial",
+                type: "tip",
+                content: "Presta atención al marcar una ciudad como inactiva, asegúrate de que no haya sedes activas dentro de dicha urbe de lo contrario presentarán fallos al ser solicitadas."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -204,7 +227,7 @@ export default function Ciudades() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -225,7 +248,7 @@ export default function Ciudades() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

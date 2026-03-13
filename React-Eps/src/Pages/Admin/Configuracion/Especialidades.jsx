@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -19,6 +20,28 @@ const statusOptions = [
 
 export default function Especialidades() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Catálogo de Especialidades",
+        description: "Gestiona la lista de todas las especialidades médicas ofrecidas en la EPS. Esta lista alimenta los perfiles de los médicos y la selección al agendar citas.",
+        sections: [
+            {
+                title: "Gestión básica",
+                type: "steps",
+                items: [
+                    "Añadir: Haz clic en 'Nueva Especialidad' para agregar una rama médica al sistema.",
+                    "Editar: Usa el ícono del lápiz en la tabla para rectificar un nombre mál escrito.",
+                    "Eliminar/Inactivar: Usa el ícono del ojo para dar de baja una especialidad que ya no se ofrece."
+                ]
+            },
+            {
+                title: "Recomendación",
+                type: "tip",
+                content: "Desactiva las especialidades que ya no se ofrezcan en la sede en lugar de intentar eliminarlas para que puedas mantener consistencia en los historiales de citas pasadas y reportes."
+            }
+        ]
+    });
+
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -209,7 +232,7 @@ export default function Especialidades() {
                                 <button
                                     disabled={currentPage === 1}
                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -230,7 +253,7 @@ export default function Especialidades() {
                                 <button
                                     disabled={currentPage === lastPage}
                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

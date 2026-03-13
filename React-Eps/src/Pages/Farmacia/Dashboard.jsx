@@ -1,10 +1,38 @@
 import { useLayout } from "../../LayoutContext";
 import { useEffect, useState } from "react";
+import { useHelp } from "../../hooks/useHelp";
 import { Link } from "react-router-dom";
 import api from "../../Api/axios";
 
 export default function Dashboard() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Panel de Farmacia (Dashboard)",
+        description: "Esta es tu pantalla principal. Aquí tienes un resumen del estado de tu inventario y las alertas más urgentes.",
+        sections: [
+            {
+                title: "Alertas Superiores",
+                type: "list",
+                items: [
+                    "Lotes vencidos: Crítico. Son medicamentos que ya pasaron su fecha de caducidad. Debes sacarlos del stock a través de una Salida Manual.",
+                    "Próximos a vencer: Medicamentos que caducarán en los próximos 30 días. Suelta este stock primero (metodología FEFO).",
+                    "Stock bajo: Medicamentos que están por agotarse y necesitas reabastecer (registro de Entradas)."
+                ]
+            },
+            {
+                title: "Acciones Rápidas",
+                type: "steps",
+                items: [
+                    "Entrada: Ir directo a registrar un nuevo medicamento recibido.",
+                    "Atender Orden: Dispersar medicamentos basados en una orden o receta médica.",
+                    "Inventario: Ver el catálogo físico de lo que hay y lo que falta.",
+                    "Historial: Revisar el registro de entradas y salidas pasadas."
+                ]
+            }
+        ]
+    });
+
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 

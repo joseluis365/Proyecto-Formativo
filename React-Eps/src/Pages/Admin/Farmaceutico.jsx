@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PersonalTable from "../../components/Users/PersonalTable";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
@@ -19,6 +20,27 @@ const statusOptions = [
 export default function Farmaceutico() {
   const { setTitle, setSubtitle } = useLayout();
 
+  useHelp({
+    title: "Gestión de Farmacéuticos",
+    description: "Este panel está dedicado a la administración de cuentas de farmacéuticos. Estos usuarios tienen acceso exclusivo a los módulos de inventario, registro de medicamentos y dispensación de fórmulas.",
+    sections: [
+      {
+        title: "Operaciones",
+        type: "steps",
+        items: [
+          "Para registrar uno nuevo, haz clic en 'Agregar Farmaceutico' y llena los datos requeridos (incluyendo qué farmacia administrarán si aplica).",
+          "Para editar su información, haz clic en el botón con el ícono de lápiz junto a su nombre en la tabla.",
+          "Para dar de baja un acceso, haz clic en el ícono del ojo para inactivar su estado."
+        ]
+      },
+      {
+        title: "Restricción de Acceso",
+        type: "warning",
+        content: "Al inactivar a un farmacéutico, automáticamente se cerrará su sesión y no podrá volver a ingresar al panel de farmacia ni realizar movimientos de inventario."
+      }
+    ]
+  });
+
   useEffect(() => {
     setTitle("Farmaceuticos");
     setSubtitle("Gestión de los Farmaceuticos");
@@ -35,7 +57,7 @@ export default function Farmaceutico() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [creating, setCreating] = useState(false);
   const [totalUsersByRol, setTotalUsersByRol] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
 
@@ -51,13 +73,12 @@ export default function Farmaceutico() {
           search: debouncedSearch || undefined,
           id_rol: 6,
           status: status || undefined,
-          page: currentPage,
+          page: page,
         },
       });
 
       setUsers(res.data || []);
       setTotalUsersByRol(res.totalPorRol || 0);
-      setCurrentPage(res.current_page || 1);
       setLastPage(res.last_page || 1);
 
     } catch (err) {
@@ -81,8 +102,13 @@ export default function Farmaceutico() {
 
   // 🔹 Ejecutar cuando cambian filtros
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [debouncedSearch, id_rol, status, currentPage]);
+    fetchUsers();
+  }, [debouncedSearch, id_rol, status, page]);
+
+  // Restablecer paginación si se busca o filtra
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, status]);
 
 
   return (
@@ -158,52 +184,51 @@ export default function Farmaceutico() {
           </motion.div>
         )}
 
-        {/* ✅ DATA */}
-        {!error && users.length > 0 && (
+        {/* ✔️ CONTENIDO */}
+        {!loading && !error && users.length > 0 && (
           <motion.div
-            key="data"
-            animate={{ opacity: loading ? 0.6 : 1 }}
-            transition={{ duration: 0.2 }}
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            <PersonalTable
-              users={users}
-              fetchUsers={fetchUsers}
-              editModal={EditFarmaceuticoModal}
-            />
-
-            <div className="flex justify-center gap-2 mt-6">
-              {/* Botón anterior */}
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => prev - 1)}
-                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-              >
-                Anterior
-              </button>
-
-              {/* Números de página */}
-              {Array.from({ length: lastPage }, (_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === i + 1
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              {/* Botón siguiente */}
-              <button
-                disabled={currentPage === lastPage}
-                onClick={() => setCurrentPage((prev) => prev + 1)}
-                className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-              >
-                Siguiente
-              </button>
+            <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
+              <PersonalTable users={users} fetchUsers={fetchUsers} editModal={EditFarmaceuticoModal} />
             </div>
+
+            {/* Paginación */}
+            {lastPage > 1 && (
+              <div className="flex justify-center flex-wrap gap-2 mt-6">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Anterior
+                </button>
+                <div className="flex gap-1 overflow-x-auto">
+                  {Array.from({ length: lastPage }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${
+                        page === p
+                          ? "bg-primary text-white shadow-md shadow-primary/20"
+                          : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  disabled={page >= lastPage}
+                  onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

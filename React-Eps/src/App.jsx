@@ -69,6 +69,10 @@ import Departamentos from "./Pages/Admin/Configuracion/Departamentos"
 import Ciudades from "./Pages/Admin/Configuracion/Ciudades"
 import Roles from "./Pages/Admin/Configuracion/Roles"
 import Estados from "./Pages/Admin/Configuracion/Estados"
+import Concentraciones from "./Pages/Admin/Configuracion/Concentraciones"
+import FormasFarmaceuticas from "./Pages/Admin/Configuracion/FormasFarmaceuticas"
+import Medicamentos from "./Pages/Admin/Configuracion/Medicamentos"
+import Presentaciones from "./Pages/Admin/Configuracion/Presentaciones"
 
 export default function App() {
   // Global Dark Mode Initialization
@@ -164,13 +168,15 @@ export default function App() {
               <Route path="ciudades" element={<Ciudades />} />
               <Route path="roles" element={<Roles />} />
               <Route path="estados" element={<Estados />} />
+              <Route path="concentraciones" element={<Concentraciones />} />
+              <Route path="formas-farmaceuticas" element={<FormasFarmaceuticas />} />
+              <Route path="medicamentos" element={<Medicamentos />} />
+              <Route path="presentaciones" element={<Presentaciones />} />
             </Route>
           </Route>
         </Route>
 
       </Route>
-      {/* ─────────────────────────────────────────────────────────── */}
-
     </Routes>
   )
 }

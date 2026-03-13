@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import Input from "@/components/UI/Input";
 import Filter from "@/components/UI/Filter";
@@ -30,6 +31,33 @@ const statusOptions = [
 
 export default function Reportes() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Centro de Reportes (Admin)",
+        description: "El Centro de Reportes es una herramienta analítica avanzada donde puedes generar listados dinámicos de cualquier entidad importante del sistema y exportarlos.",
+        sections: [
+            {
+                title: "Tipos de reporte disponibles",
+                type: "list",
+                items: [
+                    "Usuarios y Roles: Verifica todos los usuarios activos y qué nivel de acceso tienen.",
+                    "Clasificaciones Clínicas: Extrae un listado de Especialidades, Categorías de Examen y Medicamentos.",
+                    "Distribución Geográfica: Genera reportes de Ciudades y Departamentos para análisis de cobertura."
+                ]
+            },
+            {
+                title: "Cómo generar y exportar",
+                type: "steps",
+                items: [
+                    "Despliega 'Ver reporte de:' en la esquina superior derecha y selecciona la tabla de interés.",
+                    "Usa la barra de búsqueda y los filtros de estado/roles/fechas para afinar los resultados.",
+                    "Haz clic en el botón rojo 'Exportar PDF'.",
+                    "El archivo PDF respetará todos los filtros que aplicaste en pantalla, incluyendo registros ocultos por la paginación."
+                ]
+            }
+        ]
+    });
+
     const [entity, setEntity] = useState("usuario");
     const [roles, setRoles] = useState([]);
 
@@ -249,14 +277,14 @@ export default function Reportes() {
                                     type="date"
                                     value={dateFrom}
                                     onChange={(e) => setDateFrom(e.target.value)}
-                                    className="text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg p-2 focus:ring-primary focus:border-primary outline-none"
+                                    className="text-sm  dark:text-white border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg p-2 focus:ring-primary focus:border-primary outline-none"
                                 />
                                 <span className="text-gray-400 font-medium">─</span>
                                 <input
                                     type="date"
                                     value={dateTo}
                                     onChange={(e) => setDateTo(e.target.value)}
-                                    className="text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg p-2 focus:ring-primary focus:border-primary outline-none"
+                                    className="text-sm dark:text-white border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg p-2 focus:ring-primary focus:border-primary outline-none"
                                 />
                             </div>
                         </motion.div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -12,6 +13,27 @@ import useEstados from "@/hooks/useEstados";
 
 export default function Estados() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Estados del Sistema",
+        description: "Administra los estados que pueden tomar las distintas entidades de datos a lo largo de su flujo de vida (ej. Activo, Inactivo, Atendida, Pendiente).",
+        sections: [
+            {
+                title: "Opciones de la Tabla",
+                type: "list",
+                items: [
+                    "Búsqueda: Filtra los estados por su nombre.",
+                    "Editar: Modifica el nombre del estado usando el ícono del lápiz (solo para estados editables)."
+                ]
+            },
+            {
+                title: "Recomendación de Uso",
+                type: "tip",
+                content: "Mantén nombres de estados cortos y claros. Evita crear estados redundantes para no confundir a los usuarios al momento de gestionar el flujo de las distintas entidades."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -142,7 +164,7 @@ export default function Estados() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="px-4 py-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -163,7 +185,7 @@ export default function Estados() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="px-4 py-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

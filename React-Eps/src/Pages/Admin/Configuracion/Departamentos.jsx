@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -21,6 +22,27 @@ const statusOptions = [
 
 export default function Departamentos() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Departamentos (División Territorial)",
+        description: "Listado de departamentos/estados correspondientes a la división política. Utilizan el código oficial DANE de la región.",
+        sections: [
+            {
+                title: "Acciones",
+                type: "list",
+                items: [
+                    "Búsqueda y Filtros: Podrás buscar el departamento por su nombre o código DANE.",
+                    "Inactivar: Dar de baja un departamento evitará que pueda ser seleccionado al registrar ciudades en dicha jurisdicción."
+                ]
+            },
+            {
+                title: "Integridad de Datos",
+                type: "tip",
+                content: "Al inactivar un departamento afectarás la disponibilidad de registro o mudanza de sedes y pacientes referenciados hacia el mismo."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -199,7 +221,7 @@ export default function Departamentos() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -220,7 +242,7 @@ export default function Departamentos() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

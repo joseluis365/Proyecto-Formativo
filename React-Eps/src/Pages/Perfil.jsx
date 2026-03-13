@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLayout } from "../LayoutContext";
+import { useHelp } from "../hooks/useHelp";
 import api from "../Api/axios";
 import AdminLogoutButton from "../components/UI/AdminLogoutButton";
 import MotionSpinner from "../components/UI/Spinner";
@@ -119,6 +120,36 @@ function ActivityItem({ icon, label, value }) {
 /* ================================================================== */
 export default function Perfil() {
     const { setTitle, setSubtitle } = useLayout();
+    
+    useHelp({
+        title: "Mi Perfil",
+        description: "Esta es tu página de información personal. Aquí puedes ver los detalles de tu cuenta, tu información de contacto, activar/desactivar opciones visuales (como el modo oscuro) y cerrar sesión de manera segura.",
+        sections: [
+            {
+                title: "¿Qué puedo editar?",
+                type: "list",
+                items: [
+                    "Datos básicos: Nombres, apellidos, correo, teléfono y dirección.",
+                    "Si tu rol lo permite, podrás modificar también tu sexo, fecha de nacimiento y grupo sanguíneo.",
+                    "Aplica tus cambios a través del botón 'Editar Perfil'."
+                ]
+            },
+            {
+                title: "Preferencias visuales",
+                type: "steps",
+                items: [
+                    "Baja a la sección 'Preferencias'.",
+                    "Activa o desactiva el 'Modo Oscuro' usando el interruptor.",
+                    "Estos cambios se guardan localmente para no interferir en la vista de otros usuarios."
+                ]
+            },
+            {
+                title: "Seguridad",
+                type: "warning",
+                content: "Asegúrate de no dejar tu sesión iniciada en dispositivos de acceso público. Puedes salir rápidamente haciendo clic en el botón inferior 'Cerrar Sesión'."
+            }
+        ]
+    });
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

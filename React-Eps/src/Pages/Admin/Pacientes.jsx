@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PacientesTable from "../../components/Users/PacientesTable";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
@@ -18,6 +19,27 @@ const statusOptions = [
 export default function Pacientes() {
   const { setTitle, setSubtitle } = useLayout();
 
+  useHelp({
+    title: "Gestión de Pacientes",
+    description: "Esta vista te permite administrar todos los pacientes registrados en la clínica. Puedes buscar, filtrar, agregar nuevos pacientes y cambiar su estado.",
+    sections: [
+      {
+        title: "Acciones principales",
+        type: "list",
+        items: [
+          "Buscar paciente: Usa la barra de búsqueda para encontrar a un paciente por nombre, apellido o documento.",
+          "Filtrar por estado: Alterna entre ver pacientes Activos (habilitados para consultas) o Inactivos.",
+          "Agregar Paciente: Abre un formulario para registrar a una nueva persona en el sistema."
+        ]
+      },
+      {
+        title: "Sobre la tabla",
+        type: "tip",
+        content: "La tabla principal muestra el documento, nombre, correo, teléfono y estado actual de cada paciente. Puedes hacer clic en los iconos de acción de la derecha para inactivar o reactivar a un usuario."
+      }
+    ]
+  });
+
   useEffect(() => {
     setTitle("Pacientes");
     setSubtitle("Gestión de los Pacientes");
@@ -28,6 +50,8 @@ export default function Pacientes() {
   const [search, setSearch] = useState("");
   const [id_rol, setId_rol] = useState(1);
   const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState(null);
@@ -50,11 +74,13 @@ export default function Pacientes() {
           search: debouncedSearch || undefined,
           id_rol: 5,
           status: status || undefined,
+          page: page,
         },
       });
 
       setUsers(res.data || []);
       setTotalUsersByRol(res.totalPorRol || 0);
+      setLastPage(res.last_page || 1);
     } catch (err) {
       console.error("Error cargando pacientes:", err);
       setError("No se pudieron cargar los pacientes"); // ❌ error controlado
@@ -77,7 +103,12 @@ export default function Pacientes() {
   // 🔹 Ejecutar cuando cambian filtros
   useEffect(() => {
     fetchUsers();
-  }, [debouncedSearch, id_rol, status]);
+  }, [debouncedSearch, id_rol, status, page]);
+
+  // Restablecer paginación si se busca o filtra
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, status]);
 
   console.log(users);
 
@@ -154,17 +185,51 @@ export default function Pacientes() {
           </motion.div>
         )}
 
-        {/* ✅ DATA */}
-        {!error && users.length > 0 && (
+        {/* ✔️ CONTENIDO */}
+        {!loading && !error && users.length > 0 && (
           <motion.div
-            key="data"
-            animate={{ opacity: loading ? 0.6 : 1 }}
-            transition={{ duration: 0.2 }}
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
-            <PacientesTable
-              users={users}
-              fetchUsers={fetchUsers}
-            />
+            <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
+              <PacientesTable users={users} fetchUsers={fetchUsers} />
+            </div>
+
+            {/* Paginación */}
+            {lastPage > 1 && (
+              <div className="flex justify-center flex-wrap gap-2 mt-6">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Anterior
+                </button>
+                <div className="flex gap-1 overflow-x-auto">
+                  {Array.from({ length: lastPage }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${
+                        page === p
+                          ? "bg-primary text-white shadow-md shadow-primary/20"
+                          : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  disabled={page >= lastPage}
+                  onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+                  className="px-4 py-2 text-sm rounded-lg border dark:text-white border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

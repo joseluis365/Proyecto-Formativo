@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -21,6 +22,29 @@ const statusOptions = [
 
 export default function Roles() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Roles y Permisos",
+        description: "Panel para definir los tipos de acceso que cada usuario puede tener al autenticarse en el sistema.",
+        sections: [
+            {
+                title: "Opciones de la Tabla",
+                type: "list",
+                items: [
+                    "Búsqueda: Filtra los roles por su tipo de usuario.",
+                    "Filtro: Permite ver solo los roles activos o inactivos.",
+                    "Editar: Modifica el nombre del rol usando el ícono del lápiz.",
+                    "Estado: Activa o inactiva un rol con el ícono del ojo para permitir o impedir su asignación."
+                ]
+            },
+            {
+                title: "Gestión Segura",
+                type: "tip",
+                content: "Verifica cuidadosamente el tipo de usuario antes de crearlo o editarlo. Desactiva los roles que ya no sean requeridos en la organización en lugar de eliminarlos para no afectar el registro visual histórico."
+            }
+        ]
+    });
+
     const {
         data,
         loading,
@@ -206,7 +230,7 @@ export default function Roles() {
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -227,7 +251,7 @@ export default function Roles() {
                                 <button
                                     disabled={page === lastPage}
                                     onClick={() => setPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>

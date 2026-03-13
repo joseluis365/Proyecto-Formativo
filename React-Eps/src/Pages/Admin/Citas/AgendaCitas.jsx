@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from "../../../Api/axios";
 import { useLayout } from "../../../LayoutContext";
+import { useHelp } from "../../../hooks/useHelp";
 import AppointmentCard from "../../../components/Citas/AppointmentCard";
 import CalendarAgenda from "../../../components/Citas/CalendarAgenda";
 import PrincipalText from "../../../components/Users/PrincipalText";
@@ -15,6 +16,28 @@ const specialtyOptions = [
 
 export default function AgendaCitas() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Agenda General de Citas",
+        description: "Esta es tu herramienta principal para gestionar todas las citas consultadas de clínicas de forma global. Utiliza el calendario lateral para navegar entre días y ver todas las interacciones.",
+        sections: [
+            {
+                title: "Funcionalidades Clave",
+                type: "list",
+                items: [
+                    "Calendario interactivo: Selecciona cualquier día del mes para ver sus citas correspondientes. En pantallas pequeñas el calendario puede desplegarse usando el botón lateral izquierdo.",
+                    "Filtros avanzados: Filtra por Especialidad, por rango de Horas y busca directamente por nombre de paciente o médico usando la barra de búsqueda.",
+                    "Agendar Cita: Permite crear una nueva reserva para un paciente."
+                ]
+            },
+            {
+                title: "Estados de Cita",
+                type: "tip",
+                content: "Presta atención a las tarjetas de cita: el estado indica si la cita está Pendiente, ya fue Atendida o si el paciente la ha Cancelado."
+            }
+        ]
+    });
+
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import PrincipalText from "../../components/Users/PrincipalText";
 import Input from "../../components/UI/Input";
 import DataTable from "../../components/UI/DataTable";
@@ -23,6 +24,62 @@ const TIPOS = [
 
 export default function Movimientos() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Movimientos de Inventario",
+        description: "Esta pantalla centraliza el control de entradas, salidas manuales y dispensaciones de medicamentos. Cada acción queda registrada con fecha, responsable y motivo.",
+        sections: [
+            {
+                title: "¿Qué puedes hacer aquí?",
+                type: "list",
+                items: [
+                    "Ver el historial completo de movimientos (entradas, salidas y dispensaciones).",
+                    "Registrar una entrada de medicamento al inventario.",
+                    "Registrar una salida manual (pérdida, vencimiento, ajuste).",
+                    "Atender una orden médica buscando por ID de receta.",
+                    "Filtrar movimientos por tipo o buscar por nombre de medicamento.",
+                ]
+            },
+            {
+                title: "Cómo registrar una Entrada",
+                type: "steps",
+                items: [
+                    "Haz clic en el botón verde \"Registrar Entrada\".",
+                    "Selecciona el medicamento (presentación) del listado.",
+                    "Ingresa la cantidad y la fecha de vencimiento del lote.",
+                    "Escribe el motivo de la entrada (ej: \"Reponer stock\").",
+                    "Haz clic en \"Registrar\" para guardar.",
+                ]
+            },
+            {
+                title: "Cómo registrar una Salida Manual",
+                type: "steps",
+                items: [
+                    "Haz clic en el botón rojo \"Salida Manual\".",
+                    "Selecciona el lote del inventario. Verás el stock disponible por lote.",
+                    "Ingresa la cantidad a retirar (no puede superar el stock del lote).",
+                    "Indica el motivo (ej: \"Lote vencido\", \"Pérdida\").",
+                    "Haz clic en \"Registrar\" para confirmar.",
+                ]
+            },
+            {
+                title: "Cómo atender una Orden Médica (Receta)",
+                type: "steps",
+                items: [
+                    "Haz clic en \"Atender Orden\" (botón azul).",
+                    "Escribe el ID de la receta médica y haz clic en \"Buscar\".",
+                    "Verifica los datos del paciente y el estado de la receta.",
+                    "Para cada medicamento pendiente, ingresa la cantidad a entregar y haz clic en \"Dispensar\".",
+                ]
+            },
+            {
+                title: "Problemas comunes",
+                type: "warning",
+                content: "Si al registrar una salida aparece el mensaje \"Stock Insuficiente\", la cantidad ingresada supera las existencias del lote seleccionado. Verifica el stock disponible antes de continuar. Si no encuentras una receta, confirma que el ID sea correcto y que la receta esté en estado activo."
+            },
+        ]
+    });
+
     const [search, setSearch] = useState("");
     const [tipo, setTipo] = useState("");
     const [movimientos, setMovimientos] = useState([]);
@@ -319,7 +376,7 @@ export default function Movimientos() {
                 <select
                     value={tipo}
                     onChange={(e) => { setTipo(e.target.value); setPage(1); }}
-                    className="border border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/40"
+                    className="border border-gray-300 dark:border-gray-700 dark:text-white dark:bg-gray-800 text-sm rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-primary/40"
                 >
                     {TIPOS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -341,14 +398,35 @@ export default function Movimientos() {
             </div>
 
             {lastPage > 1 && !initialLoad && (
-                <div className="flex justify-center gap-3 mt-6">
-                    <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div className="flex justify-center items-center gap-2 mt-8">
+                    <button
+                        disabled={page === 1}
+                        onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         ← Anterior
                     </button>
-                    <span className="px-4 py-2 text-sm text-gray-500">Página {page} de {lastPage}</span>
-                    <button disabled={page >= lastPage} onClick={() => setPage(p => p + 1)}
-                        className="px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+
+                    <div className="flex gap-1 overflow-x-auto max-w-[200px] sm:max-w-none">
+                        {Array.from({ length: lastPage }, (_, i) => i + 1).map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setPage(p)}
+                                className={`w-10 h-10 rounded-lg transition-all text-sm font-bold shrink-0 ${page === p
+                                    ? "bg-primary text-white shadow-md shadow-primary/20"
+                                    : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    }`}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
+
+                    <button
+                        disabled={page === lastPage}
+                        onClick={() => setPage(prev => Math.min(lastPage, prev + 1))}
+                        className="px-4 py-2 text-sm rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
+                    >
                         Siguiente →
                     </button>
                 </div>
@@ -386,13 +464,13 @@ export default function Movimientos() {
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
                                     <input type="number" min="1" {...registerEntrada("cantidad")}
-                                        className={`w-full border ${errorsEntrada.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                        className={`w-full border ${errorsEntrada.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
                                     {errorsEntrada.cantidad && <p className="text-red-500 text-xs mt-1">{errorsEntrada.cantidad.message}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Vencimiento *</label>
                                     <input type="date" min={new Date().toISOString().split("T")[0]} {...registerEntrada("fecha_vencimiento")}
-                                        className={`w-full border ${errorsEntrada.fecha_vencimiento ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                        className={`w-full border ${errorsEntrada.fecha_vencimiento ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
                                     {errorsEntrada.fecha_vencimiento && <p className="text-red-500 text-xs mt-1">{errorsEntrada.fecha_vencimiento.message}</p>}
                                 </div>
                             </div>
@@ -406,7 +484,7 @@ export default function Movimientos() {
                                             {...field}
                                             list="motivos-entrada"
                                             onChange={(e) => field.onChange(normalizeText(preventDoubleSpaces(e.target.value)))}
-                                            className={`w-full border ${errorsEntrada.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            className={`w-full border ${errorsEntrada.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
                                             placeholder="Ej: Compra a proveedor..."
                                         />
                                     )}
@@ -460,7 +538,7 @@ export default function Movimientos() {
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Cantidad *</label>
                                 <input type="number" min="1" {...registerSalida("cantidad")}
-                                    className={`w-full border ${errorsSalida.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
+                                    className={`w-full border ${errorsSalida.cantidad ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`} />
                                 {errorsSalida.cantidad && <p className="text-red-500 text-xs mt-1">{errorsSalida.cantidad.message}</p>}
                             </div>
                             <div>
@@ -473,7 +551,7 @@ export default function Movimientos() {
                                             {...field}
                                             list="motivos-salida"
                                             onChange={(e) => field.onChange(normalizeText(preventDoubleSpaces(e.target.value)))}
-                                            className={`w-full border ${errorsSalida.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
+                                            className={`w-full border ${errorsSalida.motivo ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'} bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/40`}
                                             placeholder="Ej: Lote vencido, Pérdida..."
                                         />
                                     )}
@@ -583,7 +661,7 @@ export default function Movimientos() {
                                     value={idRecetaSearch}
                                     onChange={(e) => setIdRecetaSearch(e.target.value)}
                                     placeholder="ID de la receta médica..."
-                                    className="flex-1 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-500 font-medium transition-colors"
+                                    className="flex-1 border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-500 font-medium transition-colors"
                                 />
                                 <button type="submit" disabled={loading} className="px-6 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
                                     {loading ? "Buscando..." : "Buscar"}
@@ -634,7 +712,7 @@ export default function Movimientos() {
                                                                 type="number"
                                                                 min="1"
                                                                 placeholder="Cant."
-                                                                className="w-16 text-center border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-500 font-bold"
+                                                                className="w-16 text-center border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-500 font-bold"
                                                                 value={dispensarCantidades[item.id_detalle_receta] || ""}
                                                                 onChange={(e) => setDispensarCantidades(prev => ({ ...prev, [item.id_detalle_receta]: e.target.value }))}
                                                             />

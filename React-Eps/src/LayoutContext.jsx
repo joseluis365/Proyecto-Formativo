@@ -5,6 +5,8 @@ const LayoutContext = createContext(null);
 export function LayoutProvider({ children }) {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
+  const [helpContent, setHelpContent] = useState(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
     <LayoutContext.Provider
@@ -13,6 +15,10 @@ export function LayoutProvider({ children }) {
         setTitle,
         subtitle,
         setSubtitle,
+        helpContent,
+        setHelpContent,
+        isHelpOpen,
+        setIsHelpOpen,
       }}
     >
       {children}

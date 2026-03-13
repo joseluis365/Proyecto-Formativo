@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, onClose }) {
         className={`
           fixed lg:static top-0 left-0 z-50
           w-64 h-full shrink-0
-          bg-white dark:bg-gray-900/50
+          bg-white dark:bg-gray-800
           border-r border-neutral-gray-border/20 dark:border-gray-800
           flex flex-col
           transform transition-transform duration-300
@@ -72,6 +72,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/configuracion/ciudades" label="Ciudades" />
                 <SidebarSubItem to="/configuracion/roles" label="Roles" />
                 <SidebarSubItem to="/configuracion/estados" label="Estados" />
+                <SidebarSubItem to="/configuracion/concentraciones" label="Concentraciones" />
+                <SidebarSubItem to="/configuracion/formas-farmaceuticas" label="Formas Farmacéuticas" />
+                <SidebarSubItem to="/configuracion/medicamentos" label="Medicamentos" />
+                <SidebarSubItem to="/configuracion/presentaciones" label="Presentaciones" />
               </SidebarDropdown>
             </div>
           </nav>

@@ -12,7 +12,7 @@ export default function SidebarItem({ to, icon, label, onClick }) {
         ${
           isActive
             ? "bg-primary/20 text-primary"
-            : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+            : "text-gray-700 dark:text-gray-300 hover:bg-primary/10 dark:hover:bg-primary/20"
         }
         `
       }

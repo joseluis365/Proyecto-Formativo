@@ -22,7 +22,7 @@ function FarmaciaLayoutContent() {
                     title={title}
                     subtitle={subtitle}
                 />
-                <main className="flex-1 p-8">
+                <main className="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
                     <Outlet />
                 </main>
             </div>

@@ -24,7 +24,7 @@ export default function DataTable({ columns, data }) {
                             {columns.map((col) => (
                                 <td
                                     key={col.key}
-                                    className={`px-6 py-4 ${col.align === "center" ? "text-center" : ""
+                                    className={`px-6 py-4 dark:bg-gray-900  ${col.align === "center" ? "text-center" : ""
                                         }`}
                                 >
                                     {col.render(row)}

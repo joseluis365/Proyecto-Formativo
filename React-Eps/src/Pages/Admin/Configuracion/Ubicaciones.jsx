@@ -1,11 +1,25 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 
 export default function Ubicaciones() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Ubicaciones",
+        description: "Esta es tu herramienta de inspección rápida de la división territorial.",
+        sections: [
+            {
+                title: "Uso",
+                type: "tip",
+                content: "Simplemente selecciona un Departamento en el menú desplegable para cargar y listar todas las ciudades que están vinculadas a esa región geógrafica en la base de datos."
+            }
+        ]
+    });
+
     const [departamentos, setDepartamentos] = useState([]);
     const [ciudades, setCiudades] = useState([]);
     const [selectedDepto, setSelectedDepto] = useState("");

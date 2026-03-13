@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
+import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
 import BlueButton from "@/components/UI/BlueButton";
@@ -19,6 +20,28 @@ const statusOptions = [
 
 export default function CategoriasMedicamento() {
     const { setTitle, setSubtitle } = useLayout();
+
+    useHelp({
+        title: "Categorías de Medicamento",
+        description: "Administra las clasificaciones farmacéuticas (ej. Analgésicos, Antibióticos) que agrupan a los medicamentos en el sistema.",
+        sections: [
+            {
+                title: "Gestión básica",
+                type: "steps",
+                items: [
+                    "Añadir: Haz clic en 'Nueva Categoría'.",
+                    "Editar: Usa el ícono del lápiz en la tabla.",
+                    "Inactivar: Oculta una categoría que ya no se utiliza dándole al ícono del ojo cerrado."
+                ]
+            },
+            {
+                title: "Recomendación de Uso",
+                type: "tip",
+                content: "Al agrupar de forma coherente los medicamentos facilitas el proceso de inventario y dispensación en la farmacia. Evita categorías duplicadas."
+            }
+        ]
+    });
+
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -209,7 +232,7 @@ export default function CategoriasMedicamento() {
                                 <button
                                     disabled={currentPage === 1}
                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Anterior
                                 </button>
@@ -230,7 +253,7 @@ export default function CategoriasMedicamento() {
                                 <button
                                     disabled={currentPage === lastPage}
                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                    className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="p-2 rounded-lg bg-white dark:text-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                                 >
                                     Siguiente
                                 </button>
