@@ -29,16 +29,11 @@ export default function SidebarFarmacia({ isOpen, onClose }) {
                 <div className="flex flex-col h-full p-4">
                     {/* Header */}
                     <div className="flex items-center gap-3 p-3">
-                        <div
-                            className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                            style={{
-                                backgroundImage:
-                                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8BuQ6_MKI0ZY9bYYQaNC3Nhs-jNSjBCulSOKjA8DvKERRh_kzKdh6zxMs6nDID93VCAIR-xh5ieBovBudkSfZOC2x-JxjpuWWwSw5hEhH4tk8BWBRRXmelKD_P4ar3bLS0kBn302EEW9ecT4p_pVXCClHHyUZ0iyUFnI3bCCB5vv0we2rswgKg3XEosiY9DZJE9a4SR7upNACuI_CxKEGuKEZwD7o0seDCt2eurCVC_79nO9sNDIOLPj3yWzttSVgnsjZQerFkaez")',
-                            }}
-                        />
+                        <img src="/icono.png" alt="Saluvanta EPS" className="size-10 rounded-full object-cover block dark:hidden" />
+                        <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-10 rounded-full object-cover hidden dark:block" />
                         <div>
-                            <h1 className="text-gray-900 dark:text-white text-base font-medium">
-                                Salud Integral
+                            <h1 className="text-gray-900 dark:text-white text-base font-bold">
+                                Saluvanta EPS
                             </h1>
                             <p className="text-neutral-gray-text dark:text-gray-400 text-sm">
                                 Panel Farmacia

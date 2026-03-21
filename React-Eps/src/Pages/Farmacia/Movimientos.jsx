@@ -232,10 +232,10 @@ export default function Movimientos() {
         setLoading(true);
         try {
             const res = await api.get(`/farmacia/receta/${idRecetaSearch}`);
-            setRecetaData(res.data);
+            setRecetaData(res);
             const initialCants = {};
-            res.data.items.forEach(i => {
-                if (!i.dispensado) initialCants[i.id_detalle_receta] = "";
+            res.items.forEach(i => {
+                if (!i.dispensado) initialCants[i.id_detalle_receta] = i.cantidad_recetada || "";
             });
             setDispensarCantidades(initialCants);
         } catch (err) {
@@ -306,12 +306,12 @@ export default function Movimientos() {
             render: (row) => <span className="text-gray-600 dark:text-gray-400">{row.fecha}</span>,
         },
         {
-            key: "dispensacion",
+            key: "receta",
             header: "Receta",
             render: (row) => (
-                row.id_dispensacion ? (
-                    <span className="font-mono text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">
-                        #{row.id_dispensacion}
+                row.id_receta && row.id_receta !== 'N/A' ? (
+                    <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-1 rounded border border-blue-100 dark:border-blue-800">
+                        #{row.id_receta}
                     </span>
                 ) : (
                     <span className="text-gray-400 italic text-xs">N/A</span>
@@ -335,7 +335,8 @@ export default function Movimientos() {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
+        <>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="swap_horiz" text="Historial de Movimientos" number={total} />
                 <div className="flex flex-wrap gap-3">
@@ -431,10 +432,11 @@ export default function Movimientos() {
                     </button>
                 </div>
             )}
+        </div>
 
-            {/* Modal Entrada */}
+        {/* Modal Entrada */}
             {showEntradaModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-green-600">add_box</span>
@@ -509,7 +511,7 @@ export default function Movimientos() {
 
             {/* Modal Salida */}
             {showSalidaModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-red-600">indeterminate_check_box</span>
@@ -577,7 +579,7 @@ export default function Movimientos() {
 
             {/* Modal de Detalles */}
             {showDetailsModal && selectedMovimiento && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-primary">info</span>
@@ -639,7 +641,7 @@ export default function Movimientos() {
 
             {/* Modal Atender Orden */}
             {showAtenderModal && (
-                <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 relative">
@@ -698,7 +700,7 @@ export default function Movimientos() {
                                                         <div className="flex gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                             <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">water_drop</span>{item.dosis}</span>
                                                             <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span>{item.frecuencia}</span>
-                                                            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">date_range</span>{item.duracion}</span>
+                                                            <span className="flex items-center gap-1">Fin tratamiento: <span className="material-symbols-outlined text-[14px]">date_range</span>{item.duracion}</span>
                                                         </div>
                                                     </div>
 
@@ -712,7 +714,8 @@ export default function Movimientos() {
                                                                 type="number"
                                                                 min="1"
                                                                 placeholder="Cant."
-                                                                className="w-16 text-center border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-500 font-bold"
+                                                                readOnly
+                                                                className="w-16 text-center border-2 border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 rounded-lg px-2 py-2 text-sm outline-none font-bold cursor-not-allowed"
                                                                 value={dispensarCantidades[item.id_detalle_receta] || ""}
                                                                 onChange={(e) => setDispensarCantidades(prev => ({ ...prev, [item.id_detalle_receta]: e.target.value }))}
                                                             />
@@ -735,6 +738,6 @@ export default function Movimientos() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

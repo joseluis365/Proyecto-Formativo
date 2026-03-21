@@ -1,66 +1,32 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
-import MotionSpinner from "../UI/Spinner";
-import api from "../../Api/axios";
 
 /**
- * AdminRoute — Protege rutas específicamente para el usuario "Administrador" (id_rol = 2).
+ * AdminRoute — Protege rutas específicamente para el usuario "Administrador" (id_rol = 2) y SuperAdmin (1)
+ * Optimizada: usa comprobación síncrona en memoria para evitar bucles de red.
  */
 export default function AdminRoute() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isAuthorized, setIsAuthorized] = useState(false);
-
     const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
 
-    useEffect(() => {
-        const verifySessionAndRole = async () => {
-            if (!token) {
-                setIsAuthorized(false);
-                setIsLoading(false);
-                return;
-            }
-
-            try {
-                const response = await api.get("/me");
-                // Verificar si el rol es 2 (Administrador). El interceptor devuelve directamente la data.
-                const user = response.user || response; // a veces viene directo o envuelto en user
-                if (user && user.id_rol === 2) {
-                    setIsAuthorized(true);
-                } else {
-                    setIsAuthorized(false);
-                }
-            } catch (error) {
-                console.error("Error verificando sesión o rol de administrador:", error);
-                setIsAuthorized(false);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        verifySessionAndRole();
-    }, [token]);
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex flex-col gap-4 items-center justify-center dark:bg-gray-900 dark:text-white">
-                Verificando acceso de Administrador
-                <MotionSpinner />
-            </div>
-        );
-    }
-
-    if (!isAuthorized) {
-        // Redirige al dashboard correcto si está autenticado pero no tiene permisos, sino al login
-        const userStr = localStorage.getItem("user");
-        if (userStr) {
-            try {
-                const userObj = JSON.parse(userStr);
-                if (userObj.id_rol === 1) return <Navigate to="/SuperAdmin-Dashboard" replace />;
-                if (userObj.id_rol === 6) return <Navigate to="/farmacia/dashboard" replace />;
-            } catch (e) { }
-        }
+    if (!token || !userStr) {
         return <Navigate to="/login" replace />;
     }
 
-    return <Outlet />;
+    try {
+        const user = JSON.parse(userStr);
+        // Permitir SuperAdmin (1), Admin (2) y Personal Administrativo (3)
+        if (user.id_rol === 1 || user.id_rol === 2 || user.id_rol === 3) {
+            return <Outlet />;
+        }
+        
+        // Redirecciones seguras para evitar bucles
+        if (user.id_rol === 4) return <Navigate to="/medico/agenda" replace />;
+        if (user.id_rol === 5) return <Navigate to="/paciente" replace />;
+        if (user.id_rol === 6) return <Navigate to="/farmacia/dashboard" replace />;
+        
+        return <Navigate to="/login" replace />;
+    } catch (error) {
+        return <Navigate to="/login" replace />;
+    }
 }
+

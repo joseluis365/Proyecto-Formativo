@@ -25,12 +25,13 @@ export default function LoginSection() {
                 const user = JSON.parse(userStr);
                 if (user.id_rol === 1) navigate('/SuperAdmin-Dashboard', { replace: true });
                 else if (user.id_rol === 6) navigate('/farmacia/dashboard', { replace: true });
+                else if (user.id_rol === 5) navigate('/paciente', { replace: true });
                 else navigate('/dashboard', { replace: true });
             } catch (e) {
-                navigate('/dashboard', { replace: true });
+                navigate('/login', { replace: true });
             }
         } else if (token) {
-            navigate('/dashboard', { replace: true });
+            navigate('/login', { replace: true });
         }
     }, [navigate]);
 
@@ -67,6 +68,8 @@ export default function LoginSection() {
                 navigate('/SuperAdmin-Dashboard');
             } else if (user.id_rol === 6) {
                 navigate('/farmacia/dashboard');
+            } else if (user.id_rol === 5) {
+                navigate('/paciente');
             } else {
                 navigate('/dashboard');
             }

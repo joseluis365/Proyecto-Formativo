@@ -4,7 +4,7 @@ import HelpModal from "../../components/UI/HelpModal";
 import { useEffect, useState } from "react";
 import { useLayout } from "../../LayoutContext";
 
-export default function Header({ onMenuClick, title, subtitle }) {
+export default function Header({ onMenuClick, title, subtitle, children }) {
     const [profilePath, setProfilePath] = useState("/Perfil");
     const { helpContent, setIsHelpOpen } = useLayout();
 
@@ -15,6 +15,8 @@ export default function Header({ onMenuClick, title, subtitle }) {
                 const user = JSON.parse(userStr);
                 if (user.id_rol === 6) {
                     setProfilePath("/farmacia/perfil");
+                } else if (user.id_rol === 4) {
+                    setProfilePath("/medico/perfil");
                 }
             }
         } catch (error) {
@@ -25,18 +27,25 @@ export default function Header({ onMenuClick, title, subtitle }) {
     return (
         <>
             <header className="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-neutral-gray-border/20 dark:border-gray-800 px-8 py-4 bg-background-light/80 dark:bg-gray-800 backdrop-blur-sm">
-                <button
-                    onClick={onMenuClick}
-                    className="lg:hidden pr-5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <span className="material-symbols-outlined dark:text-white">menu</span>
-                </button>
-                <div className="flex flex-wrap justify-between gap-3 items-center">
+                <div className="flex items-center gap-4">
+                    {onMenuClick && (
+                        <button
+                            onClick={onMenuClick}
+                            className="lg:hidden pr-5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <span className="material-symbols-outlined dark:text-white">menu</span>
+                        </button>
+                    )}
                     <div className="flex flex-col gap-1 min-w-0">
-                        <p className="text-gray-900 dark:text-white text-3xl font-bold leading-tight">{title}</p>
+                        <p className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold leading-tight">{title}</p>
                         <p className="text-neutral-gray-text dark:text-gray-400 text-sm font-normal leading-normal md:text-base truncate whitespace-normal">
                             {subtitle}
                         </p>
                     </div>
+                </div>
+
+                {/* Contenido inyectado central (Navegación, etc) */}
+                <div className="hidden lg:flex items-center justify-center flex-1 mx-4">
+                    {children}
                 </div>
 
                 <div className="flex items-center gap-2">

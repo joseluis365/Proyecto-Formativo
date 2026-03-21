@@ -25,6 +25,10 @@ class TipoCitaController extends Controller
             $query->where('id_estado', 1);
         }
 
+        if ($request->has('acceso_directo')) {
+            $query->where('acceso_directo', $request->boolean('acceso_directo'));
+        }
+
         $tipos = $query
             ->orderBy('tipo', 'asc')
             ->paginate(10);
@@ -36,7 +40,8 @@ class TipoCitaController extends Controller
     {
         $tipo = TipoCita::create([
             'tipo' => $request->tipo,
-            'id_estado' => 1
+            'id_estado' => 1,
+            'acceso_directo' => $request->boolean('acceso_directo', false)
         ]);
 
         return response()->json([
@@ -50,7 +55,8 @@ class TipoCitaController extends Controller
         $tipo = TipoCita::findOrFail($id);
 
         $tipo->update([
-            'tipo' => $request->tipo
+            'tipo' => $request->tipo,
+            'acceso_directo' => $request->boolean('acceso_directo', $tipo->acceso_directo)
         ]);
 
         return response()->json([

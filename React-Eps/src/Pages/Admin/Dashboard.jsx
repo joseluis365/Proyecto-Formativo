@@ -38,6 +38,7 @@ export default function Dashboard() {
   const [activities, setActivities] = useState([]);
   const [citasData, setCitasData] = useState([]);
   const [stats, setStats] = useState([]);
+  const [ordenesData, setOrdenesData] = useState(null);
 
   useEffect(() => {
     setTitle("Dashboard");
@@ -47,10 +48,11 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [activityRes, citasRes, statsRes] = await Promise.all([
+        const [activityRes, citasRes, statsRes, ordenesRes] = await Promise.all([
           api.get(`/recent-activity/${CHANNEL_NAME}`),
           api.get("/admin/dashboard/citas-semana"),
           api.get("/admin/dashboard/stats"),
+          api.get("/admin/dashboard/ordenes-mes"),
         ]);
 
         // recent-activity devuelve el array directamente (ruta pública, sin wrapper)
@@ -64,6 +66,7 @@ export default function Dashboard() {
 
         // stats viene como array directo del controlador
         setStats(Array.isArray(statsRes) ? statsRes : []);
+        setOrdenesData(ordenesRes ?? null);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -89,7 +92,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 flex flex-col gap-8">
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <BarChartCitas data={citasData} />
-            <PieChartOrdenes data={ordenesMock} />
+            <PieChartOrdenes data={ordenesData} />
           </div>
         </div>
         <FeedPanel feedItems={activities} channelName={CHANNEL_NAME} />

@@ -12,6 +12,8 @@ use App\Models\Rol;
 use App\Models\Estado;
 use App\Models\Empresa;
 use App\Models\Especialidad;
+use App\Models\Consultorio;
+use App\Models\TipoDocumento;
 
 class Usuario extends Authenticatable
 {
@@ -34,6 +36,7 @@ class Usuario extends Authenticatable
     }
 
     protected $fillable = [
+        'id_tipo_documento',
         'documento',
         'primer_nombre',
         'segundo_nombre',
@@ -51,13 +54,17 @@ class Usuario extends Authenticatable
         'id_estado',
         'registro_profesional',
         'id_especialidad',
+        'id_consultorio',
         'id_farmacia',
+        'examenes',
     ];
 
     protected $hidden = [
         'contrasena',
         'remember_token',
     ];
+
+    protected $appends = ['edad'];
 
     protected $casts = [
         'fecha_nacimiento' => 'date',
@@ -66,6 +73,11 @@ class Usuario extends Authenticatable
     /**
      * 🔗 RELACIONES
      */
+
+    public function tipoDocumento()
+    {
+        return $this->belongsTo(TipoDocumento::class, 'id_tipo_documento', 'id_tipo_documento');
+    }
 
     public function rol()
     {
@@ -92,6 +104,27 @@ class Usuario extends Authenticatable
         return $this->belongsTo(Farmacia::class, 'id_farmacia', 'nit');
     }
 
+    public function consultorio()
+    {
+        return $this->belongsTo(Consultorio::class, 'id_consultorio', 'id_consultorio');
+    }
+
+    /**
+     * Citas como médico asignado
+     */
+    public function medicoCitas()
+    {
+        return $this->hasMany(Cita::class, 'doc_medico', 'documento');
+    }
+
+    /**
+     * Citas como paciente
+     */
+    public function pacienteCitas()
+    {
+        return $this->hasMany(Cita::class, 'doc_paciente', 'documento');
+    }
+
     /**
      * 🔒 Mutator automático para encriptar contraseña
      * Evita que alguien olvide hacer Hash::make()
@@ -106,5 +139,9 @@ class Usuario extends Authenticatable
                 $this->attributes['contrasena'] = Hash::make($value);
             }
         }
+    }
+    public function getEdadAttribute()
+    {
+        return $this->fecha_nacimiento ? \Carbon\Carbon::parse($this->fecha_nacimiento)->age : null;
     }
 }

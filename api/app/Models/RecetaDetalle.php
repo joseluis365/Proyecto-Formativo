@@ -14,6 +14,7 @@ class RecetaDetalle extends Model
         'id_receta',
         'id_presentacion',
         'nit_farmacia',
+        'cantidad_dispensar',
         'dosis',
         'frecuencia',
         'duracion',

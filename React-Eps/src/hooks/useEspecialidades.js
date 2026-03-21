@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 
-export default function useEspecialidades() {
+export default function useEspecialidades(params = {}) {
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -10,7 +10,7 @@ export default function useEspecialidades() {
             setLoading(true);
             try {
                 // Endpoint público o protegido según api.php
-                const response = await api.get("/especialidades");
+                const response = await api.get("/especialidades", { params });
                 // El interceptor ya devuelve response.data o response.data.data
                 const data = Array.isArray(response) ? response : response?.data || [];
 

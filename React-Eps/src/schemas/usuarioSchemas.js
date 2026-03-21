@@ -10,6 +10,7 @@ const addressRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/;
 const registroProfesionalRegex = /^[0-9]{5,15}$/;
 
 export const baseUserSchema = z.object({
+    id_tipo_documento: z.coerce.number().min(1, "El tipo de documento es obligatorio"),
     documento: z.coerce.string()
         .min(1, "El documento es obligatorio")
         .min(7, "El documento debe tener entre 7 y 10 digitos")
@@ -111,6 +112,7 @@ export const updateMedicoSchema = baseUserSchema.extend({
         .max(15, "El registro profesional debe tener entre 5 y 15 digitos")
         .regex(registroProfesionalRegex, "El registro profesional debe ser maximo de 15 digitos numericos sin espacios ni puntos"),
     id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria"),
+    id_consultorio: z.coerce.number().nullable().optional(),
 });
 
 // ======================
@@ -140,9 +142,12 @@ export const updatePacienteSchema = baseUserSchema.extend({
 // ======================
 export const createPersonalSchema = withPasswordConfirmation(baseUserSchema.extend({
     ...creationPasswordValidation,
+    examenes: z.boolean().optional(),
 }));
 
-export const updatePersonalSchema = baseUserSchema;
+export const updatePersonalSchema = baseUserSchema.extend({
+    examenes: z.boolean().optional(),
+});
 
 // ======================
 // FARMACEUTICO SCHEMAS

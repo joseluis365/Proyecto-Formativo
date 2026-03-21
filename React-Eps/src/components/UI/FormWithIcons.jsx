@@ -29,6 +29,8 @@ export default function FormWithIcons({
     };
 
     const renderField = (field) => {
+        if (field.hidden) return null;
+
         if (customRenderers[field.name]) {
             return (
                 <React.Fragment key={field.name}>

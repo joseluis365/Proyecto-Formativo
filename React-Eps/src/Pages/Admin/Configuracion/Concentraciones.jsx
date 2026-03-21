@@ -116,7 +116,7 @@ export default function Concentraciones() {
             <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
                 <div className="w-full md:w-64">
                     <Input
-                        placeholder="Buscar por nombre..."
+                        placeholder="Buscar por concentración..."
                         icon="search"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}

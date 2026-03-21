@@ -15,6 +15,7 @@ class CategoriaExamen extends Model
     protected $fillable = [
         'categoria',
         'id_estado',
+        'requiere_ayuno',
     ];
 
     public function estado()

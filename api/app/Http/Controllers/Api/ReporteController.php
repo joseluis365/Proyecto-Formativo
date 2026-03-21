@@ -14,6 +14,16 @@ class ReporteController extends Controller
             'fecha' => date('d/m/Y'),
             'usuarios' => $users
         ];
+        $logoBase64 = '';
+        try {
+            if (file_exists(public_path('icono.png'))) {
+                $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Error encoding logo for PDF: " . $e->getMessage());
+        }
+
+        $data['logoBase64'] = $logoBase64;
 
         // Cargar la vista con los datos
         $pdf = Pdf::loadView('reporte', $data);

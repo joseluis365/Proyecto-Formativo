@@ -26,6 +26,11 @@ class Receta extends Model
         return $this->belongsTo(Estado::class, 'id_estado', 'id_estado');
     }
 
+    public function detalles()
+    {
+        return $this->hasMany(RecetaDetalle::class, 'id_receta', 'id_receta');
+    }
+
     public function recetaDetalles()
     {
         return $this->hasMany(RecetaDetalle::class, 'id_receta', 'id_receta');

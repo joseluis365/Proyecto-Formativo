@@ -240,7 +240,8 @@ export default function Inventario() {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
+        <>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="inventory_2" text="Inventario Actual" number={total} />
                 <button
@@ -349,9 +350,11 @@ export default function Inventario() {
                 </div>
             )}
 
+        </div>
+
             {/* Modal Registrar Entrada */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-green-600">add_box</span>
@@ -431,6 +434,6 @@ export default function Inventario() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

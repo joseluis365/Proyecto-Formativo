@@ -13,7 +13,13 @@ class HistorialClinico extends Model
     protected $fillable = [
         'id_paciente',
         'antecedentes_personales',
-        'antecedentes_familiares'
+        'antecedentes_familiares',
+        'alergias',
+        'habitos_vida',
+    ];
+
+    protected $casts = [
+        'habitos_vida' => 'array',
     ];
 
     public function paciente()

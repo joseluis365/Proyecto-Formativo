@@ -78,8 +78,8 @@ api.interceptors.response.use(
           // Otros errores no manejados específicamente
           console.error("API Error:", response.data?.message || error.message);
       }
-    } else {
-      // Error de red o servidor caído
+    } else if (!axios.isCancel(error)) {
+      // Error de red o servidor caído, pero solo si no fue cancelado intencionalmente
       Swal.fire({
         icon: 'error',
         title: 'Error de Conexión',

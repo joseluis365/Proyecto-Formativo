@@ -2,9 +2,29 @@ import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/axios";
+import { useLayout } from "../../LayoutContext";
 
+function NavItem({ to, label, icon }) {
+    return (
+        <NavLink
+            to={to}
+            end
+            className={({ isActive }) => `
+                flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-xs tracking-wide
+                ${isActive
+                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                }
+            `}
+        >
+            <span className="material-symbols-outlined text-lg">{icon}</span>
+            <span>{label}</span>
+        </NavLink>
+    );
+}
 
 export default function UserHeader() {
+    const { setIsHelpOpen } = useLayout();
     const [open, setOpen] = useState(false);
 
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -48,19 +68,36 @@ export default function UserHeader() {
             {/* HEADER */}
             <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur-md px-6 md:px-10 lg:px-40 py-2.5 flex items-center justify-between">
 
-                {/* ESPACIO IZQUIERDO (Para equilibrar el centro) */}
-                <div className="hidden md:block flex-1"></div>
+                {/* LOGO & BRANDING */}
+                <div className="flex items-center gap-3 text-primary flex-1 min-w-max">
+                    <img src="/icono.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover block dark:hidden" />
+                    <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover hidden dark:block" />
+                    <h2 className="text-lg font-extrabold text-slate-900 dark:text-white hidden sm:block whitespace-nowrap">
+                        Saluvanta EPS
+                    </h2>
+                </div>
 
-                {/* MENU DESKTOP (CENTRAL) */}
-                <nav className="hidden md:flex items-center justify-center gap-6 flex-1">
-                    <NavLink className={navLinkStyles} to="/Usuarios-Dashboard">Inicio</NavLink>
-                    <NavLink className={navLinkStyles} to="/Usuarios-Citas">Citas</NavLink>
-                    <NavLink className={navLinkStyles} to="/Usuarios-Medicamentos">Medicamentos</NavLink>
-                    <NavLink className={navLinkStyles} to="/Usuarios-Perfil">Perfil</NavLink>
-                </nav>
+                {/* MENU DESKTOP (CENTRAL - TIPO RAMA DAVID) */}
+                <div className="hidden lg:flex items-center justify-center flex-2">
+                    <div className="flex items-center gap-2 bg-gray-100/50 dark:bg-gray-800/40 p-1.5 rounded-2xl border border-gray-100/50 dark:border-gray-800">
+                        <NavItem to="/paciente" label="Inicio" icon="dashboard" />
+                        <NavItem to="/paciente/agendar" label="Agendar" icon="add_circle" />
+                        <NavItem to="/paciente/citas" label="Mis Citas" icon="event_available" />
+                        <NavItem to="/paciente/citas" label="Mis Citas" icon="event_available" />
+                    </div>
+                </div>
 
-                {/* SECCIÓN DERECHA (PEGADA AL MARGEN) */}
-                <div className="hidden md:flex items-center justify-end gap-2 flex-1">
+                {/* SECCIÓN DERECHA */}
+                <div className="flex items-center justify-end gap-3 flex-1">
+                    {/* Botón de Ayuda */}
+                    <button
+                        title="Ver ayuda"
+                        onClick={() => setIsHelpOpen(true)}
+                        className="p-2 cursor-pointer rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors flex items-center justify-center"
+                    >
+                        <span className="material-symbols-outlined text-[22px]">help</span>
+                    </button>
+
                     <button
                         onClick={toggleDarkMode}
                         className="p-2 cursor-pointer rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors focus:outline-none flex items-center justify-center"
@@ -72,11 +109,11 @@ export default function UserHeader() {
                     </button>
                 </div>
 
-                {/* BOTÓN HAMBURGUESA */}
-                <div className="md:hidden flex justify-start items-center">
+                {/* BOTÓN HAMBURGUESA MOBILE */}
+                <div className="md:hidden flex justify-start items-center ml-2">
                     <button
                         onClick={() => setOpen(true)}
-                        className="md:hidden text-2xl cursor-pointer"
+                        className="text-2xl cursor-pointer"
                     >
                         ☰
                     </button>
@@ -108,10 +145,10 @@ export default function UserHeader() {
 
                     {/* LINKS */}
                     <nav className="flex flex-col gap-4 text-sm font-semibold text-slate-600 dark:text-white">
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Usuarios-Dashboard">Inicio</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Usuarios-Citas">Citas</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Usuarios-Medicamentos">Medicamentos</NavLink>
-                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/Usuarios-Perfil">Perfil</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/paciente">Inicio</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/paciente/agendar">Agendar Cita</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/paciente/citas">Mis Citas</NavLink>
+                        <NavLink className={navLinkStyles} onClick={closeMenu} to="/paciente/perfil">Mi Perfil</NavLink>
                     </nav>
 
                     <div className="flex-1 mt-4">

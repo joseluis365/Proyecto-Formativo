@@ -191,7 +191,24 @@ class ReportService
         $collection = $query->limit($limit)->get();
 
         if ($format === 'pdf') {
-            return (new Export\PdfExportService())->generate($entityKey, $config, $collection);
+            $pdfContent = (new Export\PdfExportService())->generate($entityKey, $config, $collection);
+            
+            // Guardar historial
+            try {
+                $user = auth()->user();
+                if ($user) {
+                    \App\Models\HistorialReporte::create([
+                        'id_usuario' => $user->documento,
+                        'tabla_relacion' => $config['label'] ?? ucfirst($entityKey),
+                        'num_registros' => $collection->count(),
+                        'ejemplo_registro' => $collection->first() ? $collection->first()->toArray() : null,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al guardar historial de reporte: " . $e->getMessage());
+            }
+            
+            return $pdfContent;
         }
 
         throw new \InvalidArgumentException("El formato de exportación '{$format}' no está soportado.");

@@ -10,13 +10,16 @@ import { createPersonalSchema } from "@/schemas/usuarioSchemas";
 import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
-
+import useTipoDocumentos from "@/hooks/useTipoDocumentos";
+import { ROLES } from "@/constants/roles";
 export default function CreatePersonalModal({
   onClose,
   onSuccess,
 }) {
   const [saving, setSaving] = useState(false);
+  const { tipoDocumentos, loading: loadingTipoDocumentos } = useTipoDocumentos();
 
+  // Configuración del formulario con RHF y Zod
   const {
     register,
     handleSubmit,
@@ -28,7 +31,7 @@ export default function CreatePersonalModal({
     reValidateMode: "onChange",
     defaultValues: {
       id_estado: 1,
-      id_rol: 3,
+      id_rol: ROLES.PERSONAL_ADMINISTRATIVO,
       segundo_nombre: "",
       segundo_apellido: ""
     }
@@ -37,9 +40,11 @@ export default function CreatePersonalModal({
   const onSubmit = async (data) => {
     try {
       setSaving(true);
-
-      const { confirm_contrasena, ...payload } = data;
-      payload.id_rol = 3;
+      // Inyección de rol administrativo (3)
+      const payload = {
+        ...data,
+        id_rol: ROLES.PERSONAL_ADMINISTRATIVO
+      };
 
       await api.post(`/usuario`, payload);
 
@@ -56,13 +61,16 @@ export default function CreatePersonalModal({
       });
 
     } catch (error) {
+      // Los errores 401/403/500 son manejados por el interceptor global.
+      // Aquí manejamos errores de validación 422.
       handleApiErrors(error, setError);
     } finally {
       setSaving(false);
     }
   };
 
-  const sections = getCreateUserSections(3);
+  // Obtenemos la configuración de campos para el rol 3 (Personal)
+  const sections = getCreateUserSections(ROLES.PERSONAL_ADMINISTRATIVO, { id_tipo_documento: tipoDocumentos });
 
   return (
     <BaseModal>
@@ -81,7 +89,7 @@ export default function CreatePersonalModal({
                 text="Guardar"
                 icon="save"
                 type="submit"
-                loading={saving}
+                loading={saving || loadingTipoDocumentos}
               />
             </div>
           </div>
@@ -90,4 +98,3 @@ export default function CreatePersonalModal({
     </BaseModal>
   );
 }
-

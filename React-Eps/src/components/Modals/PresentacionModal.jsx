@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
+import SearchableSelect from "@/components/UI/SearchableSelect";
 
 export default function PresentacionModal({ isOpen, onClose, onSuccess, editData }) {
     const [formData, setFormData] = useState({
@@ -34,9 +35,9 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                 api.get("/farmacia/concentraciones"),
                 api.get("/farmacia/formas-farmaceuticas")
             ]);
-            setMedicamentos(resMed.data.data || []);
-            setConcentraciones(resCon.data.data || []);
-            setFormas(resForm.data.data || []);
+            setMedicamentos(resMed.data || []);
+            setConcentraciones(resCon.data || []);
+            setFormas(resForm.data || []);
         } catch (error) {
             console.error("Error cargando opciones:", error);
             Swal.fire("Error", "No se pudieron cargar las listas de selección", "error");
@@ -87,9 +88,16 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden my-8"
             >
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary dark:bg-primary/50 dark:text-blue-400">
+                        <span className="material-symbols-outlined text-3xl">
+                            home_storage
+                        </span>
+                    </div>
                     <h2 className="text-xl font-bold dark:text-white">
                         {editData ? "Editar Presentación" : "Nueva Presentación"}
                     </h2>
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors"
@@ -110,21 +118,19 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Medicamento Base <span className="text-red-500">*</span>
                             </label>
-                            <select
-                                name="id_medicamento"
+                            <SearchableSelect
+                                options={medicamentos.map(med => ({
+                                    value: med.id_medicamento,
+                                    label: med.nombre
+                                }))}
                                 value={formData.id_medicamento}
-                                onChange={handleChange}
-                                className={`w-full p-2.5 rounded-lg border bg-gray-50 dark:bg-gray-900 dark:text-white outline-none transition-all ${
-                                    errors.id_medicamento ? "border-red-500" : "border-gray-300 dark:border-gray-600"
-                                }`}
-                            >
-                                <option value="">Seleccione el medicamento</option>
-                                {medicamentos.map(med => (
-                                    <option key={med.id_medicamento} value={med.id_medicamento}>
-                                        {med.nombre}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(val) => {
+                                    setFormData({ ...formData, id_medicamento: val });
+                                    if (errors.id_medicamento) setErrors({ ...errors, id_medicamento: null });
+                                }}
+                                placeholder="Seleccione el medicamento"
+                                required
+                            />
                             {errors.id_medicamento && <p className="text-red-500 text-xs mt-1">{errors.id_medicamento[0]}</p>}
                         </div>
 

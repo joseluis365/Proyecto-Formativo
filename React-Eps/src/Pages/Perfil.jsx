@@ -11,18 +11,22 @@ import Swal from "sweetalert2";
 /* ------------------------------------------------------------------ */
 
 const ROL_LABELS = {
+    1: "SuperAdmin",
     2: "Administrador",
-    3: "Médico",
-    4: "Paciente",
-    5: "Despachador",
+    3: "Personal Exámenes",
+    4: "Médico",
+    5: "Paciente",
     6: "Farmacéutico",
+    7: "Coordinador",
+    8: "Administrativo",
 };
 
 const ROL_COLORS = {
+    1: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
     2: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-    3: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-    4: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-    5: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+    3: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+    4: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+    5: "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
     6: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
 };
 
@@ -44,16 +48,21 @@ function formatNow() {
     });
 }
 
+function formatToISODate(dateStr) {
+    if (!dateStr) return "";
+    return typeof dateStr === "string" ? dateStr.substring(0, 10) : "";
+}
+
 /* ------------------------------------------------------------------ */
 /*  InfoRow — fila dentro del formulario de información                */
 /* ------------------------------------------------------------------ */
-function InfoField({ label, value, name, editMode, onChange, type = "text" }) {
+function InfoField({ label, value, name, editMode, onChange, type = "text", readOnly = false }) {
     return (
         <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {label}
             </label>
-            {editMode ? (
+            {editMode && !readOnly ? (
                 <input
                     type={type}
                     name={name}
@@ -93,7 +102,7 @@ function SelectField({ label, name, value, editMode, onChange, options }) {
                 </select>
             ) : (
                 <p className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white text-sm border border-transparent">
-                    {options.find(o => o.value === value)?.label || <span className="text-gray-400 italic">Sin información</span>}
+                    {options.find(o => String(o.value) === String(value))?.label || <span className="text-gray-400 italic">Sin información</span>}
                 </p>
             )}
         </div>
@@ -156,6 +165,7 @@ export default function Perfil() {
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({});
     const [saving, setSaving] = useState(false);
+    const [consultorios, setConsultorios] = useState([]);
 
     useEffect(() => {
         setTitle("Mi Perfil");
@@ -174,10 +184,12 @@ export default function Perfil() {
             root.classList.remove('dark');
             localStorage.setItem('theme', 'light');
             setIsDark(false);
+            window.dispatchEvent(new Event("storage")); // Trigger update in other components
         } else {
             root.classList.add('dark');
             localStorage.setItem('theme', 'dark');
             setIsDark(true);
+            window.dispatchEvent(new Event("storage"));
         }
     };
 
@@ -188,6 +200,15 @@ export default function Perfil() {
                 const data = await api.get("/me");
                 setUser(data);
                 setFormData(data);
+
+                // Si es médico, cargar consultorios
+                if (data.id_rol === 4) {
+                    const resp = await api.get("/consultorios");
+                    setConsultorios(resp.map(c => ({
+                        value: c.id_consultorio,
+                        label: `Consultorio ${c.numero_consultorio}`
+                    })));
+                }
             } catch (err) {
                 console.error("Error al cargar el perfil:", err);
             } finally {
@@ -209,7 +230,12 @@ export default function Perfil() {
             // Actualizar localStorage con nuevos datos básicos
             const stored = JSON.parse(localStorage.getItem("user") || "{}");
             localStorage.setItem("user", JSON.stringify({ ...stored, ...formData }));
-            setUser((prev) => ({ ...prev, ...formData }));
+            
+            // Recargar datos para asegurar que las relaciones se refresquen
+            const data = await api.get("/me");
+            setUser(data);
+            setFormData(data);
+
             setEditMode(false);
             Swal.fire({ icon: "success", title: "Perfil actualizado", timer: 1500, showConfirmButton: false });
         } catch (err) {
@@ -243,7 +269,7 @@ export default function Perfil() {
 
     const rolId = user.id_rol;
     const rolLabel = ROL_LABELS[rolId] || user.rol?.nombre_rol || "Usuario";
-    const rolColor = ROL_COLORS[rolId] || ROL_COLORS[6];
+    const rolColor = ROL_COLORS[rolId] || "bg-gray-100 text-gray-700";
     const fullName = [user.primer_nombre, user.segundo_nombre, user.primer_apellido, user.segundo_apellido]
         .filter(Boolean).join(" ");
 
@@ -272,7 +298,7 @@ export default function Perfil() {
                                 <span className="material-symbols-outlined text-base">badge</span>
                                 Doc: {user.documento}
                             </span>
-                            {user.nit && user.id_rol !== 6 && (
+                            {user.nit && user.id_rol === 2 && (
                                 <span className="flex items-center gap-1.5">
                                     <span className="material-symbols-outlined text-base">apartment</span>
                                     NIT Empresa: {user.nit}
@@ -323,8 +349,8 @@ export default function Perfil() {
                         <InfoField label="Teléfono" name="telefono" value={formData.telefono} editMode={editMode} onChange={handleChange} type="tel" />
                         <InfoField label="Dirección" name="direccion" value={formData.direccion} editMode={editMode} onChange={handleChange} />
 
-                        {/* Sexo, fecha nacimiento y grupo sanguíneo solo para roles distintos al administrador y farmacéutico */}
-                        {rolId !== 2 && rolId !== 6 && (
+                        {/* Sexo, fecha nacimiento y grupo sanguíneo para Pacientes (5) o Médicos (4) */}
+                        {(rolId === 4 || rolId === 5) && (
                             <>
                                 <SelectField
                                     label="Sexo"
@@ -333,26 +359,41 @@ export default function Perfil() {
                                     editMode={editMode}
                                     onChange={handleChange}
                                     options={[
-                                        { value: "M", label: "Masculino" },
-                                        { value: "F", label: "Femenino" },
-                                        { value: "O", label: "Otro" },
+                                        { value: "Masculino", label: "Masculino" },
+                                        { value: "Femenino", label: "Femenino" },
+                                        { value: "Otro", label: "Otro" },
                                     ]}
                                 />
-                                <InfoField label="Fecha de Nacimiento" name="fecha_nacimiento" value={formData.fecha_nacimiento} editMode={editMode} onChange={handleChange} type="date" />
+                                <InfoField label="Fecha de Nacimiento" name="fecha_nacimiento" value={formatToISODate(formData.fecha_nacimiento)} editMode={editMode} onChange={handleChange} type="date" />
                                 <InfoField label="Grupo Sanguíneo" name="grupo_sanguineo" value={formData.grupo_sanguineo} editMode={editMode} onChange={handleChange} />
                             </>
                         )}
 
                         {/* Campos específicos por rol */}
-                        {rolId === 3 && (
+                        {rolId === 4 && (
                             <>
-                                <InfoField label="Registro Profesional" name="registro_profesional" value={formData.registro_profesional} editMode={editMode} onChange={handleChange} />
+                                <InfoField 
+                                    label="Registro Profesional" 
+                                    name="registro_profesional" 
+                                    value={formData.registro_profesional} 
+                                    editMode={editMode} 
+                                    onChange={handleChange} 
+                                    readOnly={true} // Solo lectura como pidió el usuario
+                                />
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Especialidad</label>
                                     <p className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white text-sm border border-transparent">
-                                        {user.especialidad?.nombre_especialidad || <span className="text-gray-400 italic">Sin asignar</span>}
+                                        {user.especialidad?.especialidad || <span className="text-gray-400 italic">Sin asignar</span>}
                                     </p>
                                 </div>
+                                <SelectField
+                                    label="Consultorio Asignado"
+                                    name="id_consultorio"
+                                    value={formData.id_consultorio}
+                                    editMode={editMode}
+                                    onChange={handleChange}
+                                    options={consultorios}
+                                />
                             </>
                         )}
                     </div>
@@ -419,7 +460,7 @@ export default function Perfil() {
                             label="Rol de acceso"
                             value={rolLabel}
                         />
-                        {user.empresa && user.id_rol !== 6 && (
+                        {user.empresa && user.id_rol === 2 && (
                             <ActivityItem
                                 icon="apartment"
                                 label="Empresa"
@@ -456,10 +497,10 @@ export default function Perfil() {
                             >
                                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isDark ? 'translate-x-6' : 'translate-x-1'}`} />
                             </button>
-                        </div>
-                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
             {/* ── CERRAR SESIÓN ─────────────────────────────────── */}
             <div className="flex justify-center">

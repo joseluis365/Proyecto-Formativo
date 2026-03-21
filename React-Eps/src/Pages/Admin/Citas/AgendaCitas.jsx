@@ -7,6 +7,7 @@ import CalendarAgenda from "../../../components/Citas/CalendarAgenda";
 import PrincipalText from "../../../components/Users/PrincipalText";
 import Input from "../../../components/UI/Input";
 import Filter from "../../../components/UI/Filter";
+import ViewCitaModal from "../../../components/Modals/CitaModal/ViewCitaModal";
 
 const specialtyOptions = [
     { value: "Medicina General", label: "Medicina General" },
@@ -42,6 +43,10 @@ export default function AgendaCitas() {
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCita, setSelectedCita] = useState(null);
+
     // Filtros
     const [search, setSearch] = useState("");
     const [specialty, setSpecialty] = useState("");
@@ -52,7 +57,7 @@ export default function AgendaCitas() {
 
     useEffect(() => {
         setTitle("Agenda de Citas");
-        setSubtitle("Administra el calendario y agenda nuevas citas.");
+        setSubtitle("Administra el calendario de citas.");
 
         const checkClose = () => {
             if (window.innerWidth <= 1100) {
@@ -133,11 +138,6 @@ export default function AgendaCitas() {
                         text={`Citas del ${selectedDate}`}
                         number={totalCitas}
                     />
-
-                    <button className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
-                        Agendar Cita
-                        <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
-                    </button>
                 </div>
 
                 {/* Recuadro de Filtros Abajo del Título/Botón */}
@@ -204,15 +204,28 @@ export default function AgendaCitas() {
                                 patientDoc={cita.paciente.documento}
                                 doctorName={`Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}`}
                                 specialty={cita.tipoCita?.nombre || "General"}
-                                time={cita.hora_inicio ? cita.hora_inicio.slice(0, 5) : "Por definir"}
+                                time={cita.hora_inicio ? `${cita.fecha || ''} | ${cita.hora_inicio.slice(0, 5)}` : "Por definir"}
                                 status={cita.estado?.nombre_estado || "Pendiente"}
-                                onView={() => console.log('view', cita.id_cita)}
+                                onView={() => {
+                                    setSelectedCita(cita);
+                                    setIsModalOpen(true);
+                                }}
                                 onCancel={() => console.log('cancel', cita.id_cita)}
                             />
                         ))}
                     </div>
                 )}
             </div>
+
+            {/* Modal de Detalle */}
+            <ViewCitaModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedCita(null);
+                }}
+                cita={selectedCita}
+            />
 
             {/* Overlay Mobile */}
             {isCalendarOpen && (

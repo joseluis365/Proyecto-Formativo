@@ -23,6 +23,9 @@ export default {
       fontFamily: {
         display: ["Manrope", "sans-serif"],
       },
+      zIndex: {
+        100: "100",
+      },
     },
   },
   plugins: [],

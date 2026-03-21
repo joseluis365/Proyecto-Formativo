@@ -71,7 +71,22 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ $title }}</h1>
+        <table style="width: 100%; border: none; border-bottom: 2px solid #2563eb; margin-bottom: 10px;">
+            <tr>
+                <td style="width: 20%; border: none; text-align: left;">
+                    @if(!empty($logoBase64))
+                        <img src="data:image/png;base64,{{ $logoBase64 }}" style="width: 50px; height: 50px;">
+                    @endif
+                </td>
+                <td style="width: 60%; border: none; text-align: center;">
+                    <h1 style="margin: 0;">{{ $title }}</h1>
+                    <p style="margin: 5px 0 0 0; color: #2563eb; font-weight: bold; font-size: 14px;">Saluvanta EPS</p>
+                </td>
+                <td style="width: 20%; border: none; text-align: right; color: #666; font-size: 8px;">
+                    Documento Oficial
+                </td>
+            </tr>
+        </table>
     </div>
 
     <table class="meta">
@@ -117,7 +132,7 @@
     </table>
 
     <div class="footer">
-        Salud Integral EPS - Sistema de Gestión de Reportes Dinámicos - Página <script type="text/php">echo $PAGE_NUM . " de " . $PAGE_COUNT;</script>
+        Saluvanta EPS - Sistema de Gestión de Reportes (Sanitech) - Página <script type="text/php">echo $PAGE_NUM . " de " . $PAGE_COUNT;</script>
     </div>
 </body>
 </html>

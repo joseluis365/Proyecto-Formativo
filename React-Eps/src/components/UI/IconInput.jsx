@@ -75,6 +75,7 @@ export default function IconInput({
 
     const isPasswordType = type === 'password';
     const isSelectType = type === 'select';
+    const isCheckboxType = type === 'checkbox';
     const currentType = isPasswordType && showPassword ? 'text' : type;
 
     // Clases base dinámicas. Se usa "!" para forzar override sobre Tailwind Forms configurado globalmente.
@@ -92,11 +93,13 @@ export default function IconInput({
         readOnly,
         required,
         autoComplete,
-        className: `${baseClasses} ${statusClasses} ${isPasswordType ? 'pr-12' : 'pr-4'} ${isSelectType ? 'appearance-none pr-10' : ''}`,
+        className: isCheckboxType 
+            ? `form-checkbox h-5 w-5 text-primary rounded border-[#cfd7e7] dark:border-white/30 focus:ring-primary/20 transition-all cursor-pointer`
+            : `${baseClasses} ${statusClasses} ${isPasswordType ? 'pr-12' : 'pr-4'} ${isSelectType ? 'appearance-none pr-10' : ''}`,
         onInput: handleInput,
         onKeyDown: handleKeyDown,
-        ...(!register && value !== undefined ? { value } : {}),
-        ...(!register && onChangeHandler ? { onChange: (e) => onChangeHandler(name, e.target.value) } : {}),
+        ...(!register && value !== undefined ? { [isCheckboxType ? 'checked' : 'value']: value } : {}),
+        ...(!register && onChangeHandler ? { onChange: (e) => onChangeHandler(name, f[isCheckboxType ? 'checked' : 'value']) } : {}),
         ...props
     };
 
@@ -109,7 +112,7 @@ export default function IconInput({
             )}
 
             <div className="relative">
-                {icon && (
+                {icon && !isCheckboxType && (
                     <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
                         {icon}
                     </span>
@@ -124,6 +127,11 @@ export default function IconInput({
                             </option>
                         ))}
                     </select>
+                ) : isCheckboxType ? (
+                    <div className="flex items-center gap-2 h-12">
+                         <input {...commonProps} type="checkbox" />
+                         <span className="text-[#0d121b] dark:text-white text-sm font-medium">{placeholder}</span>
+                    </div>
                 ) : (
                     <input {...commonProps} type={currentType} />
                 )}

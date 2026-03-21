@@ -33,16 +33,13 @@ import SuperAdminForgotPassword from "./Pages/SuperAdmin/SuperAdminForgotPasswor
 import SuperAdminRecoveryCode from "./Pages/SuperAdmin/SuperAdminRecoveryCode"
 import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
 
-import UserLayout from "./layouts/UserLayout"
-import UserDashboard from "./Pages/User/Dashboard"
-import UserCitas from "./Pages/User/Citas"
-import UserMedicamentos from "./Pages/User/Medicamentos"
-import UserPerfil from "./Pages/User/Perfil"
+// (Layout de UserLayout ha sido eliminado, ya que los pacientes usan PatientLayout ahora)
 
 import { useEffect } from "react";
 import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
 import AuthRoute from "./components/Routes/AuthRoute"
 import AdminRoute from "./components/Routes/AdminRoute"
+import ExamenRoute from "./components/Routes/ExamenRoute"
 
 // Perfil compartido
 import Perfil from "./Pages/Perfil"
@@ -54,7 +51,27 @@ import FarmaciaDashboard from "./Pages/Farmacia/Dashboard"
 import FarmaciaInventario from "./Pages/Farmacia/Inventario"
 import FarmaciaMedicamentos from "./Pages/Farmacia/Medicamentos"
 import FarmaciaMovimientos from "./Pages/Farmacia/Movimientos"
+// FarmaciaReportes
 import FarmaciaReportes from "./Pages/Farmacia/Reportes"
+
+// Módulo Médico
+import DoctorLayout from "./layouts/DoctorLayout"
+import MedicoRoute from "./components/Routes/MedicoRoute"
+import AgendaMedicoPD from "./Pages/Medico/AgendaMedico"
+import ConsultaMedicaPD from "./Pages/Medico/ConsultaMedica"
+import MisPacientesPD from "./Pages/Medico/MisPacientes"
+import HistorialPacienteMedicoPD from "./Pages/Medico/HistorialPacienteMedico"
+import PerfilMedico from "./Pages/Medico/PerfilMedico"
+
+// Módulo Paciente
+import PatientLayout from "./layouts/PatientLayout"
+import PatientRoute from "./components/Routes/PatientRoute"
+import IndexPaciente from "./Pages/Paciente/IndexPaciente"
+import AgendarCita from "./Pages/Paciente/AgendarCita"
+import MisCitas from "./Pages/Paciente/MisCitas"
+import HistorialPaciente from "./Pages/Paciente/HistorialPaciente"
+import PerfilPaciente from "./Pages/Paciente/PerfilPaciente"
+import MisMedicamentos from "./Pages/Paciente/MisMedicamentos"
 
 // Configuración
 import ConfiguracionIndex from "./Pages/Admin/Configuracion/ConfiguracionIndex"
@@ -73,6 +90,15 @@ import Concentraciones from "./Pages/Admin/Configuracion/Concentraciones"
 import FormasFarmaceuticas from "./Pages/Admin/Configuracion/FormasFarmaceuticas"
 import Medicamentos from "./Pages/Admin/Configuracion/Medicamentos"
 import Presentaciones from "./Pages/Admin/Configuracion/Presentaciones"
+import EnfermedadesList from "./Pages/Admin/Configuracion/EnfermedadesList"
+
+// Módulo Médico — vistas adicionales
+import HistorialCitasAtendidas from "./Pages/Medico/HistorialCitasAtendidas"
+
+// Módulo de Exámenes (Rol 3)
+import AgendaExamenes from "./Pages/Examenes/AgendaExamenes"
+import AtenderExamen from "./Pages/Examenes/AtenderExamen"
+import GestorCategorias from "./Pages/Examenes/GestorCategorias"
 
 export default function App() {
   // Global Dark Mode Initialization
@@ -120,13 +146,7 @@ export default function App() {
       {/* ── RUTAS PROTEGIDAS — TODOS LOS USUARIOS (localStorage) ── */}
       <Route element={<AuthRoute />}>
 
-        {/* Layout del Paciente/User */}
-        <Route element={<UserLayout />}>
-          <Route path="/Usuarios-Dashboard" element={<UserDashboard />} />
-          <Route path="/Usuarios-Citas" element={<UserCitas />} />
-          <Route path="/Usuarios-Medicamentos" element={<UserMedicamentos />} />
-          <Route path="/Usuarios-Perfil" element={<UserPerfil />} />
-        </Route>
+
 
         {/* Layout del Farmacéutico */}
         <Route element={<FarmaciaRoute />}>
@@ -140,6 +160,33 @@ export default function App() {
           </Route>
         </Route>
 
+        {/* Layout del Médico */}
+        <Route element={<MedicoRoute />}>
+          <Route element={<DoctorLayout />}>
+            <Route path="/medico/agenda" element={<AgendaMedicoPD />} />
+            <Route path="/medico/consulta/:id" element={<ConsultaMedicaPD />} />
+            <Route path="/medico/pacientes" element={<MisPacientesPD />} />
+            <Route path="/medico/pacientes/:doc/historial" element={<HistorialPacienteMedicoPD />} />
+            <Route path="/medico/perfil" element={<Perfil />} />
+            <Route path="/medico/mis-citas" element={<HistorialCitasAtendidas />} />
+            <Route path="/medico/enfermedades" element={<EnfermedadesList isAdmin={false} />} />
+          </Route>
+        </Route>
+
+        {/* Layout del Paciente */}
+        <Route element={<PatientRoute />}>
+          <Route element={<PatientLayout />}>
+            <Route path="/paciente" element={<IndexPaciente />} />
+            <Route path="/paciente/agendar" element={<AgendarCita />} />
+            <Route path="/paciente/citas" element={<MisCitas />} />
+            <Route path="/paciente/historial" element={<HistorialPaciente />} />
+            <Route path="/paciente/perfil" element={<PerfilPaciente />} />
+            <Route path="/paciente/medicamentos" element={<MisMedicamentos />} />
+          </Route>
+
+            {/* Se ha eliminado UserLayout porque el rol 5 usa PatientLayout exclusivamente. */}
+        </Route>
+
         {/* Layout del Admin (sidebar) — incluyendo /Perfil compartido */}
         <Route element={<AdminRoute />}>
           <Route element={<DashboardLayout />}>
@@ -148,8 +195,8 @@ export default function App() {
             <Route path="/usuarios/personal" element={<Personal />} />
             <Route path="/usuarios/medicos" element={<Medicos />} />
             <Route path="/usuarios/pacientes" element={<Pacientes />} />
+            <Route path="/usuarios/pacientes/:doc/historial" element={<HistorialPacienteMedicoPD />} />
             <Route path="/usuarios/farmaceuticos" element={<Farmaceutico />} />
-            <Route path="/usuarios/pacientes/info-paciente" element={<InfoPaciente />} />
             <Route path="/usuarios/medicos/agenda-medico/:doc" element={<AgendaMedico />} />
             <Route path="/citas/del-dia" element={<CitasDelDia />} />
             <Route path="/citas/agenda" element={<AgendaCitas />} />
@@ -172,7 +219,17 @@ export default function App() {
               <Route path="formas-farmaceuticas" element={<FormasFarmaceuticas />} />
               <Route path="medicamentos" element={<Medicamentos />} />
               <Route path="presentaciones" element={<Presentaciones />} />
+              <Route path="enfermedades" element={<EnfermedadesList isAdmin={true} />} />
             </Route>
+          </Route>
+        </Route>
+
+        {/* Layout de Exámenes (Usando AdminLayout por el Sidebar compartido) */}
+        <Route element={<ExamenRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/examenes/agenda" element={<AgendaExamenes />} />
+            <Route path="/examenes/atender/:id" element={<AtenderExamen />} />
+            <Route path="/examenes/categorias" element={<GestorCategorias />} />
           </Route>
         </Route>
 

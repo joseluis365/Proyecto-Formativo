@@ -1,0 +1,26 @@
+
+   INFO  Running migrations.  
+
+  2026_02_18_183413_create_estado_table  18.04ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42P07]: Duplicate table: 7 ERROR:  la relación «estado» ya existe (Connection: pgsql, SQL: create table "estado" ("id_estado" bigserial not null primary key, "nombre_estado" varchar(50) null))
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:824
+    820▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    821▕                 );
+    822▕             }
+    823▕ 
+  ➜ 824▕             throw new QueryException(
+    825▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    826▕             );
+    827▕         }
+    828▕     }
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOException::("SQLSTATE[42P07]: Duplicate table: 7 ERROR:  la relación «estado» ya existe")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:570
+      PDOStatement::execute()
+

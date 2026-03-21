@@ -13,6 +13,9 @@ class TipoCitaResource extends JsonResource
             'id_tipo_cita' => $this->id_tipo_cita,
             'tipo' => $this->tipo,
             'id_estado' => $this->id_estado,
+            'id_especialidad' => $this->id_especialidad,
+            'especialidad' => $this->especialidad ? $this->especialidad->especialidad : null,
+            'acceso_directo' => (bool)$this->acceso_directo,
         ];
     }
 }

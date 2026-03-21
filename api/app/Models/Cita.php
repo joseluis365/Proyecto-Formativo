@@ -16,8 +16,14 @@ class Cita extends Model
         'hora_inicio',
         'hora_fin',
         'motivo',
-        'tipo_cita_id',
         'id_estado',
+        'recordatorio_enviado',
+        'tipo_evento',
+        'id_especialidad',
+    ];
+
+    protected $casts = [
+        'recordatorio_enviado' => 'boolean',
     ];
 
     public function paciente()
@@ -35,8 +41,13 @@ class Cita extends Model
         return $this->belongsTo(Estado::class, 'id_estado', 'id_estado');
     }
 
-    public function tipoCita()
+    public function historialDetalle()
     {
-        return $this->belongsTo(TipoCita::class, 'tipo_cita_id', 'id_tipo_cita');
+        return $this->hasOne(HistorialDetalle::class, 'id_cita', 'id_cita');
+    }
+
+    public function especialidad()
+    {
+        return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
     }
 }

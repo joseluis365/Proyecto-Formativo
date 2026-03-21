@@ -95,7 +95,42 @@ class DispensacionController extends Controller
                 'motivo'          => 'Dispensación de receta #' . $detalle->id_receta,
                 'id_dispensacion' => $dispensacion->id_dispensacion,
             ]);
+
+            // 5. Verificar estado de la receta y actualizar
+            $receta = $detalle->receta;
+            $totalDetalles = $receta->detalles()->count();
+            $dispensados = \App\Models\Dispensacion::whereIn('id_detalle_receta', $receta->detalles->pluck('id_detalle_receta'))->count();
+
+            if ($dispensados >= $totalDetalles) {
+                $receta->update(['id_estado' => 15]); // Entregada
+            } elseif ($dispensados > 0) {
+                $receta->update(['id_estado' => 14]); // Parcialmente entregada
+            }
         });
+
+        // 6. Notificar al paciente por correo
+        try {
+            $receta = $detalle->receta;
+            // Refrescar para obtener el estado actualizado
+            $receta->refresh();
+            
+            $cita = $receta->historialDetalle->cita ?? null;
+            if ($cita) {
+                $paciente = \App\Models\Usuario::find($cita->doc_paciente);
+                if ($paciente && $paciente->email) {
+                    $medicamentoNombre = $lote->presentacion->medicamento->nombre ?? 'Medicamento';
+                    if (isset($lote->presentacion->concentracion->concentracion)) {
+                        $medicamentoNombre .= ' ' . $lote->presentacion->concentracion->concentracion;
+                    }
+                    
+                    \Illuminate\Support\Facades\Mail::to($paciente->email)->send(
+                        new \App\Mail\RecetaEntregadaMail($paciente, $receta, $medicamentoNombre, $request->cantidad, $farmacia)
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error enviando correo de dispensación: " . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Dispensación registrada correctamente'], 201);
     }

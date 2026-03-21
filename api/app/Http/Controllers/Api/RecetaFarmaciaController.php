@@ -147,6 +147,7 @@ class RecetaFarmaciaController extends Controller
                 'frecuencia'        => $d->frecuencia,
                 'duracion'          => $d->duracion,
                 'observaciones'     => $d->observaciones,
+                'cantidad_recetada' => $d->cantidad_dispensar,
                 'dispensado'        => $yaDispensado,
             ];
         });

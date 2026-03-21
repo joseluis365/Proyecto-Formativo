@@ -11,6 +11,10 @@ return new class extends Migration
         Schema::create('tipo_cita', function (Blueprint $table) {
             $table->id('id_tipo_cita');
             $table->string('tipo', 50)->nullable();
+            $table->foreignId('id_especialidad')->nullable()->constrained('especialidad', 'id_especialidad');
+            $table->boolean('acceso_directo')->default(false);
+            $table->unsignedBigInteger('id_estado')->default(1);
+            $table->timestamps();
         });
     }
 

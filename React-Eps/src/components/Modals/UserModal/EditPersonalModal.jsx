@@ -11,6 +11,7 @@ import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
 import MotionSpinner from "../../UI/Spinner";
+import useTipoDocumentos from "@/hooks/useTipoDocumentos";
 
 export default function EditPersonalModal({
   onClose,
@@ -19,6 +20,7 @@ export default function EditPersonalModal({
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { tipoDocumentos, loading: loadingTipoDocumentos } = useTipoDocumentos();
 
   const {
     register,
@@ -32,18 +34,23 @@ export default function EditPersonalModal({
     reValidateMode: "onChange"
   });
 
+  // Carga de datos iniciales
   useEffect(() => {
     if (!userId) return;
 
     const fetchUser = async () => {
       try {
         setLoading(true);
+        // El interceptor ya devuelve res.data.data
         const userData = await api.get(`/usuario/${userId}`);
 
+        // Saneamiento de datos para el formulario
+        // Si el backend envía null en los campos opcionales, los pasamos a string vacío
         reset({
           ...userData,
           segundo_nombre: userData.segundo_nombre || "",
           segundo_apellido: userData.segundo_apellido || "",
+          contrasena: "" // No cargamos la contraseña por seguridad
         });
       } catch (error) {
         console.error("Error al cargar usuario:", error);
@@ -55,10 +62,17 @@ export default function EditPersonalModal({
 
     fetchUser();
   }, [userId, reset, onClose]);
-
   const onSubmit = async (data) => {
     try {
-      await api.put(`/usuario/${userId}`, data);
+      setSaving(true);
+
+      // Limpieza de datos: si la contraseña está vacía, no la enviamos para no sobreescribirla
+      const payload = { ...data };
+      if (!payload.contrasena) {
+        delete payload.contrasena;
+      }
+
+      await api.put(`/usuario/${userId}`, payload);
 
       Swal.fire({
         icon: 'success',
@@ -79,7 +93,7 @@ export default function EditPersonalModal({
     }
   };
 
-  const sections = getEditUserSections(3);
+  const sections = getEditUserSections(3, { id_tipo_documento: tipoDocumentos }); // Rol 3: Personal
 
   return (
     <BaseModal>
@@ -104,7 +118,7 @@ export default function EditPersonalModal({
                   text="Actualizar Cambios"
                   icon="published_with_changes"
                   type="submit"
-                  loading={saving}
+                  loading={saving || loadingTipoDocumentos}
                 />
               </div>
             </div>
@@ -114,4 +128,3 @@ export default function EditPersonalModal({
     </BaseModal>
   );
 }
-

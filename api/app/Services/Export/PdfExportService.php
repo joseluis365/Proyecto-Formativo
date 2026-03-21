@@ -18,7 +18,16 @@ class PdfExportService
         $date = now()->format('d/m/Y H:i');
         $total = $collection->count();
 
-        $pdf = Pdf::loadView('reports.dynamic', compact('collection', 'columns', 'title', 'date', 'total'));
+        $logoBase64 = '';
+        try {
+            if (file_exists(public_path('icono.png'))) {
+                $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Error encoding logo for PDF: " . $e->getMessage());
+        }
+
+        $pdf = Pdf::loadView('reports.dynamic', compact('collection', 'columns', 'title', 'date', 'total', 'logoBase64'));
 
         if ($landscape) {
             $pdf->setPaper('a4', 'landscape');

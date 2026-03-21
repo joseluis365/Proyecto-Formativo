@@ -3,6 +3,10 @@ import SidebarItem from "./SidebarItem";
 import SidebarSubItem from "./SidebarSubItem";
 
 export default function Sidebar({ isOpen, onClose }) {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isLabUser = user.id_rol === 3 && user.examenes === true;
+  const isSuperAdminOrAdmin = user.id_rol === 1 || user.id_rol === 2;
+
   return (
     <>
       {/* Overlay (solo mobile) */}
@@ -29,16 +33,19 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex flex-col h-full p-4">
           {/* Header */}
           <div className="flex items-center gap-3 p-3">
-            <div
-              className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style={{
-                backgroundImage:
-                  'url("https://lh3.googleusercontent.com/aida-public/AB6AXuB8BuQ6_MKI0ZY9bYYQaNC3Nhs-jNSjBCulSOKjA8DvKERRh_kzKdh6zxMs6nDID93VCAIR-xh5ieBovBudkSfZOC2x-JxjpuWWwSw5hEhH4tk8BWBRRXmelKD_P4ar3bLS0kBn302EEW9ecT4p_pVXCClHHyUZ0iyUFnI3bCCB5vv0we2rswgKg3XEosiY9DZJE9a4SR7upNACuI_CxKEGuKEZwD7o0seDCt2eurCVC_79nO9sNDIOLPj3yWzttSVgnsjZQerFkaez")',
-              }}
+            <img
+              src="/icono.png"
+              alt="Saluvanta EPS"
+              className="size-10 rounded-full object-cover block dark:hidden"
+            />
+            <img
+              src="/icono_dark.png"
+              alt="Saluvanta EPS"
+              className="size-10 rounded-full object-cover hidden dark:block"
             />
             <div>
-              <h1 className="text-gray-900 dark:text-white text-base font-medium">
-                Salud Integral
+              <h1 className="text-gray-900 dark:text-white text-base font-bold">
+                Saluvanta EPS
               </h1>
               <p className="text-neutral-gray-text dark:text-gray-400 text-sm">
                 Admin Dashboard
@@ -56,11 +63,19 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
                 <SidebarSubItem to="/usuarios/farmaceuticos" label="Farmaceuticos" />
               </SidebarDropdown>
-              <SidebarDropdown icon="calendar_month" label="Citas" basePath="/citas">
-                <SidebarSubItem to="/citas/del-dia" label="Citas del Día" />
-                <SidebarSubItem to="/citas/agenda" label="Agenda de Citas" />
-              </SidebarDropdown>
+                <SidebarItem to="/citas/agenda" icon="calendar_month" label="Agenda de Citas" />
               <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
+              
+              {/* Módulo Laboratorio / Exámenes Clínicos */}
+              {isLabUser && (
+                <SidebarDropdown icon="science" label="Laboratorio Clínico" basePath="/examenes">
+                  <SidebarSubItem to="/examenes/agenda" label="Agenda de Exámenes" />
+                  <SidebarSubItem to="/examenes/categorias" label="Tipos de Exámenes" />
+                </SidebarDropdown>
+              )}
+
+              {/* Gestión Interna (Solo Admins) */}
+              {isSuperAdminOrAdmin && (
               <SidebarDropdown icon="settings" label="Gestión Interna" basePath="/configuracion">
                 <SidebarSubItem to="/configuracion/prioridades" label="Prioridades" />
                 <SidebarSubItem to="/configuracion/tipos-cita" label="Tipos de Cita" />
@@ -76,7 +91,9 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/configuracion/formas-farmaceuticas" label="Formas Farmacéuticas" />
                 <SidebarSubItem to="/configuracion/medicamentos" label="Medicamentos" />
                 <SidebarSubItem to="/configuracion/presentaciones" label="Presentaciones" />
+                <SidebarSubItem to="/configuracion/enfermedades" label="Enfermedades" />
               </SidebarDropdown>
+              )}
             </div>
           </nav>
         </div>

@@ -8,7 +8,7 @@ export default function SecondSection({reasons}) {
                 <div className="flex flex-col gap-2 text-center mb-8">
                     <h2 className="text-primary font-bold text-[10px] uppercase tracking-[0.2em]">Nuestras Ventajas</h2>
                     <h3 className="text-slate-900 dark:text-white text-2xl md:text-3xl font-black leading-tight">
-                        ¿Por qué elegir Salud Total?
+                        ¿Por qué elegir Saluvanta EPS?
                     </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -25,6 +25,10 @@ class EspecialidadesController extends Controller
             $query->where('id_estado', 1);
         }
 
+        if ($request->has('acceso_directo')) {
+            $query->where('acceso_directo', $request->boolean('acceso_directo'));
+        }
+
         $especialidades = $query
             ->orderBy('especialidad', 'asc')
             ->paginate(10);
@@ -38,6 +42,10 @@ class EspecialidadesController extends Controller
 
         if (!$request->boolean('all')) {
             $query->where('id_estado', 1);
+        }
+
+        if ($request->has('acceso_directo')) {
+            $query->where('acceso_directo', $request->boolean('acceso_directo'));
         }
 
         return response()->json(

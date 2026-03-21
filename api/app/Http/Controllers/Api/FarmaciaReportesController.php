@@ -27,7 +27,31 @@ class FarmaciaReportesController extends Controller
      */
     public function export(Request $request, $entity)
     {
+        $user = $request->user();
         $payload = $this->getReportData($request, $entity, true);
+
+        // Guardar historial
+        try {
+            if ($user && isset($payload['data'][0])) {
+                \App\Models\HistorialReporte::create([
+                    'id_usuario' => $user->documento,
+                    'tabla_relacion' => $payload['report_title'] ?? "Reporte de Farmacia ({$entity})",
+                    'num_registros' => count($payload['data']),
+                    'ejemplo_registro' => (array)$payload['data'][0],
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Error saving report history: " . $e->getMessage());
+        }
+
+        $logoBase64 = '';
+        try {
+            if (file_exists(public_path('icono.png'))) {
+                $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Error encoding logo for PDF: " . $e->getMessage());
+        }
 
         // Render PDF
         $pdf = Pdf::loadView('reports.farmacia', [
@@ -36,13 +60,14 @@ class FarmaciaReportesController extends Controller
             'title'      => $payload['report_title'],
             'date'       => now()->format('d/m/Y H:i'),
             'total'      => count($payload['data']),
-            'generado_por' => $request->user()->primer_nombre . ' ' . $request->user()->primer_apellido,
-            'doc_generador' => $request->user()->documento,
+            'generado_por' => $user ? $user->primer_nombre . ' ' . $user->primer_apellido : 'Sistema',
+            'doc_generador' => $user ? $user->documento : 'N/A',
             'nombre_farmacia' => $payload['nombre_farmacia'],
-            'nit_farmacia' => $payload['nit_farmacia']
+            'nit_farmacia' => $payload['nit_farmacia'],
+            'logoBase64' => $logoBase64
         ]);
 
-        return $pdf->stream("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
+        return $pdf->download("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
     }
 
     private function getReportData(Request $request, $entity, $isExport)

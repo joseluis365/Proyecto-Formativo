@@ -86,4 +86,57 @@ class AdminDashboardController extends Controller
             'type'   => $type,
         ];
     }
+
+    /**
+     * Devuelve los datos para el gráfico de órdenes médicas por mes.
+     */
+    public function getOrdenesMes()
+    {
+        $now          = Carbon::now();
+        $startCurrent = $now->copy()->startOfMonth();
+        $endCurrent   = $now->copy()->endOfMonth();
+        $startPrev    = $now->copy()->subMonth()->startOfMonth();
+        $endPrev      = $now->copy()->subMonth()->endOfMonth();
+
+        // ─────────────────────────────────────────────
+        // 1. REMISIONES A ESPECIALISTAS (Remision)
+        // ─────────────────────────────────────────────
+        $remisionesMes = \App\Models\Remision::whereBetween('created_at', [$startCurrent, $endCurrent])->count();
+        $remisionesAnterior = \App\Models\Remision::whereBetween('created_at', [$startPrev, $endPrev])->count();
+
+        // ─────────────────────────────────────────────
+        // 2. EXÁMENES REMITIDOS (Examen)
+        // ─────────────────────────────────────────────
+        $examenesMes = \App\Models\Examen::whereBetween('created_at', [$startCurrent, $endCurrent])->count();
+        $examenesAnterior = \App\Models\Examen::whereBetween('created_at', [$startPrev, $endPrev])->count();
+
+        // ─────────────────────────────────────────────
+        // 3. RECETAS DE MEDICAMENTOS (Receta)
+        // ─────────────────────────────────────────────
+        $recetasMes = \App\Models\Receta::whereBetween('created_at', [$startCurrent, $endCurrent])->count();
+        $recetasAnterior = \App\Models\Receta::whereBetween('created_at', [$startPrev, $endPrev])->count();
+
+        // ─────────────────────────────────────────────
+        // TOTALES Y DIFERENCIA
+        // ─────────────────────────────────────────────
+        $totalMes = $remisionesMes + $examenesMes + $recetasMes;
+        $totalAnterior = $remisionesAnterior + $examenesAnterior + $recetasAnterior;
+
+        if ($totalAnterior === 0) {
+            $pct = $totalMes > 0 ? 100 : 0;
+        } else {
+            $pct = round((($totalMes - $totalAnterior) / $totalAnterior) * 100, 1);
+        }
+
+        return response()->json([
+            'total'      => $totalMes,
+            'diferencia' => $pct,
+            'mes'        => ucfirst($now->locale('es')->isoFormat('MMMM')),
+            'data'       => [
+                ['name' => 'Remisiones a especialistas', 'value' => $remisionesMes],
+                ['name' => 'Exámenes remitidos',         'value' => $examenesMes],
+                ['name' => 'Recetas de medicamentos',    'value' => $recetasMes],
+            ]
+        ]);
+    }
 }

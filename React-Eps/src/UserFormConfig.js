@@ -2,6 +2,7 @@
 // CAMPOS INDIVIDUALES
 // ======================
 const personalFields = [
+  { name: "id_tipo_documento", label: "Tipo de Documento", type: "select", icon: "badge" },
   { name: "documento", label: "Documento", type: "number", icon: "badge" },
   { name: "primer_nombre", label: "Primer Nombre", type: "text", icon: "person" },
   { name: "segundo_nombre", label: "Segundo Nombre", type: "text", icon: "person" },
@@ -22,8 +23,9 @@ const patientSpecificFields = [
 ];
 
 const doctorSpecificFields = [
-  { name: "registro_profesional", label: "Registro Profesional", type: "number", icon: "verified" },
+  { name: "registro_profesional", label: "Registro Profesional", type: "number", icon: "badge" },
   { name: "id_especialidad", label: "Especialidad", type: "select", icon: "medical_services" },
+  { name: "id_consultorio", label: "Consultorio", type: "select", icon: "meeting_room" },
 ];
 
 const pharmacistSpecificFields = [
@@ -38,7 +40,6 @@ export function getCreateUserSections(id_rol, dynamicOptions = {}) {
 
   // 1. Información Personal
   const personalSectionFields = [...personalFields];
-  if (id_rol === 5) personalSectionFields.push(...patientSpecificFields);
 
   sections.push({
     title: "Información Personal",
@@ -62,12 +63,25 @@ export function getCreateUserSections(id_rol, dynamicOptions = {}) {
       title: "Información Laboral",
       fields: pharmacistSpecificFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
     });
+  } else if (id_rol === 5) {
+    sections.push({
+      title: "Información Médica",
+      fields: patientSpecificFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
+    });
   }
 
   // 4. Credenciales
   sections.push({
     title: "Credenciales",
     fields: [
+      { 
+        name: "examenes", 
+        label: "Área de Exámenes", 
+        placeholder: "Trabaja en el área de exámenes",
+        type: "checkbox", 
+        readOnly: false,
+        hidden: id_rol !== 3
+      },
       { name: "contrasena", label: "Contraseña", type: "password", icon: "lock", readOnly: false },
       { name: "confirm_contrasena", label: "Confirmar Contraseña", type: "password", icon: "lock_reset", readOnly: false },
       { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], icon: "toggle_on", readOnly: false },
@@ -85,7 +99,6 @@ export function getEditUserSections(id_rol, dynamicOptions = {}) {
 
   // 1. Información Personal
   const personalSectionFields = [...personalFields];
-  if (id_rol === 5) personalSectionFields.push(...patientSpecificFields);
 
   sections.push({
     title: "Información Personal",
@@ -121,12 +134,29 @@ export function getEditUserSections(id_rol, dynamicOptions = {}) {
         options: dynamicOptions[f.name] || f.options
       }))
     });
+  } else if (id_rol === 5) {
+    sections.push({
+      title: "Información Médica",
+      fields: patientSpecificFields.map(f => ({
+        ...f,
+        readOnly: false,
+        options: dynamicOptions[f.name] || f.options
+      }))
+    });
   }
 
   // 4. Estado del usuario (sin contraseña en edición)
   sections.push({
     title: "Credenciales",
     fields: [
+      { 
+        name: "examenes", 
+        label: "Área de Exámenes", 
+        placeholder: "Trabaja en el área de exámenes",
+        type: "checkbox", 
+        readOnly: false,
+        hidden: id_rol !== 3
+      },
       { name: "id_estado", label: "Estado", type: "select", options: [{ value: 1, label: "Activo" }, { value: 2, label: "Inactivo" }], icon: "toggle_on", readOnly: false },
     ]
   });

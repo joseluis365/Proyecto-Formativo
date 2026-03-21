@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\LicenciaChartController;
 use App\Http\Controllers\Api\ReporteController;
 use App\Http\Controllers\Api\EspecialidadesController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\EnfermedadController;
 use App\Http\Controllers\Api\CitaController;
 use App\Http\Controllers\Api\PrioridadController;
 use App\Http\Controllers\Api\TipoCitaController;
@@ -35,6 +36,13 @@ use App\Http\Controllers\Api\RecetaFarmaciaController;
 use App\Http\Controllers\Api\DispensacionController;
 use App\Http\Controllers\Api\FarmaciaDashboardController;
 use App\Http\Controllers\Api\FarmaciaReportesController;
+// Módulo Médico / Paciente
+use App\Http\Controllers\Api\AtencionMedicaController;
+use App\Http\Controllers\Api\HistorialClinicoController;
+use App\Http\Controllers\Api\ExamenClinicoController;
+use App\Http\Controllers\Api\PdfMedicoController;
+use App\Http\Controllers\Api\ConsultorioController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +76,7 @@ Route::prefix('superadmin')->group(function () {
 */
 
 Route::get('/especialidades', [EspecialidadesController::class, 'select']);
+Route::get('/tipos-documento', [\App\Http\Controllers\Api\TipoDocumentoController::class, 'index']);
 Route::get('/departamentos', [LocationController::class, 'getDepartamentos']);
 Route::get('/ciudades/{departamentoId}', [LocationController::class, 'getCiudades']);
 Route::get('/licencias', [LicenciaController::class, 'index']);
@@ -132,7 +141,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     });
 
     Route::get('/admin/dashboard/stats', [AdminDashboardController::class, 'getStats']);
-
+    Route::get('/admin/dashboard/ordenes-mes', [AdminDashboardController::class, 'getOrdenesMes']);
 
     /*
     |--------------------------------------------------------------------------
@@ -161,6 +170,90 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::post('/cita', 'store');
         Route::put('/cita/{id}', 'update');
         Route::delete('/cita/{id}', 'destroy');
+        Route::put('/citas/{id}/reagendar', 'reagendar');
+        Route::patch('/cita/{id}/no-asistio', 'noAsistio');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PDF MÉDICO — Descargas DOMpdf
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/pdf/cita/{id}', [PdfMedicoController::class, 'citaPdf']);
+    Route::get('/pdf/remision/{id}', [PdfMedicoController::class, 'remisionPdf']);
+    Route::get('/pdf/receta/{id}', [PdfMedicoController::class, 'recetaPdf']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | ATENCIÓN MÉDICA
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/cita/{id}/atender', [AtencionMedicaController::class, 'atender']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | HISTORIAL CLÍNICO Y PACIENTES (MÉDICO / PACIENTE)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/medico/pacientes', [HistorialClinicoController::class, 'misPacientes']);
+    Route::get('/paciente/{doc}/historial', [HistorialClinicoController::class, 'show']);
+    Route::get('/paciente/{doc}/historial/completo', [HistorialClinicoController::class, 'completo']);
+    Route::get('/paciente/{doc}/historial/detalles', [HistorialClinicoController::class, 'detalles']);
+    Route::put('/paciente/{doc}/historial', [HistorialClinicoController::class, 'updateAntecedentes']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | ENFERMEDADES (CIE-11 ICD)
+    |--------------------------------------------------------------------------
+    | Se coloca fuera de superadmin para que los médicos puedan diagnosticar.
+    */
+    Route::get('/enfermedades/buscar', [EnfermedadController::class, 'buscar']);
+    Route::get('/enfermedades', [EnfermedadController::class, 'index']);
+    Route::post('/enfermedades', [EnfermedadController::class, 'store']);
+    Route::put('/enfermedades/{codigo_icd}', [EnfermedadController::class, 'update']);
+    Route::delete('/enfermedades/{codigo_icd}', [EnfermedadController::class, 'destroy']);
+
+    // Médicos disponibles (para agendar cita desde el portal paciente)
+    Route::get('/medicos-disponibles', [UsuarioController::class, 'medicosDisponibles']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXÁMENES CLÍNICOS (ROL 3 LABORATIO)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/examenes/agenda', [ExamenClinicoController::class, 'agenda']);
+    Route::get('/examenes/{id}', [ExamenClinicoController::class, 'show']);
+    Route::post('/examenes/{id}/atender', [ExamenClinicoController::class, 'atender']);
+    Route::get('/categorias-examen', [ExamenClinicoController::class, 'obtenerCategorias']);
+    Route::post('/categorias-examen', [ExamenClinicoController::class, 'guardarCategoria']);
+    Route::put('/categorias-examen/{id}', [ExamenClinicoController::class, 'actualizarCategoria']);
+    Route::delete('/categorias-examen/{id}', [ExamenClinicoController::class, 'eliminarCategoria']);
+
+    // Listar farmacias activas — para modal de prescripción en consulta médica
+    Route::get('/farmacias', [FarmaciaController::class, 'index']);
+
+    // Listar consultorios (para perfil de médico)
+    Route::get('/consultorios', [ConsultorioController::class, 'index']);
+    Route::get('/consultorios/disponibles', [ConsultorioController::class, 'disponibles']);
+
+    // Recetas del paciente (para panel de medicamentos activos)
+    Route::get('/paciente/{doc}/recetas', function ($doc) {
+        $recetas = \App\Models\Receta::with([
+            'estado',
+            'historialDetalle.cita',
+            'recetaDetalles.presentacion.medicamento',
+            'recetaDetalles.presentacion.concentracion',
+            'recetaDetalles.presentacion.formaFarmaceutica',
+            'recetaDetalles.farmacia',
+            'recetaDetalles.dispensacion.estado',
+        ])
+        ->whereHas('historialDetalle.cita', function ($q) use ($doc) {
+            $q->where('doc_paciente', $doc);
+        })
+        ->latest()
+        ->get();
+
+        return response()->json(['data' => $recetas]);
     });
 
     /*
@@ -347,6 +440,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
         // Inventario
         Route::get('/inventario', [InventarioFarmaciaController::class, 'index']);
+        Route::get('/inventario/por-presentacion/{id}', [InventarioFarmaciaController::class, 'porPresentacion']);
         Route::post('/inventario/entrada', [InventarioFarmaciaController::class, 'registrarEntrada']);
 
         // Movimientos
@@ -376,6 +470,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     |*/
 
     Route::prefix('reportes')->group(function () {
+        Route::get('historial', [ReportController::class, 'getHistorial']);
         Route::get('{entity}', [ReportController::class, 'index']);
         Route::get('{entity}/export', [ReportController::class, 'export']);
     });

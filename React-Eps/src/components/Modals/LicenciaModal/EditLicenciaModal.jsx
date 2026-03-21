@@ -103,7 +103,7 @@ export default function EditLicenciaModal({
             try {
                 setSaving(true);
                 // Petición DELETE a tu API de Laravel
-                await axios.delete(`/superadmin/licencia/${licenciaData.id}`);
+                await superAdminApi.delete(`/superadmin/licencia/${licenciaData.id}`);
 
                 await Swal.fire({
                     icon: 'success',

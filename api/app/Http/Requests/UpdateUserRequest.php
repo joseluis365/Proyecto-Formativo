@@ -17,6 +17,7 @@ class UpdateUserRequest extends FormRequest
         $id = $this->route('id') ?? $this->route('usuario');
 
         $rules = [
+            'id_tipo_documento' => ['required', 'exists:tipo_documento,id_tipo_documento'],
             'documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:7,10', 'numeric', 'unique:usuario,documento,' . $id . ',documento'],
             'primer_nombre' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
             'segundo_nombre' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
@@ -28,12 +29,14 @@ class UpdateUserRequest extends FormRequest
             'fecha_nacimiento' => ['required', 'date', 'before_or_equal:today'],
             'id_estado' => ['required', 'in:1,2'],
             'id_rol' => ['required', 'exists:rol,id_rol'],
+            'examenes' => ['nullable', 'boolean'],
         ];
 
         switch ($this->id_rol) {
             case 4:
-                $rules['registro_profesional'] = ['required', 'string', 'regex:/^\d{1,10}$/', 'unique:usuario,registro_profesional,' . $id . ',documento'];
-                $rules['id_especialidad'] = ['required', 'exists:especialidades,id_especialidad'];
+                $rules['registro_profesional'] = ['nullable', 'string', 'regex:/^\d{1,10}$/', 'unique:usuario,registro_profesional,' . $id . ',documento'];
+                $rules['id_especialidad'] = ['required', 'exists:especialidad,id_especialidad'];
+                $rules['id_consultorio'] = ['nullable', 'exists:consultorio,id_consultorio'];
                 break;
             case 5:
                 $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];
@@ -47,6 +50,8 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'id_tipo_documento.required' => 'El tipo de documento es obligatorio',
+            'id_tipo_documento.exists' => 'El tipo de documento seleccionado no es válido',
             'documento.required' => 'El documento es obligatorio',
             'documento.unique' => 'Este documento ya está registrado',
             'documento.digits_between' => 'El documento debe tener entre 7 y 10 digitos',

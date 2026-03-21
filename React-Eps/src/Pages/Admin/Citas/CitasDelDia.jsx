@@ -4,6 +4,7 @@ import { useLayout } from "../../../LayoutContext";
 import { useHelp } from "../../../hooks/useHelp";
 import AppointmentCard from "../../../components/Citas/AppointmentCard";
 import PrincipalText from "../../../components/Users/PrincipalText";
+import ViewCitaModal from "../../../components/Modals/CitaModal/ViewCitaModal";
 
 export default function CitasDelDia() {
     const { setTitle, setSubtitle } = useLayout();
@@ -25,6 +26,10 @@ export default function CitasDelDia() {
 
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCita, setSelectedCita] = useState(null);
 
     useEffect(() => {
         setTitle("Citas del Día");
@@ -85,12 +90,24 @@ export default function CitasDelDia() {
                             specialty={cita.tipoCita?.nombre || "General"}
                             time={cita.hora_inicio ? cita.hora_inicio.slice(0, 5) : "Por definir"}
                             status={cita.estado?.nombre_estado || "Pendiente"}
-                            onView={() => console.log('view', cita.id_cita)}
+                            onView={() => {
+                                setSelectedCita(cita);
+                                setIsModalOpen(true);
+                            }}
                             onCancel={() => console.log('cancel', cita.id_cita)}
                         />
                     ))}
                 </div>
             )}
+
+            <ViewCitaModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedCita(null);
+                }}
+                cita={selectedCita}
+            />
         </div>
     );
 }

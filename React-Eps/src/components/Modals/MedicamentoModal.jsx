@@ -26,8 +26,8 @@ export default function MedicamentoModal({ isOpen, onClose, onSuccess, editData 
 
     const fetchCategorias = async () => {
         try {
-            const { data } = await api.get("/farmacia/categorias");
-            setCategorias(data.data || []);
+            const res = await api.get("/farmacia/categorias");
+            setCategorias(res.data || []);
         } catch (error) {
             console.error("Error cargando categorías:", error);
             Swal.fire("Error", "No se pudieron cargar las categorías", "error");

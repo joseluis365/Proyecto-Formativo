@@ -39,51 +39,37 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
     useEffect(() => {
         if (isOpen) {
             fetchDepartamentos();
-        } else {
-            // Al cerrar, limpiar el form
-            reset({
-                codigo_postal: "",
-                nombre: "",
-                id_departamento: "",
-                id_estado: 1
-            });
         }
     }, [isOpen]);
 
-    // Patrón de edición: reset() cuando los departamentos ya estén cargados
-    // para que el <select> tenga sus <option>s antes de asignar el valor.
+    // Patrón de edición: reset() al cargar datos o al abrir el modal
     useEffect(() => {
-        if (!isOpen) return;
-
-        // Esperar a que los departamentos terminen de cargar para que el
-        // valor del select coincida con una opción válida.
-        if (loadingDeps) return;
-
-        if (editData) {
-            reset({
-                codigo_postal: editData.codigo_postal || "",
-                nombre: editData.nombre || "",
-                id_departamento: editData.id_departamento ? String(editData.id_departamento) : "",
-                id_estado: editData.id_estado || 1
-            });
-        } else {
-            reset({
-                codigo_postal: "",
-                nombre: "",
-                id_departamento: "",
-                id_estado: 1
-            });
+        if (isOpen) {
+            if (editData) {
+                reset({
+                    codigo_postal: editData.codigo_postal || "",
+                    nombre: editData.nombre || "",
+                    id_departamento: editData.id_departamento || "",
+                    id_estado: editData.id_estado || 1
+                });
+            } else {
+                reset({
+                    codigo_postal: "",
+                    nombre: "",
+                    id_departamento: "",
+                    id_estado: 1
+                });
+            }
         }
-    }, [editData, isOpen, loadingDeps, reset]);
+    }, [editData, isOpen, reset]);
 
     const fetchDepartamentos = async () => {
         setLoadingDeps(true);
         try {
-            const data = await api.get("/departamentos");
-            setDepartamentos(Array.isArray(data) ? data : (data.data || []));
+            const response = await api.get("/departamentos");
+            setDepartamentos(response.data);
         } catch (error) {
             console.error("Error al cargar departamentos:", error);
-            setDepartamentos([]);
         } finally {
             setLoadingDeps(false);
         }
@@ -153,7 +139,7 @@ export default function CiudadModal({ isOpen, onClose, onSuccess, editData = nul
                             } bg-white dark:bg-gray-800/50 h-12 pl-12 pr-10 appearance-none text-base font-normal transition-all`}
                     >
                         <option value="">Seleccione un departamento</option>
-                        {(departamentos || []).map(dep => (
+                        {departamentos.map(dep => (
                             <option key={dep.codigo_DANE} value={dep.codigo_DANE}>
                                 {dep.nombre}
                             </option>

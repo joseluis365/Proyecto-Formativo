@@ -15,7 +15,8 @@ export default function useCategoriasExamen() {
                 const data = Array.isArray(response) ? response : response?.data || [];
                 setCategorias(data.map(item => ({
                     value: item.id_categoria_examen,
-                    label: item.categoria
+                    label: item.categoria,
+                    requiere_ayuno: item.requiere_ayuno
                 })));
             } catch (error) {
                 console.error("Error fetching categorias examen:", error);

@@ -8,8 +8,9 @@ export default function IndexFooter() {
             <div className="max-w-[1280px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-8">
                 <div className="flex flex-col gap-4 col-span-2 md:col-span-2 pr-0 md:pr-10">
                     <div className="flex items-center gap-2 text-primary">
-                        <span className="material-symbols-outlined text-2xl font-bold">health_and_safety</span>
-                        <span className="text-lg font-black text-slate-900 dark:text-white">Salud Total</span>
+                        <img src="/icono.png" alt="Saluvanta EPS" className="size-7 rounded-lg object-cover block dark:hidden" />
+                        <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-7 rounded-lg object-cover hidden dark:block" />
+                        <span className="text-lg font-black text-slate-900 dark:text-white">Saluvanta EPS</span>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-[320px]">
                         Líderes en prestación de servicios de salud con calidad humana y tecnología avanzada. Tu bienestar es nuestra misión.
@@ -47,7 +48,7 @@ export default function IndexFooter() {
             </div>
                 
             <div className="max-w-[1280px] mx-auto mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400 font-medium">
-                <p>© 2024 Salud Total EPS. Todos los derechos reservados.</p>
+                <p>© {new Date().getFullYear()} Saluvanta EPS. Todos los derechos reservados. • <span className="text-slate-500">Sanitech</span></p>
                 <div className="flex gap-5">
                     <NavLink className="hover:text-primary" to="/SobreNosotros">Términos y Condiciones</NavLink>
                     <NavLink className="hover:text-primary" to="/SobreNosotros">Privacidad</NavLink>

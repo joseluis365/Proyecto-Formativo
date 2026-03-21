@@ -11,7 +11,7 @@ import PresentacionModal from "@/components/Modals/PresentacionModal";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
 import useTableData from "@/hooks/useTableData";
-
+ 
 export default function Presentaciones() {
     const { setTitle, setSubtitle } = useLayout();
     const {
@@ -55,26 +55,30 @@ export default function Presentaciones() {
         ]
     });
 
-    const handleDelete = async (item) => {
+    const handleToggleStatus = async (item) => {
+    if (item.id_estado === 1) {
         const result = await Swal.fire({
-            title: "¿Eliminar presentación?",
-            text: "Esta acción borrará la presentación, verifique que no cuente con existencias en farmacia.",
+            title: "¿Desactivar presentación?",
+            text: "Esta acción marcará la presentación como inactiva.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Sí, eliminar",
+            confirmButtonText: "Sí, desactivar",
             cancelButtonText: "Cancelar"
         });
 
         if (result.isConfirmed) {
             try {
                 await api.delete(`/configuracion/presentaciones/${item.id_presentacion}`);
-                Swal.fire("Eliminado", "La presentación ha sido borrada.", "success");
+                Swal.fire("Desactivado", "La presentación ha sido desactivada.", "success");
                 fetchData();
             } catch (error) {
-                Swal.fire("Error", "No se pudo eliminar, posiblemente por restricciones de inventario.", "error");
+                Swal.fire("Error", "No se pudo desactivar la presentación.", "error");
             }
         }
-    };
+    } else {
+        Swal.fire("Info", "La reactivación debe ser gestionada por soporte técnico.", "info");
+    }
+};
 
     const columns = [
         {
@@ -111,11 +115,13 @@ export default function Presentaciones() {
                         <span className="material-symbols-outlined text-base">edit</span>
                     </button>
                     <button
-                        onClick={() => handleDelete(item)}
+                        onClick={() => handleToggleStatus(item)}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                        title="Eliminar"
+                        title={item.id_estado === 1 ? "Desactivar" : "Activar"}
                     >
-                        <span className="material-symbols-outlined text-base">delete</span>
+                        <span className="material-symbols-outlined text-base">
+                            {item.id_estado === 1 ? "visibility_off" : "visibility"}
+                        </span>
                     </button>
                 </div>
             )

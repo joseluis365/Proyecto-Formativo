@@ -62,9 +62,16 @@ export default function ConcentracionModal({ isOpen, onClose, onSuccess, editDat
                 className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden"
             >
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary dark:bg-primary/50 dark:text-blue-400">
+                        <span className="material-symbols-outlined text-3xl">
+                            pill
+                        </span>
+                    </div>
                     <h2 className="text-xl font-bold dark:text-white">
                         {editData ? "Editar Concentración" : "Nueva Concentración"}
                     </h2>
+                    </div>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors"

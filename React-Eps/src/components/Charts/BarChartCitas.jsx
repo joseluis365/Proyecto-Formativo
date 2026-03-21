@@ -10,7 +10,7 @@ export default function BarChartCitas({ data }) {
   const total = data.reduce((sum, d) => sum + (d.total ?? 0), 0);
 
   return (
-    <div className="flex h-[400px] min-h-[400px] flex-col gap-4 rounded-xl border border-neutral-gray-border/20 dark:border-gray-800 p-6 bg-white dark:bg-gray-800 shadow-sm ">
+    <div className="flex h-[360px] flex-col gap-4 rounded-xl border border-neutral-gray-border/20 dark:border-gray-800 p-6 bg-white dark:bg-gray-800 shadow-sm ">
       <p className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">Citas
         por Día (Semana actual)</p>
       <div className="flex items-baseline gap-2">

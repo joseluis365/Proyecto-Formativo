@@ -11,6 +11,9 @@ import { handleApiErrors } from "@/utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "@/components/UI/BlueButton";
 import useEspecialidades from "@/hooks/useEspecialidades";
+import useTipoDocumentos from "@/hooks/useTipoDocumentos";
+import useConsultorios from "@/hooks/useConsultorios";
+import { ROLES } from "@/constants/roles";
 
 export default function CreateMedicoModal({
   onClose,
@@ -18,6 +21,8 @@ export default function CreateMedicoModal({
 }) {
   const [saving, setSaving] = useState(false);
   const { specialties, loading: loadingSpecialties } = useEspecialidades();
+  const { tipoDocumentos, loading: loadingTipoDocumentos } = useTipoDocumentos();
+  const { consultorios, loading: loadingConsultorios } = useConsultorios();
 
   const {
     register,
@@ -30,7 +35,7 @@ export default function CreateMedicoModal({
     reValidateMode: "onChange",
     defaultValues: {
       id_estado: 1,
-      id_rol: 4,
+      id_rol: ROLES.MEDICO,
       segundo_nombre: "",
       segundo_apellido: ""
     }
@@ -40,8 +45,11 @@ export default function CreateMedicoModal({
     try {
       setSaving(true);
 
-      const { confirm_contrasena, ...payload } = data;
-      payload.id_rol = 4;
+      // Inyección de rol Médico (4)
+      const payload = {
+        ...data,
+        id_rol: ROLES.MEDICO
+      };
 
       await api.post(`/usuario`, payload);
 
@@ -64,7 +72,11 @@ export default function CreateMedicoModal({
     }
   };
 
-  const sections = getCreateUserSections(4, { id_especialidad: specialties });
+  const sections = getCreateUserSections(ROLES.MEDICO, { 
+    id_especialidad: specialties, 
+    id_tipo_documento: tipoDocumentos,
+    id_consultorio: consultorios
+  });
 
   return (
     <BaseModal>
@@ -83,7 +95,7 @@ export default function CreateMedicoModal({
                 text="Guardar"
                 icon="save"
                 type="submit"
-                loading={saving || loadingSpecialties}
+                loading={saving || loadingSpecialties || loadingTipoDocumentos}
               />
             </div>
           </div>
@@ -92,4 +104,3 @@ export default function CreateMedicoModal({
     </BaseModal>
   );
 }
-

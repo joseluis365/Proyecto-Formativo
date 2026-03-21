@@ -176,4 +176,30 @@ class InventarioFarmaciaController extends Controller
 
         return response()->json(['message' => 'Entrada registrada correctamente'], 201);
     }
+
+    /**
+     * Devuelve las farmacias que tienen stock mayor a 0 para una presentación dada.
+     * Usado en el formulario de receta médica para que el doctor
+     * sepa dónde está disponible cada medicamento.
+     */
+    public function porPresentacion(int $idPresentacion)
+    {
+        $inventarios = InventarioFarmacia::with('farmacia')
+            ->where('id_presentacion', $idPresentacion)
+            ->where('stock_actual', '>', 0)
+            ->orderBy('stock_actual', 'desc')
+            ->get();
+
+        $farmacias = $inventarios->map(fn($inv) => [
+            'nit'         => $inv->nit_farmacia,
+            'nombre'      => $inv->farmacia?->nombre ?? $inv->nit_farmacia,
+            'direccion'   => $inv->farmacia?->direccion ?? '',
+            'stock'       => $inv->stock_actual,
+        ])->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $farmacias
+        ]);
+    }
 }

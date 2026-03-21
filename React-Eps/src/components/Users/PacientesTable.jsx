@@ -93,7 +93,9 @@ export default function PacientesTable({ users, fetchUsers }) {
       render: (u) => (
         <div className="flex items-center justify-center gap-2">
           <Link
-            to={`/usuarios/pacientes/info-paciente/${u.documento}`}
+            to={window.location.pathname.includes('/medico') 
+                ? `/medico/pacientes/${u.documento}/historial` 
+                : `/usuarios/pacientes/${u.documento}/historial`}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-primary font-semibold"
           >
             <span className="material-symbols-outlined text-base">visibility</span>

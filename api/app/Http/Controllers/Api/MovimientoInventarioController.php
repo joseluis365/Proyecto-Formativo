@@ -87,6 +87,7 @@ class MovimientoInventarioController extends Controller
                     'motivo'          => $m->motivo,
                     'responsable'     => $resp ? ($resp->primer_nombre . ' ' . $resp->primer_apellido) : 'N/A',
                     'id_dispensacion' => $m->id_dispensacion,
+                    'id_receta'       => $m->dispensacion?->detalleReceta?->id_receta ?? 'N/A',
                     'lote_id'         => $lote?->id_lote,
                 ];
             }),

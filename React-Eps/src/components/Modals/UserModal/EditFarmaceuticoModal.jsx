@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
 import MotionSpinner from "../../UI/Spinner";
 import useFarmaciasSelect from "../../../hooks/useFarmaciasSelect";
+import useTipoDocumentos from "@/hooks/useTipoDocumentos";
 
 export default function EditFarmaceuticoModal({
     onClose,
@@ -21,6 +22,7 @@ export default function EditFarmaceuticoModal({
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const { farmacias, loading: loadingFarmacias } = useFarmaciasSelect();
+    const { tipoDocumentos, loading: loadingTipoDocumentos } = useTipoDocumentos();
 
     const {
         register,
@@ -81,7 +83,7 @@ export default function EditFarmaceuticoModal({
         }
     };
 
-    const sections = getEditUserSections(6, { id_farmacia: farmacias });
+    const sections = getEditUserSections(6, { id_farmacia: farmacias, id_tipo_documento: tipoDocumentos });
 
     return (
         <BaseModal>
@@ -106,7 +108,7 @@ export default function EditFarmaceuticoModal({
                                     text="Actualizar Cambios"
                                     icon="published_with_changes"
                                     type="submit"
-                                    loading={saving || loadingFarmacias}
+                                    loading={saving || loadingFarmacias || loadingTipoDocumentos}
                                 />
                             </div>
                         </div>

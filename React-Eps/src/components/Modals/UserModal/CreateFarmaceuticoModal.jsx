@@ -11,6 +11,7 @@ import { handleApiErrors } from "../../../utils/formHandlers";
 import Swal from 'sweetalert2';
 import BlueButton from "../../UI/BlueButton";
 import useFarmaciasSelect from "../../../hooks/useFarmaciasSelect";
+import useTipoDocumentos from "@/hooks/useTipoDocumentos";
 
 export default function CreateFarmaceuticoModal({
     onClose,
@@ -18,6 +19,7 @@ export default function CreateFarmaceuticoModal({
 }) {
     const [saving, setSaving] = useState(false);
     const { farmacias, loading: loadingFarmacias } = useFarmaciasSelect();
+    const { tipoDocumentos, loading: loadingTipoDocumentos } = useTipoDocumentos();
 
     const {
         register,
@@ -67,7 +69,7 @@ export default function CreateFarmaceuticoModal({
         }
     };
 
-    const sections = getCreateUserSections(6, { id_farmacia: farmacias });
+    const sections = getCreateUserSections(6, { id_farmacia: farmacias, id_tipo_documento: tipoDocumentos });
 
     return (
         <BaseModal>
@@ -86,7 +88,7 @@ export default function CreateFarmaceuticoModal({
                                 text="Guardar"
                                 icon="save"
                                 type="submit"
-                                loading={saving || loadingFarmacias}
+                                loading={saving || loadingFarmacias || loadingTipoDocumentos}
                             />
                         </div>
                     </div>

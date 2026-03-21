@@ -8,6 +8,19 @@ export default function IndexHeader() {
         return localStorage.getItem("theme") === "dark";
     });
 
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                console.error("Error parsing user from localStorage", e);
+            }
+        }
+    }, []);
+
     const toggleDarkMode = () => {
         const isDark = document.documentElement.classList.toggle("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
@@ -32,9 +45,10 @@ export default function IndexHeader() {
 
                 {/* LOGO */}
                 <div className="flex items-center gap-3 text-primary">
-                    <div className="size-7">{/* SVG */}</div>
+                    <img src="/icono.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover block dark:hidden" />
+                    <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover hidden dark:block" />
                     <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                        Salud Total
+                        Saluvanta EPS
                     </h2>
                 </div>
 
@@ -48,11 +62,20 @@ export default function IndexHeader() {
                     </nav>
 
                     <div className="flex items-center gap-4">
-                        <Link to="/login">
-                            <button className="cursor-pointer bg-primary text-white rounded-lg px-5 py-2 text-sm font-bold">
-                                Iniciar Sesión
-                            </button>
-                        </Link>
+                        {user ? (
+                            <Link to={user.id_rol === 1 ? "/SuperAdmin-Dashboard" : user.id_rol === 6 ? "/farmacia/dashboard" : "/dashboard"}>
+                                <button className="cursor-pointer bg-primary text-white rounded-lg px-5 py-2 text-sm font-bold flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-sm">dashboard</span>
+                                    Dashboard
+                                </button>
+                            </Link>
+                        ) : (
+                            <Link to="/login">
+                                <button className="cursor-pointer bg-primary text-white rounded-lg px-5 py-2 text-sm font-bold">
+                                    Iniciar Sesión
+                                </button>
+                            </Link>
+                        )}
 
                         <button
                             onClick={toggleDarkMode}
@@ -119,11 +142,20 @@ export default function IndexHeader() {
                     </div>
 
                     {/* CTA */}
-                    <Link to="/login" onClick={closeMenu}>
-                        <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
-                            Iniciar Sesión
-                        </button>
-                    </Link>
+                    {user ? (
+                        <Link to={user.id_rol === 1 ? "/SuperAdmin-Dashboard" : user.id_rol === 6 ? "/farmacia/dashboard" : "/dashboard"} onClick={closeMenu}>
+                            <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold flex items-center justify-center gap-2">
+                                <span className="material-symbols-outlined">dashboard</span>
+                                Dashboard
+                            </button>
+                        </Link>
+                    ) : (
+                        <Link to="/login" onClick={closeMenu}>
+                            <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold">
+                                Iniciar Sesión
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </aside>
         </>

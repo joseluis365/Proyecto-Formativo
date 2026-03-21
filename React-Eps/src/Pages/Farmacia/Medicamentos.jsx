@@ -172,7 +172,8 @@ export default function Medicamentos() {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
+        <>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon="medication" text="Medicamentos Registrados" number={total} />
                 <button
@@ -264,9 +265,11 @@ export default function Medicamentos() {
                 </div>
             )}
 
+        </div>
+
             {/* Modal nuevo medicamento */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-primary">medication</span>
@@ -325,6 +328,6 @@ export default function Medicamentos() {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }

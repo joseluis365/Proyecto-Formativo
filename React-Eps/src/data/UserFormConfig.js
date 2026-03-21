@@ -5,6 +5,7 @@
 
 // Configuración Base para Edición
 export const editUserFormConfig = [
+    { name: "id_tipo_documento", label: "Tipo de Documento", type: "select", readOnly: false, icon: "badge" },
     { name: "documento", label: "Documento", type: "number", readOnly: true, icon: "badge" },
     { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false, icon: "person" },
     { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false, icon: "person" },
@@ -32,6 +33,7 @@ export const roleSpecificEditConfig = {
 
 // Configuración Base para Creación
 export const createUserFormConfig = [
+    { name: "id_tipo_documento", label: "Tipo de Documento", type: "select", readOnly: false, icon: "badge" },
     { name: "documento", label: "Documento", type: "number", readOnly: false, icon: "badge" },
     { name: "primer_nombre", label: "Primer Nombre", type: "text", readOnly: false, icon: "person" },
     { name: "segundo_nombre", label: "Segundo Nombre", type: "text", readOnly: false, icon: "person" },

@@ -22,7 +22,7 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $user = Usuario::where('email', $request->email)->first();
+        $user = Usuario::with(['especialidad', 'consultorio'])->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->contrasena)) {
             return response()->json([
@@ -86,7 +86,7 @@ class AuthController extends Controller
      */
     public function me(Request $request)
     {
-        $user = $request->user()->load(['rol', 'empresa', 'especialidad', 'farmacia']);
+        $user = $request->user()->load(['rol', 'empresa', 'especialidad', 'farmacia', 'consultorio']);
 
         return response()->json([
             'success' => true,

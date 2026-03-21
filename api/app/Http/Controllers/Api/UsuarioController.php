@@ -8,6 +8,7 @@ use App\Models\Usuario;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Events\SystemActivityEvent;
+use App\Constants\RolConstants;
 
 class UsuarioController extends Controller
 {
@@ -58,6 +59,47 @@ class UsuarioController extends Controller
     ]);
 }
 
+/**
+ * Obtiene médicos activos que no tengan cita en la fecha y hora proporcionada.
+ */
+public function medicosDisponibles(Request $request)
+{
+    $request->validate([
+        'fecha' => 'required|date',
+        'hora'  => 'required|date_format:H:i',
+    ]);
+
+    $fecha = $request->fecha;
+    $hora  = $request->hora;
+
+    $medicos = Usuario::with('especialidad')
+        ->where('id_rol', RolConstants::MEDICO)
+        ->where('id_estado', 1); // Activo
+
+    // Filtrar por especialidad si se requiere (para agendamiento por tipo de cita)
+    if ($request->filled('id_especialidad')) {
+        $medicos->where('id_especialidad', $request->id_especialidad);
+    }
+
+    $medicos = $medicos->whereDoesntHave('medicoCitas', function ($query) use ($fecha, $hora) {
+        $query->where('fecha', $fecha)
+              ->where('hora_inicio', $hora)
+              ->whereHas('estado', fn($q) => $q->where('nombre_estado', '!=', 'Cancelada'));
+    })
+    ->get();
+
+    return response()->json($medicos->map(function ($medico) {
+        $data = $medico instanceof \Illuminate\Database\Eloquent\Model 
+            ? $medico->toArray() 
+            : (array) $medico;
+
+        $data['value'] = $medico->documento;
+        $labelEspecialidad = $medico->especialidad->especialidad ?? 'Sin especialidad';
+        $data['label'] = "Dr. {$medico->primer_nombre} {$medico->primer_apellido} - {$labelEspecialidad}";
+        
+        return $data;
+    }));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -65,7 +107,7 @@ class UsuarioController extends Controller
     public function show($id)
     {
         return response()->json(
-            Usuario::findOrFail($id)
+            Usuario::with(['especialidad', 'consultorio'])->findOrFail($id)
         );
     }
 
