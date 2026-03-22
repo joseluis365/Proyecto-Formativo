@@ -8,6 +8,8 @@ import CalendarAgenda from "../../components/Citas/CalendarAgenda";
 import PrincipalText from "../../components/Users/PrincipalText";
 import BlueButton from "../../components/UI/BlueButton";
 import dayjs from "dayjs";
+import api from "../../Api/axios";
+import SearchableSelect from "../../components/UI/SearchableSelect";
 import { motion, AnimatePresence } from "framer-motion";
 
 const STEPS = [
@@ -28,6 +30,8 @@ export default function AgendarCita() {
     const [selectedTime, setSelectedTime] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedEspecialidad, setSelectedEspecialidad] = useState("");
+    const [selectedMotivoId, setSelectedMotivoId] = useState("");
+    const [motivosList, setMotivosList] = useState([]);
     const [motivo, setMotivo] = useState("");
     const [errors, setErrors] = useState({});
 
@@ -82,6 +86,13 @@ export default function AgendarCita() {
         return () => setHelpContent(null);
     }, [setTitle, setSubtitle, setHelpContent]);
 
+    // Obtener motivos de consulta
+    useEffect(() => {
+        api.get('/motivos-consulta')
+           .then(res => setMotivosList(res.data || res))
+           .catch(err => console.error("Error cargando motivos", err));
+    }, []);
+
     // Generación de horarios disponibles
     const timeOptions = useMemo(() => {
         if (!selectedDate) return [];
@@ -107,6 +118,7 @@ export default function AgendarCita() {
             doc_paciente: String(user.documento || ""),
             doc_medico: String(selectedDoctor || ""),
             id_especialidad: Number(selectedEspecialidad),
+            id_motivo: Number(selectedMotivoId),
             fecha: selectedDate,
             hora_inicio: selectedTime,
             motivo: motivo
@@ -122,7 +134,7 @@ export default function AgendarCita() {
         const newErrors = {};
         if (currentStep === 1) {
             if (!selectedEspecialidad) newErrors.especialidad = "Selecciona una especialidad";
-            if (!motivo.trim()) newErrors.motivo = "Ingresa el motivo de consulta";
+            if (!selectedMotivoId) newErrors.selectedMotivoId = "Selecciona un motivo principal";
         }
         if (currentStep === 2 && !selectedDate) newErrors.date = "Selecciona una fecha";
         if (currentStep === 3 && !selectedTime) newErrors.time = "Selecciona una hora";
@@ -219,17 +231,29 @@ export default function AgendarCita() {
 
                                 <div className="space-y-4 pb-4">
                                     <PrincipalText icon="description" text="¿Cuál es el motivo de tu consulta?" />
+                                    
                                     <div className="space-y-1">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Motivo Principal</label>
+                                        <SearchableSelect 
+                                            options={motivosList}
+                                            value={selectedMotivoId}
+                                            onChange={(val) => {
+                                                setSelectedMotivoId(val);
+                                                setErrors(prev => ({ ...prev, selectedMotivoId: undefined }));
+                                            }}
+                                            placeholder="Busca o selecciona un motivo..."
+                                        />
+                                        {errors.selectedMotivoId && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest mt-1">{errors.selectedMotivoId}</p>}
+                                    </div>
+
+                                    <div className="space-y-1 mt-4">
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Detalles Adicionales (Opcional)</label>
                                         <textarea
-                                            className={`w-full p-5 rounded-3xl bg-gray-50 dark:bg-gray-800 border border-transparent focus:ring-2 focus:ring-primary dark:text-white h-32 transition-all resize-none text-sm leading-relaxed ${errors.motivo ? 'border-red-500/50' : ''}`}
+                                            className="w-full p-5 rounded-3xl bg-gray-50 dark:bg-gray-800 border border-transparent focus:ring-2 focus:ring-primary dark:text-white h-24 transition-all resize-none text-sm leading-relaxed"
                                             placeholder="Detalla brevemente los síntomas o razones de la visita..."
                                             value={motivo}
-                                            onChange={(e) => {
-                                                setMotivo(e.target.value);
-                                                setErrors(prev => ({ ...prev, motivo: undefined }));
-                                            }}
+                                            onChange={(e) => setMotivo(e.target.value)}
                                         />
-                                        {errors.motivo && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest">{errors.motivo}</p>}
                                     </div>
                                 </div>
                                 <div className="pt-2">
@@ -370,7 +394,7 @@ export default function AgendarCita() {
                                                 Dr. {medicosDisponibles.find(m => (m.documento || m.value) == selectedDoctor)?.primer_nombre} {medicosDisponibles.find(m => (m.documento || m.value) == selectedDoctor)?.primer_apellido}
                                             </p>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">
-                                                {medicosDisponibles.find(m => (m.documento || m.value) == selectedDoctor)?.especialidad?.especialidad || 'Especialista'} • {selectedEspecialidadObj?.label || 'Servicio Médico'}
+                                                {medicosDisponibles.find(m => (m.documento || m.value) == selectedDoctor)?.especialidad?.especialidad || 'Especialista'}
                                             </p>
                                         </div>
                                     </div>

@@ -41,7 +41,11 @@ export default function EditPacienteModal({
 
     api.get(`/usuario/${userId}`).then((res) => {
       setUser(res);
-      reset(res);
+      const formattedData = {
+        ...res,
+        fecha_nacimiento: res.fecha_nacimiento ? res.fecha_nacimiento.substring(0, 10) : ""
+      };
+      reset(formattedData);
       setLoading(false);
     });
   }, [userId]);

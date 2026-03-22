@@ -9,6 +9,7 @@ const personalFields = [
   { name: "primer_apellido", label: "Primer Apellido", type: "text", icon: "person" },
   { name: "segundo_apellido", label: "Segundo Apellido", type: "text", icon: "person" },
   { name: "fecha_nacimiento", label: "Fecha de nacimiento", type: "date", icon: "calendar_today" },
+  { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], icon: "wc" },
 ];
 
 const contactFields = [
@@ -18,7 +19,6 @@ const contactFields = [
 ];
 
 const patientSpecificFields = [
-  { name: "sexo", label: "Sexo", type: "select", options: [{ value: "Masculino", label: "Masculino" }, { value: "Femenino", label: "Femenino" }], icon: "wc" },
   { name: "grupo_sanguineo", label: "Tipo de sangre", type: "select", options: [{ value: "A+", label: "A+" }, { value: "A-", label: "A-" }, { value: "B+", label: "B+" }, { value: "B-", label: "B-" }, { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" }, { value: "O+", label: "O+" }, { value: "O-", label: "O-" }], icon: "bloodtype" },
 ];
 
@@ -43,7 +43,13 @@ export function getCreateUserSections(id_rol, dynamicOptions = {}) {
 
   sections.push({
     title: "Información Personal",
-    fields: personalSectionFields.map(f => ({ ...f, readOnly: false, options: dynamicOptions[f.name] || f.options }))
+    fields: personalSectionFields.map(f => {
+        let opts = dynamicOptions[f.name] || f.options;
+        if (f.name === "id_tipo_documento" && id_rol !== 5 && opts) {
+            opts = opts.filter(o => Number(o.value) !== 2);
+        }
+        return { ...f, readOnly: false, options: opts };
+    })
   });
 
   // 2. Información de Contacto
@@ -102,11 +108,20 @@ export function getEditUserSections(id_rol, dynamicOptions = {}) {
 
   sections.push({
     title: "Información Personal",
-    fields: personalSectionFields.map(f => ({
-      ...f,
-      readOnly: f.name === "documento",
-      options: dynamicOptions[f.name] || f.options
-    }))
+    fields: personalSectionFields.map(f => {
+      let opts = dynamicOptions[f.name] || f.options;
+      if (f.name === "id_tipo_documento" && id_rol !== 5 && opts) {
+          opts = opts.filter(o => Number(o.value) !== 2);
+      }
+      const isRestrictedField = ["id_tipo_documento", "fecha_nacimiento", "sexo"].includes(f.name);
+      const isAdmin = [1, 2, 3].includes(id_rol);
+      
+      return {
+        ...f,
+        readOnly: f.name === "documento" || (isRestrictedField && !isAdmin),
+        options: opts
+      };
+    })
   });
 
   // 2. Información de Contacto

@@ -15,10 +15,11 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         $id = $this->route('id') ?? $this->route('usuario');
+        $isPatient = $this->id_rol == 5;
 
         $rules = [
             'id_tipo_documento' => ['required', 'exists:tipo_documento,id_tipo_documento'],
-            'documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'digits_between:7,10', 'numeric', 'unique:usuario,documento,' . $id . ',documento'],
+            'documento' => ['required', 'regex:/^[1-9][0-9]*$/', 'numeric', 'unique:usuario,documento,' . $id . ',documento'],
             'primer_nombre' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
             'segundo_nombre' => ['nullable', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/'],
             'primer_apellido' => ['required', 'string', 'min:3', 'max:40', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/'],
@@ -26,7 +27,8 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'regex:/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', 'email:rfc,dns', 'min:12', 'max:150', new UniqueIgnoreCase('usuario', 'email', $id, 'documento')],
             'telefono' => ['required', 'regex:/^3\d{9}$/', 'digits:10', 'unique:usuario,telefono,' . $id . ',documento'],
             'direccion' => ['required', 'string', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/', 'min:8', 'max:150'],
-            'fecha_nacimiento' => ['required', 'date', 'before_or_equal:today'],
+            'fecha_nacimiento' => ['required', 'date'],
+            'sexo' => ['required', 'string', 'max:10', 'in:Masculino,Femenino'],
             'id_estado' => ['required', 'in:1,2'],
             'id_rol' => ['required', 'exists:rol,id_rol'],
             'examenes' => ['nullable', 'boolean'],
@@ -39,9 +41,29 @@ class UpdateUserRequest extends FormRequest
                 $rules['id_consultorio'] = ['nullable', 'exists:consultorio,id_consultorio'];
                 break;
             case 5:
-                $rules['sexo'] = ['required', 'string', 'max:10', 'in:Masculino,Femenino'];
                 $rules['grupo_sanguineo'] = ['required', 'string', 'max:10', 'in:A+,A-,B+,B-,AB+,AB-,O+,O-'];
                 break;
+        }
+
+        // Restricciones para tipo de documento
+        if (!$isPatient) {
+            $rules['id_tipo_documento'][] = 'in:1,3';
+        }
+
+        // Restricciones para el campo documento basado en tipo
+        if ($this->id_tipo_documento == 3) {
+            $rules['documento'][] = 'digits_between:6,12';
+        } else {
+            $rules['documento'][] = 'digits_between:7,10';
+        }
+
+        // Restricciones de edad para fecha de nacimiento
+        if ($isPatient) {
+            $rules['fecha_nacimiento'][] = 'before_or_equal:today';
+        } else {
+            // Mayor de edad: restar 18 años a la fecha actual
+            $dt18 = now()->subYears(18)->format('Y-m-d');
+            $rules['fecha_nacimiento'][] = 'before_or_equal:' . $dt18;
         }
 
         return $rules;
@@ -49,12 +71,11 @@ class UpdateUserRequest extends FormRequest
 
     public function messages(): array
     {
-        return [
+        $messages = [
             'id_tipo_documento.required' => 'El tipo de documento es obligatorio',
             'id_tipo_documento.exists' => 'El tipo de documento seleccionado no es válido',
             'documento.required' => 'El documento es obligatorio',
             'documento.unique' => 'Este documento ya está registrado',
-            'documento.digits_between' => 'El documento debe tener entre 7 y 10 digitos',
             'documento.regex' => 'El documento debe tener solo numeros sin espacios ni puntos',
             'documento.numeric' => 'El documento debe ser numerico',
             'primer_nombre.required' => 'El primer nombre es obligatorio',
@@ -90,11 +111,10 @@ class UpdateUserRequest extends FormRequest
             'direccion.regex' => 'La dirección debe contener letras y números, y puede incluir #, -, . o ,.',
             'fecha_nacimiento.required' => 'La fecha de nacimiento es obligatoria',
             'fecha_nacimiento.date' => 'La fecha de nacimiento debe ser una fecha valida',
-            'fecha_nacimiento.before_or_equal' => 'La fecha de nacimiento no puede ser una fecha futura',
             'registro_profesional.required' => 'El registro profesional es obligatorio',
             'registro_profesional.regex' => 'El registro profesional debe ser maximo de 10 digitos',
             'id_especialidad.required' => 'La especialidad es obligatoria',
-            'sexo.required' => 'El sexo del paciente es obligatorio',
+            'sexo.required' => 'El sexo es obligatorio',
             'sexo.in' => 'El sexo debe ser Masculino o Femenino',
             'grupo_sanguineo.required' => 'El grupo sanguineo es obligatorio',
             'grupo_sanguineo.in' => 'El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-',
@@ -102,5 +122,20 @@ class UpdateUserRequest extends FormRequest
             'id_rol.required' => 'El rol es obligatorio',
             'id_rol.exists' => 'El rol no existe',
         ];
+
+        if ($this->id_rol != 5) {
+            $messages['id_tipo_documento.in'] = 'Este tipo de documento es exclusivo para pacientes';
+            $messages['fecha_nacimiento.before_or_equal'] = 'El usuario debe ser mayor de edad para este rol (18+ años)';
+        } else {
+            $messages['fecha_nacimiento.before_or_equal'] = 'La fecha de nacimiento no puede ser una fecha futura';
+        }
+
+        if ($this->id_tipo_documento == 3) {
+            $messages['documento.digits_between'] = 'El documento debe tener entre 6 y 12 digitos';
+        } else {
+            $messages['documento.digits_between'] = 'El documento debe tener entre 7 y 10 digitos';
+        }
+
+        return $messages;
     }
 }

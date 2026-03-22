@@ -93,13 +93,13 @@ export default function IndexPaciente() {
             <div className="bg-primary/5 rounded-[2.5rem] p-12 flex flex-col md:flex-row items-center gap-12 border border-primary/10">
                 <div className="flex-1 space-y-4">
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Tu salud, nuestra prioridad</h2>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-xl">En Salud Integral estamos comprometidos con ofrecerte el mejor servicio médico. Si tienes alguna emergencia, comunícate inmediatamente a nuestra línea de atención 01-800-SALUD.</p>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-xl">En Salud Integral estamos comprometidos con ofrecerte el mejor servicio médico. Si tienes alguna emergencia, comunícate inmediatamente a nuestra línea de atención +57 312 345 6789.</p>
                 </div>
                 <div className="shrink-0 size-48 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center p-4 shadow-2xl shadow-primary/20">
                     <img
-                        src="https://img.freepik.com/vector-premium/equipo-medico-que-brinda-servicio-atencion-medica-pacientes-ilustracion-vector-dibujos-animados-plana_107173-18158.jpg"
+                        src="https://www.velezortiz.es/wp-content/uploads/2024/04/seguros-de-salud-en-espana.jpg"
                         alt="Medical team"
-                        className="rounded-full"
+                        className="rounded-full object-cover"
                     />
                 </div>
             </div>

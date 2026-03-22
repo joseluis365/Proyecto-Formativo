@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLayout } from "../LayoutContext";
 import { useHelp } from "../hooks/useHelp";
+import useTheme from "../hooks/useTheme";
 import api from "../Api/axios";
 import AdminLogoutButton from "../components/UI/AdminLogoutButton";
 import MotionSpinner from "../components/UI/Spinner";
@@ -56,20 +57,23 @@ function formatToISODate(dateStr) {
 /* ------------------------------------------------------------------ */
 /*  InfoRow — fila dentro del formulario de información                */
 /* ------------------------------------------------------------------ */
-function InfoField({ label, value, name, editMode, onChange, type = "text", readOnly = false }) {
+function InfoField({ label, value, name, editMode, onChange, type = "text", readOnly = false, error }) {
     return (
         <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 {label}
             </label>
             {editMode && !readOnly ? (
-                <input
-                    type={type}
-                    name={name}
-                    defaultValue={value || ""}
-                    onChange={onChange}
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition"
-                />
+                <>
+                    <input
+                        type={type}
+                        name={name}
+                        value={value || ""}
+                        onChange={onChange}
+                        className={`w-full px-3 py-2 rounded-lg border bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition ${error ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-300 dark:border-gray-600'}`}
+                    />
+                    {error && <p className="text-[10px] text-red-500 font-bold uppercase mt-0.5 ml-1">{error}</p>}
+                </>
             ) : (
                 <p className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white text-sm border border-transparent">
                     {value || <span className="text-gray-400 italic">Sin información</span>}
@@ -165,33 +169,15 @@ export default function Perfil() {
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({});
     const [saving, setSaving] = useState(false);
+    const [errors, setErrors] = useState({});
     const [consultorios, setConsultorios] = useState([]);
 
     useEffect(() => {
         setTitle("Mi Perfil");
         setSubtitle("Información y configuración de tu cuenta.");
-    }, []);
+    }, [setTitle, setSubtitle]);
 
-    // Theme state configuration
-    const [isDark, setIsDark] = useState(
-        localStorage.getItem('theme') === 'dark' || 
-        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    );
-
-    const toggleTheme = () => {
-        const root = window.document.documentElement;
-        if (isDark) {
-            root.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-            setIsDark(false);
-            window.dispatchEvent(new Event("storage")); // Trigger update in other components
-        } else {
-            root.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-            setIsDark(true);
-            window.dispatchEvent(new Event("storage"));
-        }
-    };
+    const { isDark, toggleTheme } = useTheme();
 
     /* Cargar datos frescos desde el servidor */
     useEffect(() => {
@@ -219,11 +205,112 @@ export default function Perfil() {
     }, []);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+        
+        // Validación y limpieza en tiempo real
+        const newFieldErrors = { ...errors };
+        
+        if (name === "telefono") {
+            value = value.replace(/\D/g, '').substring(0, 10);
+            e.target.value = value;
+            if (!value) newFieldErrors.telefono = "El teléfono es obligatorio";
+            else if (!/^3\d{9}$/.test(value)) newFieldErrors.telefono = "Debe empezar con 3 y tener 10 dígitos";
+            else delete newFieldErrors.telefono;
+        } else if (name === "email") {
+            const emailRegex = /^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+            if (!value) newFieldErrors.email = "El correo es obligatorio";
+            else if (value.length < 12) newFieldErrors.email = "Mínimo 12 caracteres";
+            else if (!emailRegex.test(value)) newFieldErrors.email = "Formato inválido";
+            else delete newFieldErrors.email;
+        } else if (name === "direccion") {
+            const addressRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/;
+            if (!value) newFieldErrors.direccion = "La dirección es obligatoria";
+            else if (value.length < 8) newFieldErrors.direccion = "Mínimo 8 caracteres";
+            else if (!addressRegex.test(value)) newFieldErrors.direccion = "Debe contener letras y números";
+            else delete newFieldErrors.direccion;
+        } else if (["primer_nombre", "segundo_nombre", "primer_apellido", "segundo_apellido"].includes(name)) {
+            const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/;
+            const compRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/;
+            const isOptional = ["segundo_nombre", "segundo_apellido"].includes(name);
+            const regex = name.includes("apellido") ? compRegex : nameRegex;
+
+            if (!value && !isOptional) newFieldErrors[name] = "Campo obligatorio";
+            else if (value && (value.length < 3 || value.length > 40)) newFieldErrors[name] = "De 3 a 40 letras";
+            else if (value && !regex.test(value)) newFieldErrors[name] = "Formato inválido";
+            else delete newFieldErrors[name];
+        } else {
+            // General clear for other fields if they had error
+            delete newFieldErrors[name];
+        }
+
         setFormData((prev) => ({ ...prev, [name]: value }));
+        setErrors(newFieldErrors);
     };
 
     const handleSave = async () => {
+        const newErrors = {};
+
+        // Validaciones de nombres
+        const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+$/;
+        const compositeNameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(?:[ -][A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$/;
+
+        if (!formData.primer_nombre || formData.primer_nombre.length < 3 || formData.primer_nombre.length > 40 || !nameRegex.test(formData.primer_nombre)) {
+            newErrors.primer_nombre = "Mínimo 3 letras, sin espacios";
+        }
+        if (formData.segundo_nombre && (formData.segundo_nombre.length < 3 || formData.segundo_nombre.length > 40 || !nameRegex.test(formData.segundo_nombre))) {
+            newErrors.segundo_nombre = "Mínimo 3 letras, sin espacios";
+        }
+        if (!formData.primer_apellido || formData.primer_apellido.length < 3 || formData.primer_apellido.length > 40 || !compositeNameRegex.test(formData.primer_apellido)) {
+            newErrors.primer_apellido = "Mínimo 3 letras, sin espacios dobles";
+        }
+        if (formData.segundo_apellido && (formData.segundo_apellido.length < 3 || formData.segundo_apellido.length > 40 || !compositeNameRegex.test(formData.segundo_apellido))) {
+            newErrors.segundo_apellido = "Mínimo 3 letras, sin espacios dobles";
+        }
+
+        // Teléfono: ^3\d{9}$
+        if (!formData.telefono) {
+            newErrors.telefono = "El teléfono es obligatorio";
+        } else if (!/^3\d{9}$/.test(formData.telefono)) {
+            newErrors.telefono = "Debe empezar con 3 y tener exactamente 10 números";
+        }
+
+        // Dirección: ^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$ y min:8, max:150
+        const addressRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s#\-\.,\/]+$/;
+        if (!formData.direccion) {
+            newErrors.direccion = "La dirección es obligatoria";
+        } else if (formData.direccion.length < 8) {
+            newErrors.direccion = "La dirección debe tener al menos 8 caracteres";
+        } else if (formData.direccion.length > 150) {
+            newErrors.direccion = "La dirección no puede exceder los 150 caracteres";
+        } else if (!addressRegex.test(formData.direccion)) {
+            newErrors.direccion = "La dirección debe contener letras y números, y puede incluir #, -, . o ,. o /";
+        }
+
+        // Email: ^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ y min:12, max:150
+        const emailRegex = /^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!formData.email) {
+            newErrors.email = "El correo es obligatorio";
+        } else if (formData.email.length < 12) {
+            newErrors.email = "El correo debe tener al menos 12 caracteres";
+        } else if (formData.email.length > 150) {
+            newErrors.email = "El correo no puede exceder los 150 caracteres";
+        } else if (!emailRegex.test(formData.email)) {
+            newErrors.email = "Formato de correo inválido (ej: usuario@dominio.com)";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            Swal.fire({
+                icon: "error",
+                title: "Datos Inválidos",
+                text: "Por favor, corrige los errores en el formulario.",
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        setErrors({});
         setSaving(true);
         try {
             await api.put(`/usuario/${user.documento}`, formData);
@@ -279,10 +366,14 @@ export default function Perfil() {
             {/* ── TOP CARD ────────────────────────────────────────── */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                    {/* Avatar genérico */}
+                    {/* Avatar basado en sexo (Masculino por default) */}
                     <div className="relative shrink-0">
-                        <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/80 to-primary flex items-center justify-center shadow-lg">
-                            <span className="material-symbols-outlined text-white text-5xl">person</span>
+                        <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/80 to-primary shadow-lg overflow-hidden border-2 border-primary/20">
+                            <img 
+                                src={user.sexo === "Femenino" ? "/avatar_femenino.png" : "/avatar_masculino.png"} 
+                                alt="Profile" 
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                         <span className="absolute bottom-1 right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white dark:border-gray-900" title="En línea" />
                     </div>
@@ -341,32 +432,52 @@ export default function Perfil() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <InfoField label="Primer Nombre" name="primer_nombre" value={formData.primer_nombre} editMode={editMode} onChange={handleChange} />
-                        <InfoField label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} editMode={editMode} onChange={handleChange} />
-                        <InfoField label="Primer Apellido" name="primer_apellido" value={formData.primer_apellido} editMode={editMode} onChange={handleChange} />
-                        <InfoField label="Segundo Apellido" name="segundo_apellido" value={formData.segundo_apellido} editMode={editMode} onChange={handleChange} />
-                        <InfoField label="Correo Electrónico" name="email" value={formData.email} editMode={editMode} onChange={handleChange} type="email" />
-                        <InfoField label="Teléfono" name="telefono" value={formData.telefono} editMode={editMode} onChange={handleChange} type="tel" />
-                        <InfoField label="Dirección" name="direccion" value={formData.direccion} editMode={editMode} onChange={handleChange} />
+                        <InfoField label="Primer Nombre" name="primer_nombre" value={formData.primer_nombre} editMode={editMode} onChange={handleChange} error={errors.primer_nombre} />
+                        <InfoField label="Segundo Nombre" name="segundo_nombre" value={formData.segundo_nombre} editMode={editMode} onChange={handleChange} error={errors.segundo_nombre} />
+                        <InfoField label="Primer Apellido" name="primer_apellido" value={formData.primer_apellido} editMode={editMode} onChange={handleChange} error={errors.primer_apellido} />
+                        <InfoField label="Segundo Apellido" name="segundo_apellido" value={formData.segundo_apellido} editMode={editMode} onChange={handleChange} error={errors.segundo_apellido} />
+                        <InfoField label="Correo Electrónico" name="email" value={formData.email} editMode={editMode} onChange={handleChange} type="email" error={errors.email} />
+                        <InfoField label="Teléfono" name="telefono" value={formData.telefono} editMode={editMode} onChange={handleChange} type="tel" error={errors.telefono} />
+                        <InfoField label="Dirección" name="direccion" value={formData.direccion} editMode={editMode} onChange={handleChange} error={errors.direccion} />
 
-                        {/* Sexo, fecha nacimiento y grupo sanguíneo para Pacientes (5) o Médicos (4) */}
+                        {/* Campos globales restringidos para edición a admins */}
+                        <SelectField
+                            label="Tipo de Documento"
+                            name="id_tipo_documento"
+                            value={formData.id_tipo_documento}
+                            editMode={editMode && [1, 2, 3].includes(rolId)}
+                            onChange={handleChange}
+                            options={[
+                                { value: 1, label: "Cédula de Ciudadanía" },
+                                { value: 2, label: "Registro Civil" },
+                                { value: 3, label: "Cédula de Extranjería" },
+                                { value: 4, label: "Pasaporte" }
+                            ]}
+                        />
+                        <SelectField
+                            label="Sexo"
+                            name="sexo"
+                            value={formData.sexo}
+                            editMode={editMode && [1, 2, 3].includes(rolId)}
+                            onChange={handleChange}
+                            options={[
+                                { value: "Masculino", label: "Masculino" },
+                                { value: "Femenino", label: "Femenino" },
+                                { value: "Otro", label: "Otro" },
+                            ]}
+                        />
+                        <InfoField 
+                            label="Fecha de Nacimiento" 
+                            name="fecha_nacimiento" 
+                            value={formatToISODate(formData.fecha_nacimiento)} 
+                            editMode={editMode && [1, 2, 3].includes(rolId)} 
+                            onChange={handleChange} 
+                            type="date" 
+                        />
+
+                        {/* Grupo sanguíneo para Pacientes (5) o Médicos (4) */}
                         {(rolId === 4 || rolId === 5) && (
-                            <>
-                                <SelectField
-                                    label="Sexo"
-                                    name="sexo"
-                                    value={formData.sexo}
-                                    editMode={editMode}
-                                    onChange={handleChange}
-                                    options={[
-                                        { value: "Masculino", label: "Masculino" },
-                                        { value: "Femenino", label: "Femenino" },
-                                        { value: "Otro", label: "Otro" },
-                                    ]}
-                                />
-                                <InfoField label="Fecha de Nacimiento" name="fecha_nacimiento" value={formatToISODate(formData.fecha_nacimiento)} editMode={editMode} onChange={handleChange} type="date" />
-                                <InfoField label="Grupo Sanguíneo" name="grupo_sanguineo" value={formData.grupo_sanguineo} editMode={editMode} onChange={handleChange} />
-                            </>
+                            <InfoField label="Grupo Sanguíneo" name="grupo_sanguineo" value={formData.grupo_sanguineo} editMode={editMode} onChange={handleChange} />
                         )}
 
                         {/* Campos específicos por rol */}

@@ -52,7 +52,7 @@ export default function MisCitas() {
         const types = citas.map(c => 
             c.tipo_evento === 'remision' ? 'Remisión' :
             c.tipo_evento === 'examen' ? 'Examen' :
-            (c.tipoCita?.tipo || "Consulta General")
+            'Cita'
         );
         return [...new Set(types)].sort();
     }, [citas]);
@@ -80,7 +80,7 @@ export default function MisCitas() {
             .filter(cita => {
                 const citaTipo = cita.tipo_evento === 'remision' ? 'Remisión' :
                                 cita.tipo_evento === 'examen' ? 'Examen' :
-                                (cita.tipoCita?.tipo || "Consulta General");
+                                'Cita';
                 const matchTipo = !filterEspecialidad || citaTipo === filterEspecialidad;
                 
                 const citaEspMedico = cita.medico?.especialidad?.especialidad || "Médico General";
@@ -206,7 +206,7 @@ export default function MisCitas() {
                                 specialty={
                                     cita.tipo_evento === 'remision' ? `Remisión` :
                                     cita.tipo_evento === 'examen' ? `Examen` :
-                                    (cita.tipoCita?.tipo || "Consulta General")
+                                    "Cita"
                                 }
                                 doctorSpecialty={cita.medico?.especialidad?.especialidad}
                                 time={cita.fecha ? `${cita.fecha} | ${cita.hora_inicio?.slice(0, 5) || '--:--'}` : 'Sin fecha agendada | --:--'}

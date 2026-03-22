@@ -20,6 +20,7 @@ class Cita extends Model
         'recordatorio_enviado',
         'tipo_evento',
         'id_especialidad',
+        'id_motivo',
     ];
 
     protected $casts = [
@@ -49,5 +50,10 @@ class Cita extends Model
     public function especialidad()
     {
         return $this->belongsTo(Especialidad::class, 'id_especialidad', 'id_especialidad');
+    }
+
+    public function motivoConsulta()
+    {
+        return $this->belongsTo(MotivoConsulta::class, 'id_motivo', 'id_motivo');
     }
 }

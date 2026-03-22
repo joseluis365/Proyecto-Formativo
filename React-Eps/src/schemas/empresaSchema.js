@@ -70,11 +70,32 @@ export const empresaSchema = z.object({
         .optional()
         .transform(val => val === "" ? undefined : val),
 
+    admin_id_tipo_documento: z.coerce.string()
+        .min(1, "El tipo de documento es obligatorio")
+        .refine(val => ["1", "3"].includes(val.toString()), "El tipo de documento debe ser Cédula de Ciudadanía o Extranjería"),
+
     admin_documento: z.coerce.string()
         .min(1, "El documento del administrador es obligatorio")
         .min(7, "El documento debe tener entre 7 y 10 dígitos")
         .max(10, "El documento debe tener entre 7 y 10 dígitos")
         .regex(/^[1-9][0-9]*$/, "El documento debe tener solo números y no empezar por 0"),
+
+    admin_fecha_nacimiento: z.string()
+        .min(1, "La fecha de nacimiento es obligatoria")
+        .refine(date => {
+            const bd = new Date(date);
+            const today = new Date();
+            let age = today.getFullYear() - bd.getFullYear();
+            const m = today.getMonth() - bd.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) {
+                age--;
+            }
+            return age >= 18;
+        }, { message: "El administrador debe ser mayor de edad" }),
+
+    admin_sexo: z.string()
+        .min(1, "El sexo es obligatorio")
+        .refine(val => ["Masculino", "Femenino"].includes(val), "Sexo no válido"),
 
     admin_email: z.string()
         .min(1, "El correo del administrador es obligatorio")

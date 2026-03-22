@@ -55,6 +55,7 @@ export default function EditMedicoModal({
 
         reset({
           ...userData,
+          fecha_nacimiento: userData.fecha_nacimiento ? userData.fecha_nacimiento.substring(0, 10) : "",
           segundo_nombre: userData.segundo_nombre || "",
           segundo_apellido: userData.segundo_apellido || "",
           contrasena: ""

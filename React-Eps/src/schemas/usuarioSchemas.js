@@ -13,8 +13,6 @@ export const baseUserSchema = z.object({
     id_tipo_documento: z.coerce.number().min(1, "El tipo de documento es obligatorio"),
     documento: z.coerce.string()
         .min(1, "El documento es obligatorio")
-        .min(7, "El documento debe tener entre 7 y 10 digitos")
-        .max(10, "El documento debe tener entre 7 y 10 digitos")
         .regex(documentRegex, "El documento debe tener solo numeros sin espacios ni puntos"),
 
     primer_nombre: z.string()
@@ -65,6 +63,10 @@ export const baseUserSchema = z.object({
             message: "La fecha de nacimiento no puede ser una fecha futura"
         }),
 
+    sexo: z.string()
+        .min(1, "El sexo es obligatorio")
+        .refine(val => ["Masculino", "Femenino"].includes(val), "El sexo debe ser Masculino o Femenino"),
+
     id_estado: z.coerce.number().min(1, "El estado es obligatorio"),
     id_rol: z.coerce.number().min(1, "El rol es obligatorio"),
 });
@@ -92,20 +94,71 @@ const withPasswordConfirmation = (schema) => schema.superRefine(({ confirm_contr
     }
 });
 
+const applyCommonRefinements = (schema) => schema.superRefine((data, ctx) => {
+    const docLength = data.documento.length;
+
+    // Validación de longitud de documento condicional
+    if (data.id_tipo_documento === 3) {
+        if (docLength < 6 || docLength > 12) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "El documento debe tener entre 6 y 12 digitos",
+                path: ["documento"],
+            });
+        }
+    } else {
+        if (docLength < 7 || docLength > 10) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "El documento debe tener entre 7 y 10 digitos",
+                path: ["documento"],
+            });
+        }
+    }
+
+    // Condición de edad para "No Pacientes"
+    if (data.id_rol !== 5) {
+        const bd = new Date(data.fecha_nacimiento);
+        const today = new Date();
+        let age = today.getFullYear() - bd.getFullYear();
+        const m = today.getMonth() - bd.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) {
+            age--;
+        }
+        if (age < 18) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "El usuario debe ser mayor de edad para este rol (18+ años)",
+                path: ["fecha_nacimiento"],
+            });
+        }
+
+        // El tipo de documento 2 es exclusivo para pacientes
+        if (data.id_tipo_documento === 2) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Este tipo de documento es exclusivo para pacientes",
+                path: ["id_tipo_documento"],
+            });
+        }
+    }
+});
+
 // ======================
 // MEDICO SCHEMAS
 // ======================
-export const createMedicoSchema = withPasswordConfirmation(baseUserSchema.extend({
+export const createMedicoSchema = applyCommonRefinements(withPasswordConfirmation(baseUserSchema.extend({
     ...creationPasswordValidation,
     registro_profesional: z.coerce.string()
         .min(1, "El registro profesional es obligatorio")
         .min(5, "El registro profesional debe tener entre 5 y 15 digitos")
         .max(15, "El registro profesional debe tener entre 5 y 15 digitos")
         .regex(registroProfesionalRegex, "El registro profesional debe ser maximo de 15 digitos numericos sin espacios ni puntos"),
-    id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria")
-}));
+    id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria"),
+    id_consultorio: z.coerce.number().nullable().optional()
+})));
 
-export const updateMedicoSchema = baseUserSchema.extend({
+export const updateMedicoSchema = applyCommonRefinements(baseUserSchema.extend({
     registro_profesional: z.coerce.string()
         .min(1, "El registro profesional es obligatorio")
         .min(5, "El registro profesional debe tener entre 5 y 15 digitos")
@@ -113,50 +166,68 @@ export const updateMedicoSchema = baseUserSchema.extend({
         .regex(registroProfesionalRegex, "El registro profesional debe ser maximo de 15 digitos numericos sin espacios ni puntos"),
     id_especialidad: z.coerce.number().min(1, "La especialidad es obligatoria"),
     id_consultorio: z.coerce.number().nullable().optional(),
-});
+}));
 
 // ======================
 // PACIENTE SCHEMAS
 // ======================
-export const createPacienteSchema = withPasswordConfirmation(baseUserSchema.extend({
+export const createPacienteSchema = applyCommonRefinements(withPasswordConfirmation(baseUserSchema.extend({
     ...creationPasswordValidation,
-    sexo: z.string()
-        .min(1, "El sexo del paciente es obligatorio")
-        .refine(val => ["Masculino", "Femenino"].includes(val), "El sexo debe ser Masculino o Femenino"),
     grupo_sanguineo: z.string()
         .min(1, "El grupo sanguineo es obligatorio")
         .refine(val => ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].includes(val), "El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-")
-}));
+})));
 
-export const updatePacienteSchema = baseUserSchema.extend({
-    sexo: z.string()
-        .min(1, "El sexo del paciente es obligatorio")
-        .refine(val => ["Masculino", "Femenino"].includes(val), "El sexo debe ser Masculino o Femenino"),
+export const updatePacienteSchema = applyCommonRefinements(baseUserSchema.extend({
     grupo_sanguineo: z.string()
         .min(1, "El grupo sanguineo es obligatorio")
         .refine(val => ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].includes(val), "El grupo sanguineo debe ser A+, A-, B+, B-, AB+, AB-, O+, O-"),
-});
+}));
 
 // ======================
 // PERSONAL SCHEMAS
 // ======================
-export const createPersonalSchema = withPasswordConfirmation(baseUserSchema.extend({
+export const createPersonalSchema = applyCommonRefinements(withPasswordConfirmation(baseUserSchema.extend({
     ...creationPasswordValidation,
     examenes: z.boolean().optional(),
-}));
+})));
 
-export const updatePersonalSchema = baseUserSchema.extend({
+export const updatePersonalSchema = applyCommonRefinements(baseUserSchema.extend({
     examenes: z.boolean().optional(),
-});
+}));
 
 // ======================
 // FARMACEUTICO SCHEMAS
 // ======================
-export const createFarmaceuticoSchema = withPasswordConfirmation(baseUserSchema.extend({
+export const createFarmaceuticoSchema = applyCommonRefinements(withPasswordConfirmation(baseUserSchema.extend({
     ...creationPasswordValidation,
+    id_farmacia: z.coerce.string().min(1, "La farmacia es obligatoria"),
+})));
+
+export const updateFarmaceuticoSchema = applyCommonRefinements(baseUserSchema.extend({
     id_farmacia: z.coerce.string().min(1, "La farmacia es obligatoria"),
 }));
 
-export const updateFarmaceuticoSchema = baseUserSchema.extend({
-    id_farmacia: z.coerce.string().min(1, "La farmacia es obligatoria"),
+// ======================
+// PERFIL PACIENTE (self-edit)
+// Only fields the patient can edit from their own profile
+// ======================
+export const updatePerfilPacienteSchema = z.object({
+    email: z.string()
+        .min(1, "El correo es obligatorio")
+        .min(12, "El correo debe tener al menos 12 caracteres")
+        .max(150, "El correo debe tener como maximo 150 caracteres")
+        .regex(emailBaseRegex, "El correo debe tener máximo 64 caracteres antes del @, un solo @, al menos un punto en el dominio, sin espacios y con un dominio válido.")
+        .email("El correo debe ser un correo valido"),
+
+    telefono: z.coerce.string()
+        .min(1, "El telefono es obligatorio")
+        .length(10, "El telefono debe tener exactamente 10 digitos")
+        .regex(phoneRegex, "El telefono debe empezar con 3 y tener 10 numeros sin espacios ni puntos"),
+
+    direccion: z.string()
+        .min(1, "La direccion es obligatoria")
+        .min(8, "La direccion debe tener al menos 8 caracteres")
+        .max(150, "La direccion debe tener como maximo 150 caracteres")
+        .regex(addressRegex, "La dirección debe contener letras y números, y puede incluir #, -, . o ,."),
 });

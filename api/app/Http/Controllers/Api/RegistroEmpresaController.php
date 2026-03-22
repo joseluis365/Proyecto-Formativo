@@ -68,11 +68,14 @@ class RegistroEmpresaController extends Controller
 
                 // Crear el Usuario Administrador vinculado a ese NIT
                 $user = Usuario::create([
+                    'id_tipo_documento' => $request->admin_id_tipo_documento,
                     'documento' => $request->admin_documento,
                     'primer_nombre' => $request->admin_primer_nombre,
                     'segundo_nombre' => $request->admin_segundo_nombre,
                     'primer_apellido' => $request->admin_primer_apellido,
                     'segundo_apellido' => $request->admin_segundo_apellido,
+                    'fecha_nacimiento' => $request->admin_fecha_nacimiento,
+                    'sexo' => $request->admin_sexo,
                     'email' => $request->admin_email,
                     'telefono' => $request->admin_telefono,
                     'direccion' => $request->admin_direccion,

@@ -42,7 +42,9 @@ class CitaController extends Controller
         $query = Cita::with([
             'paciente',
             'medico.especialidad',
+            'medico.consultorio',
             'estado',
+            'motivoConsulta',
             'especialidad',
             'historialDetalle.remisiones.especialidad',
             'historialDetalle.remisiones.categoriaExamen',
@@ -101,6 +103,7 @@ class CitaController extends Controller
         $citas = $query->latest()->paginate($perPage);
 
         return response()->json([
+            'success' => true,
             'message' => 'Citas obtenidas correctamente',
             'data' => $citas->items(),
             'current_page' => $citas->currentPage(),
@@ -114,7 +117,9 @@ class CitaController extends Controller
         $cita = Cita::with([
             'paciente',
             'medico.especialidad',
+            'medico.consultorio',
             'estado',
+            'motivoConsulta',
             'especialidad',
             'historialDetalle.remisiones.especialidad',
             'historialDetalle.remisiones.categoriaExamen',
@@ -142,6 +147,7 @@ class CitaController extends Controller
         }
 
         return response()->json([
+            'success' => true,
             'message' => 'Cita obtenida correctamente',
             'data' => $cita
         ]);
@@ -165,6 +171,7 @@ class CitaController extends Controller
             'doc_medico'   => $request->doc_medico,
             'fecha'        => $request->fecha,
             'motivo'       => $request->motivo,
+            'id_motivo'    => $request->id_motivo,
             'id_especialidad' => $request->id_especialidad,
             'id_estado'    => $estado->id_estado,
             'hora_inicio'  => $request->hora_inicio ?? null,
@@ -189,6 +196,7 @@ class CitaController extends Controller
         ));
 
         return response()->json([
+            'success' => true,
             'message' => 'Cita agendada correctamente y notificación enviada',
             'data'    => $cita
         ], 201);
@@ -214,6 +222,7 @@ class CitaController extends Controller
         ));
 
         return response()->json([
+            'success' => true,
             'message' => 'Cita actualizada correctamente',
             'data'    => $cita
         ]);

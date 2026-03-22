@@ -48,6 +48,7 @@ export default function EditPersonalModal({
         // Si el backend envía null en los campos opcionales, los pasamos a string vacío
         reset({
           ...userData,
+          fecha_nacimiento: userData.fecha_nacimiento ? userData.fecha_nacimiento.substring(0, 10) : "",
           segundo_nombre: userData.segundo_nombre || "",
           segundo_apellido: userData.segundo_apellido || "",
           contrasena: "" // No cargamos la contraseña por seguridad

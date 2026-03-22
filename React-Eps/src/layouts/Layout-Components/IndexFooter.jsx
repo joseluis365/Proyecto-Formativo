@@ -8,8 +8,8 @@ export default function IndexFooter() {
             <div className="max-w-[1280px] mx-auto grid grid-cols-2 md:grid-cols-5 gap-8">
                 <div className="flex flex-col gap-4 col-span-2 md:col-span-2 pr-0 md:pr-10">
                     <div className="flex items-center gap-2 text-primary">
-                        <img src="/icono.png" alt="Saluvanta EPS" className="size-7 rounded-lg object-cover block dark:hidden" />
-                        <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-7 rounded-lg object-cover hidden dark:block" />
+                        <img src="/icono.png" alt="Saluvanta EPS" className="size-12 rounded-lg object-cover block dark:hidden" />
+                        <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-12 rounded-lg object-cover hidden dark:block" />
                         <span className="text-lg font-black text-slate-900 dark:text-white">Saluvanta EPS</span>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed max-w-[320px]">
