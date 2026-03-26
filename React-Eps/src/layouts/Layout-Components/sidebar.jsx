@@ -5,6 +5,7 @@ import SidebarSubItem from "./SidebarSubItem";
 export default function Sidebar({ isOpen, onClose }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isLabUser = user.id_rol === 3 && user.examenes === true;
+  const isPersonalAdmin = user.id_rol === 3 && user.examenes !== true;
   const isSuperAdminOrAdmin = user.id_rol === 1 || user.id_rol === 2;
 
   return (
@@ -48,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 Saluvanta EPS
               </h1>
               <p className="text-neutral-gray-text dark:text-gray-400 text-sm">
-                Admin Dashboard
+                Gestión Administrativa  
               </p>
             </div>
           </div>
@@ -56,26 +57,43 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Nav */}
           <nav className="mt-6 grow">
             <div className="flex flex-col gap-2">
-              <SidebarItem to="/dashboard" icon="home" label="Inicio" onClick={onClose} />
-              <SidebarDropdown icon="group" label="Usuarios" basePath="/usuarios">
-                <SidebarSubItem to="/usuarios/personal" label="Personal" />
-                <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
-                <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
-                <SidebarSubItem to="/usuarios/farmaceuticos" label="Farmaceuticos" />
-              </SidebarDropdown>
-                <SidebarItem to="/citas/agenda" icon="calendar_month" label="Agenda de Citas" />
-              <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
+              {(isSuperAdminOrAdmin || isLabUser) && !isLabUser && <SidebarItem to="/dashboard" icon="home" label="Inicio" onClick={onClose} />}
               
-              {/* Módulo Laboratorio / Exámenes Clínicos */}
+              {isSuperAdminOrAdmin && (
+                <>
+                  <SidebarDropdown icon="group" label="Usuarios" basePath="/usuarios">
+                    <SidebarSubItem to="/usuarios/personal" label="Personal" />
+                    <SidebarSubItem to="/usuarios/medicos" label="Medicos" />
+                    <SidebarSubItem to="/usuarios/pacientes" label="Pacientes" />
+                    <SidebarSubItem to="/usuarios/farmaceuticos" label="Farmaceuticos" />
+                  </SidebarDropdown>
+                  <SidebarItem to="/citas/agenda" icon="calendar_month" label="Agenda de Citas" />
+                  <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
+                </>
+              )}
+              
+              {/* Módulo Laboratorio / Exámenes Clínicos (Opciones Individuales si es Personal de Examenes) */}
               {isLabUser && (
-                <SidebarDropdown icon="science" label="Laboratorio Clínico" basePath="/examenes">
-                  <SidebarSubItem to="/examenes/agenda" label="Agenda de Exámenes" />
-                  <SidebarSubItem to="/examenes/categorias" label="Tipos de Exámenes" />
-                </SidebarDropdown>
+                <>
+                  <SidebarItem to="/examenes/agenda" icon="science" label="Agenda de Exámenes" onClick={onClose} />
+                  <SidebarItem to="/examenes/categorias" icon="category" label="Tipos de Exámenes" onClick={onClose} />
+                  <SidebarItem to="/examenes/reportes" icon="bar_chart" label="Reportes" onClick={onClose} />
+                </>
               )}
 
-              {/* Gestión Interna (Solo Admins) */}
-              {isSuperAdminOrAdmin && (
+              {/* Módulo Personal Administrativo Normal (Rol 3 sin examenes) */}
+              {isPersonalAdmin && (
+                <>
+                  <SidebarItem to="/personal/dashboard" icon="home" label="Inicio" onClick={onClose} />
+                  <SidebarItem to="/personal/pacientes" icon="group" label="Pacientes" onClick={onClose} />
+                  <SidebarItem to="/personal/agenda" icon="calendar_month" label="Agenda de Citas" onClick={onClose} />
+                  <SidebarItem to="/personal/pqrs" icon="forum" label="PQRS" onClick={onClose} />
+                  <SidebarItem to="/personal/reportes" icon="bar_chart" label="Reportes" onClick={onClose} />
+                </>
+              )}
+
+              {/* Gestión Interna (Solo Admins Normales - Super y Admin regulares) */}
+              {(isSuperAdminOrAdmin && !isLabUser) && (
               <SidebarDropdown icon="settings" label="Gestión Interna" basePath="/configuracion">
                 <SidebarSubItem to="/configuracion/prioridades" label="Prioridades" />
                 <SidebarSubItem to="/configuracion/tipos-cita" label="Tipos de Cita" />

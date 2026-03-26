@@ -41,6 +41,29 @@ export default function AgendaMedico() {
     const { citas, loading: loadingCitas } = useCitas({
         fecha: selectedDate,
         doc_medico: doc,
+        per_page: 100,
+    });
+
+    const [filtroPaciente, setFiltroPaciente] = useState("");
+    const [filtroHora, setFiltroHora] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("");
+
+    const filteredCitas = (citas || []).filter(cita => {
+        if (filtroPaciente) {
+            const nombreCompleto = cita.paciente 
+                ? `${cita.paciente.primer_nombre} ${cita.paciente.primer_apellido}`.toLowerCase() 
+                : "";
+            if (!nombreCompleto.includes(filtroPaciente.toLowerCase())) return false;
+        }
+        if (filtroHora && !cita.hora_inicio?.startsWith(filtroHora)) return false;
+
+        const estadoName = cita.estado?.nombre_estado;
+        if (filtroEstado && filtroEstado !== "Todas") {
+            if (estadoName !== filtroEstado) return false;
+        } else if (!filtroEstado) {
+            if (estadoName === "Cancelada" || estadoName === "Inasistencia") return false;
+        }
+        return true;
     });
 
     useEffect(() => {
@@ -104,10 +127,58 @@ export default function AgendaMedico() {
                     specialty={user.especialidad?.especialidad ?? "Especialista"}
                     office={user.consultorio?.numero_consultorio ? `Consultorio ${user.consultorio.numero_consultorio}` : "Sin Consultorio"}
                     status={user.id_estado === 1 ? "ACTIVO" : "INACTIVO"}
+                    gender={user.sexo}
                 />
             ) : (
                 <div className="p-4 bg-red-100 text-red-700 rounded-lg">Médico no encontrado</div>
             )}
+
+            {/* ── Filtros ───────────────────────────────────────────────── */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Paciente</label>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar por nombre..." 
+                        value={filtroPaciente}
+                        onChange={(e) => setFiltroPaciente(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                    />
+                </div>
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Hora inicio</label>
+                    <input 
+                        type="time" 
+                        value={filtroHora}
+                        onChange={(e) => setFiltroHora(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                    />
+                </div>
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Estado</label>
+                    <select 
+                        value={filtroEstado}
+                        onChange={(e) => setFiltroEstado(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none appearance-none"
+                    >
+                        <option value="">Por defecto (Agendadas/Atendidas)</option>
+                        <option value="Todas">Todas</option>
+                        <option value="Agendada">Agendada</option>
+                        <option value="Atendida">Atendida</option>
+                        <option value="Cancelada">Cancelada</option>
+                        <option value="Inasistencia">Inasistencia</option>
+                    </select>
+                </div>
+                {/* Botón limpiar filtros */}
+                {(filtroPaciente || filtroHora || filtroEstado) && (
+                    <button 
+                        onClick={() => { setFiltroPaciente(""); setFiltroHora(""); setFiltroEstado(""); }}
+                        className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-sm transition-colors"
+                    >
+                        Limpiar
+                    </button>
+                )}
+            </div>
 
             {/* ── Layout: [Citas] + [Calendario] ────────────────────────── */}
             <div className="flex flex-col xl:flex-row gap-6 items-start">
@@ -124,7 +195,7 @@ export default function AgendaMedico() {
                                     ? `Hoy — ${formatDateLabel(selectedDate)}`
                                     : formatDateLabel(selectedDate)
                             }
-                            number={citas.length}
+                            number={filteredCitas.length}
                         />
 
                         {/* Botón regresar a hoy */}
@@ -152,9 +223,9 @@ export default function AgendaMedico() {
                                 >
                                     <TableSkeleton rows={5} columns={5} />
                                 </motion.div>
-                            ) : citas.length === 0 ? (
+                            ) : filteredCitas.length === 0 ? (
                                 <motion.div
-                                    key={`empty-${selectedDate}`}
+                                    key={`empty-${selectedDate}-${filtroPaciente}-${filtroHora}-${filtroEstado}`}
                                     initial={{ opacity: 0, y: 8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
@@ -165,22 +236,23 @@ export default function AgendaMedico() {
                                         event_busy
                                     </span>
                                     <p className="text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider text-sm">
-                                        {isToday
-                                            ? "No hay citas agendadas para hoy."
-                                            : `Sin citas el ${formatDateLabel(selectedDate)}.`
-                                        }
+                                        {citas.length > 0
+                                            ? "No hay citas que coincidan con los filtros."
+                                            : isToday 
+                                                ? "No hay citas agendadas para hoy." 
+                                                : `Sin citas el ${formatDateLabel(selectedDate)}.`}
                                     </p>
                                 </motion.div>
                             ) : (
                                 <motion.div
-                                    key={`table-${selectedDate}`}
+                                    key={`table-${selectedDate}-${filtroPaciente}-${filtroHora}-${filtroEstado}`}
                                     initial={{ opacity: 0, y: 8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
                                 >
                                     <ScheduleTable
-                                        appointments={citas}
+                                        appointments={filteredCitas}
                                         onView={(cita) => setViewingCita(cita)}
                                         // onAtender y onNoAsistio NO se envían, la tabla los ocultará automáticamente
                                     />

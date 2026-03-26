@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-/**
- * useTheme — hook global para manejar el modo oscuro/claro.
- * Lee el estado inicial desde localStorage y sincroniza los cambios
- * en el elemento <html> para que Tailwind los detecte.
- */
 export default function useTheme() {
-    const [isDark, setIsDark] = useState(
-        () =>
-            localStorage.getItem("theme") === "dark" ||
-            (!("theme" in localStorage) &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches)
-    );
+    const getTheme = () =>
+        localStorage.getItem("theme") === "dark" ||
+        (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+    const [isDark, setIsDark] = useState(getTheme());
+
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setIsDark(getTheme());
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+        return () => window.removeEventListener("storage", handleStorageChange);
+    }, []);
 
     const toggleTheme = () => {
         const root = window.document.documentElement;
@@ -24,7 +28,6 @@ export default function useTheme() {
             localStorage.setItem("theme", "dark");
             setIsDark(true);
         }
-        // Notifica a otros componentes que escuchan el storage
         window.dispatchEvent(new Event("storage"));
     };
 

@@ -31,6 +31,29 @@ class ExamenClinicoController extends Controller
     }
 
     /**
+     * Lista los exámenes de un paciente específico.
+     */
+    public function misExamenes(Request $request)
+    {
+        $doc = $request->query('doc_paciente');
+        
+        if (!$doc) {
+            return response()->json(['success' => false, 'message' => 'Documento requerido'], 400);
+        }
+
+        $examenes = \App\Models\Examen::with(['paciente', 'categoriaExamen', 'estado'])
+            ->where('doc_paciente', $doc)
+            ->orderBy('fecha', 'desc')
+            ->orderBy('hora_inicio', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $examenes
+        ]);
+    }
+
+    /**
      * Obtiene los detalles de un solo examen.
      */
     public function show(int $id)

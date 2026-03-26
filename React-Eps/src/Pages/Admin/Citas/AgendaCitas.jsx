@@ -8,12 +8,12 @@ import PrincipalText from "../../../components/Users/PrincipalText";
 import Input from "../../../components/UI/Input";
 import Filter from "../../../components/UI/Filter";
 import ViewCitaModal from "../../../components/Modals/CitaModal/ViewCitaModal";
+import AgendarCitaAdminModal from "../../../components/Modals/CitaModal/AgendarCitaAdminModal";
+import ReagendarCitaModal from "../../../components/Modals/CitaModal/ReagendarCitaModal";
+import useCitas from "../../../hooks/useCitas";
+import Swal from "sweetalert2";
 
-const specialtyOptions = [
-    { value: "Medicina General", label: "Medicina General" },
-    { value: "Odontología", label: "Odontología" },
-    { value: "Cardiología", label: "Cardiología" }
-];
+
 
 export default function AgendaCitas() {
     const { setTitle, setSubtitle } = useLayout();
@@ -45,19 +45,33 @@ export default function AgendaCitas() {
 
     // Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAgendarModalOpen, setIsAgendarModalOpen] = useState(false);
     const [selectedCita, setSelectedCita] = useState(null);
+    const [reagendandoCita, setReagendandoCita] = useState(null);
+
+    const { cancelCita, reagendarCita } = useCitas({ enabled: false });
 
     // Filtros
     const [search, setSearch] = useState("");
     const [specialty, setSpecialty] = useState("");
     const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
+    const [specialtyOptions, setSpecialtyOptions] = useState([]);
 
     const [isCalendarOpen, setIsCalendarOpen] = useState(true);
 
     useEffect(() => {
         setTitle("Agenda de Citas");
         setSubtitle("Administra el calendario de citas.");
+
+        const fetchEspecialidades = async () => {
+            try {
+                const res = await api.get('/especialidades');
+                setSpecialtyOptions(res || []);
+            } catch (error) {
+                console.error("Error al cargar especialidades", error);
+            }
+        };
+        fetchEspecialidades();
 
         const checkClose = () => {
             if (window.innerWidth <= 1100) {
@@ -69,13 +83,17 @@ export default function AgendaCitas() {
         window.addEventListener("resize", checkClose);
         return () => window.removeEventListener("resize", checkClose);
     }, [setTitle, setSubtitle]);
-
     const fetchCitas = async () => {
         try {
             setLoading(true);
-            const res = await api.get("/citas");
+            const res = await api.get("/citas", {
+                params: {
+                    fecha: selectedDate,
+                    per_page: 100
+                }
+            });
 
-            let filteredCitas = (res.data || []).filter(cita => cita.fecha === selectedDate);
+            let filteredCitas = res || [];
 
             if (search) {
                 const searchLower = search.toLowerCase();
@@ -87,29 +105,30 @@ export default function AgendaCitas() {
                 });
             }
 
+            // Filter by status: only Agendada and Atendida (per user request)
+            filteredCitas = filteredCitas.filter(cita => {
+                const statusName = cita.estado?.nombre_estado;
+                return statusName === "Agendada" || statusName === "Atendida";
+            });
+
             if (specialty) {
-                filteredCitas = filteredCitas.filter(cita => cita.tipoCita?.nombre === specialty);
+                // Since specialty is now id_especialidad (value) from backend
+                filteredCitas = filteredCitas.filter(cita => String(cita.medico?.id_especialidad) === String(specialty));
             }
 
-            if (startTime && endTime) {
+            if (startTime) {
                 filteredCitas = filteredCitas.filter(cita => {
                     if (!cita.hora_inicio) return false;
-                    const timeCita = cita.hora_inicio.slice(0, 5); // "HH:mm"
-                    return timeCita >= startTime && timeCita <= endTime;
-                });
-            } else if (startTime) {
-                filteredCitas = filteredCitas.filter(cita => {
-                    if (!cita.hora_inicio) return false;
-                    const timeCita = cita.hora_inicio.slice(0, 5);
-                    return timeCita >= startTime;
-                });
-            } else if (endTime) {
-                filteredCitas = filteredCitas.filter(cita => {
-                    if (!cita.hora_inicio) return false;
-                    const timeCita = cita.hora_inicio.slice(0, 5);
-                    return timeCita <= endTime;
+                    return cita.hora_inicio.startsWith(startTime);
                 });
             }
+
+            // Ordenar por hora_inicio
+            filteredCitas.sort((a, b) => {
+                const horaA = a.hora_inicio || '23:59:59';
+                const horaB = b.hora_inicio || '23:59:59';
+                return horaA.localeCompare(horaB);
+            });
 
             setCitas(filteredCitas);
         } catch (error) {
@@ -121,7 +140,7 @@ export default function AgendaCitas() {
 
     useEffect(() => {
         fetchCitas();
-    }, [selectedDate, search, specialty, startTime, endTime]);
+    }, [selectedDate, search, specialty, startTime]);
 
     const totalCitas = citas.length;
 
@@ -129,7 +148,7 @@ export default function AgendaCitas() {
         <div className="flex flex-col lg:flex-row h-[calc(100vh-130px)] -mx-8 -my-8 overflow-hidden bg-gray-50/50 dark:bg-gray-900/10 relative">
 
             {/* Left Column: Citas del Día Seleccionado */}
-            <div className="flex-1 flex flex-col w-full overflow-y-auto px-8 py-8 transition-all duration-300">
+            <div className={`flex-1 flex flex-col w-full overflow-y-auto px-8 py-8 transition-all duration-500 ${loading ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}>
 
                 {/* Header (Título y botón Agendar arriba) */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -138,6 +157,13 @@ export default function AgendaCitas() {
                         text={`Citas del ${selectedDate}`}
                         number={totalCitas}
                     />
+                    <button 
+                        onClick={() => setIsAgendarModalOpen(true)}
+                        className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors w-full md:w-auto"
+                    >
+                        <span className="material-symbols-outlined text-xl">add_circle</span>
+                        Agendar Cita
+                    </button>
                 </div>
 
                 {/* Recuadro de Filtros Abajo del Título/Botón */}
@@ -166,22 +192,12 @@ export default function AgendaCitas() {
                         </div>
 
                         {/* Hora Inicio */}
-                        <div className="sm:col-span-1 lg:col-span-2 w-full">
+                        <div className="sm:col-span-1 lg:col-span-4 w-full">
                             <Input
                                 type="time"
                                 placeholder="Hora Inicio"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                            />
-                        </div>
-
-                        {/* Hora Fin */}
-                        <div className="sm:col-span-1 lg:col-span-2 w-full">
-                            <Input
-                                type="time"
-                                placeholder="Hora Fin"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
                             />
                         </div>
 
@@ -203,14 +219,35 @@ export default function AgendaCitas() {
                                 patientName={`${cita.paciente.primer_nombre} ${cita.paciente.primer_apellido}`}
                                 patientDoc={cita.paciente.documento}
                                 doctorName={`Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}`}
-                                specialty={cita.tipoCita?.nombre || "General"}
+                                doctorSpecialty={cita.medico?.especialidad?.especialidad || "Médico General"}
+                                specialty={cita.tipoCita?.nombre || ""}
+                                tipoServicio={cita.tipo_evento === 'remision' ? 'Remisión' : 'Cita Médica'}
                                 time={cita.hora_inicio ? `${cita.fecha || ''} | ${cita.hora_inicio.slice(0, 5)}` : "Por definir"}
                                 status={cita.estado?.nombre_estado || "Pendiente"}
                                 onView={() => {
                                     setSelectedCita(cita);
                                     setIsModalOpen(true);
                                 }}
-                                onCancel={() => console.log('cancel', cita.id_cita)}
+                                onCancel={(cita.estado?.nombre_estado === "Agendada" || cita.estado?.nombre_estado === "Pendiente") ? async () => {
+                                    const success = await cancelCita(cita.id_cita);
+                                    if (success) fetchCitas();
+                                } : undefined}
+                                onReschedule={(cita.estado?.nombre_estado === "Agendada" || cita.estado?.nombre_estado === "Pendiente") ? () => {
+                                    if (cita.fecha && cita.hora_inicio) {
+                                        const citaDate = new Date(`${cita.fecha}T${cita.hora_inicio}`);
+                                        const now = new Date();
+                                        const diffHours = (citaDate - now) / (1000 * 60 * 60);
+                                        if (diffHours < 24) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Atención',
+                                                text: 'No puedes reagendar una cita con menos de un día de anticipación.',
+                                            });
+                                            return;
+                                        }
+                                    }
+                                    setReagendandoCita(cita);
+                                } : undefined}
                             />
                         ))}
                     </div>
@@ -226,6 +263,34 @@ export default function AgendaCitas() {
                 }}
                 cita={selectedCita}
             />
+
+            {/* Modal de Agendar */}
+            {isAgendarModalOpen && (
+                <AgendarCitaAdminModal
+                    isOpen={isAgendarModalOpen}
+                    onClose={() => setIsAgendarModalOpen(false)}
+                    onSuccess={() => {
+                        fetchCitas();
+                        setIsAgendarModalOpen(false);
+                    }}
+                />
+            )}
+
+            {/* Modal de Reagendar */}
+            {reagendandoCita && (
+                <ReagendarCitaModal
+                    isOpen={!!reagendandoCita}
+                    onClose={() => setReagendandoCita(null)}
+                    cita={reagendandoCita}
+                    onConfirm={async (id, data) => {
+                        const success = await reagendarCita(id, data);
+                        if (success) {
+                            fetchCitas();
+                            setReagendandoCita(null);
+                        }
+                    }}
+                />
+            )}
 
             {/* Overlay Mobile */}
             {isCalendarOpen && (

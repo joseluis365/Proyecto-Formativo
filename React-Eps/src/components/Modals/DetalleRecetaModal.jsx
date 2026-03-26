@@ -60,13 +60,13 @@ export default function DetalleRecetaModal({ receta, cita, onClose }) {
                 {/* Cita de Origen */}
                 {cita && (
                     <>
-                        <GeneralInfo item={citaItems} />
+                        <GeneralInfo item={citaItems} icon="calendar_month" title="DATOS DE LA CONSULTA" />
                         <hr className="border-gray-200 dark:border-gray-700" />
                     </>
                 )}
 
                 {/* Info de la receta */}
-                <GeneralInfo item={recetaItems} />
+                <GeneralInfo item={recetaItems} icon="assignment_turned_in" title="INFORMACIÓN DE LA RECETA" />
 
                 {/* Estado */}
                 <State state={receta.estado?.nombre_estado || "Pendiente"} />

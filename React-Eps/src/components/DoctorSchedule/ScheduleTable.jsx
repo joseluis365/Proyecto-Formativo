@@ -24,7 +24,11 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
     {
       key: "motivo",
       header: "MOTIVO CONSULTA",
-      render: (d) => d.motivo || "No especificado",
+      render: (d) => {
+        const reasonObj = d.motivoConsulta || d.motivo_consulta;
+        if (reasonObj && d.motivo) return `${reasonObj.motivo} - ${d.motivo}`;
+        return reasonObj?.motivo || d.motivo || "No especificado";
+      },
     },
     {
       key: "id_estado",
@@ -50,7 +54,17 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
       header: "Acciones",
       align: "center",
       render: (d) => {
-        const isPending = d.estado?.nombre_estado === "Agendada";
+        const statusName = d.estado?.nombre_estado;
+        const isActionable = statusName === "Agendada";
+        
+        const isWithinAttendanceWindow = (fecha, hora_inicio) => {
+            if (!fecha || !hora_inicio) return false;
+            const now = new Date();
+            const citaDate = new Date(`${fecha}T${hora_inicio}`);
+            const limitDate = new Date(citaDate.getTime() + 40 * 60000);
+            return now >= citaDate && now <= limitDate;
+        };
+
         return (
           <div className="flex items-center justify-center gap-2">
             <button
@@ -61,7 +75,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
               <span className="material-symbols-outlined text-base">visibility</span>
             </button>
 
-            {isPending && onAtender && onNoAsistio && (
+            {isActionable && onAtender && onNoAsistio && (
               <>
                 <button
                   onClick={() => onAtender(d)}
@@ -70,13 +84,23 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
                 >
                   <span className="material-symbols-outlined text-base font-bold">medical_information</span>
                 </button>
-                <button
-                  onClick={() => onNoAsistio(d)}
-                  className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
-                  title="Marcar Inasistencia"
-                >
-                  <span className="material-symbols-outlined text-base">person_off</span>
-                </button>
+                {isWithinAttendanceWindow(d.fecha, d.hora_inicio) ? (
+                    <button
+                      onClick={() => onNoAsistio(d)}
+                      className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
+                      title="Marcar Inasistencia"
+                    >
+                      <span className="material-symbols-outlined text-base">person_off</span>
+                    </button>
+                ) : (
+                    <button
+                      disabled
+                      className="p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
+                      title="Fuera de horario para inasistencia"
+                    >
+                      <span className="material-symbols-outlined text-base">person_off</span>
+                    </button>
+                )}
               </>
             )}
           </div>

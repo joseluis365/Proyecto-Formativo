@@ -25,7 +25,7 @@ export default function DoctorSidebar({ isOpen, onClose }) {
           lg:translate-x-0
         `}
             >
-                <div className="flex flex-col h-full p-4">
+                <div className="flex flex-col h-full p-4 dark:bg-gray-800 dark:border-gray-800">
                     {/* Header / Brand */}
                     <div className="flex items-center gap-3 p-3">
                         <img src="/icono.png" alt="Saluvanta EPS" className="size-10 rounded-full object-cover block dark:hidden" />

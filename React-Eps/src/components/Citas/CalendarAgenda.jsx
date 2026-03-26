@@ -56,7 +56,7 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
                         const isSelected = selectedDate === dateStr;
                         const isToday = new Date().toISOString().split('T')[0] === dateStr;
 
-                        const isPast = dateObj <= new Date(new Date().setHours(0, 0, 0, 0));
+                        const isPast = dateObj < new Date(new Date().setHours(0, 0, 0, 0));
                         const isTooFar = dateObj > twoMonthsFromNow;
                         const isDisabled = isPast || isTooFar;
 

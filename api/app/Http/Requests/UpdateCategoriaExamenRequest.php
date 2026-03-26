@@ -12,7 +12,8 @@ class UpdateCategoriaExamenRequest extends FormRequest
     {
         $id = $this->route('id');
         return [
-            'categoria' => ['required', 'string', 'max:100', new UniqueIgnoreCase('categoria_examen', 'categoria', $id, 'id_categoria_examen')]
+            'categoria' => ['required', 'string', 'max:100', new UniqueIgnoreCase('categoria_examen', 'categoria', $id, 'id_categoria_examen')],
+            'requiere_ayuno' => ['nullable', 'boolean']
         ];
     }
 }

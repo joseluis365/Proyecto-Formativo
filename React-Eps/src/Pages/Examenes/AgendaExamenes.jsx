@@ -4,6 +4,8 @@ import { useLayout } from "../../LayoutContext";
 import CalendarSelector from "../../components/Medico/CalendarSelector";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
+import ExamenTable from "../../components/Examenes/ExamenTable";
+import AtenderExamenModal from "../../components/Modals/AtenderExamenModal";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 
@@ -18,27 +20,60 @@ function formatDateLabel(dateStr) {
 
 export default function AgendaExamenes() {
     const { setTitle, setSubtitle, setHelpContent } = useLayout();
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     const [selectedDate, setSelectedDate] = useState(
         new Date().toISOString().split('T')[0]
     );
 
-    const navigate = useNavigate();
     const [examenes, setExamenes] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [selectedExamen, setSelectedExamen] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchExamenes = async () => {
         setLoading(true);
         try {
             const res = await api.get('/examenes/agenda', { params: { fecha: selectedDate } });
-            setExamenes(res.data?.data || []);
+            // El interceptor devuelve response.data.data si success está presente
+            // ExamenClinicoController@agenda devuelve {success: true, data: [...]}
+            // Así que res ya es el array de exámenes.
+            setExamenes(Array.isArray(res) ? res : res.data || []);
         } catch (error) {
             console.error("Error fetching examenes:", error);
         } finally {
             setLoading(false);
         }
     };
+
+    const [filtroPaciente, setFiltroPaciente] = useState("");
+    const [filtroHora, setFiltroHora] = useState("");
+    const [filtroTipo, setFiltroTipo] = useState("");
+
+    // Derivamos las categorías únicas de los exámenes cargados en la agenda
+    const categoriasDisponibles = Array.from(
+        new Map(
+            examenes
+                .filter(e => e.categoria_examen)
+                .map(e => [e.id_categoria_examen, e.categoria_examen])
+        ).values()
+    ).sort((a, b) => a.categoria.localeCompare(b.categoria));
+
+    const filteredExamenes = (examenes || []).filter(exam => {
+        if (filtroPaciente) {
+            const nombreCompleto = exam.paciente 
+                ? `${exam.paciente.primer_nombre} ${exam.paciente.primer_apellido}`.toLowerCase() 
+                : "";
+            const documento = String(exam.paciente?.documento || "");
+            if (!nombreCompleto.includes(filtroPaciente.toLowerCase()) && !documento.includes(filtroPaciente)) return false;
+        }
+        if (filtroHora && !exam.hora_inicio?.startsWith(filtroHora)) return false;
+
+        if (filtroTipo) {
+            if (String(exam.id_categoria_examen) !== String(filtroTipo)) return false;
+        }
+        return true;
+    });
 
     useEffect(() => {
         fetchExamenes();
@@ -64,18 +99,63 @@ export default function AgendaExamenes() {
 
     const isToday = selectedDate === new Date().toISOString().split('T')[0];
 
-    const isAtendido = (estado) => ['Atendida', 'Finalizada'].includes(estado);
+    const handleAtender = (examen) => {
+        setSelectedExamen(examen);
+        setIsModalOpen(true);
+    };
+
+    const handleModalSuccess = () => {
+        setIsModalOpen(false);
+        setSelectedExamen(null);
+        fetchExamenes(); // Refrescar los datos de la tabla
+    };
 
     return (
         <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm flex items-center gap-4">
-                <div className="size-14 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-3xl text-indigo-600 dark:text-indigo-400">biotech</span>
+            {/* Filtros */}
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Paciente / DOC</label>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar por nombre o doc..." 
+                        value={filtroPaciente}
+                        onChange={(e) => setFiltroPaciente(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all outline-none"
+                    />
                 </div>
-                <div>
-                    <h2 className="text-xl font-bold dark:text-white">Laboratorio Clínico</h2>
-                    <p className="text-sm text-gray-500">Profesional: {user.primer_nombre} {user.primer_apellido}</p>
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Hora inicio</label>
+                    <input 
+                        type="time" 
+                        value={filtroHora}
+                        onChange={(e) => setFiltroHora(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all outline-none"
+                    />
                 </div>
+                <div className="flex-1 w-full">
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-2">Tipo de Examen</label>
+                    <select 
+                        value={filtroTipo}
+                        onChange={(e) => setFiltroTipo(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all outline-none appearance-none"
+                    >
+                        <option value="">Todos los tipos</option>
+                        {categoriasDisponibles.map(cat => (
+                            <option key={cat.id_categoria_examen} value={cat.id_categoria_examen}>
+                                {cat.categoria}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {(filtroPaciente || filtroHora || filtroTipo) && (
+                    <button 
+                        onClick={() => { setFiltroPaciente(""); setFiltroHora(""); setFiltroTipo(""); }}
+                        className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-sm transition-colors cursor-pointer"
+                    >
+                        Limpiar
+                    </button>
+                )}
             </div>
 
             <div className="flex flex-col xl:flex-row gap-6 items-start">
@@ -84,7 +164,7 @@ export default function AgendaExamenes() {
                         <PrincipalText
                             icon={isToday ? "today" : "calendar_today"}
                             text={isToday ? `Hoy — ${formatDateLabel(selectedDate)}` : formatDateLabel(selectedDate)}
-                            number={examenes.length}
+                            number={filteredExamenes.length}
                         />
 
                         {!isToday && (
@@ -106,67 +186,17 @@ export default function AgendaExamenes() {
                                         <TableSkeleton rows={5} columns={5} />
                                     </div>
                                 </motion.div>
-                            ) : examenes.length === 0 ? (
+                            ) : filteredExamenes.length === 0 ? (
                                 <motion.div key={`empty-${selectedDate}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-center py-16 m-6 rounded-2xl border-2 border-dashed border-gray-200">
                                     <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">science</span>
-                                    <p className="text-gray-500 font-medium text-sm">No hay exámenes programados para esta fecha.</p>
+                                    <p className="text-gray-500 font-medium text-sm">No hay exámenes para mostrar con esos filtros.</p>
                                 </motion.div>
                             ) : (
                                 <motion.div key={`table-${selectedDate}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                                    <table className="w-full text-left text-sm whitespace-nowrap">
-                                        <thead className="bg-gray-50 dark:bg-gray-800/50 text-gray-500 font-bold uppercase text-xs tracking-wider">
-                                            <tr>
-                                                <th className="px-6 py-4 rounded-tl-xl">Hora</th>
-                                                <th className="px-6 py-4">Paciente / Documento</th>
-                                                <th className="px-6 py-4">Examen</th>
-                                                <th className="px-6 py-4">Ayuno</th>
-                                                <th className="px-6 py-4">Estado</th>
-                                                <th className="px-6 py-4 rounded-tr-xl">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                                            {examenes.map(exam => (
-                                                <tr key={exam.id_examen} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors">
-                                                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-gray-100">{exam.hora_inicio?.slice(0, 5)}</td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="font-bold text-gray-900 dark:text-gray-100">{exam.paciente?.primer_nombre} {exam.paciente?.primer_apellido}</div>
-                                                        <div className="text-xs text-gray-500">{exam.paciente?.documento}</div>
-                                                    </td>
-                                                    <td className="px-6 py-4 font-medium text-gray-700 dark:text-gray-300">
-                                                        {exam.categoria_examen?.categoria ?? 'Laboratorio'}
-                                                    </td>
-                                                    <td className="px-6 py-4 flex mt-2">
-                                                        {exam.requiere_ayuno ? (
-                                                            <span className="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><span className="material-symbols-outlined text-sm">restaurant</span> Sí</span>
-                                                        ) : (
-                                                            <span className="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><span className="material-symbols-outlined text-sm">no_food</span> No</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={`px-2 py-1 text-xs font-bold rounded-lg ${isAtendido(exam.estado?.nombre_estado) ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                                            {exam.estado?.nombre_estado}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        {isAtendido(exam.estado?.nombre_estado) ? (
-                                                            <button disabled className="text-gray-400 bg-gray-100 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 cursor-not-allowed">
-                                                                <span className="material-symbols-outlined text-sm">check_circle</span>
-                                                                Completado
-                                                            </button>
-                                                        ) : (
-                                                            <button 
-                                                                onClick={() => navigate(`/examenes/atender/${exam.id_examen}`)}
-                                                                className="bg-indigo-600 text-white hover:bg-indigo-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 cursor-pointer shadow-sm hover:shadow-indigo-500/20 transition-all"
-                                                            >
-                                                                <span className="material-symbols-outlined text-sm">science</span>
-                                                                Atender
-                                                            </button>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                    <ExamenTable 
+                                        examenes={filteredExamenes} 
+                                        onAtender={handleAtender} 
+                                    />
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -177,6 +207,13 @@ export default function AgendaExamenes() {
                     <CalendarSelector selectedDate={selectedDate} onDateSelect={setSelectedDate} />
                 </div>
             </div>
+
+            <AtenderExamenModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+                examen={selectedExamen} 
+                onSuccess={handleModalSuccess}
+            />
         </div>
     );
 }

@@ -40,6 +40,7 @@ import SuperAdminRoute from "./components/Routes/SuperAdminRoute"
 import AuthRoute from "./components/Routes/AuthRoute"
 import AdminRoute from "./components/Routes/AdminRoute"
 import ExamenRoute from "./components/Routes/ExamenRoute"
+import PersonalRoute from "./components/Routes/PersonalRoute"
 
 // Perfil compartido
 import Perfil from "./Pages/Perfil"
@@ -98,7 +99,12 @@ import HistorialCitasAtendidas from "./Pages/Medico/HistorialCitasAtendidas"
 // Módulo de Exámenes (Rol 3)
 import AgendaExamenes from "./Pages/Examenes/AgendaExamenes"
 import AtenderExamen from "./Pages/Examenes/AtenderExamen"
-import GestorCategorias from "./Pages/Examenes/GestorCategorias"
+import ReportesExamenes from "./Pages/Examenes/ReportesExamenes"
+
+// Módulo Personal Administrativo (Rol 3)
+import PersonalAdminDashboard from "./Pages/Personal/PersonalAdminDashboard"
+import PqrsList from "./Pages/Personal/PqrsList"
+import PersonalReportes from "./Pages/Personal/PersonalReportes"
 
 export default function App() {
   // Global Dark Mode Initialization
@@ -229,7 +235,20 @@ export default function App() {
           <Route element={<DashboardLayout />}>
             <Route path="/examenes/agenda" element={<AgendaExamenes />} />
             <Route path="/examenes/atender/:id" element={<AtenderExamen />} />
-            <Route path="/examenes/categorias" element={<GestorCategorias />} />
+            <Route path="/examenes/categorias" element={<CategoriasExamen />} />
+            <Route path="/examenes/reportes" element={<ReportesExamenes />} />
+          </Route>
+        </Route>
+
+        {/* Layout de Personal Administrativo Normal */}
+        <Route element={<PersonalRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/personal/dashboard" element={<PersonalAdminDashboard />} />
+            <Route path="/personal/pacientes" element={<Pacientes />} />
+            <Route path="/personal/pacientes/:doc/historial" element={<HistorialPacienteMedicoPD />} />
+            <Route path="/personal/agenda" element={<AgendaCitas />} />
+            <Route path="/personal/pqrs" element={<PqrsList />} />
+            <Route path="/personal/reportes" element={<PersonalReportes />} />
           </Route>
         </Route>
 

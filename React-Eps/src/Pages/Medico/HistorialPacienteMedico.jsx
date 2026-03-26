@@ -59,16 +59,22 @@ function CitaDetalleModal({ cita, onClose }) {
     const [selectedReceta, setSelectedReceta] = useState(null);
 
     const getUnit = (key) => {
-        switch (key.toLowerCase()) {
-            case 'frecuencia_cardiaca': return 'lpm';
-            case 'frecuencia_respiratoria': return 'rpm';
-            case 'presion_arterial': return 'mmHg';
-            case 'temperatura': return '°C';
-            case 'saturacion_oxigeno': return '%';
-            case 'peso': return 'kg';
-            case 'estatura': return 'cm';
-            case 'talla': return 'cm';
-            case 'imc': return 'kg/m²';
+        const k = key.toUpperCase().replace(/_/g, " ");
+        switch (k) {
+            case 'FC':
+            case 'FRECUENCIA CARDIACA': return 'lpm';
+            case 'FR':
+            case 'FRECUENCIA RESPIRATORIA': return 'rpm';
+            case 'PESO': return 'kg';
+            case 'TALLA':
+            case 'ESTATURA': return 'm';
+            case 'TEMPERATURA': return '°C';
+            case 'TA SISTOLICA': return 'mmHG';
+            case 'TA DIASTOLICA': return 'mmHG';
+            case 'PRESION ARTERIAL': return 'mmHG';
+            case 'SATURACION O2':
+            case 'SATURACION OXIGENO': return '%';
+            case 'IMC': return 'kg/m²';
             default: return '';
         }
     };
@@ -171,7 +177,7 @@ function CitaDetalleModal({ cita, onClose }) {
                                                     {r.id_remision && <span className="text-xs font-bold text-gray-400">#{r.id_remision}</span>}
                                                 </div>
                                                 <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                                                    {r.especialidad?.especialidad || r.categoriaExamen?.categoria || "Requiere asignación"}
+                                                    {r.especialidad?.especialidad || (r.categoriaExamen || r.categoria_examen)?.categoria || "Requiere asignación"}
                                                 </p>
                                                 {(r.cita?.fecha || r.examen?.fecha) && (
                                                     <p className="text-[10px] font-bold text-primary mt-0.5 flex items-center gap-1">
@@ -232,6 +238,24 @@ function CitaDetalleModal({ cita, onClose }) {
                 ) : (
                     <p className="text-sm text-gray-400 text-center py-4">Sin detalles clínicos registrados para esta cita.</p>
                 )}
+
+                {/* Footer del Modal - Botón PDF */}
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                    <button
+                        onClick={downloadPdf}
+                        disabled={downloading}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all ${
+                            downloading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
+                        }`}
+                    >
+                        {downloading ? (
+                            <span className="material-symbols-outlined animate-spin">refresh</span>
+                        ) : (
+                            <span className="material-symbols-outlined">description</span>
+                        )}
+                        {downloading ? "Generando..." : "Descargar PDF"}
+                    </button>
+                </div>
             </motion.div>
 
             {/* Sub-modales de detalles usando AnimatePresence */}

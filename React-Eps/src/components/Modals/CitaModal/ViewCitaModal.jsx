@@ -7,9 +7,13 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
     const navigate = useNavigate();
     if (!isOpen || !cita) return null;
 
+    const isExamen = cita._isExamen;
     const patientName = `${cita.paciente?.primer_nombre || ''} ${cita.paciente?.primer_apellido || ''}`;
     const doctorName = cita.medico ? `Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}` : "Por Asignar";
-    const specialty = cita.tipo_evento === 'remision' ? `Remisión a Especialista` : cita.tipo_evento === 'examen' ? `Orden de Examen` : (cita.tipoCita?.tipo || "Consulta General");
+    const specialty = isExamen 
+        ? cita.categoria_examen?.categoria 
+        : (cita.tipo_evento === 'remision' ? `Remisión a Especialista` : (cita.tipoCita?.tipo || "Consulta General"));
+    
     const status = cita.estado?.nombre_estado || "Pendiente";
     const reasonObj = cita.motivoConsulta || cita.motivo_consulta;
     const historialObj = cita.historialDetalle || cita.historial_detalle;
@@ -26,11 +30,32 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
         navigate(path);
     };
 
+    const getUnit = (key) => {
+        const k = key.toUpperCase().replace(/_/g, " ");
+        switch (k) {
+            case 'FC':
+            case 'FRECUENCIA CARDIACA': return 'lpm';
+            case 'FR':
+            case 'FRECUENCIA RESPIRATORIA': return 'rpm';
+            case 'PESO': return 'kg';
+            case 'TALLA':
+            case 'ESTATURA': return 'm';
+            case 'TEMPERATURA': return '°C';
+            case 'TA SISTOLICA': return 'mmHG';
+            case 'TA DIASTOLICA': return 'mmHG';
+            case 'PRESION ARTERIAL': return 'mmHG';
+            case 'SATURACION O2':
+            case 'SATURACION OXIGENO': return '%';
+            case 'IMC': return 'kg/m²';
+            default: return '';
+        }
+    };
+
     return (
         <BaseModal>
             <ModalHeader
-                title="Detalles de la Cita"
-                icon="info"
+                title={isExamen ? "Detalles del Examen" : "Detalles de la Cita"}
+                icon={isExamen ? "science" : "info"}
                 onClose={onClose}
             />
 
@@ -54,21 +79,35 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                         </div>
                     </div>
 
-                    {/* Seccion Medica */}
-                    <div className="bg-green-50/50 dark:bg-green-900/10 p-4 rounded-xl border border-green-100 dark:border-green-900/30">
-                        <h3 className="text-green-700 dark:text-green-400 font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">medical_services</span>
-                            Información Médica
+                    {/* Seccion Medica / Examen */}
+                    <div className={`${isExamen ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30' : 'bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30'} p-4 rounded-xl border`}>
+                        <h3 className={`${isExamen ? 'text-indigo-700 dark:text-indigo-400' : 'text-green-700 dark:text-green-400'} font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2`}>
+                            <span className="material-symbols-outlined text-lg">
+                                {isExamen ? 'lab_profile' : 'medical_services'}
+                            </span>
+                            {isExamen ? 'Información del Examen' : 'Información Médica'}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {!isExamen && (
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Médico Tratante</p>
+                                    <p className="font-semibold text-gray-800 dark:text-gray-200">{doctorName}</p>
+                                </div>
+                            )}
                             <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Médico Tratante</p>
-                                <p className="font-semibold text-gray-800 dark:text-gray-200">{doctorName}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Especialidad / Tipo Cita</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {isExamen ? 'Categoría de Examen' : 'Especialidad / Tipo Cita'}
+                                </p>
                                 <p className="font-semibold text-gray-800 dark:text-gray-200">{specialty}</p>
                             </div>
+                            {isExamen && (
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Requerimiento</p>
+                                    <p className="font-semibold text-gray-800 dark:text-gray-200">
+                                        {cita.categoria_examen?.requiere_ayuno ? 'Requiere Ayuno' : 'Sin ayuno previo'}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -130,8 +169,8 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                                                 <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5 truncate" title={k.replace(/_/g, " ")}>
                                                     {k.replace(/_/g, " ")}
                                                 </p>
-                                                <p className="text-sm font-black text-blue-700 dark:text-blue-300">
-                                                    {v}
+                                                <p className="text-sm font-black text-blue-700 dark:text-blue-300 flex items-baseline gap-1">
+                                                    {v} <span className="text-[10px] font-medium text-blue-500/70">{getUnit(k)}</span>
                                                 </p>
                                             </div>
                                         ))}
@@ -175,6 +214,30 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                                     </div>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* Resultados PDF para Examen */}
+                    {isExamen && cita.resultado_pdf && (
+                        <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+                             <h3 className="text-primary dark:text-blue-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                Resultados del Examen
+                            </h3>
+                            <a 
+                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/storage/${cita.resultado_pdf.replace('app/', '')}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/30 rounded-2xl hover:bg-indigo-100 transition-colors group"
+                            >
+                                <div className="size-10 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                                    <span className="material-symbols-outlined">download</span>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200 group-hover:underline">Descargar Resultados (PDF)</p>
+                                    <p className="text-[10px] text-indigo-500 uppercase font-black tracking-widest">Documento Oficial</p>
+                                </div>
+                            </a>
                         </div>
                     )}
 

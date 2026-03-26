@@ -1,233 +1,294 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1f2937; background: #fff; padding: 32px; }
+    <meta charset="UTF-8">
+    <title>Resumen de Atención Médica</title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; margin: 0; padding: 20px; }
+        .header { width: 100%; border-bottom: 3px solid #0056b3; padding-bottom: 10px; margin-bottom: 20px; }
+        .header table { width: 100%; }
+        .logo-eps { font-size: 24px; font-weight: bold; color: #0056b3; text-transform: uppercase; }
+        .doc-title { font-size: 16px; font-weight: bold; color: #555; text-align: right; }
+        .system-name { font-size: 10px; color: #777; margin-top: 5px; }
 
-    /* Header */
-    .header { background: linear-gradient(135deg, #1d4ed8 0%, #0ea5e9 100%); color: white; padding: 24px 28px; border-radius: 8px; margin-bottom: 28px; }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .logo-area h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.05em; }
-    .logo-area p { font-size: 10px; opacity: 0.85; margin-top: 2px; }
-    .doc-info { text-align: right; }
-    .doc-info .label { font-size: 9px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.08em; }
-    .doc-info .value { font-size: 14px; font-weight: 700; }
-    .doc-badge { display: inline-block; margin-top: 8px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 20px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+        .card { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; overflow: hidden; page-break-inside: avoid; }
+        .card-header { background-color: #f4f7f6; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #ddd; color: #0056b3; font-size: 12px; text-transform: uppercase; }
+        .card-body { padding: 12px; }
 
-    /* Section */
-    .section { margin-bottom: 20px; }
-    .section-title { font-size: 9px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1.5px solid #dbeafe; padding-bottom: 5px; margin-bottom: 12px; }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table td { padding: 6px; vertical-align: top; }
+        .info-label { font-size: 9px; color: #777; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 2px; }
+        .info-value { font-size: 12px; font-weight: bold; color: #222; }
 
-    /* Info grid */
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; }
-    .info-item .lbl { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-    .info-item .val { font-size: 11px; color: #1f2937; margin-top: 1px; font-weight: 500; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-exam { background-color: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
+        .badge-cita { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9;}
+        .badge-receta { background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7;}
+        
+        .icd-badge { display: inline-block; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #1e40af; margin-right: 5px; margin-bottom: 5px;}
 
-    /* Text block */
-    .text-block { background: #f8fafc; border-left: 3px solid #1d4ed8; border-radius: 0 6px 6px 0; padding: 12px 14px; margin-top: 4px; }
-    .text-block p { font-size: 11px; line-height: 1.6; color: #374151; }
+        .text-block { background: #f8fafc; border-left: 3px solid #1d4ed8; padding: 10px; margin-top: 5px; margin-bottom: 10px; }
+        .text-block p { margin: 0; font-size: 11px; line-height: 1.5; color: #374151; white-space: pre-wrap; }
 
-    /* Badges */
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-    .badge-blue { background: #dbeafe; color: #1e40af; }
-    .badge-green { background: #dcfce7; color: #15803d; }
-    .badge-purple { background: #f3e8ff; color: #7e22ce; }
-    .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .vital-table { width: 100%; margin-bottom: 15px; }
+        .vital-box { background: #f0f8ff; border: 1px solid #b6d4fe; padding: 8px; border-radius: 6px; text-align: left; }
+        .vital-label { font-size: 9px; color: #084298; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 2px; }
+        .vital-value { font-size: 13px; font-weight: bold; color: #052c65; }
+        .vital-unit { font-size: 9px; font-weight: normal; color: #084298; }
 
-    /* Table */
-    .med-table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-    .med-table th { background: #1d4ed8; color: white; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 7px 10px; text-align: left; }
-    .med-table td { font-size: 10px; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; color: #374151; }
-    .med-table tr:last-child td { border-bottom: none; }
-    .med-table tr:nth-child(even) td { background: #f8fafc; }
+        .item-list-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; margin-bottom: 8px; }
+        .item-title { font-size: 11px; font-weight: bold; color: #1e293b; margin-bottom: 4px; }
+        .item-desc { font-size: 10px; color: #475569; }
 
-    /* ICD badges row */
-    .icd-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .icd-badge { background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; color: #1e40af; }
+        .footer { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 10px; font-size: 9px; color: #999; text-align: center; }
 
-    /* Footer */
-    .footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-    .footer p { font-size: 9px; color: #94a3b8; }
-    .footer .stamp { font-size: 9px; color: #94a3b8; text-align: right; }
-
-    /* Remision card */
-    .remision-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; }
-    .remision-card .type-badge { margin-bottom: 8px; }
-
-    /* Notice box */
-    .notice-box { background: #fef3c7; border: 1px solid #fcd34d; border-radius: 6px; padding: 12px 14px; }
-    .notice-box p { font-size: 10px; color: #92400e; line-height: 1.5; }
-</style>
+        .med-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .med-table th, .med-table td { border: 1px solid #e2e8f0; padding: 6px 8px; text-align: left; font-size: 10px; }
+        .med-table th { background-color: #f8fafc; color: #475569; font-size: 9px; text-transform: uppercase; }
+    </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="header-top">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            @if(!empty($logoBase64))
-                <img src="data:image/png;base64,{{ $logoBase64 }}" style="width: 45px; height: 45px; margin-right: 12px; vertical-align: middle;">
-            @endif
-            <div style="display: inline-block; vertical-align: middle;">
-                <h1 style="font-size: 18px; font-weight: 700; letter-spacing: 0.05em; margin: 0;">SALUVANTA EPS</h1>
-                <p style="font-size: 10px; opacity: 0.85; margin-top: 2px;">Atención Médica — Documento Oficial</p>
+    <div class="header">
+        <table>
+            <tr>
+                <td style="width: 10%; vertical-align: middle;">
+                    @if(!empty($logoBase64))
+                        <img src="data:image/png;base64,{{ $logoBase64 }}" style="width: 50px; height: 50px;">
+                    @endif
+                </td>
+                <td style="width: 40%; vertical-align: middle;">
+                    <div class="logo-eps">SALUVANTA EPS</div>
+                    <div class="system-name">Generado por Sanitec</div>
+                </td>
+                <td style="width: 50%; vertical-align: middle; text-align: right;">
+                    <div class="doc-title">RESUMEN DE ATENCIÓN MÉDICA</div>
+                    <div style="margin-top: 5px;">
+                        <span class="badge" style="background: #eee; color: #333;">Consulta Nº #{{ $cita->id_cita }}</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Datos de la Consulta -->
+    <div class="card">
+        <div class="card-header">Datos de la Consulta</div>
+        <div class="card-body">
+            <table class="info-table">
+                <tr>
+                    <td style="width: 50%;">
+                        <span class="info-label">Paciente</span>
+                        <span class="info-value">{{ $cita->paciente?->primer_nombre }} {{ $cita->paciente?->primer_apellido }}</span>
+                    </td>
+                    <td style="width: 50%;">
+                        <span class="info-label">Documento</span>
+                        <span class="info-value">{{ $cita->paciente?->tipo_documento ?? 'CC' }} {{ $cita->paciente?->documento ?? $cita->doc_paciente }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="info-label">Médico Tratante</span>
+                        <span class="info-value">Dr. {{ $cita->medico?->primer_nombre }} {{ $cita->medico?->primer_apellido }}</span>
+                    </td>
+                    <td>
+                        <span class="info-label">Especialidad</span>
+                        <span class="info-value">{{ $cita->especialidad?->especialidad ?? 'Medicina General' }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="info-label">Motivo General</span>
+                        <span class="info-value">{{ $cita->motivoConsulta?->motivo ?? 'Atención General' }}</span>
+                    </td>
+                    <td>
+                        <span class="info-label">Fecha y Hora</span>
+                        <span class="info-value">{{ $cita->fecha }} a las {{ substr($cita->hora_inicio, 0, 5) }}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    @if($cita->historialDetalle)
+    @php 
+        $det = $cita->historialDetalle; 
+        $sv = $det->signos_vitales;
+
+        // Helper para unidades
+        $getUnit = function($key) {
+            $k = strtoupper(str_replace('_', ' ', $key));
+            switch ($k) {
+                case 'FC': case 'FRECUENCIA CARDIACA': return 'lpm';
+                case 'FR': case 'FRECUENCIA RESPIRATORIA': return 'rpm';
+                case 'PESO': return 'kg';
+                case 'TALLA': case 'ESTATURA': return 'm';
+                case 'TEMPERATURA': return '°C';
+                case 'TA SISTOLICA': case 'TA DIASTOLICA': case 'PRESION ARTERIAL': return 'mmHG';
+                case 'SATURACION O2': case 'SATURACION OXIGENO': return '%';
+                case 'IMC': return 'kg/m²';
+                default: return '';
+            }
+        };
+    @endphp
+
+    <!-- Información Clínica -->
+    <div class="card">
+        <div class="card-header">Información Clínica</div>
+        <div class="card-body">
+            
+            @if(is_array($sv) && count($sv) > 0)
+            <div style="margin-bottom: 15px;">
+                <span class="info-label" style="color:#084298;">SIGNOS VITALES</span>
+                <table style="width: 100%; border-collapse: separate; border-spacing: 5px 0; margin-left: -5px;">
+                    <tr>
+                        @php $count = 0; @endphp
+                        @foreach($sv as $k => $v)
+                            @if($count > 0 && $count % 4 == 0)
+                                </tr><tr><td colspan="4" style="height:5px;"></td></tr><tr>
+                            @endif
+                            <td style="width: 25%;"><div class="vital-box">
+                                <span class="vital-label">{{ str_replace('_', ' ', $k) }}</span>
+                                <span class="vital-value">{{ $v }} <span class="vital-unit">{{ $getUnit($k) }}</span></span>
+                            </div></td>
+                            @php $count++; @endphp
+                        @endforeach
+                        @while($count % 4 != 0)
+                            <td style="width: 25%;"></td>
+                            @php $count++; @endphp
+                        @endwhile
+                    </tr>
+                </table>
             </div>
-        </div>
-        <div class="doc-info">
-            <div class="label">Nº de Consulta</div>
-            <div class="value">#{{ $cita->id_cita }}</div>
-            <div class="doc-badge">Cita Atendida</div>
+            @endif
+
+            @if($det->subjetivo)
+            <div>
+                <span class="info-label">Motivo de Consulta / Subjetivo</span>
+                <div class="text-block"><p>{{ $det->subjetivo }}</p></div>
+            </div>
+            @endif
+
+            @if($det->diagnostico || ($det->enfermedades && count($det->enfermedades) > 0))
+            <div>
+                <span class="info-label">Diagnóstico Clínico</span>
+                @if($det->enfermedades && count($det->enfermedades) > 0)
+                <div style="margin-top: 5px;">
+                    @foreach($det->enfermedades as $enf)
+                    <span class="icd-badge">[{{ $enf->codigo_icd }}] {{ $enf->nombre }}</span>
+                    @endforeach
+                </div>
+                @endif
+                @if($det->diagnostico)
+                <div class="text-block" style="margin-top: 5px;"><p>{{ $det->diagnostico }}</p></div>
+                @endif
+            </div>
+            @endif
+
+            @if($det->tratamiento)
+            <div>
+                <span class="info-label">Plan de Tratamiento</span>
+                <div class="text-block"><p>{{ $det->tratamiento }}</p></div>
+            </div>
+            @endif
+
+            @if($det->observaciones)
+            <div>
+                <span class="info-label">Observaciones</span>
+                <div class="text-block"><p>{{ $det->observaciones }}</p></div>
+            </div>
+            @endif
+
         </div>
     </div>
-</div>
 
-<!-- Información General -->
-<div class="section">
-    <div class="section-title">Información General</div>
-    <div class="info-grid">
-        <div class="info-item">
-            <div class="lbl">Paciente</div>
-            <div class="val">{{ $cita->paciente?->primer_nombre }} {{ $cita->paciente?->primer_apellido }}</div>
+    <!-- Remisiones y Exámenes -->
+    @if($det->remisiones && count($det->remisiones) > 0)
+    <div class="card">
+        <div class="card-header">Remisiones y Exámenes ({{ count($det->remisiones) }})</div>
+        <div class="card-body" style="padding-bottom: 4px;">
+            @foreach($det->remisiones as $r)
+            <div class="item-list-box">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="vertical-align: top; width: 70%;">
+                            <div style="margin-bottom: 4px;">
+                                @if($r->tipo_remision === 'examen')
+                                    <span class="badge badge-exam">EXAMEN</span>
+                                @else
+                                    <span class="badge badge-cita">REMISIÓN</span>
+                                @endif
+                                <span style="font-size: 10px; color: #888; font-weight: bold; margin-left: 4px;">#{{ $r->id_remision }}</span>
+                            </div>
+                            <div class="item-title">
+                                {{ $r->tipo_remision === 'examen' ? ($r->categoriaExamen?->categoria ?? 'Examen General') : ($r->especialidad?->especialidad ?? 'Especialista') }}
+                            </div>
+                            @if($r->notas)
+                                <div class="item-desc" style="margin-top: 3px;">Nota: {{ $r->notas }}</div>
+                            @endif
+                        </td>
+                        <td style="vertical-align: top; text-align: right; width: 30%;">
+                            @if(($r->tipo_remision === 'cita' && $r->cita) || ($r->tipo_remision === 'examen' && $r->examen))
+                                @php $asig = $r->tipo_remision === 'cita' ? $r->cita : $r->examen; @endphp
+                                <div style="font-size: 9px; color: #666; text-transform: uppercase; font-weight: bold;">Cita Asignada</div>
+                                <div style="font-size: 10px; color: #1d4ed8; font-weight: bold; margin-top: 2px;">{{ $asig->fecha }}</div>
+                                <div style="font-size: 10px; color: #1d4ed8;">{{ substr($asig->hora_inicio, 0, 5) }}</div>
+                            @else
+                                <div style="font-size: 10px; color: #e65100; font-weight: bold; margin-top: 15px;">Pendiente de Asignación</div>
+                            @endif
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            @endforeach
         </div>
-        <div class="info-item">
-            <div class="lbl">Documento</div>
-            <div class="val">{{ $cita->paciente?->documento ?? $cita->doc_paciente }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Médico Tratante</div>
-            <div class="val">Dr. {{ $cita->medico?->primer_nombre }} {{ $cita->medico?->primer_apellido }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Especialidad</div>
-            <div class="val">{{ $cita->especialidad?->especialidad ?? 'Medicina General' }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Fecha</div>
-            <div class="val">{{ $cita->fecha }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Hora</div>
-            <div class="val">{{ substr($cita->hora_inicio, 0, 5) }}</div>
-        </div>
-    </div>
-</div>
-
-@if($cita->historialDetalle)
-@php $det = $cita->historialDetalle; @endphp
-
-@if($det->subjetivo)
-<div class="section">
-    <div class="section-title">Motivo de Consulta</div>
-    <div class="text-block"><p>{{ $det->subjetivo }}</p></div>
-</div>
-@endif
-
-@if($det->diagnostico)
-<div class="section">
-    <div class="section-title">Diagnóstico Clínico</div>
-    @if($det->enfermedades && count($det->enfermedades) > 0)
-    <div class="icd-row">
-        @foreach($det->enfermedades as $enf)
-        <span class="icd-badge">[{{ $enf->codigo_icd }}] {{ $enf->nombre }}</span>
-        @endforeach
     </div>
     @endif
-    <div class="text-block" style="margin-top: 8px;"><p>{{ $det->diagnostico }}</p></div>
-</div>
-@endif
 
-@if($det->tratamiento)
-<div class="section">
-    <div class="section-title">Plan de Tratamiento</div>
-    <div class="text-block"><p>{{ $det->tratamiento }}</p></div>
-</div>
-@endif
-
-@if($det->observaciones)
-<div class="section">
-    <div class="section-title">Observaciones</div>
-    <div class="text-block"><p>{{ $det->observaciones }}</p></div>
-</div>
-@endif
-
-@if($det->receta && $det->receta->recetaDetalles && count($det->receta->recetaDetalles) > 0)
-<div class="section">
-    <div class="section-title">Receta Médica · ID #{{ $det->receta->id_receta }}</div>
-    <table class="med-table">
-        <thead>
-            <tr>
-                <th>Medicamento</th>
-                <th>Presentación</th>
-                <th>Dosis</th>
-                <th>Frecuencia</th>
-                <th>Duración</th>
-                <th>Farmacia</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($det->receta->recetaDetalles as $rd)
-            <tr>
-                <td><strong>{{ $rd->presentacion?->medicamento?->nombre ?? '—' }}</strong></td>
-                <td>{{ $rd->presentacion?->concentracion?->concentracion ?? '' }} {{ $rd->presentacion?->formaFarmaceutica?->forma_farmaceutica ?? '' }}</td>
-                <td>{{ $rd->dosis }} (Cant: {{ $rd->cantidad_dispensar }})</td>
-                <td>{{ $rd->frecuencia }}</td>
-                <td>{{ $rd->duracion }}</td>
-                <td>{{ $rd->farmacia?->nombre ?? $rd->nit_farmacia }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-@endif
-
-@if($det->remisiones && count($det->remisiones) > 0)
-<div class="section">
-    <div class="section-title">Remisiones Generadas ({{ count($det->remisiones) }})</div>
-    @foreach($det->remisiones as $r)
-    <div class="remision-card">
-        <div class="type-badge">
-            @if($r->tipo_remision === 'examen')
-            <span class="badge badge-blue">Examen Clínico</span>
+    <!-- Receta Médica -->
+    @if($det->receta)
+    <div class="card">
+        <div class="card-header">Receta Médica</div>
+        <div class="card-body" style="padding-top: 8px;">
+            <div style="margin-bottom: 8px;">
+                <span class="badge badge-receta">RECETA FORMATO #{{ $det->receta->id_receta }}</span>
+                <span style="font-size: 10px; color: #666; margin-left: 8px;">Emisión: {{ $det->receta->created_at->format('d/m/Y') }}</span>
+            </div>
+            
+            @if($det->receta->recetaDetalles && count($det->receta->recetaDetalles) > 0)
+            <table class="med-table">
+                <thead>
+                    <tr>
+                        <th>Medicamento y Dosis</th>
+                        <th>Frecuencia</th>
+                        <th>Duración</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($det->receta->recetaDetalles as $rd)
+                    <tr>
+                        <td>
+                            <strong style="color: #0056b3;">{{ $rd->presentacion?->medicamento?->nombre ?? 'Medicamento' }}</strong><br>
+                            <span style="color: #555;">Dosis: {{ $rd->dosis }}</span>
+                        </td>
+                        <td>{{ $rd->frecuencia }}</td>
+                        <td>{{ $rd->duracion }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
             @else
-            <span class="badge badge-green">Interconsulta / Especialista</span>
+            <p style="font-size: 10px; color: #777; margin: 0;">Sin medicamentos registrados.</p>
             @endif
         </div>
-        <div class="info-grid" style="margin-top: 4px; padding: 10px;">
-            <div class="info-item"><div class="lbl">Emisión</div><div class="val">{{ $r->created_at->format('d/m/Y') }}</div></div>
-            @if($r->tipo_remision === 'cita')
-            <div class="info-item"><div class="lbl">Especialidad</div><div class="val">{{ $r->especialidad?->especialidad ?? '—' }}</div></div>
-            @if($r->cita)
-            <div class="info-item"><div class="lbl">Fecha Cita</div><div class="val">{{ $r->cita->fecha }} ({{ substr($r->cita->hora_inicio, 0, 5) }})</div></div>
-            <div class="info-item"><div class="lbl">Médico</div><div class="val">Dr. {{ $r->cita->medico?->primer_nombre }} {{ $r->cita->medico?->primer_apellido }}</div></div>
-            @endif
-            @else
-            <div class="info-item"><div class="lbl">Examen</div><div class="val">{{ $r->categoriaExamen?->categoria ?? '—' }}</div></div>
-            @if($r->examen)
-            <div class="info-item"><div class="lbl">Fecha Examen</div><div class="val">{{ $r->examen->fecha }} ({{ substr($r->examen->hora_inicio, 0, 5) }})</div></div>
-            @endif
-            <div class="info-item"><div class="lbl">Requiere Ayuno</div><div class="val">{{ $r->requiere_ayuno ? 'Sí' : 'No' }}</div></div>
-            @endif
-            <div class="info-item"><div class="lbl">Prioridad</div><div class="val">{{ $r->prioridad?->nombre_prioridad ?? 'Normal' }}</div></div>
-            <div class="info-item"><div class="lbl">Estado</div><div class="val">{{ $r->estado?->nombre_estado ?? 'Activa' }}</div></div>
-        </div>
-        @if($r->notas)
-        <p style="font-size: 10px; color: #64748b; margin-top: 6px;">📝 {{ $r->notas }}</p>
-        @endif
     </div>
-    @endforeach
-</div>
-@endif
+    @endif
 
-@endif
+    @endif
 
-<div class="footer">
-    <p>Documento generado por Saluvanta EPS (Sanitech) · {{ now()->format('d/m/Y H:i') }}</p>
-    <div class="stamp">
-        <p>Firma Médico Tratante</p>
-        <p style="margin-top: 28px; border-top: 1px solid #cbd5e1; padding-top: 4px;">Dr. {{ $cita->medico?->primer_nombre }} {{ $cita->medico?->primer_apellido }}</p>
+    <div class="footer">
+        Documento Oficial &copy; Saluvanta EPS | Generado por el Sistema de Información Sanitec | Fecha: {{ now()->format('d/m/Y H:i A') }}
     </div>
-</div>
 
 </body>
 </html>

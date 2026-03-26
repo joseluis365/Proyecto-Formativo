@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
 import { useHelp } from "../../hooks/useHelp";
 import BarChartCitas from "../../components/Charts/BarChartCitas";
@@ -13,6 +14,15 @@ const CHANNEL_NAME = "admin-feed";
 
 export default function Dashboard() {
   const { setTitle, setSubtitle } = useLayout();
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Guard: Si es personal de exámenes, no debe estar en el dashboard administrativo
+  useEffect(() => {
+    if (user.id_rol === 3 && user.examenes) {
+      navigate('/examenes/agenda', { replace: true });
+    }
+  }, [user, navigate]);
 
   useHelp({
     title: "Panel de Administración",

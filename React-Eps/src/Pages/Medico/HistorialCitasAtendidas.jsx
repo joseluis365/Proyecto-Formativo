@@ -1,31 +1,43 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import api from "@/Api/axios";
-import { useLayout } from "@/LayoutContext";
+import api from "../../Api/axios";
+import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import { AnimatePresence, motion } from "framer-motion";
 import Swal from "sweetalert2";
 import SearchableSelect from "@/components/UI/SearchableSelect";
 import DetalleRemisionModal from "@/components/Modals/DetalleRemisionModal";
 import DetalleRecetaModal from "@/components/Modals/DetalleRecetaModal";
 
+
 // ── PDF Generation (via browser print) ─────────────────────────────────────
 function generatePdfContent(items, title) {
-    const rows = items.map(c => `
+    const rows = items.map(c => {
+        const detalle = c.historialDetalle || c.historial_detalle;
+        const diagnosticoStr = detalle?.enfermedades?.length > 0 
+            ? detalle.enfermedades.map(e => e.nombre).join(", ") 
+            : (detalle?.diagnostico || "—");
+        const motivo = (c.motivo_consulta || c.motivoConsulta)?.motivo || "General";
+        
+        return `
         <tr>
             <td>${c.id_cita}</td>
             <td>${c.fecha || "—"}</td>
             <td>${c.hora_inicio?.slice(0,5) || "—"}</td>
             <td>${c.paciente ? `${c.paciente.primer_nombre} ${c.paciente.primer_apellido}` : c.doc_paciente}</td>
-            <td>${c.especialidad?.nombre_especialidad || "General"}</td>
-            <td>${c.historialDetalle?.diagnostico || "—"}</td>
-        </tr>`).join("");
+            <td>${motivo}</td>
+            <td>${diagnosticoStr}</td>
+        </tr>`;
+    }).join("");
+    
     return `<!DOCTYPE html><html><head><title>${title}</title>
 <style>body{font-family:sans-serif;font-size:12px;padding:20px}
 table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px;text-align:left}
 th{background:#f5f5f5;font-weight:bold}h2{color:#1d4ed8;margin-bottom:16px}</style></head>
 <body><h2>${title}</h2><table>
-<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Paciente</th><th>Especialidad</th><th>Diagnóstico</th></tr></thead>
+<thead><tr><th>#</th><th>Fecha</th><th>Hora</th><th>Paciente</th><th>Motivo</th><th>Diagnóstico</th></tr></thead>
 <tbody>${rows}</tbody></table></body></html>`;
 }
+
 
 // ── Row Detail Modal ─────────────────────────────────────────────────────────
 function CitaDetalleModal({ cita, onClose }) {
@@ -37,16 +49,22 @@ function CitaDetalleModal({ cita, onClose }) {
     const [downloading, setDownloading] = useState(false);
 
     const getUnit = (key) => {
-        switch (key.toLowerCase()) {
-            case 'frecuencia_cardiaca': return 'lpm';
-            case 'frecuencia_respiratoria': return 'rpm';
-            case 'presion_arterial': return 'mmHg';
-            case 'temperatura': return '°C';
-            case 'saturacion_oxigeno': return '%';
-            case 'peso': return 'kg';
-            case 'estatura': return 'cm';
-            case 'talla': return 'cm';
-            case 'imc': return 'kg/m²';
+        const k = key.toUpperCase().replace(/_/g, " ");
+        switch (k) {
+            case 'FC':
+            case 'FRECUENCIA CARDIACA': return 'lpm';
+            case 'FR':
+            case 'FRECUENCIA RESPIRATORIA': return 'rpm';
+            case 'PESO': return 'kg';
+            case 'TALLA':
+            case 'ESTATURA': return 'm';
+            case 'TEMPERATURA': return '°C';
+            case 'TA SISTOLICA': return 'mmHG';
+            case 'TA DIASTOLICA': return 'mmHG';
+            case 'PRESION ARTERIAL': return 'mmHG';
+            case 'SATURACION O2':
+            case 'SATURACION OXIGENO': return '%';
+            case 'IMC': return 'kg/m²';
             default: return '';
         }
     };
@@ -154,12 +172,12 @@ function CitaDetalleModal({ cita, onClose }) {
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1.5">
                                                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.tipo_remision === 'examen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-                                                        {r.tipo_remision === 'examen' ? 'EXAMEN' : 'INTERCONSULTA'}
+                                                        {r.tipo_remision === 'examen' ? 'EXAMEN' : 'REMISION'}
                                                     </span>
                                                     {r.id_remision && <span className="text-xs font-bold text-gray-400">#{r.id_remision}</span>}
                                                 </div>
                                                 <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                                                    {r.especialidad?.especialidad || r.categoriaExamen?.categoria || "Requiere asignación"}
+                                                    {r.especialidad?.especialidad || (r.categoriaExamen || r.categoria_examen)?.categoria || "Requiere asignación"}
                                                 </p>
                                                 {(r.cita?.fecha || r.examen?.fecha) && (
                                                     <p className="text-[10px] font-bold text-primary mt-0.5 flex items-center gap-1">
@@ -199,7 +217,7 @@ function CitaDetalleModal({ cita, onClose }) {
                                                 {(detalle.receta.recetaDetalles || detalle.receta.receta_detalles).map((rd, i) => (
                                                     <li key={i} className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                         {rd.presentacion?.medicamento?.nombre} 
-                                                        <span className="text-gray-400 font-normal ml-1">({rd.dosis} por {rd.duracion})</span>
+                                                        <span className="text-gray-400 font-normal ml-1">({rd.dosis} {rd.frecuencia} - hasta {rd.duracion})</span>
                                                     </li>
                                                 ))}
                                             </ul>
@@ -218,6 +236,24 @@ function CitaDetalleModal({ cita, onClose }) {
                         )}
                     </div>
                 )}
+
+                {/* Footer del Modal - Botón PDF */}
+                <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                    <button
+                        onClick={downloadPdf}
+                        disabled={downloading}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all ${
+                            downloading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
+                        }`}
+                    >
+                        {downloading ? (
+                            <span className="material-symbols-outlined animate-spin">refresh</span>
+                        ) : (
+                            <span className="material-symbols-outlined">description</span>
+                        )}
+                        {downloading ? "Generando..." : "Descargar PDF"}
+                    </button>
+                </div>
             </motion.div>
         </motion.div>
 
@@ -254,10 +290,44 @@ export default function HistorialCitasAtendidas() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [selectedCita, setSelectedCita] = useState(null);
     const [enfermedadesOptions, setEnfermedadesOptions] = useState([]);
+    const [motivosOptions, setMotivosOptions] = useState([]);
+    const [downloadingReport, setDownloadingReport] = useState(false);
     const [filters, setFilters] = useState({
         fecha: "",
         busqueda: "",
         codigo_enfermedad: "",
+        id_motivo: "",
+    });
+
+    useHelp({
+        title: "Historial de Citas y Reportes",
+        description: "En esta sección puedes consultar todas tus atenciones pasadas y generar reportes profesionales para tu archivo o para el paciente.",
+        sections: [
+            {
+                title: "¿Qué puedes hacer aquí?",
+                type: "list",
+                items: [
+                    "Visualizar detalles completos de cada cita (Signos vitales, Diagnóstico, Recetas).",
+                    "Filtrar el historial por fecha, paciente, enfermedad (CIE-11) o motivo de consulta.",
+                    "Descargar reportes oficiales en PDF con formato profesional."
+                ]
+            },
+            {
+                title: "Pasos para generar un reporte",
+                type: "steps",
+                items: [
+                    "Aplica los filtros necesarios (ej: Rango de fecha o Motivo) para segmentar la información.",
+                    "Verifica en la tabla que se muestren las citas que deseas incluir.",
+                    "Haz clic en el botón 'Descargar Reporte' en la parte inferior derecha.",
+                    "El sistema generará automáticamente un PDF horizontal con el logo de la EPS y tu información profesional."
+                ]
+            },
+            {
+                title: "Recomendaciones",
+                type: "warning",
+                content: "Recuerda que los reportes generados son documentos oficiales. Asegúrate de que los diagnósticos estén correctamente registrados antes de exportar."
+            }
+        ]
     });
 
     useEffect(() => {
@@ -273,7 +343,20 @@ export default function HistorialCitasAtendidas() {
                 setEnfermedadesOptions(list.map(e => ({ value: e.codigo_icd, label: `[${e.codigo_icd}] ${e.nombre}` })));
             } catch {}
         };
+        const fetchMotivos = async () => {
+            try {
+                const res = await api.get("/motivos-consulta");
+                const list = Array.isArray(res) ? res : (res?.data || []);
+                // Si ya viene con {value, label}, lo usamos directamente
+                if (list.length > 0 && list[0].value && list[0].label) {
+                    setMotivosOptions(list);
+                } else {
+                    setMotivosOptions(list.map(m => ({ value: m.id_motivo, label: m.motivo })));
+                }
+            } catch {}
+        };
         fetchEnfermedades();
+        fetchMotivos();
     }, []);
 
     const fetchCitas = useCallback(async () => {
@@ -287,6 +370,7 @@ export default function HistorialCitasAtendidas() {
             if (filters.fecha) params.fecha = filters.fecha;
             if (filters.busqueda) params.busqueda = filters.busqueda;
             if (filters.codigo_enfermedad) params.codigo_enfermedad = filters.codigo_enfermedad;
+            if (filters.id_motivo) params.id_motivo = filters.id_motivo;
 
             const res = await api.get("/citas", { params });
             const data = res.data ?? res;
@@ -302,11 +386,47 @@ export default function HistorialCitasAtendidas() {
 
     useEffect(() => { fetchCitas(); }, [fetchCitas]);
 
-    const printAll = () => {
-        const win = window.open("", "_blank");
-        win.document.write(generatePdfContent(citas, "Mis Citas Atendidas"));
-        win.document.close();
-        win.print();
+    const downloadReport = async () => {
+        if (citas.length === 0) return;
+        setDownloadingReport(true);
+        try {
+            const params = {
+                id_estado: 10,
+                search: filters.busqueda || undefined,
+                date_from: filters.fecha || undefined,
+                date_to: filters.fecha || undefined,
+                codigo_icd: filters.codigo_enfermedad || undefined,
+                id_motivo: filters.id_motivo || undefined
+            };
+
+            const response = await api.get('/personal/reportes/citas/export', {
+                params,
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `reporte_mis_citas_${new Date().getTime()}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            
+            Swal.fire({
+                title: 'Reporte Generado',
+                text: 'El historial de reportes ha sido actualizado.',
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        } catch (error) {
+            console.error("Error al exportar reporte:", error);
+            Swal.fire("Error", "No se pudo generar el reporte en este momento.", "error");
+        } finally {
+            setDownloadingReport(false);
+        }
     };
 
     const handleFilterChange = (key, val) => {
@@ -321,7 +441,7 @@ export default function HistorialCitasAtendidas() {
                 <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
                     <span className="material-symbols-outlined text-base text-primary">filter_list</span> Filtros
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 max-[1090px]:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</label>
                         <input
@@ -347,13 +467,22 @@ export default function HistorialCitasAtendidas() {
                             options={enfermedadesOptions}
                             value={filters.codigo_enfermedad}
                             onChange={(val) => handleFilterChange("codigo_enfermedad", val)}
-                            placeholder="Buscar enfermedad CIE-11..."
+                            placeholder="Buscar CIE-11..."
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Motivo de Consulta</label>
+                        <SearchableSelect
+                            options={motivosOptions}
+                            value={filters.id_motivo}
+                            onChange={(val) => handleFilterChange("id_motivo", val)}
+                            placeholder="Todos..."
                         />
                     </div>
                 </div>
-                {(filters.fecha || filters.busqueda || filters.codigo_enfermedad) && (
+                {(filters.fecha || filters.busqueda || filters.codigo_enfermedad || filters.id_motivo) && (
                     <button
-                        onClick={() => { setFilters({ fecha: "", busqueda: "", codigo_enfermedad: "" }); setPage(1); }}
+                        onClick={() => { setFilters({ fecha: "", busqueda: "", codigo_enfermedad: "", id_motivo: "" }); setPage(1); }}
                         className="text-xs font-bold text-red-500 hover:underline flex items-center gap-1"
                     >
                         <span className="material-symbols-outlined text-sm">filter_list_off</span> Limpiar filtros
@@ -367,12 +496,14 @@ export default function HistorialCitasAtendidas() {
                     <strong>{meta.total}</strong> citas atendidas
                 </p>
                 <button
-                    onClick={printAll}
-                    disabled={citas.length === 0}
+                    onClick={downloadReport}
+                    disabled={citas.length === 0 || downloadingReport}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-primary border border-primary/30 hover:bg-primary/5 rounded-xl transition-colors disabled:opacity-40"
                 >
-                    <span className="material-symbols-outlined text-base">download</span>
-                    Descargar Reporte
+                    <span className={`material-symbols-outlined text-base ${downloadingReport ? 'animate-spin' : ''}`}>
+                        {downloadingReport ? 'refresh' : 'download'}
+                    </span>
+                    {downloadingReport ? 'Generando...' : 'Descargar Reporte'}
                 </button>
             </div>
 
@@ -385,7 +516,7 @@ export default function HistorialCitasAtendidas() {
                                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
                                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Hora</th>
                                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Paciente</th>
-                                <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Especialidad</th>
+                                <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Motivo</th>
                                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Diagnóstico</th>
                                 <th className="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Acción</th>
                             </tr>
@@ -411,7 +542,7 @@ export default function HistorialCitasAtendidas() {
                             ) : (
                                 citas.map(cita => {
                                     const paciente = cita.paciente;
-                                    const detalle = cita.historialDetalle;
+                                    const detalle = cita.historialDetalle || cita.historial_detalle;
                                     return (
                                         <tr
                                             key={cita.id_cita}
@@ -430,9 +561,13 @@ export default function HistorialCitasAtendidas() {
                                                     <span className="text-gray-400">{cita.doc_paciente}</span>
                                                 )}
                                             </td>
-                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{cita.especialidad?.nombre_especialidad || "General"}</td>
+                                            <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{(cita.motivo_consulta || cita.motivoConsulta)?.motivo || "General"}</td>
                                             <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-xs">
-                                                <p className="truncate">{detalle?.diagnostico || "—"}</p>
+                                                <p className="truncate">
+                                                    {detalle?.enfermedades?.length > 0 
+                                                        ? detalle.enfermedades.map(e => e.nombre).join(", ") 
+                                                        : (detalle?.diagnostico || "—")}
+                                                </p>
                                             </td>
                                             <td className="px-4 py-3 text-center">
                                                 <button

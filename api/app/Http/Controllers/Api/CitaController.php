@@ -28,12 +28,15 @@ class CitaController extends Controller
 
         if ($estadoAgendada && $estadoCancelada) {
             $now = \Carbon\Carbon::now();
+            // Cancelar citas si han pasado 40 minutos desde la hora_inicio sin ser atendidas
+            // (30 min de duración + 10 min de gracia)
+            $cutoff = $now->copy()->subMinutes(40);
             Cita::where('id_estado', $estadoAgendada->id_estado)
-                ->where(function ($query) use ($now) {
+                ->where(function ($query) use ($now, $cutoff) {
                     $query->where('fecha', '<', $now->toDateString())
-                          ->orWhere(function ($q) use ($now) {
+                          ->orWhere(function ($q) use ($now, $cutoff) {
                               $q->where('fecha', $now->toDateString())
-                                ->where('hora_inicio', '<', $now->toTimeString());
+                                ->whereTime('hora_inicio', '<=', $cutoff->toTimeString());
                           });
                 })->update(['id_estado' => $estadoCancelada->id_estado]);
         }
@@ -99,6 +102,11 @@ class CitaController extends Controller
             });
         }
 
+        // Filtro: motivo de consulta
+        if ($request->has('id_motivo') && $request->id_motivo !== '') {
+            $query->where('id_motivo', $request->id_motivo);
+        }
+
         $perPage = $request->get('per_page', 15);
         $citas = $query->latest()->paginate($perPage);
 
@@ -162,8 +170,9 @@ class CitaController extends Controller
             $horaFin = $horaInicio->copy()->addMinutes(30)->format('H:i');
         }
 
-        // Find or create 'Agendada' state
-        $estado = Estado::firstOrCreate(['nombre_estado' => 'Agendada']);
+        // Get 'Agendada' status (ID 9)
+        $estado = Estado::where('nombre_estado', 'Agendada')->first();
+        $idEstado = $estado ? $estado->id_estado : 9;
 
         // Create the appointment
         $cita = Cita::create([
@@ -173,7 +182,7 @@ class CitaController extends Controller
             'motivo'       => $request->motivo,
             'id_motivo'    => $request->id_motivo,
             'id_especialidad' => $request->id_especialidad,
-            'id_estado'    => $estado->id_estado,
+            'id_estado'    => $idEstado,
             'hora_inicio'  => $request->hora_inicio ?? null,
             'hora_fin'     => $horaFin,
         ]);
@@ -239,7 +248,8 @@ class CitaController extends Controller
         }
 
         $fechaCita = $cita->fecha;
-        $cita->delete();
+        $estadoCancelada = Estado::firstOrCreate(['nombre_estado' => 'Cancelada']);
+        $cita->update(['id_estado' => $estadoCancelada->id_estado]);
 
         event(new SystemActivityEvent(
             "Cita cancelada — fecha: {$fechaCita}",
@@ -322,7 +332,7 @@ class CitaController extends Controller
             return response()->json(['message' => 'Cita no encontrada.'], 404);
         }
 
-        // Solo se permite marcar como "No Asistió" si estaba Agendada o Pendiente
+        // Permitir marcar inasistencia en citas Agendadas o Pendientes (ya que Canceladas por auto-cancelación no se pueden marcar después)
         $estadosPermitidos = Estado::whereIn('nombre_estado', ['Agendada', 'Pendiente'])
             ->pluck('id_estado')
             ->toArray();
@@ -333,13 +343,32 @@ class CitaController extends Controller
             ], 422);
         }
 
-        // Cambiar estado a "No Asistió"
-        $estadoNoAsistio = Estado::firstOrCreate(['nombre_estado' => 'No Asistió']);
+        // Validar que la hora actual esté dentro de la ventana permitida:
+        // Desde la hora_inicio hasta 40 minutos después
+        if ($cita->fecha && $cita->hora_inicio) {
+            $now = \Carbon\Carbon::now();
+            $citaTime = \Carbon\Carbon::parse($cita->fecha . ' ' . $cita->hora_inicio);
+            $citaTimeLimit = $citaTime->copy()->addMinutes(40);
 
-        $cita->update(['id_estado' => $estadoNoAsistio->id_estado]);
+            if ($now->lt($citaTime)) {
+                return response()->json([
+                    'message' => 'Aún no es la hora de la cita. No se puede marcar inasistencia.'
+                ], 422);
+            }
+
+            if ($now->gt($citaTimeLimit)) {
+                return response()->json([
+                    'message' => 'Han pasado más de 40 minutos desde el inicio de la cita. No se puede marcar inasistencia manualmente.'
+                ], 422);
+            }
+        }
+
+        // Cambiar estado a "Inasistencia"
+        $estadoInasistencia = Estado::firstOrCreate(['nombre_estado' => 'Inasistencia']);
+        $cita->update(['id_estado' => $estadoInasistencia->id_estado]);
 
         return response()->json([
-            'message' => 'Cita marcada como "No Asistió".',
+            'message' => 'Cita marcada como Inasistencia.',
             'data' => $cita->load(['paciente', 'medico', 'estado'])
         ]);
     }

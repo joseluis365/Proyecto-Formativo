@@ -119,9 +119,9 @@ class AtencionMedicaController extends Controller
                         'id_especialidad' => $remData['id_especialidad'] ?? null,
                         'fecha' => $remData['fecha'],
                         'hora_inicio' => $remData['hora_inicio'],
-                        'hora_fin' => $horaFin,
                         'id_estado' => $estadoAgendada->id_estado,
-                        'motivo' => substr($remData['notas'], 0, 255),
+                        'id_motivo' => $remData['id_motivo'] ?? null,
+                        'motivo' => !empty($remData['notas']) ? substr($remData['notas'], 0, 255) : null,
                     ]);
                     $idCitaRecienCreada = $nuevaCita->id_cita;
                 } else if ($remData['tipo_remision'] === 'examen') {
@@ -147,9 +147,8 @@ class AtencionMedicaController extends Controller
                     'id_especialidad' => $remData['id_especialidad'] ?? null,
                     'id_categoria_examen' => $remData['id_categoria_examen'] ?? null,
                     'requiere_ayuno'      => $remData['requiere_ayuno'] ?? false,
-                    'id_examen'       => $idExamen,
                     'id_prioridad'    => $remData['id_prioridad'] ?? null,
-                    'notas'           => $remData['notas'],
+                    'notas'           => $remData['notas'] ?? null,
                     'id_estado'       => $estadoActivaId,
                 ]);
             }

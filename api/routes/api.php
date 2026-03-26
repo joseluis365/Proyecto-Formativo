@@ -27,8 +27,9 @@ use App\Http\Controllers\Api\RolController;
 use App\Http\Controllers\Api\EstadoController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Api\AdminDashboardController;
-use App\Http\Controllers\Api\ContactoController;
+use App\Http\Controllers\Api\PqrController;
 use App\Http\Controllers\Api\MotivoConsultaController;
+use App\Http\Controllers\Api\PersonalReporteController;
 // Farmacia módulo
 use App\Http\Controllers\Api\MedicamentoController;
 use App\Http\Controllers\Api\InventarioFarmaciaController;
@@ -84,7 +85,7 @@ Route::get('/licencias', [LicenciaController::class, 'index']);
 Route::get('/licencia/{id}', [LicenciaController::class, 'show']);
 Route::post('/registrar-empresa-licencia', [RegistroEmpresaController::class, 'store']);
 Route::get('/motivos-consulta', [MotivoConsultaController::class, 'index']);
-Route::post('/contacto', [ContactoController::class, 'send']);
+Route::post('/contacto', [PqrController::class, 'store']);
 
 Route::get('/recent-activity/{channelName}', function ($channel) {
     return Activity::where('channel_name', $channel)
@@ -224,6 +225,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/examenes/agenda', [ExamenClinicoController::class, 'agenda']);
+    Route::get('/examenes/mis-examenes', [ExamenClinicoController::class, 'misExamenes']);
     Route::get('/examenes/{id}', [ExamenClinicoController::class, 'show']);
     Route::post('/examenes/{id}/atender', [ExamenClinicoController::class, 'atender']);
     Route::get('/categorias-examen', [ExamenClinicoController::class, 'obtenerCategorias']);
@@ -233,6 +235,15 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     // Listar farmacias activas — para modal de prescripción en consulta médica
     Route::get('/farmacias', [FarmaciaController::class, 'index']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | PQRS (PETICIONES, QUEJAS, RECLAMOS, SUGERENCIAS)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/pqrs', [PqrController::class, 'index']);
+    Route::post('/pqrs/{id}/responder', [PqrController::class, 'responder']);
+
 
     // Listar consultorios (para perfil de médico)
     Route::get('/consultorios', [ConsultorioController::class, 'index']);
@@ -475,6 +486,17 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::get('historial', [ReportController::class, 'getHistorial']);
         Route::get('{entity}', [ReportController::class, 'index']);
         Route::get('{entity}/export', [ReportController::class, 'export']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | REPORTES PERSONAL ADMINISTRATIVO
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::prefix('personal/reportes')->group(function () {
+        Route::get('{entity}', [PersonalReporteController::class, 'index']);
+        Route::get('{entity}/export', [PersonalReporteController::class, 'export']);
     });
 
 });

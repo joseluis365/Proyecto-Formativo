@@ -6,6 +6,7 @@ import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
 import ReagendarCitaModal from "../../components/Modals/CitaModal/ReagendarCitaModal";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
+import api from "../../Api/axios";
 import Swal from "sweetalert2";
 
 export default function MisCitas() {
@@ -21,8 +22,29 @@ export default function MisCitas() {
     const [filterMedico, setFilterMedico]                   = useState("");
     const [filterFecha, setFilterFecha]                     = useState("");
 
-    // Obtenemos solo las citas de este paciente mediante el filtro de servidor
-    const { citas, loading, cancelCita, reagendarCita } = useCitas({ doc_paciente: user.documento });
+    const { citas, loading: loadingCitas, cancelCita, reagendarCita } = useCitas({ doc_paciente: user.documento });
+    
+    const [examenes, setExamenes] = useState([]);
+    const [loadingExamenes, setLoadingExamenes] = useState(true);
+
+    const fetchExamenes = async () => {
+        setLoadingExamenes(true);
+        try {
+            const response = await api.get(`/examenes/mis-examenes?doc_paciente=${user.documento}`);
+            // El interceptor devuelve response.data.data si success es true
+            setExamenes(Array.isArray(response) ? response : (response.data || []));
+        } catch (error) {
+            console.error("Error fetching exams:", error);
+        } finally {
+            setLoadingExamenes(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchExamenes();
+    }, []);
+
+    const loading = loadingCitas || loadingExamenes;
 
     useEffect(() => {
         setTitle("Citas y Exámenes");
@@ -73,33 +95,52 @@ export default function MisCitas() {
         return [...new Set(docs)].sort();
     }, [citas]);
 
-    // Mostramos todas las citas y ordenamos desde la más reciente
-    const misCitasActivas = useMemo(() => {
-        if (!citas) return [];
-        return citas
-            .filter(cita => {
-                const citaTipo = cita.tipo_evento === 'remision' ? 'Remisión' :
-                                cita.tipo_evento === 'examen' ? 'Examen' :
-                                'Cita';
-                const matchTipo = !filterEspecialidad || citaTipo === filterEspecialidad;
+    // Combinamos y filtramos
+    const misServiciosActivos = useMemo(() => {
+        const allServices = [
+            ...(citas || []).map(c => ({ ...c, _isExamen: false })),
+            ...(examenes || []).map(e => ({ ...e, _isExamen: true }))
+        ];
+
+        return allServices
+            .filter(item => {
+                const itemTipo = item._isExamen ? 'Examen' : 
+                                (item.tipo_evento === 'remision' ? 'Remisión' : 'Cita');
                 
-                const citaEspMedico = cita.medico?.especialidad?.especialidad || "Médico General";
-                const matchEspMedico = !filterEspecialidadMedico || citaEspMedico === filterEspecialidadMedico;
+                const matchTipo = !filterEspecialidad || itemTipo === filterEspecialidad;
                 
-                const doctorName = cita.medico ? `Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}` : "Por Asignar";
-                const matchMedico = !filterMedico || doctorName === filterMedico;
+                // Para especialidad médica solo filtramos citas
+                let matchEspMedico = true;
+                if (filterEspecialidadMedico) {
+                    if (item._isExamen) {
+                        matchEspMedico = false; // Los exámenes no tienen "especialidad médica" en este contexto
+                    } else {
+                        const citaEspMedico = item.medico?.especialidad?.especialidad || "Médico General";
+                        matchEspMedico = citaEspMedico === filterEspecialidadMedico;
+                    }
+                }
                 
-                const matchFecha = !filterFecha || cita.fecha === filterFecha;
+                // Para médico solo filtramos citas
+                let matchMedico = true;
+                if (filterMedico) {
+                    if (item._isExamen) {
+                        matchMedico = false;
+                    } else {
+                        const doctorName = item.medico ? `Dr. ${item.medico.primer_nombre} ${item.medico.primer_apellido}` : "Por Asignar";
+                        matchMedico = doctorName === filterMedico;
+                    }
+                }
+                
+                const matchFecha = !filterFecha || item.fecha === filterFecha;
 
                 return matchTipo && matchEspMedico && matchMedico && matchFecha;
             })
             .sort((a, b) => {
-                const dateA = a.fecha ? new Date(`${a.fecha}T${a.hora_inicio || '00:00'}`) : new Date(8640000000000000); // Mueve a futuro lejano si no tiene fecha
+                const dateA = a.fecha ? new Date(`${a.fecha}T${a.hora_inicio || '00:00'}`) : new Date(8640000000000000);
                 const dateB = b.fecha ? new Date(`${b.fecha}T${b.hora_inicio || '00:00'}`) : new Date(8640000000000000);
-                // Orden descendente (más recientes o futuras primero)
                 return dateB - dateA;
             });
-    }, [citas, filterEspecialidad, filterEspecialidadMedico, filterMedico, filterFecha]);
+    }, [citas, examenes, filterEspecialidad, filterEspecialidadMedico, filterMedico, filterFecha]);
 
     return (
         <div className="space-y-8">
@@ -108,7 +149,7 @@ export default function MisCitas() {
                     icon="calendar_month"
                     text="Historial de Citas y Exámenes"
                     subtext="Estas son tus gestiones, incluyendo pasadas y canceladas."
-                    number={misCitasActivas.length}
+                    number={misServiciosActivos.length}
                 />
             </div>
 
@@ -180,7 +221,7 @@ export default function MisCitas() {
                             <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">Cargando resultados...</span>
                         </div>
                     </motion.div>
-                ) : misCitasActivas.length === 0 ? (
+                ) : misServiciosActivos.length === 0 ? (
                     <motion.div
                         key="empty"
                         initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
@@ -198,24 +239,30 @@ export default function MisCitas() {
                         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                     >
-                        {misCitasActivas.map(cita => (
+                        {misServiciosActivos.map(item => (
                             <AppointmentCard
-                                key={cita.id_cita}
-                                patientName={`${cita.paciente?.primer_nombre} ${cita.paciente?.primer_apellido}`}
-                                doctorName={cita.medico ? `Dr. ${cita.medico.primer_nombre} ${cita.medico.primer_apellido}` : "Por Asignar"}
-                                specialty={
-                                    cita.tipo_evento === 'remision' ? `Remisión` :
-                                    cita.tipo_evento === 'examen' ? `Examen` :
-                                    "Cita"
+                                key={item._isExamen ? `exam-${item.id_examen}` : `cita-${item.id_cita}`}
+                                
+                                isExamen={item._isExamen}
+                                requiresFasting={item.categoria_examen?.requiere_ayuno}
+                                doctorName={item._isExamen 
+                                    ? item.categoria_examen?.categoria 
+                                    : (item.medico ? `Dr. ${item.medico.primer_nombre} ${item.medico.primer_apellido}` : "Por Asignar")
                                 }
-                                doctorSpecialty={cita.medico?.especialidad?.especialidad}
-                                time={cita.fecha ? `${cita.fecha} | ${cita.hora_inicio?.slice(0, 5) || '--:--'}` : 'Sin fecha agendada | --:--'}
-                                status={cita.estado?.nombre_estado}
-                                onView={() => setViewingCita(cita)}
-                                onCancel={(cita.estado?.nombre_estado === "Agendada" || cita.estado?.nombre_estado === "Pendiente") ? () => cancelCita(cita.id_cita) : undefined}
-                                onReschedule={(cita.estado?.nombre_estado === "Agendada" || cita.estado?.nombre_estado === "Pendiente") ? () => {
-                                    if (cita.fecha && cita.hora_inicio) {
-                                        const citaDate = new Date(`${cita.fecha}T${cita.hora_inicio}`);
+                                specialty={!item._isExamen ? (item.tipoCita?.nombre || "") : ""}
+                                tipoServicio={
+                                    item._isExamen ? "Examen Médico" :
+                                    item.tipo_evento === 'remision' ? `Remisión` :
+                                    "Cita Médica"
+                                }
+                                doctorSpecialty={!item._isExamen ? (item.medico?.especialidad?.especialidad || "Médico General") : ""}
+                                time={item.fecha ? `${item.fecha} | ${item.hora_inicio?.slice(0, 5) || '--:--'}` : 'Sin fecha agendada | --:--'}
+                                status={item.estado?.nombre_estado}
+                                onView={() => setViewingCita(item)}
+                                onCancel={(!item._isExamen && (item.estado?.nombre_estado === "Agendada" || item.estado?.nombre_estado === "Pendiente")) ? () => cancelCita(item.id_cita) : undefined}
+                                onReschedule={(!item._isExamen && (item.estado?.nombre_estado === "Agendada" || item.estado?.nombre_estado === "Pendiente")) ? () => {
+                                    if (item.fecha && item.hora_inicio) {
+                                        const citaDate = new Date(`${item.fecha}T${item.hora_inicio}`);
                                         const now = new Date();
                                         const diffHours = (citaDate - now) / (1000 * 60 * 60);
                                         if (diffHours < 24) {
@@ -227,7 +274,7 @@ export default function MisCitas() {
                                             return;
                                         }
                                     }
-                                    setReagendandoCita(cita);
+                                    setReagendandoCita(item);
                                 } : undefined}
                             />
                         ))}

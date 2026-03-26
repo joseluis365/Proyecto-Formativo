@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
+import { useHelp } from "../../hooks/useHelp";
 import api from "../../Api/axios";
 import { ROLES } from "../../constants/roles";
 import DataTable from "../../components/UI/DataTable";
@@ -14,6 +15,31 @@ export default function MisPacientes() {
     const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+
+    useHelp({
+        title: "Gestión de Mis Pacientes",
+        description: "En este panel puedes ver a todos los pacientes que han sido registrados o atendidos por ti en la EPS.",
+        sections: [
+            {
+                title: "¿Cómo buscar un paciente?",
+                type: "list",
+                items: [
+                    "Ingresa el nombre o número de documento en el buscador superior.",
+                    "La tabla se filtrará automáticamente en tiempo real."
+                ]
+            },
+            {
+                title: "Acciones disponibles",
+                type: "text",
+                content: "Al hacer clic en el botón 'Historial' de un paciente, serás redirigido a su expediente clínico completo, donde podrás ver atenciones previas, antecedentes y resultados de exámenes."
+            },
+            {
+                title: "Privacidad de Datos",
+                type: "warning",
+                content: "Recuerda que el acceso a la información del paciente debe realizarse únicamente con fines médicos y bajo los protocolos de confidencialidad de la EPS."
+            }
+        ]
+    });
 
     const fetchPacientes = async () => {
         setLoading(true);
@@ -118,7 +144,7 @@ export default function MisPacientes() {
                     <input
                         type="text"
                         placeholder="Buscar por documento o nombre..."
-                        className="w-full sm:w-80 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+                        className="w-full sm:w-80 px-4 py-2 rounded-xl border dark:text-white border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />

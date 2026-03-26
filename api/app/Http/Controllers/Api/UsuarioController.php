@@ -77,7 +77,7 @@ public function medicosDisponibles(Request $request)
         ->where('id_estado', 1); // Activo
 
     // Filtrar por especialidad si se requiere (para agendamiento por tipo de cita)
-    if ($request->filled('id_especialidad')) {
+    if ($request->filled('id_especialidad') && $request->id_especialidad !== 'undefined' && $request->id_especialidad !== 'null') {
         $medicos->where('id_especialidad', $request->id_especialidad);
     }
 

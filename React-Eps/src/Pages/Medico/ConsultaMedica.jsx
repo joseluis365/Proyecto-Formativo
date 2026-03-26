@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -44,13 +44,17 @@ const schema = z.object({
         id_especialidad: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         doc_medico: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         id_categoria_examen: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
+        id_motivo: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().min(1, "Motivo principal requerido")),
         requiere_ayuno: z.boolean().optional(),
         id_prioridad: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         fecha: z.string().min(1, "La fecha es obligatoria").refine((val) => new Date(val) >= new Date(new Date().setHours(0,0,0,0)), "No puede ser pasada"),
         hora_inicio: z.string().min(1, "La hora es obligatoria"),
-        notas: z.string().min(5, "Mínimo 5 caracteres")
+        notas: z.string().optional()
     })).superRefine((data, ctx) => {
         data.forEach((rem, idx) => {
+            if (String(rem.id_motivo) === "51" && (!rem.notas || rem.notas.trim().length < 5)) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Mínimo 5 caracteres si eligió 'Otro'", path: [idx, 'notas'] });
+            }
             if (rem.tipo_remision === 'cita' && !rem.id_especialidad) {
                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Especialidad obligatoria", path: [idx, 'id_especialidad'] });
             }
@@ -88,19 +92,22 @@ const ErrorMsg = ({ error }) => {
     );
 };
 
-function RemisionRow({ index, field, register, control, setValue, remove, specialties, prioridades, categorias, errors }) {
+function RemisionRow({ index, field, register, control, setValue, remove, specialties, prioridades, categorias, motivosList, errors }) {
     const tipo = useWatch({ control, name: `remisiones.${index}.tipo_remision` });
     const selectedEspecialidad = useWatch({ control, name: `remisiones.${index}.id_especialidad` });
     const selectedCategoriaId = useWatch({ control, name: `remisiones.${index}.id_categoria_examen` });
     const selectedFecha = useWatch({ control, name: `remisiones.${index}.fecha` });
     const selectedHora = useWatch({ control, name: `remisiones.${index}.hora_inicio` });
     const selectedDocMedico = useWatch({ control, name: `remisiones.${index}.doc_medico` });
+    const selectedMotivoId = useWatch({ control, name: `remisiones.${index}.id_motivo` });
 
     useEffect(() => {
         if (tipo === "examen" && selectedCategoriaId && categorias) {
             const cat = categorias.find(c => String(c.value) === String(selectedCategoriaId));
             if (cat) {
-                setValue(`remisiones.${index}.requiere_ayuno`, Boolean(cat.requiere_ayuno));
+                // Forzar booleano real
+                const requires = !!(cat.requiere_ayuno === true || cat.requiere_ayuno === 1 || cat.requiere_ayuno === "1" || cat.requiere_ayuno === "true");
+                setValue(`remisiones.${index}.requiere_ayuno`, requires, { shouldValidate: true, shouldDirty: true });
             }
         }
     }, [tipo, selectedCategoriaId, categorias, setValue, index]);
@@ -113,6 +120,8 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
         selectedHora, 
         selectedEspecialidad
     );
+
+    const isDatePicked = Boolean(selectedFecha);
 
     return (
         <motion.div
@@ -217,14 +226,15 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                                     <ErrorMsg error={errors?.remisiones?.[index]?.id_categoria_examen} />
                                 </div>
                                 <div className="space-y-1 flex items-center mt-6">
-                                    <label className="inline-flex items-center cursor-pointer pointer-events-none opacity-80">
+                                    <label className="inline-flex items-center cursor-default opacity-90">
                                         <input
                                             type="checkbox"
+                                            checked={!!requiereAyuno}
                                             {...register(`remisiones.${index}.requiere_ayuno`)}
                                             className="sr-only peer"
-                                            readOnly
+                                            onChange={() => {}} // Evitar cambios manuales ya que depende de la categoría
                                         />
-                                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        <div className="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 shadow-inner"></div>
                                         <span className="ms-3 text-sm font-bold text-gray-900 dark:text-gray-300">
                                             {requiereAyuno ? 'Requiere Ayuno' : 'No requiere Ayuno'}
                                         </span>
@@ -268,6 +278,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                         <select
                             {...register(`remisiones.${index}.hora_inicio`, { required: "La hora es obligatoria" })}
                             className={`${SELECT_BASE} ${errors?.remisiones?.[index]?.hora_inicio ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
+                            disabled={!isDatePicked}
                         >
                             <option value="">Seleccione horario</option>
                             {Array.from({ length: 19 }).map((_, i) => {
@@ -283,16 +294,25 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
 
                 <div className="space-y-1 md:col-span-2">
                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                        Justificación
-                        <span className="text-red-500">*</span>
+                        Motivo Principal <span className="text-red-500">*</span>
+                    </label>
+                    <SearchableSelect
+                        options={motivosList || []}
+                        value={selectedMotivoId}
+                        onChange={(val) => setValue(`remisiones.${index}.id_motivo`, val)}
+                        placeholder="Busca o selecciona un motivo..."
+                    />
+                    <ErrorMsg error={errors?.remisiones?.[index]?.id_motivo} />
+                </div>
+
+                <div className="space-y-1 md:col-span-2">
+                    <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                        Justificación / Detalles Adicionales {String(selectedMotivoId) === "51" ? <span className="text-red-500">*</span> : <span className="text-xs text-gray-400 font-normal opacity-70">(Opcional)</span>}
                     </label>
                     <textarea
-                        {...register(`remisiones.${index}.notas`, {
-                            required: "La justificación es obligatoria",
-                            minLength: { value: 5, message: "Mínimo 5 caracteres" }
-                        })}
+                        {...register(`remisiones.${index}.notas`)}
                         rows={2}
-                        placeholder="Motivo de la remisión..."
+                        placeholder="Detalles sobre el motivo de la remisión..."
                         className={`${TEXTAREA_BASE} ${errors?.remisiones?.[index]?.notas ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                     />
                     <ErrorMsg error={errors?.remisiones?.[index]?.notas} />
@@ -427,15 +447,22 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
     const [medFarmacias, setMedFarmacias] = useState([]);
     const [loadingFarms, setLoadingFarms] = useState(false);
 
+    const isInitMed = useRef(true);
+
     useEffect(() => {
         if (!selectedMed) {
             setMedFarmacias([]);
-            setValue(`recetas.${index}.nit_farmacia`, "");
+            if (!isInitMed.current) setValue(`recetas.${index}.nit_farmacia`, "");
             return;
         }
         const fetchFarmaciasConStock = async () => {
             setLoadingFarms(true);
-            setValue(`recetas.${index}.nit_farmacia`, "");
+            
+            // Si no estamos en la carga inicial, borramos la farmacia seleccionada al cambiar de medicamento
+            if (!isInitMed.current) {
+                setValue(`recetas.${index}.nit_farmacia`, "");
+            }
+            
             try {
                 const res = await api.get(`/farmacia/inventario/por-presentacion/${selectedMed}`);
                 const list = Array.isArray(res) ? res : (res?.data || []);
@@ -445,6 +472,7 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
                 setMedFarmacias([]);
             } finally {
                 setLoadingFarms(false);
+                isInitMed.current = false;
             }
         };
         fetchFarmaciasConStock();
@@ -612,6 +640,7 @@ export default function ConsultaMedica() {
     const { medicos } = useMedicos();
     const { categorias } = useCategoriasExamen();
     const [enfermedadesOptions, setEnfermedadesOptions] = useState([]);
+    const [motivosList, setMotivosList] = useState([]);
 
     const {
         register,
@@ -683,13 +712,28 @@ export default function ConsultaMedica() {
                 const response = await api.get(`/cita/${id}`);
                 const dataRaw = response.data || response || {};
 
-                setCita({
+                const citaData = {
                     paciente: dataRaw.paciente || {},
                     historial: dataRaw.historial || {},
                     remisiones: dataRaw.remisiones || [],
                     tipoCita: dataRaw.tipoCita || {},
                     ...dataRaw
-                });
+                };
+                setCita(citaData);
+
+                // Pre-llenar subjetivo con el motivo de la consulta si no hay borrador guardado
+                if (!getSavedData()?.subjetivo) {
+                    const reasonObj = dataRaw.motivoConsulta || dataRaw.motivo_consulta;
+                    const dropdownReason = reasonObj?.motivo || "";
+                    const extraReason = dataRaw.motivo || "";
+                    let combined = dropdownReason;
+                    if (extraReason) {
+                        combined = dropdownReason ? `${dropdownReason} - ${extraReason}` : extraReason;
+                    }
+                    if (combined) {
+                        setValue('subjetivo', combined);
+                    }
+                }
             } catch (error) {
                 Swal.fire("Error", "No se pudo cargar la cita solicitada.", "error");
                 navigate("/medico/agenda");
@@ -718,9 +762,17 @@ export default function ConsultaMedica() {
             } catch (err) { console.error("Error cargando enfermedades", err); }
         };
 
+        const fetchMotivos = async () => {
+            try {
+                const res = await api.get('/motivos-consulta');
+                setMotivosList(res.data || res);
+            } catch (err) { console.error("Error cargando motivos", err); }
+        };
+
         fetchCita();
         fetchPresentaciones();
         fetchEnfermedades();
+        fetchMotivos();
 
         return () => setHelpContent(null);
     }, [id, navigate, setTitle, setSubtitle, setHelpContent]);
@@ -747,7 +799,11 @@ export default function ConsultaMedica() {
                 tratamiento: data.tratamiento,
                 observaciones: data.observaciones || undefined,
                 notas_medicas: data.notas_medicas || undefined,
-                remisiones: data.remisiones || [],
+                remisiones: (data.remisiones || []).map(r => ({
+                    ...r,
+                    doc_medico: (r.doc_medico === 'undefined' || r.doc_medico === 'null') ? "" : r.doc_medico,
+                    id_especialidad: (r.id_especialidad === 'undefined' || r.id_especialidad === 'null') ? "" : r.id_especialidad
+                })),
                 recetas: data.recetas?.length > 0 ? data.recetas : undefined,
             };
 
@@ -835,29 +891,38 @@ export default function ConsultaMedica() {
 
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-b-xl shadow-sm flex-1 flex flex-col">
                 <div className="flex border-b border-gray-200 dark:border-gray-800">
-                    {TABS.map(tab => (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex flex-1 justify-center items-center gap-2 px-4 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer
-                                ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}
-                            `}
-                        >
-                            <span className="material-symbols-outlined text-base">{tab.icon}</span>
-                            {tab.label}
-                            {tab.id === "remisiones" && fields.length > 0 && (
-                                <span className="ml-1 bg-primary text-white text-xs rounded-full size-5 flex items-center justify-center font-bold">
-                                    {fields.length}
-                                </span>
-                            )}
-                            {tab.id === "recetas" && recetaFields.length > 0 && (
-                                <span className="ml-1 bg-green-500 text-white text-xs rounded-full size-5 flex items-center justify-center font-bold">
-                                    {recetaFields.length}
-                                </span>
-                            )}
-                        </button>
-                    ))}
+                    {TABS.map(tab => {
+                        const hasErrors = (tab.id === "soap" && (errors.subjetivo || errors.diagnostico || errors.tratamiento)) ||
+                                         (tab.id === "remisiones" && errors.remisiones) ||
+                                         (tab.id === "recetas" && errors.recetas);
+
+                        return (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex flex-1 justify-center items-center gap-2 px-4 py-3 text-sm font-bold border-b-2 transition-colors cursor-pointer relative
+                                    ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}
+                                `}
+                            >
+                                <span className="material-symbols-outlined text-base">{tab.icon}</span>
+                                {tab.label}
+                                {hasErrors && (
+                                    <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500 animate-pulse border-2 border-white dark:border-gray-900 shadow-sm" />
+                                )}
+                                {tab.id === "remisiones" && fields.length > 0 && !hasErrors && (
+                                    <span className="ml-1 bg-primary text-white text-xs rounded-full size-5 flex items-center justify-center font-bold">
+                                        {fields.length}
+                                    </span>
+                                )}
+                                {tab.id === "recetas" && recetaFields.length > 0 && !hasErrors && (
+                                    <span className="ml-1 bg-green-500 text-white text-xs rounded-full size-5 flex items-center justify-center font-bold">
+                                        {recetaFields.length}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -878,6 +943,7 @@ export default function ConsultaMedica() {
                                         Subjetivo — Motivo de Consulta
                                     </label>
                                     <textarea {...register("subjetivo")} rows={2} placeholder="Relato del paciente..." className={TEXTAREA_BASE} />
+                                    <ErrorMsg error={errors.subjetivo} />
                                 </div>
 
                                 <div className="space-y-6">
@@ -958,7 +1024,7 @@ export default function ConsultaMedica() {
                                     <p className="text-sm text-gray-500">Agrega remisiones o exámenes opcionales.</p>
                                     <button
                                         type="button"
-                                        onClick={() => append({ tipo_remision: "cita", id_especialidad: "", id_categoria_examen: "", requiere_ayuno: false, id_prioridad: "", notas: "" })}
+                                        onClick={() => append({ tipo_remision: "cita", id_especialidad: "", doc_medico: "", id_categoria_examen: "", requiere_ayuno: false, id_prioridad: "", notas: "", fecha: "", hora_inicio: "" })}
                                         className="flex items-center gap-1.5 text-sm font-bold text-primary hover:bg-primary/5 px-3 py-2 rounded-lg cursor-pointer transition-colors"
                                     >
                                         <span className="material-symbols-outlined">add_circle</span> Agregar Remisión
@@ -979,6 +1045,7 @@ export default function ConsultaMedica() {
                                             prioridades={prioridades}
                                             medicos={medicos}
                                             categorias={categorias}
+                                            motivosList={motivosList}
                                             errors={errors}
                                         />
                                     ))}

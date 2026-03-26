@@ -135,6 +135,9 @@ export default function AgendarCita() {
         if (currentStep === 1) {
             if (!selectedEspecialidad) newErrors.especialidad = "Selecciona una especialidad";
             if (!selectedMotivoId) newErrors.selectedMotivoId = "Selecciona un motivo principal";
+            else if (String(selectedMotivoId) === "51" && !motivo.trim()) {
+                newErrors.motivo = "Por favor, especifica el motivo en los detalles adicionales";
+            }
         }
         if (currentStep === 2 && !selectedDate) newErrors.date = "Selecciona una fecha";
         if (currentStep === 3 && !selectedTime) newErrors.time = "Selecciona una hora";
@@ -247,13 +250,17 @@ export default function AgendarCita() {
                                     </div>
 
                                     <div className="space-y-1 mt-4">
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Detalles Adicionales (Opcional)</label>
+                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Detalles Adicionales {String(selectedMotivoId) === "51" ? <span className="text-red-500">*</span> : "(Opcional)"}</label>
                                         <textarea
-                                            className="w-full p-5 rounded-3xl bg-gray-50 dark:bg-gray-800 border border-transparent focus:ring-2 focus:ring-primary dark:text-white h-24 transition-all resize-none text-sm leading-relaxed"
+                                            className={`w-full p-5 rounded-3xl bg-gray-50 dark:bg-gray-800 border ${errors.motivo ? 'border-red-500 ring-2 ring-red-500/20' : 'border-transparent'} focus:ring-2 focus:ring-primary dark:text-white h-24 transition-all resize-none text-sm leading-relaxed`}
                                             placeholder="Detalla brevemente los síntomas o razones de la visita..."
                                             value={motivo}
-                                            onChange={(e) => setMotivo(e.target.value)}
+                                            onChange={(e) => {
+                                                setMotivo(e.target.value);
+                                                if (errors.motivo) setErrors(prev => ({ ...prev, motivo: undefined }));
+                                            }}
                                         />
+                                        {errors.motivo && <p className="text-red-500 text-[10px] font-bold text-center uppercase tracking-widest mt-1">{errors.motivo}</p>}
                                     </div>
                                 </div>
                                 <div className="pt-2">

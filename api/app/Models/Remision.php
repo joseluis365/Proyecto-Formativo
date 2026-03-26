@@ -30,7 +30,7 @@ class Remision extends Model
 
     public function historialDetalle()
     {
-        return $this->belongsTo(HistorialDetalle::class, 'id_detalle_cita', 'id_detalle_cita');
+        return $this->belongsTo(HistorialDetalle::class, 'id_detalle_cita', 'id_detalle');
     }
 
     public function especialidad()

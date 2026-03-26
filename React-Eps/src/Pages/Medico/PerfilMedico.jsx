@@ -79,7 +79,7 @@ export default function PerfilMedico() {
                                     />
                                 </div>
                                 <div className="pb-2">
-                                    <h2 className="text-3xl font-black text-gray-900 dark:text-white leading-tight">
+                                    <h2 className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white leading-tight wrap-break-word">
                                         Dr. {user.primer_nombre} {user.primer_apellido}
                                     </h2>
                                     <p className="text-primary font-bold flex items-center gap-2">

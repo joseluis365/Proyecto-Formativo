@@ -1,199 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: DejaVu Sans, sans-serif; font-size: 11px; color: #1f2937; background: #fff; padding: 32px; }
+    <meta charset="UTF-8">
+    <title>Remision Medica</title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #333; margin: 0; padding: 20px; }
+        .header { width: 100%; border-bottom: 3px solid #0056b3; padding-bottom: 10px; margin-bottom: 20px; }
+        .header table { width: 100%; }
+        .logo-eps { font-size: 24px; font-weight: bold; color: #0056b3; text-transform: uppercase; }
+        .doc-title { font-size: 16px; font-weight: bold; color: #555; text-align: right; }
+        .system-name { font-size: 10px; color: #777; margin-top: 5px; }
 
-    .header { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); color: white; padding: 24px 28px; border-radius: 8px; margin-bottom: 28px; }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .logo-area h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.05em; }
-    .logo-area p { font-size: 10px; opacity: 0.85; margin-top: 2px; }
-    .doc-info { text-align: right; }
-    .doc-info .label { font-size: 9px; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.08em; }
-    .doc-info .value { font-size: 14px; font-weight: 700; }
-    .doc-badge { display: inline-block; margin-top: 8px; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 20px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+        .card { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; overflow: hidden; page-break-inside: avoid; }
+        .card-header { background-color: #f4f7f6; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #ddd; color: #0056b3; font-size: 12px; text-transform: uppercase; }
+        .card-body { padding: 12px; }
 
-    .section { margin-bottom: 20px; }
-    .section-title { font-size: 9px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1.5px solid #ede9fe; padding-bottom: 5px; margin-bottom: 12px; }
+        .info-table { width: 100%; border-collapse: collapse; }
+        .info-table td { padding: 6px; vertical-align: top; }
+        .info-label { font-size: 9px; color: #777; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 2px; }
+        .info-value { font-size: 12px; font-weight: bold; color: #222; }
 
-    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; }
-    .info-item .lbl { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-    .info-item .val { font-size: 11px; color: #1f2937; margin-top: 1px; font-weight: 500; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-exam { background-color: #e3f2fd; color: #0d47a1; }
+        .badge-cita { background-color: #e8f5e9; color: #1b5e20; }
+        
+        .alert-ayuno { background-color: #ffebee; border: 1px solid #ffcdd2; color: #c62828; padding: 10px; border-radius: 5px; font-weight: bold; margin-bottom: 15px; }
+        .observaciones { background-color: #fffde7; border-left: 4px solid #fbc02d; padding: 10px; margin-bottom: 15px; font-style: italic; }
+        
+        .instrucciones { background-color: #e1f5fe; border: 1px solid #b3e5fc; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .instrucciones h4 { margin: 0 0 5px 0; color: #0277bd; font-size: 11px; text-transform: uppercase; }
+        .instrucciones p { margin: 0; font-size: 11px; line-height: 1.5; color: #01579b; }
 
-    .text-block { background: #f8fafc; border-left: 3px solid #7c3aed; border-radius: 0 6px 6px 0; padding: 12px 14px; margin-top: 4px; }
-    .text-block p { font-size: 11px; line-height: 1.6; color: #374151; }
-
-    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-    .badge-exam { background: #dbeafe; color: #1e40af; }
-    .badge-cita { background: #d1fae5; color: #065f46; }
-
-    .priority-box { background: #fef9c3; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; margin-top: 10px; }
-    .priority-box p { font-size: 10px; color: #78350f; }
-
-    .ayuno-box { background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 10px 14px; margin-top: 10px; }
-    .ayuno-box p { font-size: 10px; color: #7f1d1d; font-weight: 600; }
-
-    .notice-box { background: #e0f2fe; border: 1px solid #7dd3fc; border-radius: 6px; padding: 12px 14px; margin-top: 12px; }
-    .notice-box h4 { font-size: 9px; font-weight: 700; color: #0369a1; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-    .notice-box p { font-size: 10px; color: #0c4a6e; line-height: 1.5; }
-
-    .footer { margin-top: 32px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-    .footer p { font-size: 9px; color: #94a3b8; }
-</style>
+        .footer { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; font-size: 9px; color: #999; text-align: center; }
+    </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="header-top">
-        <div style="display: flex; align-items: center; gap: 15px;">
-            @if(!empty($logoBase64))
-                <img src="data:image/png;base64,{{ $logoBase64 }}" style="width: 45px; height: 45px; margin-right: 12px; vertical-align: middle;">
-            @endif
-            <div style="display: inline-block; vertical-align: middle;">
-                <h1 style="font-size: 18px; font-weight: 700; letter-spacing: 0.05em; margin: 0;">SALUVANTA EPS</h1>
-                <p style="font-size: 10px; opacity: 0.85; margin-top: 2px;">
-                    @if($remision->tipo_remision === 'examen') Orden de Examen Clínico @else Remisión Médica @endif
-                </p>
-            </div>
-        </div>
-        <div class="doc-info">
-            <div class="label">Nº de Remisión</div>
-            <div class="value">#{{ $remision->id_remision }}</div>
-            @if($remision->tipo_remision === 'examen')
-            <div class="doc-badge">Examen Clínico</div>
-            @else
-            <div class="doc-badge">Interconsulta</div>
-            @endif
+    <div class="header">
+        <table>
+            <tr>
+                <td style="width: 10%; vertical-align: middle;">
+                    @if(!empty($logoBase64))
+                        <img src="data:image/png;base64,{{ $logoBase64 }}" style="width: 50px; height: 50px;">
+                    @endif
+                </td>
+                <td style="width: 40%; vertical-align: middle;">
+                    <div class="logo-eps">SALUVANTA EPS</div>
+                    <div class="system-name">Generado por Sanitec</div>
+                </td>
+                <td style="width: 50%; vertical-align: middle; text-align: right;">
+                    <div class="doc-title">
+                        @if($remision->tipo_remision === 'examen') ORDEN DE EXAMEN CLÍNICO @else REMISIÓN MÉDICA @endif
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <span class="badge" style="background: #eee; color: #333;">Nº #{{ $remision->id_remision }}</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Cita de Origen -->
+    @if($remision->historialDetalle?->cita)
+    @php $cita = $remision->historialDetalle->cita; @endphp
+    <div class="card">
+        <div class="card-header">Datos de la Consulta de Origen</div>
+        <div class="card-body">
+            <table class="info-table">
+                <tr>
+                    <td style="width: 50%;">
+                        <span class="info-label">Paciente</span>
+                        <span class="info-value">{{ $cita->paciente?->primer_nombre }} {{ $cita->paciente?->primer_apellido }}</span>
+                    </td>
+                    <td style="width: 50%;">
+                        <span class="info-label">Documento</span>
+                        <span class="info-value">{{ $cita->paciente?->tipo_documento ?? 'CC' }} {{ $cita->paciente?->documento ?? $cita->doc_paciente }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="info-label">Médico Tratante</span>
+                        <span class="info-value">Dr. {{ $cita->medico?->primer_nombre }} {{ $cita->medico?->primer_apellido }}</span>
+                    </td>
+                    <td>
+                        <span class="info-label">Fecha y Hora</span>
+                        <span class="info-value">{{ $cita->fecha }} — {{ substr($cita->hora_inicio, 0, 5) }}</span>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
-</div>
+    @endif
 
-<!-- Cita de Origen -->
-@if($remision->historialDetalle?->cita)
-@php $cita = $remision->historialDetalle->cita; @endphp
-<div class="section">
-    <div class="section-title">Cita Médica de Origen — #{{ $cita->id_cita }}</div>
-    <div class="info-grid">
-        <div class="info-item">
-            <div class="lbl">Paciente</div>
-            <div class="val">{{ $cita->paciente?->primer_nombre }} {{ $cita->paciente?->primer_apellido }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Documento</div>
-            <div class="val">{{ $cita->paciente?->documento ?? $cita->doc_paciente }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Médico que Remite</div>
-            <div class="val">Dr. {{ $cita->medico?->primer_nombre }} {{ $cita->medico?->primer_apellido }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Fecha de Consulta</div>
-            <div class="val">{{ $cita->fecha }} — {{ substr($cita->hora_inicio, 0, 5) }}</div>
-        </div>
-    </div>
-</div>
-@endif
+    <!-- Detalles de la Remisión -->
+    <div class="card">
+        <div class="card-header">Detalles de la Solicitud</div>
+        <div class="card-body">
+            <table class="info-table">
+                <tr>
+                    <td style="width: 50%;">
+                        <span class="info-label">Fecha de Emisión</span>
+                        <span class="info-value">{{ $remision->created_at->format('d/m/Y') }}</span>
+                    </td>
+                    <td style="width: 50%;">
+                        <span class="info-label">Tipo de Solicitud</span>
+                        <span class="info-value">
+                            @if($remision->tipo_remision === 'examen')
+                                <span class="badge badge-exam">Examen Clínico</span>
+                            @else
+                                <span class="badge badge-cita">Interconsulta / Especialista</span>
+                            @endif
+                        </span>
+                    </td>
+                </tr>
 
-<!-- Detalles de la Remisión -->
-<div class="section">
-    <div class="section-title">Detalles de la Remisión</div>
-    <div class="info-grid">
-        <div class="info-item">
-            <div class="lbl">Fecha de Emisión</div>
-            <div class="val">{{ $remision->created_at->format('d/m/Y') }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Tipo</div>
-            <div class="val">
-                @if($remision->tipo_remision === 'examen')
-                <span class="badge badge-exam">Examen Clínico</span>
+                @if($remision->tipo_remision === 'cita')
+                    <tr>
+                        <td>
+                            <span class="info-label">Especialidad Destino</span>
+                            <span class="info-value">{{ $remision->especialidad?->especialidad ?? '—' }}</span>
+                        </td>
+                        <td>
+                            <span class="info-label">Prioridad</span>
+                            <span class="info-value" style="color: {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? '#c62828' : '#333' }};">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
+                        </td>
+                    </tr>
+                    @if($remision->cita)
+                        <tr>
+                            <td>
+                                <span class="info-label">Médico Receptor Asignado</span>
+                                <span class="info-value">Dr. {{ $remision->cita->medico?->primer_nombre }} {{ $remision->cita->medico?->primer_apellido }}</span>
+                            </td>
+                            <td>
+                                <span class="info-label">Cita Asignada</span>
+                                <span class="info-value">{{ $remision->cita->fecha }} a las {{ substr($remision->cita->hora_inicio, 0, 5) }}</span>
+                            </td>
+                        </tr>
+                    @endif
                 @else
-                <span class="badge badge-cita">Interconsulta / Especialista</span>
+                    <tr>
+                        <td>
+                            <span class="info-label">Categoría de Examen</span>
+                            <span class="info-value">{{ $remision->categoriaExamen?->categoria ?? $remision->categoria_examen?->categoria ?? '—' }}</span>
+                        </td>
+                        <td>
+                            <span class="info-label">Prioridad</span>
+                            <span class="info-value" style="color: {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? '#c62828' : '#333' }};">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
+                        </td>
+                    </tr>
+                    @if($remision->examen)
+                        <tr>
+                            <td colspan="2">
+                                <span class="info-label">Cita de Examen Asignada</span>
+                                <span class="info-value">{{ $remision->examen->fecha }} a las {{ substr($remision->examen->hora_inicio, 0, 5) }}</span>
+                            </td>
+                        </tr>
+                    @endif
                 @endif
-            </div>
+            </table>
         </div>
-        @if($remision->tipo_remision === 'cita')
-        <div class="info-item">
-            <div class="lbl">Especialidad Destino</div>
-            <div class="val">{{ $remision->especialidad?->especialidad ?? '—' }}</div>
-        </div>
-        @if($remision->cita)
-        <div class="info-item">
-            <div class="lbl">Médico Receptor</div>
-            <div class="val">Dr. {{ $remision->cita->medico?->primer_nombre }} {{ $remision->cita->medico?->primer_apellido }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Fecha de Cita</div>
-            <div class="val">{{ $remision->cita->fecha }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Hora de Cita</div>
-            <div class="val">{{ substr($remision->cita->hora_inicio, 0, 5) }}</div>
-        </div>
-        @endif
-        @else
-        <div class="info-item">
-            <div class="lbl">Categoría de Examen</div>
-            <div class="val">{{ $remision->categoriaExamen?->categoria ?? '—' }}</div>
-        </div>
-        @if($remision->examen)
-        <div class="info-item">
-            <div class="lbl">Fecha de Examen</div>
-            <div class="val">{{ $remision->examen->fecha }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Hora de Examen</div>
-            <div class="val">{{ substr($remision->examen->hora_inicio, 0, 5) }}</div>
-        </div>
-        @endif
-        @endif
-        <div class="info-item">
-            <div class="lbl">Prioridad</div>
-            <div class="val">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</div>
-        </div>
-        <div class="info-item">
-            <div class="lbl">Estado</div>
-            <div class="val">{{ $remision->estado?->nombre_estado ?? 'Activa' }}</div>
-        </div>
-        @if($remision->tipo_remision === 'examen')
-        <div class="info-item">
-            <div class="lbl">Requiere Ayuno</div>
-            <div class="val">{{ $remision->requiere_ayuno ? '✅ SÍ — acuda en ayunas' : 'No requiere ayuno' }}</div>
-        </div>
-        @endif
     </div>
 
     @if($remision->requiere_ayuno && $remision->tipo_remision === 'examen')
-    <div class="ayuno-box"><p>⚠️ IMPORTANTE: Este examen requiere ayuno mínimo de 8 horas. No consuma alimentos ni bebidas azucaradas antes de la prueba. Puede tomar agua.</p></div>
+    <div class="alert-ayuno">
+        <strong>ADVERTENCIA:</strong> REQUIERE AYUNO: Este examen requiere un mínimo de 8 a 12 horas de ayuno. No consuma alimentos ni bebidas (sólo agua si es necesario).
+    </div>
     @endif
-</div>
 
-@if($remision->notas)
-<div class="section">
-    <div class="section-title">Observaciones y Motivo</div>
-    <div class="text-block"><p>{{ $remision->notas }}</p></div>
-</div>
-@endif
+    @if($remision->notas)
+    <div class="observaciones">
+        <strong>Observaciones Clínicas / Motivo:</strong><br>
+        {{ $remision->notas }}
+    </div>
+    @endif
 
-<div class="notice-box">
-    <h4>📌 Instrucciones para el Paciente</h4>
-    <p>
-        Presente este documento en la recepción del servicio indicado para solicitar su cita o atención.
-        Este documento tiene validez de 30 días a partir de la fecha de emisión.
-        @if($remision->tipo_remision === 'examen')
-        Diríjase al área de Laboratorio o Imágenes según corresponda al tipo de examen solicitado.
-        @else
-        Acuda al servicio de {{ $remision->especialidad?->especialidad ?? 'especialidad indicada' }} con este documento y su documento de identidad.
-        @endif
-    </p>
-</div>
+    <div class="instrucciones">
+        <h4>Instrucciones Generales para el Paciente</h4>
+        <p>
+            - Presente este documento impreso o digital al momento de requerir el servicio.<br>
+            - La presente orden es válida por un período máximo de 30 días calendario contados a partir de su emisión.<br>
+            @if($remision->tipo_remision === 'examen')
+            - Diríjase al área de Laboratorio Clínico o Imágenes Diagnósticas según corresponda al tipo de examen.
+            @else
+            - Solicite su cita en los canales de atención de Saluvanta EPS para acceder al especialista indicado.
+            @endif
+        </p>
+    </div>
 
-<div class="footer">
-    <p>Documento generado por Saluvanta EPS (Sanitech) · {{ now()->format('d/m/Y H:i') }}</p>
-    <p>Remisión #{{ $remision->id_remision }} · Cita Origen #{{ $remision->historialDetalle?->cita?->id_cita ?? '—' }}</p>
-</div>
+    <div class="footer">
+        Documento Oficial &copy; Saluvanta EPS | Generado por el Sistema de Información Sanitec | Fecha: {{ now()->format('d/m/Y H:i A') }}
+    </div>
 
 </body>
 </html>

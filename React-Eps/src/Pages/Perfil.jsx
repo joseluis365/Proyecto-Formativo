@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 const ROL_LABELS = {
     1: "SuperAdmin",
     2: "Administrador",
-    3: "Personal Exámenes",
+    3: "Personal Administrativo",
     4: "Médico",
     5: "Paciente",
     6: "Farmacéutico",
@@ -355,7 +355,13 @@ export default function Perfil() {
     }
 
     const rolId = user.id_rol;
-    const rolLabel = ROL_LABELS[rolId] || user.rol?.nombre_rol || "Usuario";
+    let rolLabel = ROL_LABELS[rolId] || user.rol?.nombre_rol || "Usuario";
+
+    // Lógica dinámica para Personal Administrativo / Exámenes
+    if (rolId === 3) {
+        rolLabel = user.examenes ? "Personal Exámenes" : "Personal Administrativo";
+    }
+
     const rolColor = ROL_COLORS[rolId] || "bg-gray-100 text-gray-700";
     const fullName = [user.primer_nombre, user.segundo_nombre, user.primer_apellido, user.segundo_apellido]
         .filter(Boolean).join(" ");
@@ -379,31 +385,35 @@ export default function Perfil() {
                     </div>
 
                     {/* Nombre + info básica */}
-                    <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-3">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white truncate">{fullName}</h1>
-                            <span className={`text-xs font-bold px-3 py-1 rounded-full ${rolColor}`}>{rolLabel}</span>
+                    <div className="flex-1 min-w-0 w-full">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white wrap-break-word leading-tight">
+                                {fullName}
+                            </h1>
+                            <span className={`inline-flex items-center w-fit text-xs font-bold px-3 py-1 rounded-full ${rolColor}`}>
+                                {rolLabel}
+                            </span>
                         </div>
-                        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="flex items-center gap-1.5">
+                        <div className="mt-3 flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                            <span className="flex items-center gap-1.5 shrink-0">
                                 <span className="material-symbols-outlined text-base">badge</span>
                                 Doc: {user.documento}
                             </span>
                             {user.nit && user.id_rol === 2 && (
-                                <span className="flex items-center gap-1.5">
+                                <span className="flex items-center gap-1.5 break-all">
                                     <span className="material-symbols-outlined text-base">apartment</span>
-                                    NIT Empresa: {user.nit}
+                                    NIT: {user.nit}
                                 </span>
                             )}
                             {user.nit_farmacia && user.id_rol === 6 && (
-                                <span className="flex items-center gap-1.5">
+                                <span className="flex items-center gap-1.5 break-all">
                                     <span className="material-symbols-outlined text-base">local_pharmacy</span>
-                                    NIT Farmacia: {user.nit_farmacia}
+                                    NIT: {user.nit_farmacia}
                                 </span>
                             )}
-                            <span className="flex items-center gap-1.5">
+                            <span className="flex items-center gap-1.5 shrink-0">
                                 <span className="material-symbols-outlined text-base">calendar_month</span>
-                                Registrado: {formatDate(user.created_at)}
+                                Reg: {formatDate(user.created_at)}
                             </span>
                         </div>
                     </div>

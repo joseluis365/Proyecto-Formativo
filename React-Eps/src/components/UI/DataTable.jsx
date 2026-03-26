@@ -27,7 +27,7 @@ export default function DataTable({ columns, data }) {
                                     className={`px-6 py-4 dark:bg-gray-900  ${col.align === "center" ? "text-center" : ""
                                         }`}
                                 >
-                                    {col.render(row)}
+                                    {col.render ? col.render(row) : (row[col.key] || "-")}
                                 </td>
                             ))}
                         </tr>

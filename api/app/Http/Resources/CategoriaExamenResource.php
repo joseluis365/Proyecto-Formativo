@@ -13,6 +13,7 @@ class CategoriaExamenResource extends JsonResource
             'id_categoria_examen' => $this->id_categoria_examen,
             'categoria' => $this->categoria,
             'id_estado' => $this->id_estado,
+            'requiere_ayuno' => (bool)$this->requiere_ayuno,
         ];
     }
 }

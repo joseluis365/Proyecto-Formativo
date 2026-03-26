@@ -12,6 +12,28 @@ class AtencionMedicaRequest extends FormRequest
         return true; // La autorización de médico asignado se valida en el controlador
     }
 
+    /**
+     * Prepara los datos para validación.
+     * Convierte strings "undefined" o "null" accidentales del frontend en valores nulos reales.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('remisiones')) {
+            $remisiones = $this->input('remisiones');
+            if (is_array($remisiones)) {
+                foreach ($remisiones as $i => $rem) {
+                    if (isset($rem['doc_medico']) && ($rem['doc_medico'] === 'undefined' || $rem['doc_medico'] === 'null')) {
+                        $remisiones[$i]['doc_medico'] = null;
+                    }
+                    if (isset($rem['id_especialidad']) && ($rem['id_especialidad'] === 'undefined' || $rem['id_especialidad'] === 'null')) {
+                        $remisiones[$i]['id_especialidad'] = null;
+                    }
+                }
+                $this->merge(['remisiones' => $remisiones]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -52,8 +74,13 @@ class AtencionMedicaRequest extends FormRequest
                 'nullable',
                 Rule::exists('examen', 'id_examen'),
             ],
+            'remisiones.*.id_categoria_examen' => [
+                'nullable',
+                Rule::exists('categoria_examen', 'id_categoria_examen'),
+            ],
+            'remisiones.*.id_motivo'           => 'required_with:remisiones|integer|exists:motivo_consulta,id_motivo',
+            'remisiones.*.notas'               => 'required_if:remisiones.*.id_motivo,51|nullable|string|max:1000',
             'remisiones.*.id_prioridad'        => 'nullable|exists:prioridad,id_prioridad',
-            'remisiones.*.notas'               => 'required_with:remisiones|string|max:1000',
             'remisiones.*.fecha'               => 'required_with:remisiones|date|after_or_equal:today',
             'remisiones.*.hora_inicio'         => 'required_with:remisiones|date_format:H:i',
             'remisiones.*.doc_medico'          => 'nullable|exists:usuario,documento',
@@ -95,10 +122,10 @@ class AtencionMedicaRequest extends FormRequest
                     );
                 }
 
-                if ($tipo === 'examen' && empty($rem['id_examen'])) {
+                if ($tipo === 'examen' && empty($rem['id_examen']) && empty($rem['id_categoria_examen'])) {
                     $v->errors()->add(
-                        "remisiones.{$i}.id_examen",
-                        'El examen es obligatorio para remisión de tipo "examen".'
+                        "remisiones.{$i}.id_categoria_examen",
+                        'El examen o categoría de examen es obligatorio para remisión de tipo "examen".'
                     );
                 }
 
@@ -149,7 +176,8 @@ class AtencionMedicaRequest extends FormRequest
             'tratamiento.required'         => 'El plan de tratamiento es obligatorio.',
             'tratamiento.max'              => 'El tratamiento no debe exceder los 3000 caracteres.',
             'remisiones.*.tipo_remision.in' => 'El tipo de remisión debe ser "cita" o "examen".',
-            'remisiones.*.notas.required' => 'Las notas de remisión son obligatorias.',
+            'remisiones.*.id_motivo.required_with' => 'El motivo es obligatorio.',
+            'remisiones.*.notas.required_if' => 'Debe especificar el motivo en las notas si selecciona "Otro".',
         ];
     }
 }

@@ -22,10 +22,11 @@ export default function LoginSection() {
         const userStr = localStorage.getItem('user');
         if (token && userStr) {
             try {
-                const user = JSON.parse(userStr);
                 if (user.id_rol === 1) navigate('/SuperAdmin-Dashboard', { replace: true });
                 else if (user.id_rol === 6) navigate('/farmacia/dashboard', { replace: true });
                 else if (user.id_rol === 5) navigate('/paciente', { replace: true });
+                else if (user.id_rol === 3 && user.examenes) navigate('/examenes/agenda', { replace: true });
+                else if (user.id_rol === 3 && !user.examenes) navigate('/personal/dashboard', { replace: true });
                 else navigate('/dashboard', { replace: true });
             } catch (e) {
                 navigate('/login', { replace: true });
@@ -70,6 +71,10 @@ export default function LoginSection() {
                 navigate('/farmacia/dashboard');
             } else if (user.id_rol === 5) {
                 navigate('/paciente');
+            } else if (user.id_rol === 3 && user.examenes) {
+                navigate('/examenes/agenda');
+            } else if (user.id_rol === 3 && !user.examenes) {
+                navigate('/personal/dashboard');
             } else {
                 navigate('/dashboard');
             }

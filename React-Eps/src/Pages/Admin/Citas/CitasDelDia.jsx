@@ -39,13 +39,15 @@ export default function CitasDelDia() {
     const fetchCitasDelDia = async () => {
         try {
             setLoading(true);
-            const res = await api.get("/citas");
-
-            // Filtrar por citas de hoy
             const todayStr = new Date().toISOString().split('T')[0];
-            const citasHoy = (res.data || []).filter(cita => cita.fecha === todayStr);
+            const res = await api.get("/citas", {
+                params: {
+                    fecha: todayStr,
+                    per_page: 100
+                }
+            });
 
-            setCitas(citasHoy);
+            setCitas(res || []);
         } catch (error) {
             console.error("Error cargando citas del día:", error);
         } finally {
@@ -87,7 +89,9 @@ export default function CitasDelDia() {
                             patientName={`${cita.paciente?.primer_nombre || ''} ${cita.paciente?.primer_apellido || ''}`.trim() || 'No asignado'}
                             patientDoc={cita.paciente?.documento}
                             doctorName={`Dr. ${cita.medico?.primer_nombre || ''} ${cita.medico?.primer_apellido || ''}`.trim() || 'General'}
-                            specialty={cita.tipoCita?.nombre || "General"}
+                            doctorSpecialty={cita.medico?.especialidad?.especialidad || "Médico General"}
+                            specialty={cita.tipoCita?.nombre || ""}
+                            tipoServicio={cita.motivoConsulta?.motivo || "Cita Regular"}
                             time={cita.hora_inicio ? cita.hora_inicio.slice(0, 5) : "Por definir"}
                             status={cita.estado?.nombre_estado || "Pendiente"}
                             onView={() => {

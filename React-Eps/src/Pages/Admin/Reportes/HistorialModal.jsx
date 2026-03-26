@@ -58,17 +58,47 @@ export default function HistorialModal({ isOpen, onClose, report }) {
                     </div>
 
                     <div className="mt-2">
-                        <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-gray-400 text-lg">data_object</span>
-                            Ejemplo de un Registro (Estructura)
+                        <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-blue-500 text-xl">fact_check</span>
+                            Vista Previa de los Datos (Un Registro)
                         </h4>
                         
-                        <div className="bg-gray-900 dark:bg-black p-4 rounded-xl overflow-x-auto border border-gray-700 shadow-inner">
-                            <pre className="text-[13px] text-green-400 font-mono leading-relaxed">
-                                {report.ejemplo_registro 
-                                    ? JSON.stringify(report.ejemplo_registro, null, 2)
-                                    : "No hay información de ejemplo disponible"}
-                            </pre>
+                        <div className="bg-gray-50 dark:bg-gray-900/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800">
+                            {report.ejemplo_registro && Object.keys(report.ejemplo_registro).length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                                    {Object.entries(report.ejemplo_registro).map(([key, value]) => {
+                                        // No mostrar campos técnicos de Laravel si se colaron
+                                        if (['pivot', 'laravel_through_key'].includes(key)) return null;
+                                        
+                                        const formattedKey = key
+                                            .replace(/_/g, " ")
+                                            .replace(/\bid\b/i, "ID")
+                                            .replace(/^\w/, (c) => c.toUpperCase());
+
+                                        let renderedValue = "-";
+                                        if (value === true || value === 1 && key.includes('estado')) renderedValue = <span className="text-green-600 dark:text-green-400 font-bold">Sí</span>;
+                                        else if (value === false || value === 0 && key.includes('estado')) renderedValue = <span className="text-red-600 dark:text-red-400 font-bold">No</span>;
+                                        else if (value === null) renderedValue = <span className="text-gray-400 italic font-normal">No aplica</span>;
+                                        else if (typeof value === 'object') renderedValue = <span className="text-gray-400 text-xs italic">Dato complejo</span>;
+                                        else renderedValue = String(value);
+
+                                        return (
+                                            <div key={key} className="flex flex-col border-b border-gray-100 dark:border-gray-800 pb-2">
+                                                <span className="text-[11px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 mb-0.5">
+                                                    {formattedKey}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                                                    {renderedValue}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="text-center py-6">
+                                    <p className="text-gray-400 italic">No hay información de ejemplo detallada para este reporte.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

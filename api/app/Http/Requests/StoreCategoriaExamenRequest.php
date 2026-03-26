@@ -11,7 +11,8 @@ class StoreCategoriaExamenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'categoria' => ['required', 'string', 'max:100', new UniqueIgnoreCase('categoria_examen', 'categoria')]
+            'categoria' => ['required', 'string', 'max:100', new UniqueIgnoreCase('categoria_examen', 'categoria')],
+            'requiere_ayuno' => ['nullable', 'boolean']
         ];
     }
 }

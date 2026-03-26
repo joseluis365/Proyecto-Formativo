@@ -41,7 +41,7 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
         { label: "Fecha de Emisión", value: remision.created_at ? new Date(remision.created_at).toLocaleDateString() : "—" },
         { label: "Tipo", value: isExamen ? "Examen Clínico" : "Interconsulta / Especialista" },
         isExamen
-            ? { label: "Categoría de Examen", value: remision.categoriaExamen?.categoria || "—" }
+            ? { label: "Categoría de Examen", value: (remision.categoriaExamen || remision.categoria_examen)?.categoria || "—" }
             : { label: "Especialidad Destino", value: remision.especialidad?.especialidad || "—" },
         !isExamen && remision.cita?.medico && { 
             label: "Médico Receptor", 
@@ -77,19 +77,12 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
                 {/* Cita de Origen */}
                 {cita && (
                     <>
-                        <GeneralInfo item={citaItems} />
+                        <GeneralInfo item={citaItems} icon="calendar_month" title="DATOS DE LA CONSULTA" />
                         <hr className="border-gray-200 dark:border-gray-700" />
                     </>
                 )}
 
-                {/* Info de la remisión */}
-                <div className="flex gap-3 mb-3 mt-2">
-                    <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">assignment_turned_in</span>
-                    <h3 className="text-gray-800 dark:text-gray-200 text-sm font-bold uppercase tracking-wider">
-                        Información de la Remisión
-                    </h3>
-                </div>
-                <GeneralInfo item={generalItems} />
+                <GeneralInfo item={generalItems} icon="assignment_turned_in" title="DATOS DE LA REMISIÓN" />
 
                 {/* Tipo-específico */}
                 {isExamen && remision.requiere_ayuno && (
@@ -118,7 +111,7 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
                     </h4>
                     <p className="text-sm text-blue-600 dark:text-blue-300 leading-relaxed">
                         {isExamen
-                            ? `Diríjase al área de ${remision.categoriaExamen?.categoria || "Laboratorio / Imágenes"} presentando este documento y su cédula de identidad.`
+                            ? `Diríjase al área de ${(remision.categoriaExamen || remision.categoria_examen)?.categoria || "Laboratorio / Imágenes"} presentando este documento y su cédula de identidad.`
                             : `Acuda al servicio de ${remision.especialidad?.especialidad || "especialidad indicada"} con este documento y su documento de identidad.`
                         }
                         {" "}Este documento tiene validez de 30 días a partir de la fecha de emisión.

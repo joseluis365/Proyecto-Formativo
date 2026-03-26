@@ -36,6 +36,7 @@ class CategoriaExamenController extends Controller
     {
         $categoria = CategoriaExamen::create([
             'categoria' => $request->categoria,
+            'requiere_ayuno' => $request->boolean('requiere_ayuno'),
             'id_estado' => 1
         ]);
 
@@ -50,7 +51,8 @@ class CategoriaExamenController extends Controller
         $categoria = CategoriaExamen::findOrFail($id);
 
         $categoria->update([
-            'categoria' => $request->categoria
+            'categoria' => $request->categoria,
+            'requiere_ayuno' => $request->boolean('requiere_ayuno'),
         ]);
 
         return response()->json([

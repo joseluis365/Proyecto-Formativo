@@ -70,7 +70,6 @@ function PatientLayoutContent() {
 
     return (
         <div className="min-h-screen bg-neutral-gray-bg dark:bg-black font-figtree">
-            {/* Header — passes nav items for lg screens; hamburger for md range */}
             <Header
                 title={
                     <div className="flex items-center gap-3">
@@ -82,7 +81,7 @@ function PatientLayoutContent() {
                         <span className="tracking-tight">Saluvanta EPS</span>
                     </div>
                 }
-                subtitle="Estás en tu área personal"
+                subtitle="Estas en tu pagina personal"
                 hideLogout
                 /* hamburger slot — visible only md → lg */
                 hamburger={

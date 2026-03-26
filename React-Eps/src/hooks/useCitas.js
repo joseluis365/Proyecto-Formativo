@@ -36,7 +36,7 @@ import Swal from "sweetalert2";
  * @param {boolean} [filters.enabled=true]
  */
 export default function useCitas(filters = {}) {
-    const { fecha, doc_paciente, doc_medico, estado, enabled = true } = filters;
+    const { fecha, doc_paciente, doc_medico, estado, per_page, enabled = true } = filters;
 
     const [citas, setCitas] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -56,8 +56,9 @@ export default function useCitas(filters = {}) {
         if (doc_paciente) params.doc_paciente = doc_paciente;
         if (doc_medico)   params.doc_medico   = doc_medico;
         if (estado)       params.estado       = estado;
+        if (per_page)     params.per_page     = per_page;
         return params;
-    }, [fecha, doc_paciente, doc_medico, estado]);
+    }, [fecha, doc_paciente, doc_medico, estado, per_page]);
 
     /**
      * Carga las citas del servidor con los filtros activos.

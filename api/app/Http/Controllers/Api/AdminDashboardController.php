@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use App\Models\Cita;
+use App\Models\Pqr;
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
@@ -54,11 +55,18 @@ class AdminDashboardController extends Controller
             ->whereDate('created_at', '<=', $endPrev)
             ->count();
 
+        // ─────────────────────────────────────────────
+        // 5. PQRS PENDIENTES (id_estado = 13)
+        // ─────────────────────────────────────────────
+        $pqrsPendientes    = Pqr::where('id_estado', 13)->count();
+        $pqrsAnterior      = 0; // The pqr table lacks standard timestamps (no created_at)
+
         return response()->json([
             $this->buildStat('Médicos Activos',   'stethoscope',   $medicosActivos,   $medicosAnterior),
             $this->buildStat('Pacientes Activos',  'personal_injury', $pacientesActivos, $pacientesAnterior),
             $this->buildStat('Citas del Mes',      'calendar_month',  $citasMes,         $citasMesAnterior),
             $this->buildStat('Personal Activo',    'badge',          $personalActivo,   $personalAnterior),
+            $this->buildStat('PQRS Pendientes',    'forum',          $pqrsPendientes,   $pqrsAnterior),
         ]);
     }
 

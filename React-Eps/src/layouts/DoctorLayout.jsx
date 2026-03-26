@@ -22,7 +22,7 @@ function DoctorLayoutContent() {
                     title={title} 
                     subtitle={subtitle} 
                 />
-                <main className="flex-1 p-8">
+                <main className="flex-1 p-8 dark:bg-gray-900">
                     <Outlet />
                 </main>
             </div>
