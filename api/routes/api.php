@@ -440,6 +440,30 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — MOTIVOS DE CONSULTA
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(MotivoConsultaController::class)->group(function () {
+        Route::post('/motivos-consulta', 'store');
+        Route::put('/motivos-consulta/{id}', 'update');
+        Route::delete('/motivos-consulta/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIGURACIÓN — TIPOS DE DOCUMENTO
+    |--------------------------------------------------------------------------
+    |*/
+
+    Route::controller(\App\Http\Controllers\Api\TipoDocumentoController::class)->group(function () {
+        Route::post('/tipos-documento', 'store');
+        Route::put('/tipos-documento/{id}', 'update');
+        Route::delete('/tipos-documento/{id}', 'destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | MÓDULO FARMACIA — CATÁLOGO
     |--------------------------------------------------------------------------
     */

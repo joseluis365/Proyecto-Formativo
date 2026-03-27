@@ -6,16 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Departamento;
 use App\Models\Ciudad;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class LocationController extends Controller
 {
     public function getDepartamentos()
     {
-        return response()->json(Departamento::orderBy('nombre')->get());
+        return response()->json(Cache::remember('departamentos_all', 86400, function () {
+            return Departamento::orderBy('nombre')->get();
+        }));
     }
 
     public function getCiudades($departamentoId)
     {
-        return response()->json(Ciudad::where('id_departamento', $departamentoId)->orderBy('nombre')->get());
+        return response()->json(Cache::remember("ciudades_dep_{$departamentoId}", 86400, function () use ($departamentoId) {
+            return Ciudad::where('id_departamento', $departamentoId)->orderBy('nombre')->get();
+        }));
     }
 }

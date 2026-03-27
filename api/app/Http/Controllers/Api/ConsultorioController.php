@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Consultorio;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ConsultorioController extends Controller
 {
@@ -15,7 +16,9 @@ class ConsultorioController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Consultorio::all()
+            'data' => Cache::remember('consultorios_all', 3600, function() {
+                return Consultorio::all();
+            })
         ]);
     }
 

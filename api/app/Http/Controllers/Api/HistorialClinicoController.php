@@ -104,7 +104,7 @@ class HistorialClinicoController extends Controller
         $historial = HistorialClinico::where('id_paciente', $doc)->first();
 
         // 1.5 Cargar datos básicos del paciente (siempre requerido, incluso si no hay historial)
-        $paciente = Usuario::where('documento', $doc)->first();
+        $paciente = Usuario::find($doc);
 
         if (!$paciente) {
             return response()->json(['status' => 'error', 'message' => 'Paciente no encontrado.'], 404);
@@ -233,7 +233,7 @@ class HistorialClinicoController extends Controller
         $historial->update($request->only('antecedentes_personales', 'antecedentes_familiares', 'alergias', 'habitos_vida'));
 
         // Update basic patient information if present
-        $usuario = Usuario::where('documento', $doc)->first();
+        $usuario = Usuario::find($doc);
         if ($usuario) {
             $usuario->update($request->only('email', 'telefono', 'direccion', 'sexo', 'fecha_nacimiento', 'grupo_sanguineo'));
         }
@@ -275,7 +275,7 @@ class HistorialClinicoController extends Controller
         $this->authorizeDoctorForPatient($doc);
 
         $historial = HistorialClinico::where('id_paciente', $doc)->first();
-        $paciente = Usuario::where('documento', $doc)->firstOrFail();
+        $paciente = Usuario::findOrFail($doc);
 
         $detalles = HistorialDetalle::whereHas('historial', fn($q) => $q->where('id_paciente', $doc))
             ->with([
@@ -465,7 +465,7 @@ class HistorialClinicoController extends Controller
     {
         $this->authorizeDoctorForPatient($doc);
 
-        $paciente = Usuario::where('documento', $doc)->firstOrFail();
+        $paciente = Usuario::findOrFail($doc);
 
         $detalles = HistorialDetalle::whereHas('historial', fn($q) => $q->where('id_paciente', $doc))
             ->with(['cita', 'enfermedades'])

@@ -9,3 +9,4 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 Schedule::command('app:check-licenses')->daily();
+Schedule::command('email:reminders')->daily();

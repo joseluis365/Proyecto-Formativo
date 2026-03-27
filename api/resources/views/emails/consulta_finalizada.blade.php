@@ -128,7 +128,7 @@
     <div class="footer">
         Protegemos tus datos médicos conforme a la ley de Habeas Data.<br>
         Este correo es generado de manera automática, por favor no respondas a este remitente.<br>
-        <strong>Proyecto EPS</strong> &copy; {{ date('Y') }}
+        <strong>Saluvanta EPS</strong> &copy; {{ date('Y') }}
     </div>
 </div>
 

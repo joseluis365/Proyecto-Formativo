@@ -8,6 +8,8 @@ export default function SearchableSelect({
     placeholder = "Seleccionar...",
     noOptionsText = "No se encontraron resultados",
     required = false,
+    onSearchChange,
+    loading = false,
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -37,22 +39,38 @@ export default function SearchableSelect({
         }
     }, [isOpen]);
 
+    // Invoke onSearchChange when search changes
+    useEffect(() => {
+        if (onSearchChange) {
+            onSearchChange(search);
+        }
+    }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
+
     // Filter options case-insensitive
     const filteredOptions = useMemo(() => {
+        if (onSearchChange) return options;
         if (!search) return options;
         const lowerSearch = search.toLowerCase();
         return options.filter(opt =>
             opt.label.toLowerCase().includes(lowerSearch)
         );
-    }, [options, search]);
+    }, [options, search, onSearchChange]);
 
-    const selectedOption = useMemo(() =>
-        options.find(opt => String(opt.value) === String(value)),
-        [options, value]);
+    const selectedOption = useMemo(() => {
+        // If we are searching async, the selected option might not be in the current `options` list
+        // We should ideally have the full option object or at least show the value if label is unknown
+        const found = options.find(opt => String(opt.value) === String(value));
+        if (found) return found;
+        if (value && options.length === 0 && onSearchChange) {
+             return { value, label: `Seleccionado: ${value}` }; // Fallback for async when initialized
+        }
+        return null;
+    }, [options, value, onSearchChange]);
 
     const handleSelect = (val) => {
         onChange(val);
         setSearch('');
+        if (onSearchChange) onSearchChange('');
         setIsOpen(false);
     };
 
@@ -111,7 +129,12 @@ export default function SearchableSelect({
                         </div>
 
                         <ul className="max-h-60 overflow-y-auto p-1">
-                            {filteredOptions.length === 0 ? (
+                            {loading ? (
+                                <li className="px-3 py-3 text-sm text-gray-500 text-center flex items-center justify-center gap-2">
+                                    <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                                    Buscando...
+                                </li>
+                            ) : filteredOptions.length === 0 ? (
                                 <li className="px-3 py-3 text-sm text-gray-500 text-center">
                                     {noOptionsText}
                                 </li>

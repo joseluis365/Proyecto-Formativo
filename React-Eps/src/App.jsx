@@ -99,6 +99,8 @@ import FormasFarmaceuticas from "./Pages/Admin/Configuracion/FormasFarmaceuticas
 import Medicamentos from "./Pages/Admin/Configuracion/Medicamentos"
 import Presentaciones from "./Pages/Admin/Configuracion/Presentaciones"
 import EnfermedadesList from "./Pages/Admin/Configuracion/EnfermedadesList"
+import MotivosConsulta from "./Pages/Admin/Configuracion/MotivosConsulta"
+import TiposDocumento from "./Pages/Admin/Configuracion/TiposDocumento"
 
 // Módulo Médico — vistas adicionales
 import HistorialCitasAtendidas from "./Pages/Medico/HistorialCitasAtendidas"
@@ -239,6 +241,8 @@ export default function App() {
               <Route path="medicamentos" element={<Medicamentos />} />
               <Route path="presentaciones" element={<Presentaciones />} />
               <Route path="enfermedades" element={<EnfermedadesList isAdmin={true} />} />
+              <Route path="motivos-consulta" element={<MotivosConsulta />} />
+              <Route path="tipos-documento" element={<TiposDocumento />} />
             </Route>
           </Route>
         </Route>

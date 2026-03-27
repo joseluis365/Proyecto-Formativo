@@ -110,6 +110,20 @@ export default function ConfiguracionIndex() {
             icon: "inventory_2",
             to: "/configuracion/presentaciones",
             color: "amber"
+        },
+        {
+            title: "Motivos de Consulta",
+            description: "Gestión de razones o motivos por los que el paciente puede agendar.",
+            icon: "medical_services",
+            to: "/configuracion/motivos-consulta",
+            color: "pink"
+        },
+        {
+            title: "Tipos de Documento",
+            description: "Listado maestro de los documentos de identidad válidos.",
+            icon: "badge",
+            to: "/configuracion/tipos-documento",
+            color: "violet"
         }
     ];
 

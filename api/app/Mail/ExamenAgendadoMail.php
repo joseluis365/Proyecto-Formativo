@@ -6,28 +6,22 @@ use App\Models\Examen;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ResultadoExamenMail extends Mailable implements ShouldQueue
+class ExamenAgendadoMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $examen;
-    public $pdfPath;
+    public Examen $examen;
 
     /**
      * Create a new message instance.
-     *
-     * @param Examen $examen
-     * @param string $pdfPath
      */
-    public function __construct(Examen $examen, string $pdfPath)
+    public function __construct(Examen $examen)
     {
         $this->examen = $examen;
-        $this->pdfPath = $pdfPath;
     }
 
     /**
@@ -35,9 +29,8 @@ class ResultadoExamenMail extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $nombreExamen = $this->examen->categoriaExamen->categoria ?? 'Examen Clínico';
         return new Envelope(
-            subject: "Resultados de tu examen: $nombreExamen - Saluvanta EPS",
+            subject: 'Notificación: Examen de Laboratorio Asignado - Saluvanta EPS',
         );
     }
 
@@ -47,7 +40,7 @@ class ResultadoExamenMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.resultado_examen',
+            view: 'emails.examen_agendado',
         );
     }
 
@@ -58,10 +51,6 @@ class ResultadoExamenMail extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromPath($this->pdfPath)
-                ->as('Resultados_Examen.pdf')
-                ->withMime('application/pdf'),
-        ];
+        return [];
     }
 }

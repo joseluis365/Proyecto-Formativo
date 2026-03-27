@@ -26,22 +26,29 @@ export default function PieChartOrdenes({ data }) {
       <div className="flex-1 min-h-0">
       {pieData && pieData.length > 0 && (
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
+        <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
           <Pie
             data={pieData}
             dataKey="value"
             cx="50%"
-            cy="40%"
-            innerRadius={45}
-            outerRadius={70}
-            paddingAngle={6}
+            cy="50%"
+            innerRadius={60}
+            outerRadius={80}
+            paddingAngle={5}
+            stroke="none"
           >
             {pieData.map((_, index) => (
               <Cell key={index} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip 
-            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+            contentStyle={{ 
+              borderRadius: '12px', 
+              border: 'none', 
+              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(4px)'
+            }}
           />
           <Legend 
             verticalAlign="bottom" 
@@ -50,7 +57,8 @@ export default function PieChartOrdenes({ data }) {
             wrapperStyle={{ 
               paddingTop: '20px',
               fontSize: '12px',
-              color: '#6B7280'
+              color: '#6B7280',
+              fontWeight: 500
             }}
           />
         </PieChart>

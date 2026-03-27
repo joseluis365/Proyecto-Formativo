@@ -49,6 +49,9 @@ export default function HistorialCitasAtendidas() {
     const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 });
     const [selectedCita, setSelectedCita] = useState(null);
     const [enfermedadesOptions, setEnfermedadesOptions] = useState([]);
+    const [loadingEnfermedades, setLoadingEnfermedades] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const debounceTimeout = useRef(null);
     const [motivosOptions, setMotivosOptions] = useState([]);
     const [downloadingReport, setDownloadingReport] = useState(false);
     const [filters, setFilters] = useState({
@@ -94,14 +97,33 @@ export default function HistorialCitasAtendidas() {
         setSubtitle("Historial completo de consultas realizadas");
     }, [setTitle, setSubtitle]);
 
+    // Async fetch for enfermedades based on search query
     useEffect(() => {
-        const fetchEnfermedades = async () => {
+        if (!searchQuery) {
+            setEnfermedadesOptions([]);
+            return;
+        }
+
+        if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+
+        debounceTimeout.current = setTimeout(async () => {
+            setLoadingEnfermedades(true);
             try {
-                const res = await api.get("/enfermedades/buscar", { params: { limit: 3000 } });
+                const res = await api.get("/enfermedades/buscar", { params: { search: searchQuery, limit: 50 } });
                 const list = Array.isArray(res) ? res : (res?.data || []);
                 setEnfermedadesOptions(list.map(e => ({ value: e.codigo_icd, label: `[${e.codigo_icd}] ${e.nombre}` })));
-            } catch {}
-        };
+            } catch (error) {
+                console.error("Error buscando enfermedades:", error);
+                setEnfermedadesOptions([]);
+            } finally {
+                setLoadingEnfermedades(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(debounceTimeout.current);
+    }, [searchQuery]);
+
+    useEffect(() => {
         const fetchMotivos = async () => {
             try {
                 const res = await api.get("/motivos-consulta");
@@ -114,7 +136,6 @@ export default function HistorialCitasAtendidas() {
                 }
             } catch {}
         };
-        fetchEnfermedades();
         fetchMotivos();
     }, []);
 
@@ -227,6 +248,9 @@ export default function HistorialCitasAtendidas() {
                             value={filters.codigo_enfermedad}
                             onChange={(val) => handleFilterChange("codigo_enfermedad", val)}
                             placeholder="Buscar CIE-11..."
+                            onSearchChange={setSearchQuery}
+                            loading={loadingEnfermedades}
+                            noOptionsText="Escribe para buscar..."
                         />
                     </div>
                     <div className="space-y-1">

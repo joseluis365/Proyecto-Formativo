@@ -8,7 +8,8 @@ class ReporteController extends Controller
 {
     public function generarPdf()
     {
-        $users = Usuario::all();
+        // Limitamos para evitar colapso de memoria al generar PDF
+        $users = Usuario::limit(500)->orderBy('documento')->get();
         $data = [
             'titulo' => 'Listado de Usuarios',
             'fecha' => date('d/m/Y'),

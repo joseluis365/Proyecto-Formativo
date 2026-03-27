@@ -103,6 +103,8 @@ class AtencionMedicaController extends Controller
             }
 
             // ── 3.2 Remisiones ────────────────────────────────────────────────
+            $citasAgendadas = [];
+            $examenesAgendados = [];
             foreach ($request->remisiones ?? [] as $remData) {
                 // Generar Cita o Examen a futuro para que el paciente las pueda agendar o gestionar
                 $horaInicio = \Carbon\Carbon::createFromFormat('H:i', $remData['hora_inicio']);
@@ -124,6 +126,7 @@ class AtencionMedicaController extends Controller
                         'motivo' => !empty($remData['notas']) ? substr($remData['notas'], 0, 255) : null,
                     ]);
                     $idCitaRecienCreada = $nuevaCita->id_cita;
+                    $citasAgendadas[] = $nuevaCita;
                 } else if ($remData['tipo_remision'] === 'examen') {
                     $examen = \App\Models\Examen::create([
                         'nombre' => 'Examen Remitido',
@@ -137,6 +140,7 @@ class AtencionMedicaController extends Controller
                         'id_estado' => $estadoAgendada->id_estado,
                     ]);
                     $idExamen = $examen->id_examen;
+                    $examenesAgendados[] = $examen;
                 }
 
                 Remision::create([
@@ -210,12 +214,15 @@ class AtencionMedicaController extends Controller
                 'cita_id'    => $cita->id_cita,
                 'estado'     => $estadoAtendida->nombre_estado,
                 'paciente'   => $cita->paciente,
+                'citas_agendadas'    => $citasAgendadas,
+                'examenes_agendados' => $examenesAgendados,
             ];
         });
 
         // ── 6. Enviar Correo de Notificación (Fuera de la DB Transaction) ──────
         try {
             if ($cita->paciente && $cita->paciente->email) {
+                // Email: Consulta Finalizada
                 \Illuminate\Support\Facades\Mail::to($cita->paciente->email)
                     ->send(new \App\Mail\ConsultaFinalizadaMail(
                         $cita, 
@@ -223,6 +230,19 @@ class AtencionMedicaController extends Controller
                         $responseData['remisiones'], 
                         $responseData['receta']
                     ));
+                    
+                // Email: Remisiones Agendadas
+                foreach ($responseData['citas_agendadas'] as $nuevaCita) {
+                    \Illuminate\Support\Facades\Mail::to($cita->paciente->email)
+                        ->send(new \App\Mail\CitaAgendadaMailable($nuevaCita));
+                }
+
+                // Email: Exámenes Médicos Asignados
+                foreach ($responseData['examenes_agendados'] as $nuevoExamen) {
+                    $nuevoExamen->load('categoriaExamen');
+                    \Illuminate\Support\Facades\Mail::to($cita->paciente->email)
+                        ->send(new \App\Mail\ExamenAgendadoMail($nuevoExamen));
+                }
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Correo fallido en cita #{$cita->id_cita}: " . $e->getMessage());

@@ -40,7 +40,7 @@ export default function ResetPasswordSection() {
 
     useEffect(() => {
         if (!email || !code) {
-            navigate("/forgot-password");
+            navigate("/confirm-email");
         }
     }, [email, code, navigate]);
 
@@ -61,9 +61,9 @@ export default function ResetPasswordSection() {
                 showConfirmButton: false
             });
 
+            navigate("/login");
             sessionStorage.removeItem("recovery_email");
             sessionStorage.removeItem("recovery_code");
-            navigate("/login");
         } catch (error) {
             if (error.response?.status === 422) {
                 const backendErrors = error.response.data.errors;

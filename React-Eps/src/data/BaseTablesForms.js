@@ -219,3 +219,31 @@ export const formTipoCita = {
         }
     ]
 };
+
+export const formMotivoConsulta = {
+    fields: [
+        {
+            name: "motivo",
+            label: "Motivo de Consulta",
+            icon: "medical_services",
+            type: "text",
+            placeholder: "Ej: Dolor Abdominal",
+            required: true,
+            onlyLetters: true,
+        }
+    ]
+};
+
+export const formTipoDocumento = {
+    fields: [
+        {
+            name: "tipo_documento",
+            label: "Tipo de Documento",
+            icon: "badge",
+            type: "text",
+            placeholder: "Ej: Cédula de Ciudadanía",
+            required: true,
+            onlyLetters: true,
+        }
+    ]
+};

@@ -111,6 +111,8 @@ export default function Sidebar({ isOpen, onClose }) {
                 <SidebarSubItem to="/configuracion/medicamentos" label="Medicamentos" />
                 <SidebarSubItem to="/configuracion/presentaciones" label="Presentaciones" />
                 <SidebarSubItem to="/configuracion/enfermedades" label="Enfermedades" />
+                <SidebarSubItem to="/configuracion/motivos-consulta" label="Motivos de Consulta" />
+                <SidebarSubItem to="/configuracion/tipos-documento" label="Tipos de Documento" />
               </SidebarDropdown>
               )}
             </div>

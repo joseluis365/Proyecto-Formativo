@@ -24,7 +24,7 @@
         </div>
         <div class="content">
             <p>Hola,</p>
-            <p>Hemos detectado un intento de inicio de sesión en tu cuenta de Administrador de <strong>Proyecto EPS</strong>. Para continuar y verificar tu identidad, ingresa el siguiente código:</p>
+            <p>Hemos detectado un intento de inicio de sesión en tu cuenta de Administrador de <strong>Saluvanta EPS</strong>. Para continuar y verificar tu identidad, ingresa el siguiente código:</p>
             
             <div class="code-box">
                 <p class="code">{{ $code }}</p>
@@ -33,11 +33,11 @@
             <p>Este código es válido por <strong>5 minutos</strong>. Si no has intentado iniciar sesión, puedes ignorar este correo de forma segura.</p>
             
             <div class="warning">
-                <strong>⚠️ Advertencia de Seguridad:</strong> Nunca compartas este código con nadie. El equipo de Proyecto EPS nunca te pedirá tu código de verificación.
+                <strong>⚠️ Advertencia de Seguridad:</strong> Nunca compartas este código con nadie. El equipo de Saluvanta EPS nunca te pedirá tu código de verificación.
             </div>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} Proyecto EPS. Todos los derechos reservados.
+            &copy; {{ date('Y') }} Saluvanta EPS. Todos los derechos reservados.
         </div>
     </div>
 </body>

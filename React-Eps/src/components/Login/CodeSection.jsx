@@ -42,7 +42,7 @@ export default function CodeSection() {
 
     useEffect(() => {
         if (!email) {
-            navigate("/forgot-password");
+            navigate("/confirm-email");
         }
     }, [email, navigate]);
 

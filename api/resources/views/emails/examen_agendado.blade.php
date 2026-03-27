@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Notificación de Cita Agendada</title>
+    <title>Examen Médico Asignado</title>
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -21,30 +21,30 @@
 
 <div class="container">
     <div class="header">
-        <h1>¡Hola! Tu cita ha sido agendada</h1>
+        <h1>Examen Clínico Asignado</h1>
     </div>
     
     <div class="content">
         <p class="greeting">Estimado(a) paciente,</p>
-        <p style="color: #64748b; font-size: 15px;">Te confirmamos que se ha agendado exitosamente una nueva cita médica en el sistema de <strong>Saluvanta EPS</strong> con los siguientes detalles:</p>
+        <p style="color: #64748b; font-size: 15px;">Te confirmamos que se ha asignado una nueva cita para examen de laboratorio en el sistema de <strong>Saluvanta EPS</strong> con los siguientes detalles:</p>
 
         <div class="section" style="margin-top: 30px;">
             <div class="data-row">
                 <span class="data-label">Documento del Paciente:</span>
-                <span class="data-value">{{ $cita->doc_paciente }}</span>
+                <span class="data-value">{{ $examen->doc_paciente }}</span>
             </div>
             <div class="data-row">
-                <span class="data-label">Documento del Médico:</span>
-                <span class="data-value">{{ $cita->doc_medico ?? 'Sin Asignar' }}</span>
+                <span class="data-label">Tipo de Examen:</span>
+                <span class="data-value">{{ $examen->categoriaExamen->categoria ?? 'Examen General' }}</span>
             </div>
             <div class="data-row">
                 <span class="data-label">Fecha Programada:</span>
-                <span class="data-value">{{ \Carbon\Carbon::parse($cita->fecha)->format('d \d\e F, Y') }}</span>
+                <span class="data-value">{{ \Carbon\Carbon::parse($examen->fecha)->format('d \d\e F, Y') }}</span>
             </div>
-            @if($cita->hora_inicio)
+            @if($examen->hora_inicio)
             <div class="data-row">
                 <span class="data-label">Hora:</span>
-                <span class="data-value">{{ \Carbon\Carbon::parse($cita->hora_inicio)->format('h:i A') }}</span>
+                <span class="data-value">{{ \Carbon\Carbon::parse($examen->hora_inicio)->format('h:i A') }}</span>
             </div>
             @else
             <div class="data-row">
@@ -53,14 +53,25 @@
             </div>
             @endif
             <div class="data-row" style="margin-top: 15px;">
-                <span class="data-label">Motivo de la Cita:</span>
-                <span class="data-value">{{ $cita->motivo ?? 'Consulta General' }}</span>
+                <span class="data-label">Descripción:</span>
+                <span class="data-value">{{ $examen->descripcion ?? 'Examen general de laboratorio' }}</span>
             </div>
         </div>
 
+        @if($examen->requiere_ayuno)
+        <div style="background-color: #FEF2F2; border-left: 4px solid #EF4444; padding: 15px; margin-bottom: 20px;">
+            <h4 style="margin: 0 0 5px 0; color: #DC2626;">Requiere Ayuno</h4>
+            <p style="margin: 0; font-size: 14px; color: #991B1B;">Para este examen es estrictamente necesario presentarse en ayunas. Por favor, consulta los tiempos de ayuno con nuestro personal y abstente de ingerir alimentos o bebidas.</p>
+        </div>
+        @else
+        <div style="background-color: #F0FDF4; border-left: 4px solid #22C55E; padding: 15px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 14px; color: #166534;">Este examen <strong>no requiere ayuno</strong>. Puedes presentarte con normalidad.</p>
+        </div>
+        @endif
+
         <p style="text-align: center; font-size: 14px; color: #475569;">
             Por favor, preséntate con 15 minutos de anticipación.<br>
-            Si necesitas cancelar o reagendar, hazlo con mínimo 24 horas de antelación en el portal web.
+            Puedes revisar más detalles en tu portal de salud.
         </p>
     </div>
 

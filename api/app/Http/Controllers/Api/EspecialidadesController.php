@@ -38,21 +38,28 @@ class EspecialidadesController extends Controller
 
     public function select(Request $request)
     {
-        $query = Especialidad::query();
+        $all = $request->boolean('all');
+        $hasAccesoDirecto = $request->has('acceso_directo');
+        $accesoDirecto = $request->boolean('acceso_directo');
+        $cacheKey = "especialidades_select_" . ($all ? '1' : '0') . "_" . ($hasAccesoDirecto ? ($accesoDirecto ? '1' : '0') : 'none');
 
-        if (!$request->boolean('all')) {
-            $query->where('id_estado', 1);
-        }
+        $result = \Illuminate\Support\Facades\Cache::remember($cacheKey, 86400, function () use ($all, $hasAccesoDirecto, $accesoDirecto) {
+            $query = Especialidad::query();
 
-        if ($request->has('acceso_directo')) {
-            $query->where('acceso_directo', $request->boolean('acceso_directo'));
-        }
+            if (!$all) {
+                $query->where('id_estado', 1);
+            }
 
-        return response()->json(
-            $query->select('id_especialidad as value', 'especialidad as label')
+            if ($hasAccesoDirecto) {
+                $query->where('acceso_directo', $accesoDirecto);
+            }
+
+            return $query->select('id_especialidad as value', 'especialidad as label')
                 ->orderBy('especialidad', 'asc')
-                ->get()
-        );
+                ->get();
+        });
+
+        return response()->json($result);
     }
 
     public function store(StoreEspecialidadRequest $request)

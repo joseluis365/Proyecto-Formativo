@@ -24,7 +24,7 @@
         </div>
         <div class="content">
             <p>Hola,</p>
-            <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>Proyecto EPS</strong>. Para continuar con el proceso, utiliza el siguiente código de recuperación:</p>
+            <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en <strong>Saluvanta EPS</strong>. Para continuar con el proceso, utiliza el siguiente código de recuperación:</p>
             
             <div class="code-box">
                 <p class="code">{{ $code }}</p>
@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} Proyecto EPS. Todos los derechos reservados.
+            &copy; {{ date('Y') }} Saluvanta EPS. Todos los derechos reservados.
         </div>
     </div>
 </body>

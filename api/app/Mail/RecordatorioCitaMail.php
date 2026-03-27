@@ -2,33 +2,28 @@
 
 namespace App\Mail;
 
-use App\Models\Cita;
-use App\Models\HistorialDetalle;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ConsultaFinalizadaMail extends Mailable implements ShouldQueue
+class RecordatorioCitaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public Cita $cita;
-    public HistorialDetalle $detalle;
-    public $remisiones;
-    public $receta;
+    public $registro;
+    public string $tipoEvento;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Cita $cita, HistorialDetalle $detalle, $remisiones, $receta)
+    public function __construct($registro, string $tipoEvento)
     {
-        $this->cita = $cita;
-        $this->detalle = $detalle;
-        $this->remisiones = $remisiones;
-        $this->receta = $receta;
+        // Puede recibir una instancia de Cita o Examen
+        $this->registro = $registro;
+        $this->tipoEvento = $tipoEvento;
     }
 
     /**
@@ -37,7 +32,7 @@ class ConsultaFinalizadaMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Resultado de Consulta Médica #' . $this->cita->id_cita . ' - Saluvanta EPS',
+            subject: 'Recordatorio Mañana: ' . ucfirst($this->tipoEvento) . ' Médica - Saluvanta EPS',
         );
     }
 
@@ -47,14 +42,12 @@ class ConsultaFinalizadaMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.consulta_finalizada',
+            view: 'emails.recordatorio_cita',
         );
     }
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

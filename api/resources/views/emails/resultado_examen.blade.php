@@ -2,24 +2,35 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Resultados de Examen - Clínica EPS</title>
+    <title>Resultados de Examen - Saluvanta EPS</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .header { background-color: #3B82F6; color: white; padding: 30px 40px; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; font-weight: 600; }
+        .content { padding: 40px; }
+        .footer { background-color: #f8fafc; padding: 20px; text-align: center; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0; }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-    
-    <div style="background-color: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-        <h1 style="margin: 0; font-size: 24px;">Resultados de Laboratorio</h1>
-    </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resultados de Laboratorio</h1>
+        </div>
 
-    <div style="background-color: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px;">
-        <p>Hola <strong>{{ $examen->paciente->primer_nombre }} {{ $examen->paciente->primer_apellido }}</strong>,</p>
+        <div class="content">
+            <p style="font-size: 18px; color: #1e293b; margin-top: 0;">Hola, <strong>{{ $examen->paciente->primer_nombre }} {{ $examen->paciente->primer_apellido }}</strong></p>
 
-        <p>Adjunto a este correo encontrarás los resultados de tu examen clínico de categoría <strong>{{ $examen->categoriaExamen->categoria ?? 'Examen General' }}</strong> realizado el <strong>{{ $examen->fecha }}</strong>.</p>
+            <p style="color: #64748b; font-size: 15px;">Adjunto a este correo encontrarás los resultados de tu examen clínico correspondiente a la categoría <strong>{{ $examen->categoriaExamen->categoria ?? 'Examen General' }}</strong>, procesados el <strong>{{ \Carbon\Carbon::parse($examen->fecha)->format('d/m/Y') }}</strong>.</p>
 
-        <p>Por favor, revisa el archivo PDF adjunto y consúltalo con tu respectivo médico tratante. No dudes en agendar una cita de seguimiento si es necesario.</p>
+            <p style="color: #64748b; font-size: 15px;">Te recomendamos revisar el archivo PDF adjunto y programar una <strong>Cita de Seguimiento</strong> con tu médico tratante para interpretar los resultados y continuar con tu tratamiento de ser necesario.</p>
 
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 14px; color: #64748b; text-align: center;">
-            <p style="margin: 0;">Este es un mensaje automático generado por el sistema de Clínica EPS.</p>
-            <p style="margin: 5px 0 0 0;">Por favor no respondas a este correo.</p>
+        </div>
+
+        <div class="footer">
+            Este es un mensaje automático generado por el sistema de <strong>Saluvanta EPS</strong>.<br>
+            Protegemos tus datos médicos conforme a la ley de Habeas Data.<br>
+            &copy; {{ date('Y') }}
         </div>
     </div>
 </body>
