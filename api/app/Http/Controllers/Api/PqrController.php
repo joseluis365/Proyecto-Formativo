@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Pqr;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Mail\PqrRespuestaMail;
 
 class PqrController extends Controller
@@ -56,12 +57,21 @@ class PqrController extends Controller
     public function responder(Request $request, $id)
     {
         $request->validate([
-            'respuesta' => 'required|string|min:10|max:1000'
+            'respuesta' => 'required|string|min:10|max:1000',
+            'archivo_adjunto' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120' // 5MB limit
         ]);
 
         try {
             $pqr = Pqr::findOrFail($id);
             
+            // Manejar el archivo adjunto si existe
+            if ($request->hasFile('archivo_adjunto')) {
+                $file = $request->file('archivo_adjunto');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('pqrs_adjuntos', $filename, 'public');
+                $pqr->archivo_adjunto = $path;
+            }
+
             // Actualizar el registro
             $pqr->respuesta = $request->respuesta;
             $pqr->id_estado = 10; // 10 = Atendido
@@ -79,7 +89,7 @@ class PqrController extends Controller
             Log::error('Error respondiendo PQRS: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al procesar la respuesta.'
+                'message' => 'Error al procesar la respuesta: ' . $e->getMessage()
             ], 500);
         }
     }

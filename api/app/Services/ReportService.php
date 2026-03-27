@@ -150,7 +150,17 @@ class ReportService
 
         $query->where(function ($q) use ($config, $searchTerm, $operator) {
             foreach ($config['searchable'] as $column) {
-                $q->orWhere($column, $operator, "%{$searchTerm}%");
+                if (str_contains($column, '.')) {
+                    $parts = explode('.', $column);
+                    $field = array_pop($parts);
+                    $relation = implode('.', $parts);
+                    
+                    $q->orWhereHas($relation, function($sub) use ($field, $operator, $searchTerm) {
+                        $sub->where($field, $operator, "%{$searchTerm}%");
+                    });
+                } else {
+                    $q->orWhere($column, $operator, "%{$searchTerm}%");
+                }
             }
         });
     }
@@ -161,8 +171,8 @@ class ReportService
     private function applyFilters(Builder $query, array $config, array $params): void
     {
         // Filtro por id_estado
-        if (($config['uses_estado'] ?? false) && isset($params['id_estado'])) {
-            $query->where('id_estado', $params['id_estado']);
+        if (($config['uses_estado'] ?? false) && isset($params['id_estado']) && $params['id_estado'] !== '') {
+            $query->where($query->getModel()->getTable().'.id_estado', $params['id_estado']);
         }
 
         // Filtro por id_rol (específico para usuarios)
@@ -170,9 +180,25 @@ class ReportService
             $query->where('id_rol', $params['id_rol']);
         }
 
-        // Filtro por rango de fechas (solo si el modelo tiene timestamps)
-        if (($config['has_timestamps'] ?? false) && !empty($params['date_from']) && !empty($params['date_to'])) {
-            $query->whereBetween('created_at', [$params['date_from'], $params['date_to']]);
+        // Filtro por nit_farmacia
+        if (!empty($params['nit_farmacia'])) {
+            $model = $query->getModel();
+            // Si el modelo tiene directamente la columna nit_farmacia
+            if (in_array('nit_farmacia', $model->getFillable()) || $config['model'] == \App\Models\LoteMedicamento::class) {
+                $query->where('nit_farmacia', $params['nit_farmacia']);
+            } elseif (method_exists($model, 'loteMedicamento')) {
+                // Si no, intentar por relación whereHas('loteMedicamento')
+                $query->whereHas('loteMedicamento', function($q) use ($params) {
+                    $q->where('nit_farmacia', $params['nit_farmacia']);
+                });
+            }
+        }
+
+        // Filtro por rango de fechas (configurable)
+        $dateColumn = $config['date_column'] ?? (($config['has_timestamps'] ?? false) ? 'created_at' : null);
+        
+        if ($dateColumn && !empty($params['date_from']) && !empty($params['date_to'])) {
+            $query->whereBetween($dateColumn, [$params['date_from'], $params['date_to']]);
         }
     }
 
@@ -197,8 +223,10 @@ class ReportService
             try {
                 $user = auth()->user();
                 if ($user) {
+                    $idUsuario = ($user instanceof \App\Models\Usuario) ? $user->documento : null;
+                    
                     \App\Models\HistorialReporte::create([
-                        'id_usuario' => $user->documento,
+                        'id_usuario' => $idUsuario,
                         'tabla_relacion' => $config['label'] ?? ucfirst($entityKey),
                         'num_registros' => $collection->count(),
                         'ejemplo_registro' => $collection->first() ? $collection->first()->toArray() : null,

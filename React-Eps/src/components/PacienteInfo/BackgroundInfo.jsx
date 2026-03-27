@@ -6,7 +6,7 @@ export default function BackgroundInfo({icon, title, data}) {
     return (
         <section>
             <div className="flex items-center gap-3 mb-4">
-                <span className="material-symbols-outlined text-primary-green text-2xl">{icon}</span>
+                <span className="material-symbols-outlined text-primary text-2xl">{icon}</span>
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{title}
                 </h3>
             </div>

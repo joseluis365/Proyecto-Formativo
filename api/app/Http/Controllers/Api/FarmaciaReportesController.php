@@ -73,70 +73,90 @@ class FarmaciaReportesController extends Controller
     private function getReportData(Request $request, $entity, $isExport)
     {
         $user = $request->user();
-        $farmacia = \App\Models\Farmacia::where('nit_empresa', $user->nit)
-            ->orWhere('nit', $user->nit)
-            ->first();
 
-        $nitFarmaciaReal = $farmacia ? $farmacia->nit : $user->nit;
-        $nombreFarmacia = $farmacia ? $farmacia->nombre : 'Indefinida';
+        // Si se especifica nit_farmacia en la URL (admin), usar ese; si no, el del usuario logueado
+        $nitFarmaciaReal = null;
+        $nombreFarmacia = 'N/A';
+
+        if ($request->filled('nit_farmacia')) {
+            // Modo Admin: usa la farmacia enviada como parámetro
+            $farmacia = \App\Models\Farmacia::find($request->nit_farmacia);
+            $nitFarmaciaReal = $farmacia ? $farmacia->nit : $request->nit_farmacia;
+            $nombreFarmacia = $farmacia ? $farmacia->nombre : 'Farmacia seleccionada';
+        } else {
+            // Modo farmacéutico: obtiene la farmacia del usuario logueado
+            $farmacia = \App\Models\Farmacia::where('nit_empresa', $user->nit)
+                ->orWhere('nit', $user->nit)
+                ->first();
+            $nitFarmaciaReal = $farmacia ? $farmacia->nit : $user->nit;
+            $nombreFarmacia = $farmacia ? $farmacia->nombre : 'Indefinida';
+        }
+
 
         $columns = [];
         $title = "Reporte de Farmacia";
         $data = [];
 
         if ($entity === 'inventario') {
-            $title = "Inventario de Medicamentos";
+            $title = "Inventario de Medicamentos (Por Lote)";
             $columns = [
+                'id_lote'          => 'Lote #',
                 'nombre'           => 'Medicamento',
                 'forma'            => 'Forma Farmacéutica',
                 'concentracion'    => 'Concentración',
-                'categoria'        => 'Categoría',
-                'stock_actual'     => 'Stock',
+                'stock_lote'       => 'Stock Lote',
+                'stock_total'      => 'Stock Total',
                 'estado_stock'     => 'Estado',
-                'fecha_vencimiento'=> 'Venc. Próximo',
+                'fecha_vencimiento'=> 'Vencimiento',
             ];
 
-            $query = InventarioFarmacia::with([
+            // Consultamos lotes activos directamente
+            $lotes = LoteMedicamento::with([
                 'presentacion.medicamento.categoriaMedicamento',
                 'presentacion.concentracion',
                 'presentacion.formaFarmaceutica',
-            ])->where('nit_farmacia', $nitFarmaciaReal);
+            ])->where('nit_farmacia', $nitFarmaciaReal)
+              ->where('stock_actual', '>', 0)
+              ->get();
 
-            $inventario = $query->get();
             $hoy = Carbon::today();
 
-            $mapped = $inventario->map(function ($item) use ($hoy, $nitFarmaciaReal) {
-                $p = $item->presentacion;
-                $loteProximo = LoteMedicamento::where('nit_farmacia', $nitFarmaciaReal)
-                    ->where('id_presentacion', $item->id_presentacion)
-                    ->where('stock_actual', '>', 0)
-                    ->orderBy('fecha_vencimiento', 'asc')
-                    ->first();
+            // Mapear datos con stock total del medicamento para contexto
+            $mapped = $lotes->map(function ($lote) use ($hoy, $nitFarmaciaReal) {
+                $p = $lote->presentacion;
+                $idPresentacion = $lote->id_presentacion;
 
-                $diasVencimiento = null;
+                // Calcular stock total disponible (suma de lotes no vencidos)
+                $stockTotal = LoteMedicamento::where('nit_farmacia', $nitFarmaciaReal)
+                    ->where('id_presentacion', $idPresentacion)
+                    ->where('fecha_vencimiento', '>=', $hoy->toDateString())
+                    ->sum('stock_actual');
+
+                $diasVencimiento = $hoy->diffInDays(Carbon::parse($lote->fecha_vencimiento), false);
                 $estadoStock = 'Normal';
 
-                if ($loteProximo) {
-                    $diasVencimiento = $hoy->diffInDays(Carbon::parse($loteProximo->fecha_vencimiento), false);
-                    if ($diasVencimiento < 0) $estadoStock = 'Vencido';
-                    elseif ($diasVencimiento <= 30) $estadoStock = 'Próximo';
+                if ($diasVencimiento < 0) {
+                    $estadoStock = 'Vencido';
+                } elseif ($diasVencimiento <= 30) {
+                    $estadoStock = 'Próximo';
                 }
 
-                if ($item->stock_actual <= 0) $estadoStock = 'Agotado';
-                elseif ($item->stock_actual <= 20 && $estadoStock === 'Normal') $estadoStock = 'Bajo';
+                if ($lote->stock_actual <= 20 && $estadoStock === 'Normal') {
+                    $estadoStock = 'Bajo';
+                }
 
-                // Usamos objetos para compatibilidad con Pdf::loadView object access, 
-                // o si es array data_get() nos salva. Lo hacemos objeto para estandarizar con admin.
                 return (object)[
+                    'id_lote'          => $lote->id_lote,
                     'nombre'           => ($p->medicamento->nombre ?? ''),
                     'id_forma'         => $p->id_forma_farmaceutica,
                     'forma'            => $p->formaFarmaceutica->forma_farmaceutica ?? '',
                     'id_concentracion' => $p->id_concentracion,
                     'concentracion'    => $p->concentracion->concentracion ?? '',
                     'categoria'        => $p->medicamento->categoriaMedicamento->categoria ?? '',
-                    'stock_actual'     => $item->stock_actual,
+                    'stock_lote'       => $lote->stock_actual,
+                    'stock_total'      => (int)$stockTotal,
                     'estado_stock'     => $estadoStock,
-                    'fecha_vencimiento'=> $loteProximo ? Carbon::parse($loteProximo->fecha_vencimiento)->format('d/m/Y') : 'N/A',
+                    'fecha_vencimiento'=> Carbon::parse($lote->fecha_vencimiento)->format('d/m/Y'),
                     'dias_vencimiento' => $diasVencimiento,
                 ];
             });
@@ -144,7 +164,9 @@ class FarmaciaReportesController extends Controller
             if ($request->filled('search')) {
                 $search = strtolower($request->search);
                 $mapped = $mapped->filter(function ($item) use ($search) {
-                    return str_contains(strtolower($item->nombre), $search) || str_contains(strtolower($item->concentracion), $search);
+                    return str_contains(strtolower($item->nombre), $search) || 
+                           str_contains(strtolower($item->concentracion), $search) ||
+                           str_contains(strtolower($item->id_lote), $search);
                 });
             }
             if ($request->filled('id_forma')) {
@@ -157,13 +179,9 @@ class FarmaciaReportesController extends Controller
                 $mapped = $mapped->where('estado_stock', $request->estado);
             }
 
+            // Ordenar por vencimiento
             $mapped = $mapped->sort(function ($a, $b) {
-                $da = $a->dias_vencimiento;
-                $db = $b->dias_vencimiento;
-                if ($da === null && $db === null) return 0;
-                if ($da === null) return 1;
-                if ($db === null) return -1;
-                return $da <=> $db;
+                return $a->dias_vencimiento <=> $b->dias_vencimiento;
             })->values();
 
             $data = $mapped;
@@ -230,7 +248,7 @@ class FarmaciaReportesController extends Controller
                 'loteMedicamento.presentacion.concentracion',
                 'loteMedicamento.presentacion.formaFarmaceutica',
                 'usuarioDocumento',
-                'dispensacion.detalleReceta.receta.paciente',
+                'dispensacion.detalleReceta.receta.historialDetalle.cita.paciente',
             ])->whereHas('loteMedicamento', function ($q) use ($nitFarmaciaReal) {
                 $q->where('nit_farmacia', $nitFarmaciaReal);
             });
@@ -268,7 +286,9 @@ class FarmaciaReportesController extends Controller
                 $p    = $lote?->presentacion;
                 $med  = $p?->medicamento;
                 $resp = $m->usuarioDocumento;
-                $pacienteModel = $m->dispensacion?->detalleReceta?->receta?->paciente;
+                
+                // Relación profunda para obtener al paciente de la receta
+                $pacienteModel = $m->dispensacion?->detalleReceta?->receta?->historialDetalle?->cita?->paciente;
                 
                 $tipoLabel = $m->tipo_movimiento;
                 if ($tipoLabel === 'Salida') {
@@ -277,10 +297,10 @@ class FarmaciaReportesController extends Controller
 
                 return (object)[
                     'tipo_movimiento' => $tipoLabel,
-                    'medicamento'     => ($med->nombre ?? '') . ' ' . ($p?->concentracion->concentracion ?? '') . ' (' . ($p?->formaFarmaceutica->forma_farmaceutica ?? '') . ')',
+                    'medicamento'     => ($med->nombre ?? 'N/A') . ' ' . ($p?->concentracion->concentracion ?? '') . ' (' . ($p?->formaFarmaceutica->forma_farmaceutica ?? '') . ')',
                     'cantidad'        => $m->cantidad,
-                    'fecha'           => Carbon::parse($m->fecha)->format('d/m/Y'),
-                    'motivo'          => $m->motivo ?? ($m->id_dispensacion ? 'Receta #'.$m->dispensacion->detalleReceta->id_receta : 'N/A'),
+                    'fecha'           => Carbon::parse($m->fecha ?? $m->created_at)->format('d/m/Y'),
+                    'motivo'          => $m->motivo ?? ($m->id_dispensacion ? 'Receta #'.$m->dispensacion?->detalleReceta?->id_receta : 'N/A'),
                     'responsable'     => $resp ? ($resp->primer_nombre . ' ' . $resp->primer_apellido) : 'N/A',
                     'paciente'        => $pacienteModel ? ($pacienteModel->primer_nombre . ' ' . $pacienteModel->primer_apellido) : 'N/A',
                 ];

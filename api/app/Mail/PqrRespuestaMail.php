@@ -27,7 +27,16 @@ class PqrRespuestaMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Respuesta a su PQRS - Saluvanta EPS')
-                    ->view('emails.pqr_respuesta');
+        $email = $this->subject('Respuesta a su PQRS - Saluvanta EPS')
+                      ->view('emails.pqr_respuesta');
+
+        if ($this->pqr->archivo_adjunto) {
+            $path = storage_path('app/public/' . $this->pqr->archivo_adjunto);
+            if (file_exists($path)) {
+                $email->attach($path);
+            }
+        }
+
+        return $email;
     }
 }

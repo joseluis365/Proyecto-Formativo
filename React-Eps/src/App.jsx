@@ -19,7 +19,9 @@ import Login from "./Pages/Inicio/Login"
 import ConfirmEmail from "./Pages/Inicio/ConfirmEmail"
 import VerifyCode from "./Pages/Inicio/VerifyCode"
 import ResetPassword from "./Pages/Inicio/ResetPassword"
+import LoginVerify2FA from "./Pages/Inicio/LoginVerify2FA"
 import SuperAdminLogin from "./Pages/SuperAdmin/SuperAdminLogin"
+
 import SuperAdminVerify from "./Pages/SuperAdmin/SuperAdminVerify"
 import SuperAdminDashboard from "./Pages/SuperAdmin/SuperAdminDashboard"
 import SuperAdminLayout from "./layouts/SuperAdminLayout"
@@ -32,6 +34,11 @@ import Pago from "./Pages/Inicio/Pago"
 import SuperAdminForgotPassword from "./Pages/SuperAdmin/SuperAdminForgotPassword"
 import SuperAdminRecoveryCode from "./Pages/SuperAdmin/SuperAdminRecoveryCode"
 import SuperAdminResetPassword from "./Pages/SuperAdmin/SuperAdminResetPassword"
+import SuperAdminEstados from "./Pages/SuperAdmin/GestionInterna/SuperAdminEstados"
+import SuperAdminRoles from "./Pages/SuperAdmin/GestionInterna/SuperAdminRoles"
+import SuperAdminDepartamentos from "./Pages/SuperAdmin/GestionInterna/SuperAdminDepartamentos"
+import SuperAdminCiudades from "./Pages/SuperAdmin/GestionInterna/SuperAdminCiudades"
+
 
 // (Layout de UserLayout ha sido eliminado, ya que los pacientes usan PatientLayout ahora)
 
@@ -132,6 +139,10 @@ export default function App() {
           <Route path="/SuperAdmin-Empresas" element={<SuperAdminEmpresas />} />
           <Route path="/SuperAdmin-Licencias" element={<SuperAdminLicencias />} />
           <Route path="/SuperAdmin-Historial" element={<SuperAdminHistorial />} />
+          <Route path="/SuperAdmin-Gestion/estados" element={<SuperAdminEstados />} />
+          <Route path="/SuperAdmin-Gestion/roles" element={<SuperAdminRoles />} />
+          <Route path="/SuperAdmin-Gestion/departamentos" element={<SuperAdminDepartamentos />} />
+          <Route path="/SuperAdmin-Gestion/ciudades" element={<SuperAdminCiudades />} />
         </Route>
       </Route>
 
@@ -147,6 +158,7 @@ export default function App() {
         <Route path="/confirm-email" element={<ConfirmEmail />} />
         <Route path="/code-verification" element={<VerifyCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-2fa" element={<LoginVerify2FA />} />
       </Route>
 
       {/* ── RUTAS PROTEGIDAS — TODOS LOS USUARIOS (localStorage) ── */}
@@ -207,6 +219,7 @@ export default function App() {
             <Route path="/citas/del-dia" element={<CitasDelDia />} />
             <Route path="/citas/agenda" element={<AgendaCitas />} />
             <Route path="/reportes" element={<Reportes />} />
+            <Route path="/pqrs" element={<PqrsList readonly={true} />} />
 
             {/* Configuración */}
             <Route path="/configuracion" element={<ConfiguracionIndex />}>

@@ -10,7 +10,7 @@ import api from "../../Api/axios";
 import Swal from "sweetalert2";
 import MotionSpinner from "../../components/UI/Spinner";
 
-export default function PqrsList() {
+export default function PqrsList({ readonly = false }) {
     const { setTitle, setSubtitle } = useLayout();
 
     useHelp({
@@ -53,7 +53,7 @@ export default function PqrsList() {
     const [selectedPqr, setSelectedPqr] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState(readonly ? "10" : "");
 
     useEffect(() => {
         setTitle("Gestión de PQRS");
@@ -166,13 +166,13 @@ export default function PqrsList() {
                     ))}
                 </div>
             )}
-
             {isModalOpen && selectedPqr && (
                 <PqrModal 
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
                     pqr={selectedPqr}
                     onSuccess={handlePqrUpdated}
+                    readonly={readonly}
                 />
             )}
         </div>

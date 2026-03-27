@@ -22,7 +22,9 @@ export default function LoginSection() {
         const userStr = localStorage.getItem('user');
         if (token && userStr) {
             try {
+                const user = JSON.parse(userStr);
                 if (user.id_rol === 1) navigate('/SuperAdmin-Dashboard', { replace: true });
+                else if (user.id_rol === 2) navigate('/dashboard', { replace: true });
                 else if (user.id_rol === 6) navigate('/farmacia/dashboard', { replace: true });
                 else if (user.id_rol === 5) navigate('/paciente', { replace: true });
                 else if (user.id_rol === 3 && user.examenes) navigate('/examenes/agenda', { replace: true });
@@ -50,9 +52,23 @@ export default function LoginSection() {
 
         try {
             // skipGlobalHandler: true → evita que el interceptor global muestre Swal propio
-            const loginData = await api.post('/login', data, { skipGlobalHandler: true });
+            const response = await api.post('/login', data, { skipGlobalHandler: true });
 
-            const { access_token, user } = loginData;
+            // Manejo de verificación de doble factor (2FA)
+            if (response.requires_2fa) {
+                sessionStorage.setItem('2fa_email', response.email);
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Verificación requerida',
+                    text: response.message || 'Se ha enviado un código a tu correo.',
+                    timer: 3000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+                return navigate('/verify-2fa');
+            }
+
+            const { access_token, user } = response;
 
             localStorage.setItem('token', access_token);
             localStorage.setItem('user', JSON.stringify(user));
@@ -67,6 +83,8 @@ export default function LoginSection() {
 
             if (user.id_rol === 1) {
                 navigate('/SuperAdmin-Dashboard');
+            } else if (user.id_rol === 2) {
+                navigate('/dashboard');
             } else if (user.id_rol === 6) {
                 navigate('/farmacia/dashboard');
             } else if (user.id_rol === 5) {

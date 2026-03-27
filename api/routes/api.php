@@ -44,6 +44,7 @@ use App\Http\Controllers\Api\HistorialClinicoController;
 use App\Http\Controllers\Api\ExamenClinicoController;
 use App\Http\Controllers\Api\PdfMedicoController;
 use App\Http\Controllers\Api\ConsultorioController;
+use App\Http\Controllers\Api\ExamenReporteController;
 
 
 /*
@@ -53,6 +54,7 @@ use App\Http\Controllers\Api\ConsultorioController;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/verify-2fa', [AuthController::class, 'verify2FA']);
 Route::post('/forgot-password', [AuthController::class, 'sendRecoveryCode']);
 Route::post('/verify-recovery-code', [AuthController::class, 'verifyRecoveryCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
@@ -203,6 +205,9 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     Route::get('/paciente/{doc}/historial/completo', [HistorialClinicoController::class, 'completo']);
     Route::get('/paciente/{doc}/historial/detalles', [HistorialClinicoController::class, 'detalles']);
     Route::put('/paciente/{doc}/historial', [HistorialClinicoController::class, 'updateAntecedentes']);
+    Route::get('/paciente/{doc}/historial/pdf', [HistorialClinicoController::class, 'exportPdf']);
+    Route::get('/paciente/{doc}/historial/evolucion', [HistorialClinicoController::class, 'evolucion']);
+    Route::post('/paciente/{doc}/historial/evolucion/pdf', [HistorialClinicoController::class, 'exportEvolucionPdf']);
 
     /*
     |--------------------------------------------------------------------------
@@ -228,6 +233,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     Route::get('/examenes/mis-examenes', [ExamenClinicoController::class, 'misExamenes']);
     Route::get('/examenes/{id}', [ExamenClinicoController::class, 'show']);
     Route::post('/examenes/{id}/atender', [ExamenClinicoController::class, 'atender']);
+    Route::get('/examenes/{id}/resultado', [ExamenClinicoController::class, 'descargarResultado']);
     Route::get('/categorias-examen', [ExamenClinicoController::class, 'obtenerCategorias']);
     Route::post('/categorias-examen', [ExamenClinicoController::class, 'guardarCategoria']);
     Route::put('/categorias-examen/{id}', [ExamenClinicoController::class, 'actualizarCategoria']);
@@ -455,6 +461,8 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         Route::get('/inventario', [InventarioFarmaciaController::class, 'index']);
         Route::get('/inventario/por-presentacion/{id}', [InventarioFarmaciaController::class, 'porPresentacion']);
         Route::post('/inventario/entrada', [InventarioFarmaciaController::class, 'registrarEntrada']);
+        // Lotes disponibles (para selector de Salida Manual)
+        Route::get('/lotes', [InventarioFarmaciaController::class, 'lotesDisponibles']);
 
         // Movimientos
         Route::get('/movimientos', [MovimientoInventarioController::class, 'index']);
@@ -497,6 +505,12 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
     Route::prefix('personal/reportes')->group(function () {
         Route::get('{entity}', [PersonalReporteController::class, 'index']);
         Route::get('{entity}/export', [PersonalReporteController::class, 'export']);
+    });
+
+    // Reportes de Exámenes (Laboratorio - Rol 3)
+    Route::prefix('examenes/reportes')->group(function () {
+        Route::get('{entity}', [ExamenReporteController::class, 'index']);
+        Route::get('{entity}/export', [ExamenReporteController::class, 'export']);
     });
 
 });

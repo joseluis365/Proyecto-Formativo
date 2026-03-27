@@ -68,11 +68,88 @@ class AuthController extends Controller
             }
         }
 
+        // --- NUEVA LÓGICA 2FA PARA ADMINISTRADORES (ID_ROL 2) ---
+        if ($user->id_rol == 2) {
+            $code = random_int(100000, 999999);
+            
+            // Guardar en caché por 5 minutos
+            Cache::put('2fa_login_' . $user->email, $code, now()->addMinutes(5));
+
+            try {
+                Mail::send('emails.verification_code', ['code' => $code], function ($message) use ($user) {
+                    $message->to($user->email)
+                            ->subject('Código de Acceso (2FA) - Saluvanta EPS');
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Se ha enviado un código de verificación a su correo electrónico.',
+                    'data' => [
+                        'requires_2fa' => true,
+                        'email' => $user->email
+                    ]
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al enviar el código de verificación: ' . $e->getMessage(),
+                    'data' => null
+                ], 500);
+            }
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Inicio de sesión exitoso',
+            'data' => [
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user
+            ]
+        ]);
+    }
+
+    /**
+     * Verificar código 2FA para el login de administrador
+     */
+    public function verify2FA(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|numeric'
+        ]);
+
+        $cacheKey = '2fa_login_' . $request->email;
+        $storedCode = Cache::get($cacheKey);
+
+        if (!$storedCode || (int)$storedCode !== (int)$request->code) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Código de verificación incorrecto o expirado.',
+                'data' => null
+            ], 401);
+        }
+
+        $user = Usuario::with(['especialidad', 'consultorio', 'rol', 'empresa'])->where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado.',
+                'data' => null
+            ], 404);
+        }
+
+        // Limpiar caché
+        Cache::forget($cacheKey);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Verificación exitosa',
             'data' => [
                 'access_token' => $token,
                 'token_type' => 'Bearer',

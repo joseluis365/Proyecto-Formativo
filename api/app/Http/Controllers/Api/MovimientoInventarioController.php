@@ -116,20 +116,34 @@ class MovimientoInventarioController extends Controller
         DB::transaction(function () use ($request, $user, $lote) {
             // Descontar del lote
             $lote->decrement('stock_actual', $request->cantidad);
+            $lote->refresh();
 
-            // Descontar del inventario general
-            InventarioFarmacia::where('nit_farmacia', $lote->nit_farmacia)
-                ->where('id_presentacion', $lote->id_presentacion)
-                ->decrement('stock_actual', $request->cantidad);
+            $idLote         = $lote->id_lote;
+            $idPresentacion = $lote->id_presentacion;
+            $nitFarmacia    = $lote->nit_farmacia;
+
+            // Si el lote queda en 0, eliminarlo automáticamente
+            if ($lote->stock_actual <= 0) {
+                $lote->delete();
+            }
+
+            // Recalcular inventario general como suma de lotes activos
+            $nuevoTotal = LoteMedicamento::where('nit_farmacia', $nitFarmacia)
+                ->where('id_presentacion', $idPresentacion)
+                ->sum('stock_actual');
+
+            InventarioFarmacia::where('nit_farmacia', $nitFarmacia)
+                ->where('id_presentacion', $idPresentacion)
+                ->update(['stock_actual' => $nuevoTotal]);
 
             // Registrar movimiento
             MovimientoInventario::create([
-                'id_lote'        => $lote->id_lote,
-                'tipo_movimiento'=> 'Salida',
-                'cantidad'       => $request->cantidad,
-                'fecha'          => now()->toDateString(),
-                'documento'      => $user->documento,
-                'motivo'         => $request->motivo,
+                'id_lote'         => $idLote,
+                'tipo_movimiento' => 'Salida',
+                'cantidad'        => $request->cantidad,
+                'fecha'           => now()->toDateString(),
+                'documento'       => $user->documento,
+                'motivo'          => $request->motivo,
             ]);
         });
 

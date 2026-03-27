@@ -153,7 +153,7 @@ export default function MisMedicamentos() {
                                                 <EstadoBadge estado={dispensado ? "Dispensado" : "Pendiente"} />
                                                 <p className="text-xs text-gray-400 mt-1">
                                                     <span className="material-symbols-outlined text-xs align-middle">local_pharmacy</span>
-                                                    {det.farmacia?.nombre ?? det.nit_farmacia}
+                                                    {det.farmacia?.nombre ?? det.nit_farmacia} - {det.farmacia?.direccion}
                                                 </p>
                                             </div>
                                         </div>

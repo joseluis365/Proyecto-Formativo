@@ -17,6 +17,7 @@ const useReports = (entity) => {
     const [search, setSearch] = useState("");
     const [idEstado, setIdEstado] = useState("");
     const [idRol, setIdRol] = useState("");
+    const [nitFarmacia, setNitFarmacia] = useState("");
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
 
@@ -34,6 +35,7 @@ const useReports = (entity) => {
         setSearch("");
         setIdEstado("");
         setIdRol("");
+        setNitFarmacia("");
         setDateFrom("");
         setDateTo("");
         setPage(1);
@@ -54,6 +56,7 @@ const useReports = (entity) => {
                     search: search || undefined,
                     id_estado: idEstado || undefined,
                     id_rol: idRol || undefined,
+                    nit_farmacia: nitFarmacia || undefined,
                     date_from: dateFrom || undefined,
                     date_to: dateTo || undefined,
                     page: page,
@@ -79,7 +82,7 @@ const useReports = (entity) => {
         } finally {
             setLoading(false);
         }
-    }, [entity, search, idEstado, idRol, dateFrom, dateTo, page]);
+    }, [entity, search, idEstado, idRol, nitFarmacia, dateFrom, dateTo, page]);
 
     // Ejecutar fetch cuando cambian los filtros relevantes
     useEffect(() => {
@@ -106,6 +109,8 @@ const useReports = (entity) => {
         setIdEstado,
         idRol,
         setIdRol,
+        nitFarmacia,
+        setNitFarmacia,
         dateFrom,
         setDateFrom,
         dateTo,

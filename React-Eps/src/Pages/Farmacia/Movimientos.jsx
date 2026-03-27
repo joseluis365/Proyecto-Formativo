@@ -160,8 +160,8 @@ export default function Movimientos() {
     };
 
     const fetchLotes = async () => {
-        const res = await api.get("/farmacia/inventario", { params: { page: 1 } });
-        setLotes(res.data ?? []);
+        const res = await api.get("/farmacia/lotes");
+        setLotes(Array.isArray(res) ? res : (res.data ?? []));
     };
 
     const handleOpenEntrada = () => { fetchPresentaciones(); setShowEntradaModal(true); };
@@ -198,12 +198,12 @@ export default function Movimientos() {
     };
 
     const handleRegistrarSalida = async (data) => {
-        const loteSeleccionado = lotes.find(l => String(l.lote_id) === String(data.id_lote));
+        const loteSeleccionado = lotes.find(l => String(l.id_lote) === String(data.id_lote));
         if (loteSeleccionado && Number(data.cantidad) > Number(loteSeleccionado.stock_actual)) {
             Swal.fire({
                 icon: "warning",
                 title: "Stock Insuficiente",
-                text: `La cantidad a retirar (${data.cantidad}) excede el stock actual (${loteSeleccionado.stock_actual}) de este lote.`
+                text: `La cantidad a retirar (${data.cantidad}) excede el stock del lote #${loteSeleccionado.id_lote} (${loteSeleccionado.stock_actual} unid.).`
             });
             return;
         }
@@ -527,10 +527,10 @@ export default function Movimientos() {
                                         <SearchableSelect
                                             value={field.value}
                                             onChange={field.onChange}
-                                            placeholder="Seleccionar producto del inventario..."
+                                            placeholder="Seleccionar lote del inventario..."
                                             options={lotes.map(l => ({
-                                                value: l.lote_id,
-                                                label: `${l.nombre} (${l.forma}) — Stock: ${l.stock_actual} — Lote #${l.lote_id}`
+                                                value: l.id_lote,
+                                                label: `${l.nombre} — Stock: ${l.stock_actual} unid. — Lote #${l.id_lote} — Vence: ${l.fecha_vencimiento}${l.vencido ? ' ⚠️ VENCIDO' : ''}`
                                             }))}
                                         />
                                     )}

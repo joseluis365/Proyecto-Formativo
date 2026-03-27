@@ -19,37 +19,37 @@ export default function Inventario() {
 
     useHelp({
         title: "Inventario de Farmacia",
-        description: "Aquí puedes consultar el stock actual de todos los medicamentos, identificar productos próximos a vencer o con stock bajo, y registrar nuevas entradas al inventario.",
+        description: "Aquí puedes consultar el stock por lote de todos los medicamentos, identificar lotes próximos a vencer o agotados, y registrar nuevas entradas al inventario.",
         sections: [
             {
                 title: "¿Qué puedes hacer aquí?",
                 type: "list",
                 items: [
-                    "Ver el stock actual de todos los medicamentos por lote (sistema FEFO).",
-                    "Filtrar por estado del stock (Normal, Bajo, Próximo a vencer, Vencido, Agotado).",
+                    "Ver cada lote de medicamentos por separado con su propio stock.",
+                    "Ver el stock total disponible del medicamento (suma de lotes no vencidos).",
+                    "Filtrar por estado del lote (Normal, Bajo, Próximo a vencer, Vencido).",
                     "Filtrar por forma farmacéutica o concentración.",
                     "Buscar un medicamento específico por nombre.",
-                    "Registrar una nueva entrada directamente desde esta pantalla.",
+                    "Registrar una nueva entrada (crea siempre un lote nuevo).",
                 ]
             },
             {
-                title: "Significado de los estados de stock",
+                title: "Significado de los estados de lote",
                 type: "list",
                 items: [
-                    "🟢 Normal — Stock suficiente y sin riesgo de vencimiento próximo.",
-                    "🟡 Bajo — Existencias reducidas. Considera reabastecer pronto.",
+                    "🟢 Normal — Lote con stock suficiente y sin riesgo de vencimiento próximo.",
+                    "🟡 Bajo — Stock reducido en el lote (≤ 20 unidades).",
                     "🟠 Próximo a vencer — El lote vence en menos de 30 días.",
-                    "🔴 Vencido / Crítico — El lote ya venció o el stock es crítico. Requiere acción inmediata.",
-                    "⚫ Agotado — No hay existencias disponibles de este medicamento.",
+                    "🔴 Vencido — El lote ya venció. Retíralo con una Salida Manual.",
                 ]
             },
             {
                 title: "¿Qué es el sistema FEFO?",
                 type: "tip",
-                content: "FEFO significa First Expired, First Out (el primero en vencer es el primero en salir). El sistema muestra el lote con fecha de vencimiento más próxima para cada medicamento, garantizando que siempre se use primero el stock más antiguo."
+                content: "FEFO = First Expired, First Out. Cuando se dispensa una receta, el sistema descuenta automáticamente del lote con la fecha de vencimiento más próxima. Si ese lote se agota, se elimina y continúa con el siguiente."
             },
             {
-                title: "Cómo registrar una Entrada desde Inventario",
+                title: "Cómo registrar una Entrada",
                 type: "steps",
                 items: [
                     "Haz clic en el botón verde \"Registrar Entrada\".",
@@ -61,7 +61,7 @@ export default function Inventario() {
             {
                 title: "Problemas comunes",
                 type: "warning",
-                content: "Si un medicamento aparece como \"Agotado\" pero esperabas ver stock, verifica que se hayan registrado las entradas correctamente en la pantalla de Movimientos. Los medicamentos vencidos deben retirarse mediante una Salida Manual en la sección de Movimientos."
+                content: "Los lotes vencidos deben retirarse mediante una Salida Manual en la sección de Movimientos. Un lote con stock 0 se elimina automáticamente al dispensar o al registrar una salida manual."
             },
         ]
     });
@@ -91,7 +91,7 @@ export default function Inventario() {
 
     useEffect(() => {
         setTitle("Inventario de Farmacia");
-        setSubtitle("Control de existencias y fechas de vencimiento.");
+        setSubtitle("Control de existencias y fechas de vencimiento por lote.");
 
         const params = new URLSearchParams(location.search);
         const estadoParam = params.get("estado");
@@ -145,7 +145,7 @@ export default function Inventario() {
         setSaving(true);
         try {
             await api.post("/farmacia/inventario/entrada", data);
-            Swal.fire({ icon: "success", title: "Entrada registrada", timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: "success", title: "Entrada registrada", text: "Se creó un nuevo lote en el inventario.", timer: 1800, showConfirmButton: false });
             setShowModal(false);
             reset();
             fetchInventario();
@@ -163,16 +163,12 @@ export default function Inventario() {
 
     const handleValidationErrors = (errors) => {
         const errorMessages = Object.values(errors).map(err => err.message).join('\n');
-        Swal.fire({
-            icon: "warning",
-            title: "Datos incompletos o inválidos",
-            text: errorMessages
-        });
+        Swal.fire({ icon: "warning", title: "Datos incompletos o inválidos", text: errorMessages });
     };
 
     const estadoConfig = {
-        Normal: { cls: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400" },
-        Bajo: { cls: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400" },
+        Normal:  { cls: "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400" },
+        Bajo:    { cls: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400" },
         Próximo: { cls: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800 dark:text-orange-400" },
         Agotado: { cls: "bg-gray-100 text-gray-600 border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400" },
         Vencido: { cls: "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400" },
@@ -196,33 +192,48 @@ export default function Inventario() {
             ),
         },
         {
-            key: "stock",
-            header: "Stock Actual",
+            key: "lote",
+            header: "Lote",
             render: (row) => (
-                <span className={`font-bold text-lg ${row.stock_actual <= 20 ? "text-red-600" : "text-gray-900 dark:text-white"}`}>
-                    {row.stock_actual} <span className="text-xs font-normal text-gray-400">unid.</span>
+                <span className="font-mono text-xs font-bold text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                    #{row.id_lote}
                 </span>
             ),
         },
         {
-            key: "lote",
-            header: "Lote FEFO",
+            key: "stock_lote",
+            header: "Stock del Lote",
             render: (row) => (
-                <span className="font-mono text-xs text-gray-500 dark:text-gray-400">
-                    {row.lote_id ? `#${row.lote_id}` : "—"}
+                <span className={`font-bold text-lg ${row.stock_lote <= 20 ? "text-red-600" : "text-gray-900 dark:text-white"}`}>
+                    {row.stock_lote} <span className="text-xs font-normal text-gray-400">unid.</span>
                 </span>
+            ),
+        },
+        {
+            key: "stock_total",
+            header: "Stock Total",
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="font-semibold text-primary text-sm">
+                        {row.stock_total} <span className="text-xs font-normal text-gray-400">unid.</span>
+                    </span>
+                    <span className="text-xs text-gray-400">lotes no vencidos</span>
+                </div>
             ),
         },
         {
             key: "vencimiento",
-            header: "Próx. Vencimiento",
+            header: "Vencimiento del Lote",
             render: (row) => (
                 <div>
                     <p className="text-sm text-gray-700 dark:text-gray-300">{row.fecha_vencimiento ?? "—"}</p>
                     {row.dias_vencimiento !== null && (
                         <p className={`text-xs font-semibold ${row.dias_vencimiento < 0 ? "text-red-600" : row.dias_vencimiento <= 30 ? "text-orange-500" : "text-gray-400"}`}>
-                            {row.dias_vencimiento < 0 ? `Vencido hace ${Math.abs(row.dias_vencimiento)} días` :
-                                row.dias_vencimiento === 0 ? "Vence hoy" : `En ${row.dias_vencimiento} días`}
+                            {row.dias_vencimiento < 0
+                                ? `Vencido hace ${Math.abs(row.dias_vencimiento)} días`
+                                : row.dias_vencimiento === 0
+                                    ? "Vence hoy"
+                                    : `En ${row.dias_vencimiento} días`}
                         </p>
                     )}
                 </div>
@@ -243,7 +254,7 @@ export default function Inventario() {
         <>
             <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="inventory_2" text="Inventario Actual" number={total} />
+                <PrincipalText icon="inventory_2" text="Lotes en Inventario" number={total} />
                 <button
                     onClick={handleOpenEntrada}
                     className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-green-600/20"
@@ -266,14 +277,13 @@ export default function Inventario() {
                     <select
                         value={filtroEstado}
                         onChange={(e) => { setFiltroEstado(e.target.value); setPage(1); }}
-                        className="w-36 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 text-gray-700 dark:text-gray-300 font-medium"
+                        className="w-44 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 text-gray-700 dark:text-gray-300 font-medium"
                     >
                         <option value="">Todos los Estados</option>
                         <option value="Normal">Normal</option>
                         <option value="Próximo">Próximos a Vencer</option>
                         <option value="Vencido">Vencidos</option>
                         <option value="Bajo">Stock Bajo</option>
-                        <option value="Agotado">Agotados</option>
                     </select>
                     <select
                         value={filtroForma}
@@ -300,13 +310,24 @@ export default function Inventario() {
                 )}
             </div>
 
+            {/* Leyenda de columnas */}
+            <div className="mb-4 flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-400">
+                <span className="flex items-center gap-1">
+                    <span className="font-bold text-gray-700 dark:text-gray-300">Stock del Lote</span> — unidades en ese lote específico
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span className="flex items-center gap-1">
+                    <span className="font-bold text-primary">Stock Total</span> — suma de todos los lotes no vencidos
+                </span>
+            </div>
+
             <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
                 {initialLoad ? (
                     <TableSkeleton rows={8} cols={6} />
                 ) : inventario.length === 0 ? (
                     <div className="py-16 text-center text-gray-400 dark:text-gray-600">
                         <span className="material-symbols-outlined text-4xl mb-2 block">inventory</span>
-                        No hay medicamentos en el inventario
+                        No hay lotes en el inventario
                     </div>
                 ) : (
                     <div className={`transition-opacity duration-200 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
@@ -356,10 +377,13 @@ export default function Inventario() {
             {showModal && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                             <span className="material-symbols-outlined text-green-600">add_box</span>
                             Registrar Entrada de Medicamento
                         </h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
+                            Se creará un <strong>nuevo lote</strong> independiente en el inventario.
+                        </p>
                         <form onSubmit={handleSubmit(handleRegistrarEntrada, handleValidationErrors)} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Medicamento (presentación) *</label>

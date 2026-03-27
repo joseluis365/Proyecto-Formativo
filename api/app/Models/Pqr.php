@@ -18,6 +18,7 @@ class Pqr extends Model
         'mensaje',
         'respuesta',
         'id_estado',
+        'archivo_adjunto',
     ];
 
     public function estado()

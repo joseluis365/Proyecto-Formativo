@@ -31,6 +31,9 @@
         .instrucciones h4 { margin: 0 0 5px 0; color: #0277bd; font-size: 11px; text-transform: uppercase; }
         .instrucciones p { margin: 0; font-size: 11px; line-height: 1.5; color: #01579b; }
 
+        .priority-urgent { color: #c62828; }
+        .priority-normal { color: #333; }
+
         .footer { margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; font-size: 9px; color: #999; text-align: center; }
     </style>
 </head>
@@ -122,7 +125,7 @@
                         </td>
                         <td>
                             <span class="info-label">Prioridad</span>
-                            <span class="info-value" style="color: {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? '#c62828' : '#333' }};">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
+                            <span class="info-value {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? 'priority-urgent' : 'priority-normal' }}">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
                         </td>
                     </tr>
                     @if($remision->cita)
@@ -145,7 +148,7 @@
                         </td>
                         <td>
                             <span class="info-label">Prioridad</span>
-                            <span class="info-value" style="color: {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? '#c62828' : '#333' }};">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
+                            <span class="info-value {{ $remision->prioridad?->nombre_prioridad == 'Urgente' ? 'priority-urgent' : 'priority-normal' }}">{{ $remision->prioridad?->nombre_prioridad ?? 'Normal' }}</span>
                         </td>
                     </tr>
                     @if($remision->examen)

@@ -49,7 +49,7 @@ const schema = z.object({
         id_prioridad: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         fecha: z.string().min(1, "La fecha es obligatoria").refine((val) => new Date(val) >= new Date(new Date().setHours(0,0,0,0)), "No puede ser pasada"),
         hora_inicio: z.string().min(1, "La hora es obligatoria"),
-        notas: z.string().optional()
+        notas: z.string().min(5, "La justificación es obligatoria (mín. 5 caracteres)")
     })).superRefine((data, ctx) => {
         data.forEach((rem, idx) => {
             if (String(rem.id_motivo) === "51" && (!rem.notas || rem.notas.trim().length < 5)) {
@@ -307,7 +307,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
 
                 <div className="space-y-1 md:col-span-2">
                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                        Justificación / Detalles Adicionales {String(selectedMotivoId) === "51" ? <span className="text-red-500">*</span> : <span className="text-xs text-gray-400 font-normal opacity-70">(Opcional)</span>}
+                        Justificación / Detalles Adicionales <span className="text-red-500">*</span>
                     </label>
                     <textarea
                         {...register(`remisiones.${index}.notas`)}
@@ -857,8 +857,8 @@ export default function ConsultaMedica() {
             </button>
 
             <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-3xl">stethoscope</span>
+                <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white">
+                    <span className="material-symbols-outlined text-primary text-3xl ">stethoscope</span>
                     Atender: {pacienteNombre}
                 </h1>
 
@@ -927,9 +927,15 @@ export default function ConsultaMedica() {
 
                 <form onSubmit={handleSubmit(onSubmit, (errors) => {
                     console.log("Validation errors:", errors);
+                    
+                    const tabErrors = [];
+                    if (errors.subjetivo || errors.diagnostico || errors.tratamiento || errors.enfermedades) tabErrors.push("SOAP Clínico");
+                    if (errors.remisiones) tabErrors.push("Remisiones");
+                    if (errors.recetas) tabErrors.push("Recetas");
+
                     Swal.fire({
-                        title: "¡Verificar campos!",
-                        text: "Hay errores en el formulario. Por favor revise todas las pestañas (SOAP, Remisiones, Recetas).",
+                        title: "¡Campos pendientes!",
+                        html: `Por favor revise las siguientes secciones:<br/><b>${tabErrors.join(", ")}</b>`,
                         icon: "warning",
                         confirmButtonColor: "#3B82F6",
                     });

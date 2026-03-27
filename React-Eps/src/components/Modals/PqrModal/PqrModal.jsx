@@ -6,10 +6,26 @@ import api from '../../../Api/axios';
 import Swal from 'sweetalert2';
 import Badge from '../../UI/Badge';
 
-export default function PqrModal({ isOpen, onClose, pqr, onSuccess }) {
+export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = false }) {
     const isAtendido = pqr.id_estado === 10;
     const [respuesta, setRespuesta] = useState(pqr.respuesta || "");
     const [loading, setLoading] = useState(false);
+    const [archivo, setArchivo] = useState(null);
+    const [errorArchivo, setErrorArchivo] = useState("");
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                setErrorArchivo("El archivo no debe superar los 5MB");
+                setArchivo(null);
+                e.target.value = "";
+            } else {
+                setErrorArchivo("");
+                setArchivo(file);
+            }
+        }
+    };
 
     const handleResponder = async () => {
         if (!respuesta || respuesta.trim().length < 10) {
@@ -23,7 +39,18 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess }) {
 
         setLoading(true);
         try {
-            await api.post(`/pqrs/${pqr.id_pqr}/responder`, { respuesta });
+            const formData = new FormData();
+            formData.append('respuesta', respuesta);
+            if (archivo) {
+                formData.append('archivo_adjunto', archivo);
+            }
+
+            await api.post(`/pqrs/${pqr.id_pqr}/responder`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
             Swal.fire({
                 icon: 'success',
                 title: '¡Respondido!',
@@ -37,10 +64,17 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess }) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Ocurrió un error al intentar enviar la respuesta.'
+                text: error.response?.data?.message || 'Ocurrió un error al intentar enviar la respuesta.'
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleVisualizar = () => {
+        if (pqr.archivo_adjunto) {
+            const url = `${import.meta.env.VITE_API_BASE_URL}/storage/${pqr.archivo_adjunto}`;
+            window.open(url, '_blank');
         }
     };
 
@@ -82,65 +116,95 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess }) {
                     </div>
                 </div>
 
-                {/* Área de respuesta */}
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-primary text-lg">reply</span>
-                        Escribir Respuesta
-                    </h3>
-                    
-                    <textarea 
-                        disabled={isAtendido || loading}
-                        value={respuesta}
-                        onChange={(e) => setRespuesta(e.target.value)}
-                        className={`w-full p-3 rounded-xl border text-sm focus:ring-2 focus:ring-primary focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-[120px] transition-all ${
-                            isAtendido 
-                                ? 'border-gray-200 dark:border-gray-700 opacity-70 cursor-not-allowed' 
-                                : (respuesta.length > 0 && respuesta.length < 10) 
-                                    ? 'border-red-500 ring-1 ring-red-500 bg-red-50/10' 
-                                    : 'border-gray-300 dark:border-gray-600'
-                        }`}
-                        placeholder={isAtendido ? 'Esta solicitud ya fue atendida.' : 'Escribe aquí la respuesta que será enviada por correo al usuario...'}
-                    />
-                    
-                    {!isAtendido && (
-                        <div className="flex justify-between mt-1 px-1">
-                            <p className={`text-[10px] font-bold uppercase tracking-widest ${respuesta.length < 10 && respuesta.length > 0 ? 'text-red-500' : 'text-gray-400'}`}>
-                                {respuesta.length < 10 && respuesta.length > 0 ? 'Mínimo 10 caracteres' : 'Longitud suficiente'}
-                            </p>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                {respuesta.length} caracteres
-                            </p>
+                    {/* Área de respuesta (Solo si no es readonly o ya está atendido) */}
+                    {(isAtendido || !readonly) && (
+                        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-lg">reply</span>
+                                {isAtendido ? 'Respuesta Enviada' : 'Escribir Respuesta'}
+                            </h3>
+                            
+                            <textarea 
+                                disabled={isAtendido || loading}
+                                value={respuesta}
+                                onChange={(e) => setRespuesta(e.target.value)}
+                                className={`w-full p-3 rounded-xl border text-sm focus:ring-2 focus:ring-primary focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-[120px] transition-all ${
+                                    isAtendido 
+                                        ? 'border-gray-200 dark:border-gray-700 opacity-70 cursor-not-allowed' 
+                                        : (respuesta.length > 0 && respuesta.length < 10) 
+                                            ? 'border-red-500 ring-1 ring-red-500 bg-red-50/10' 
+                                            : 'border-gray-300 dark:border-gray-600'
+                                }`}
+                                placeholder={isAtendido ? 'Esta solicitud ya fue atendida.' : 'Escribe aquí la respuesta que será enviada por correo al usuario...'}
+                            />
+                            
+                            {/* Control de archivos */}
+                            {!isAtendido && !readonly && (
+                                <div className="mt-4">
+                                    <label className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2 cursor-pointer">
+                                        <span className="material-symbols-outlined text-primary text-lg">attach_file</span>
+                                        Adjuntar archivo (Opcional, Máx. 5MB)
+                                    </label>
+                                    <input 
+                                        type="file" 
+                                        onChange={handleFileChange}
+                                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all border border-gray-200 dark:border-gray-700 rounded-xl p-1"
+                                    />
+                                    {errorArchivo && <p className="text-xs text-red-500 mt-1 font-medium">{errorArchivo}</p>}
+                                </div>
+                            )}
+                            
+                            {isAtendido && (
+                                <div className="flex flex-col gap-2 mt-2">
+                                    <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
+                                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                        Esta petición ya fue respondida y cerrada.
+                                    </p>
+                                    {pqr.archivo_adjunto && (
+                                        <button
+                                            onClick={handleVisualizar}
+                                            className="flex items-center gap-2 w-fit px-4 py-2 mt-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-sm font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-100 dark:border-blue-800"
+                                        >
+                                            <span className="material-symbols-outlined text-lg">visibility</span>
+                                            Visualizar archivo enviado
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
-                    
-                    {isAtendido && (
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-medium flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px]">check_circle</span>
-                            Esta petición ya fue respondida y cerrada.
-                        </p>
-                    )}
-                </div>
 
-                {/* Botones */}
-                <div className="flex justify-end gap-3 mt-4">
-                    <button 
-                        onClick={onClose}
-                        disabled={loading}
-                        className="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-                    >
-                        Cerrar
-                    </button>
-                    {!isAtendido && (
-                        <BlueButton 
-                            text="Enviar Respuesta" 
-                            icon="send" 
-                            onClick={handleResponder} 
-                            loading={loading}
-                        />
+                    {readonly && !isAtendido && (
+                        <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-4 rounded-xl flex items-center gap-3">
+                                <span className="material-symbols-outlined text-amber-600 dark:text-amber-400">info</span>
+                                <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">
+                                    Esta solicitud se encuentra <b>pendiente</b> de respuesta por el personal administrativo.
+                                </p>
+                             </div>
+                        </div>
                     )}
+
+                    {/* Botones */}
+                    <div className="flex justify-end gap-3 mt-4">
+                        <button 
+                            onClick={onClose}
+                            disabled={loading}
+                            className="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            Cerrar
+                        </button>
+                        {!isAtendido && !readonly && (
+                            <BlueButton 
+                                text="Enviar Respuesta" 
+                                icon="send" 
+                                onClick={handleResponder} 
+                                loading={loading}
+                            />
+                        )}
+                    </div>
                 </div>
-            </div>
-        </BaseModal>
+            </BaseModal>
     );
 }

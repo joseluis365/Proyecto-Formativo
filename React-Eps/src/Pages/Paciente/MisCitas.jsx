@@ -4,6 +4,9 @@ import useCitas from "../../hooks/useCitas";
 import AppointmentCard from "../../components/Citas/AppointmentCard";
 import ViewCitaModal from "../../components/Modals/CitaModal/ViewCitaModal";
 import ReagendarCitaModal from "../../components/Modals/CitaModal/ReagendarCitaModal";
+import CitaDetalleMedicoModal from "../../components/Modals/CitaModal/CitaDetalleMedicoModal";
+import DetalleExamenResultModal from "../../components/Modals/DetalleExamenResultModal";
+import DetalleRecetaModal from "../../components/Modals/DetalleRecetaModal";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
@@ -15,6 +18,10 @@ export default function MisCitas() {
 
     const [viewingCita, setViewingCita]         = useState(null);
     const [reagendandoCita, setReagendandoCita] = useState(null);
+    const [resultsCita, setResultsCita]         = useState(null);
+    const [nestedResultsCita, setNestedResultsCita] = useState(null);
+    const [resultsExamen, setResultsExamen]     = useState(null);
+    const [resultsReceta, setResultsReceta]     = useState(null);
 
     // Filtros
     const [filterEspecialidad, setFilterEspecialidad]       = useState(""); // Tipo de evento (Remisión, Examen, etc)
@@ -132,8 +139,9 @@ export default function MisCitas() {
                 }
                 
                 const matchFecha = !filterFecha || item.fecha === filterFecha;
+                const matchEstado = item.estado?.nombre_estado !== "Cancelada";
 
-                return matchTipo && matchEspMedico && matchMedico && matchFecha;
+                return matchTipo && matchEspMedico && matchMedico && matchFecha && matchEstado;
             })
             .sort((a, b) => {
                 const dateA = a.fecha ? new Date(`${a.fecha}T${a.hora_inicio || '00:00'}`) : new Date(8640000000000000);
@@ -141,6 +149,42 @@ export default function MisCitas() {
                 return dateB - dateA;
             });
     }, [citas, examenes, filterEspecialidad, filterEspecialidadMedico, filterMedico, filterFecha]);
+
+    const handleViewRemision = (r, parentCita) => {
+        if (r.tipo_remision === 'examen') {
+            if (r.examen && (r.examen.resultado_pdf || r.examen.id_estado === 8)) {
+                setResultsExamen({ ...r.examen, _isExamen: true, cita_raw: parentCita });
+            } else {
+                Swal.fire({
+                    title: "Pendiente",
+                    text: "Los resultados de este examen aún no han sido cargados.",
+                    icon: "info",
+                    confirmButtonColor: "#3B82F6"
+                });
+            }
+        } else if (r.tipo_remision === 'cita') {
+            if (r.cita && (r.cita.historialDetalle || r.cita.historial_detalle)) {
+                if (parentCita) {
+                    setNestedResultsCita({ cita: r.cita, citaOrigen: parentCita });
+                } else {
+                    setResultsCita(r.cita);
+                }
+            } else {
+                Swal.fire({
+                    title: "Pendiente",
+                    text: "Esta remisión aún no ha sido atendida por el especialista.",
+                    icon: "info",
+                    confirmButtonColor: "#3B82F6"
+                });
+            }
+        }
+    };
+
+    const handleViewReceta = (rec, parentCita) => {
+        if (rec) {
+            setResultsReceta({ receta: rec, cita: parentCita });
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -258,8 +302,19 @@ export default function MisCitas() {
                                 doctorSpecialty={!item._isExamen ? (item.medico?.especialidad?.especialidad || "Médico General") : ""}
                                 time={item.fecha ? `${item.fecha} | ${item.hora_inicio?.slice(0, 5) || '--:--'}` : 'Sin fecha agendada | --:--'}
                                 status={item.estado?.nombre_estado}
-                                onView={() => setViewingCita(item)}
-                                onCancel={(!item._isExamen && (item.estado?.nombre_estado === "Agendada" || item.estado?.nombre_estado === "Pendiente")) ? () => cancelCita(item.id_cita) : undefined}
+                                onView={() => {
+                                    const isFinished = item.estado?.nombre_estado === "Atendida";
+                                    if (isFinished) {
+                                        if (item._isExamen) {
+                                            setResultsExamen(item);
+                                        } else {
+                                            setResultsCita(item);
+                                        }
+                                    } else {
+                                        setViewingCita(item);
+                                    }
+                                }}
+                                onCancel={(!item._isExamen && item.tipo_evento !== 'remision' && (item.estado?.nombre_estado === "Agendada" || item.estado?.nombre_estado === "Pendiente")) ? () => cancelCita(item.id_cita) : undefined}
                                 onReschedule={(!item._isExamen && (item.estado?.nombre_estado === "Agendada" || item.estado?.nombre_estado === "Pendiente")) ? () => {
                                     if (item.fecha && item.hora_inicio) {
                                         const citaDate = new Date(`${item.fecha}T${item.hora_inicio}`);
@@ -297,6 +352,51 @@ export default function MisCitas() {
                 onConfirm={reagendarCita}
                 loading={loading}
             />
+
+            {/* Modal: Resultados Cita / Remisión (Nivel 1) */}
+            <AnimatePresence>
+                {resultsCita && (
+                    <CitaDetalleMedicoModal
+                        cita={resultsCita}
+                        onClose={() => setResultsCita(null)}
+                        onViewRemision={(r) => handleViewRemision(r, resultsCita)}
+                        onViewReceta={(rec) => handleViewReceta(rec, resultsCita)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal: Resultados Cita / Remisión Anidado (Nivel 2) */}
+            <AnimatePresence>
+                {nestedResultsCita && (
+                    <CitaDetalleMedicoModal
+                        cita={nestedResultsCita.cita}
+                        citaOrigen={nestedResultsCita.citaOrigen}
+                        onClose={() => setNestedResultsCita(null)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal: Resultados Examen */}
+            <AnimatePresence>
+                {resultsExamen && (
+                    <DetalleExamenResultModal
+                        examen={resultsExamen}
+                        citaOrigen={resultsExamen.cita_raw}
+                        onClose={() => setResultsExamen(null)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal: Receta */}
+            <AnimatePresence>
+                {resultsReceta && (
+                    <DetalleRecetaModal
+                        receta={resultsReceta.receta}
+                        cita={resultsReceta.cita}
+                        onClose={() => setResultsReceta(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

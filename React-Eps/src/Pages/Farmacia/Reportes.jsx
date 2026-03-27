@@ -22,7 +22,6 @@ const estadoInventarioOptions = [
     { value: "Bajo", label: "Stock Bajo" },
     { value: "Próximo", label: "Próximo a Vencer" },
     { value: "Vencido", label: "Vencido" },
-    { value: "Agotado", label: "Agotado" },
 ];
 
 const tipoMovimientoOptions = [
@@ -204,13 +203,34 @@ export default function Reportes() {
                 }
 
                 if (key === 'estado_stock') {
-                    let bg = "bg-green-100 text-green-800";
-                    if (value === "Vencido" || value === "Agotado") bg = "bg-red-100 text-red-800";
-                    if (value === "Próximo" || value === "Bajo") bg = "bg-yellow-100 text-yellow-800";
-                    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${bg}`}>{value}</span>;
+                    let bg = "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300";
+                    if (value === "Vencido" || value === "Agotado") bg = "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300";
+                    if (value === "Próximo" || value === "Bajo") bg = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300";
+                    return <span className={`px-2.5 py-1 text-xs font-bold rounded-full border border-current ${bg}`}>{value}</span>;
                 }
 
-                return <span>{value || "-"}</span>;
+                if (key === 'stock_lote' || key === 'stock_actual') {
+                    const isLow = Number(value) <= 20;
+                    return (
+                        <span className={`font-bold ${isLow ? "text-red-600 dark:text-red-400" : "text-gray-900 dark:text-gray-100"}`}>
+                            {value} <span className="text-[10px] font-normal text-gray-400">unid.</span>
+                        </span>
+                    );
+                }
+
+                if (key === 'stock_total') {
+                    return (
+                        <span className="font-semibold text-primary dark:text-blue-400">
+                            {value} <span className="text-[10px] font-normal text-gray-400">unid.</span>
+                        </span>
+                    );
+                }
+
+                if (key === 'id_lote') {
+                    return <span className="font-mono text-xs font-bold text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded">#{value}</span>;
+                }
+
+                return <span className="text-gray-700 dark:text-gray-300">{value || "-"}</span>;
             }
         }));
     }, [meta]);

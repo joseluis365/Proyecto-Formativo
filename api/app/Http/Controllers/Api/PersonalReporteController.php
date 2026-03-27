@@ -38,7 +38,7 @@ class PersonalReporteController extends Controller
             if ($usuario && $usuario->id_rol === 4) {
                 $usuario->load('especialidad');
             }
-            
+
             try {
                 if ($usuario) {
                     $ejemplo = [];
@@ -46,17 +46,17 @@ class PersonalReporteController extends Controller
                         $first = $data[0];
                         // Usar getAttributes() para guardar solo las columnas de la tabla base, 
                         // evitando cargar todas las relaciones configuradas con 'with'.
-                        $cleanArray = is_object($first) && method_exists($first, 'getAttributes') 
-                            ? $first->getAttributes() 
+                        $cleanArray = is_object($first) && method_exists($first, 'getAttributes')
+                            ? $first->getAttributes()
                             : (is_object($first) && method_exists($first, 'toArray') ? $first->toArray() : (array) $first);
-                        
+
                         // Doble limpieza para asegurar que sea JSON puro sin caracteres nulos de objetos protegidos
                         $ejemplo = json_decode(json_encode($cleanArray), true);
-                        
+
                         // Quitar metadatos de Eloquent que puedan haber quedado
                         unset($ejemplo['connection'], $ejemplo['table'], $ejemplo['primaryKey'], $ejemplo['wasRecentlyCreated'], $ejemplo['exists']);
                     }
-                    
+
                     HistorialReporte::create([
                         'id_usuario'       => $usuario->documento,
                         'tabla_relacion'   => $entity,
@@ -71,7 +71,7 @@ class PersonalReporteController extends Controller
             // Determinar la vista. Si es Médico (rol 4) y entidad citas, usar su propia plantilla
             $view = 'reports.personal.reporte_dinamico';
             $orientation = 'landscape';
-            
+
             if ($usuario && $usuario->id_rol === 4 && $entity === 'citas') {
                 $view = 'reports.medico.reporte_citas';
                 $orientation = 'landscape';
@@ -82,7 +82,7 @@ class PersonalReporteController extends Controller
                 'entity'   => $entity,
                 'data'     => $data,
                 'filters'  => $request->all(),
-                'generado' => $usuario ? ($usuario->primer_nombre . ' ' . $usuario->primer_apellido) : 'Sistema Sanitech',
+                'generado' => $usuario ? ($usuario->primer_nombre . ' ' . $usuario->primer_apellido) : 'Sistema Sanitec',
                 'especialidad' => ($usuario && $usuario->id_rol === 4) ? ($usuario->especialidad->especialidad ?? 'Médico General') : null,
                 'fecha'    => Carbon::now()->format('d/m/Y H:iA'),
             ])->setPaper('a4', $orientation);
@@ -108,39 +108,38 @@ class PersonalReporteController extends Controller
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('documento', 'ILIKE', "%{$search}%")
-                      ->orWhere('primer_nombre', 'ILIKE', "%{$search}%")
-                      ->orWhere('segundo_nombre', 'ILIKE', "%{$search}%")
-                      ->orWhere('primer_apellido', 'ILIKE', "%{$search}%")
-                      ->orWhere('segundo_apellido', 'ILIKE', "%{$search}%")
-                      ->orWhere('email', 'ILIKE', "%{$search}%");
+                        ->orWhere('primer_nombre', 'ILIKE', "%{$search}%")
+                        ->orWhere('segundo_nombre', 'ILIKE', "%{$search}%")
+                        ->orWhere('primer_apellido', 'ILIKE', "%{$search}%")
+                        ->orWhere('segundo_apellido', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%");
                 });
             }
             if ($request->filled('id_estado')) {
                 $query->where('id_estado', $request->id_estado);
             }
-        } 
-        elseif ($entity === 'citas') {
+        } elseif ($entity === 'citas') {
             $query = Cita::with([
-                'estado', 
-                'paciente', 
-                'medico', 
-                'especialidad', 
-                'motivoConsulta', 
+                'estado',
+                'paciente',
+                'medico',
+                'especialidad',
+                'motivoConsulta',
                 'historialDetalle.enfermedades'
             ]);
 
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
-                    $q->whereHas('paciente', function($q2) use ($search) {
+                    $q->whereHas('paciente', function ($q2) use ($search) {
                         $q2->where('primer_nombre', 'ILIKE', "%{$search}%")
-                           ->orWhere('primer_apellido', 'ILIKE', "%{$search}%")
-                           ->orWhere('documento', 'ILIKE', "%{$search}%");
+                            ->orWhere('primer_apellido', 'ILIKE', "%{$search}%")
+                            ->orWhere('documento', 'ILIKE', "%{$search}%");
                     })
-                    ->orWhereHas('medico', function($q3) use ($search) {
-                        $q3->where('primer_nombre', 'ILIKE', "%{$search}%")
-                           ->orWhere('primer_apellido', 'ILIKE', "%{$search}%");
-                    });
+                        ->orWhereHas('medico', function ($q3) use ($search) {
+                            $q3->where('primer_nombre', 'ILIKE', "%{$search}%")
+                                ->orWhere('primer_apellido', 'ILIKE', "%{$search}%");
+                        });
                 });
             }
             if ($request->filled('id_estado')) {
@@ -161,10 +160,10 @@ class PersonalReporteController extends Controller
             if ($request->filled('date_to')) {
                 $query->whereDate('fecha', '<=', $request->date_to);
             }
-            
+
             // Filtro específico para Citas Atendidas (id_estado = 10) y Diagnóstico
             if ($request->filled('id_estado') && $request->id_estado == 10 && $request->filled('codigo_icd')) {
-                $query->whereHas('historialDetalle.enfermedades', function($q) use ($request) {
+                $query->whereHas('historialDetalle.enfermedades', function ($q) use ($request) {
                     $q->where('enfermedades.codigo_icd', $request->codigo_icd);
                 });
             }
@@ -174,15 +173,14 @@ class PersonalReporteController extends Controller
             if ($user && $user->id_rol === 4) {
                 $query->where('doc_medico', $user->documento);
             }
-        } 
-        elseif ($entity === 'pqrs') {
+        } elseif ($entity === 'pqrs') {
             $query = Pqr::with('estado');
 
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
                     $q->where('nombre_usuario', 'ILIKE', "%{$search}%")
-                      ->orWhere('asunto', 'ILIKE', "%{$search}%");
+                        ->orWhere('asunto', 'ILIKE', "%{$search}%");
                 });
             }
             if ($request->filled('id_estado')) {
@@ -196,8 +194,7 @@ class PersonalReporteController extends Controller
             }
             // Sorting by id to compensate lack of created_at column if applicable
             $query->orderBy('id_pqr', 'desc');
-        } 
-        else {
+        } else {
             return collect([]);
         }
 

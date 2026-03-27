@@ -87,17 +87,16 @@ class ExamenClinicoController extends Controller
             $filename = 'examen_' . $examen->id_examen . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('examenes_resultados', $filename, 'local');
             
-            $absolutePath = storage_path('app/' . $path);
-
             $estadoFinalizado = \App\Models\Estado::firstOrCreate(['nombre_estado' => 'Atendida']);
             $examen->update([
                 'id_estado' => $estadoFinalizado->id_estado,
-                'resultado_pdf' => 'app/' . $path 
+                'resultado_pdf' => $path 
             ]);
 
             // Enviar Correo con el PDF adjunto
             try {
                 if ($examen->paciente && $examen->paciente->email) {
+                    $absolutePath = \Illuminate\Support\Facades\Storage::disk('local')->path($path);
                     \Illuminate\Support\Facades\Mail::to($examen->paciente->email)
                         ->send(new \App\Mail\ResultadoExamenMail($examen, $absolutePath));
                 }
@@ -159,5 +158,26 @@ class ExamenClinicoController extends Controller
         $estadoInactivo = \App\Models\Estado::firstOrCreate(['nombre_estado' => 'Inactivo'])->id_estado;
         $cat->update(['id_estado' => $estadoInactivo]);
         return response()->json(['success' => true, 'message' => 'Categoría desactivada']);
+    }
+
+    /**
+     * Permite descargar el resultado PDF de un examen.
+     */
+    public function descargarResultado($id)
+    {
+        $examen = \App\Models\Examen::findOrFail($id);
+
+        if (!$examen->resultado_pdf) {
+            return response()->json(['message' => 'Este examen no tiene resultados cargados aún.'], 404);
+        }
+
+        // Limpiar posible prefijo 'app/' de registros anteriores
+        $cleanPath = str_replace('app/', '', $examen->resultado_pdf);
+
+        if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($cleanPath)) {
+            return response()->json(['message' => 'El archivo no se encuentra en el servidor.'], 404);
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('local')->download($cleanPath);
     }
 }

@@ -178,7 +178,7 @@ export default function Dashboard() {
                             ))
                         ) : (
                             <div className="bg-white dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 rounded-2xl text-center text-gray-400 dark:text-gray-500">
-                                <span className="material-symbols-outlined text-3xl mb-2 block">check_circle</span>
+                                <span className="material-symbols-outlined text-3xl mb-2 block mr-2">check_circle</span>
                                 Sin medicamentos próximos a vencer en los próximos 30 días
                             </div>
                         )}

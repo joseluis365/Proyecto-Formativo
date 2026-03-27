@@ -48,7 +48,7 @@ export default function IndexFooter() {
             </div>
                 
             <div className="max-w-[1280px] mx-auto mt-10 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400 font-medium">
-                <p>© {new Date().getFullYear()} Saluvanta EPS. Todos los derechos reservados. • <span className="text-slate-500">Sanitech</span></p>
+                <p>© {new Date().getFullYear()} Saluvanta EPS. Todos los derechos reservados. • <span className="text-slate-500">Sanitec</span></p>
                 <div className="flex gap-5">
                     <NavLink className="hover:text-primary" to="/SobreNosotros">Términos y Condiciones</NavLink>
                     <NavLink className="hover:text-primary" to="/SobreNosotros">Privacidad</NavLink>

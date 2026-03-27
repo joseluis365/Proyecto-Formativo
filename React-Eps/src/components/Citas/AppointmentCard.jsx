@@ -125,8 +125,10 @@ export default function AppointmentCard({
                     onClick={onView}
                     className="grow py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-gray-200 dark:shadow-none cursor-pointer flex items-center justify-center gap-2"
                 >
-                    <span className="material-symbols-outlined text-base">visibility</span>
-                    Detalles
+                    <span className="material-symbols-outlined text-base">
+                        {status === 'Atendida' ? 'assignment_turned_in' : 'visibility'}
+                    </span>
+                    {status === 'Atendida' ? 'Ver Resultados' : 'Detalles'}
                 </button>
 
                 {(status === "Agendada" || status === "Pendiente") && (
@@ -141,13 +143,15 @@ export default function AppointmentCard({
                         </button>
 
                         {/* Botón Cancelar */}
-                        <button
-                            onClick={onCancel}
-                            className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
-                            title="Cancelar Cita"
-                        >
-                            <span className="material-symbols-outlined text-xl">close</span>
-                        </button>
+                        {onCancel && (
+                            <button
+                                onClick={onCancel}
+                                className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
+                                title="Cancelar Cita"
+                            >
+                                <span className="material-symbols-outlined text-xl">close</span>
+                            </button>
+                        )}
                     </>
                 )}
             </div>

@@ -2,6 +2,7 @@ import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import superAdminApi from "../../Api/superadminAxios";
+import { motion, AnimatePresence } from "framer-motion";
 
 import SuperAdminLogoutButton from "../../components/UI/SuperAdminLogoutButton";
 
@@ -39,16 +40,28 @@ export default function SuperAdminHeader() {
         }
     };
 
-    const closeMenu = () => setOpen(false);
+    const [isInternalMenuOpen, setIsInternalMenuOpen] = useState(false);
+
+    const closeMenu = () => {
+        setOpen(false);
+        setIsInternalMenuOpen(false);
+    };
+
     const navLinkStyles = ({ isActive }) =>
         isActive
             ? "text-blue-600 font-bold dark:text-blue-400"
             : "text-slate-600 hover:text-blue-500 transition-colors dark:text-white dark:hover:text-blue-400";
 
+    const dropdownItemStyles = ({ isActive }) =>
+        `flex items-center px-4 py-2 text-sm transition-colors ${isActive
+            ? "bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/30 dark:text-blue-400"
+            : "text-slate-600 hover:bg-slate-50 dark:text-gray-300 dark:hover:bg-gray-800"
+        }`;
+
     return (
         <>
             {/* HEADER */}
-            <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur-md px-6 md:px-10 lg:px-40 py-2.5 flex items-center justify-between">
+            <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-gray-800 bg-white/90 dark:bg-gray-800 backdrop-blur-md px-6 md:px-10 lg:px-40 py-2.5 flex items-center justify-between">
 
                 {/* ESPACIO IZQUIERDO (Para equilibrar el centro) */}
                 <div className="hidden md:block flex-1"></div>
@@ -59,6 +72,46 @@ export default function SuperAdminHeader() {
                     <NavLink className={navLinkStyles} to="/SuperAdmin-Empresas">Empresas</NavLink>
                     <NavLink className={navLinkStyles} to="/SuperAdmin-Licencias">Planes</NavLink>
                     <NavLink className={navLinkStyles} to="/SuperAdmin-Historial">Historial</NavLink>
+
+                    {/* DROPDOWN GESTIÓN INTERNA */}
+                    <div className="relative group">
+                        <button
+                            onClick={() => setIsInternalMenuOpen(!isInternalMenuOpen)}
+                            onBlur={() => setTimeout(() => setIsInternalMenuOpen(false), 200)}
+                            className={`flex items-center gap-1 cursor-pointer font-medium transition-colors whitespace-nowrap ${isInternalMenuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-white"}`}
+                        >
+                            Gestión Interna
+                            <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                        </button>
+
+                        <AnimatePresence>
+                            {isInternalMenuOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl shadow-lg py-2 overflow-hidden"
+                                >
+                                    <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/estados">
+                                        <span className="material-symbols-outlined mr-2 text-sm">settings</span>
+                                        Estados
+                                    </NavLink>
+                                    <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/roles">
+                                        <span className="material-symbols-outlined mr-2 text-sm">group</span>
+                                        Roles
+                                    </NavLink>
+                                    <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/departamentos">
+                                        <span className="material-symbols-outlined mr-2 text-sm">map</span>
+                                        Departamentos
+                                    </NavLink>
+                                    <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/ciudades">
+                                        <span className="material-symbols-outlined mr-2 text-sm">location_city</span>
+                                        Ciudades
+                                    </NavLink>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </nav>
 
                 {/* SECCIÓN DERECHA (PEGADA AL MARGEN) */}
@@ -105,7 +158,7 @@ export default function SuperAdminHeader() {
                 transform transition-transform duration-300 ease-in-out
                 ${open ? "translate-x-0" : "translate-x-full"}`}
             >
-                <div className="p-6 flex flex-col h-full gap-6">
+                <div className="p-6 flex flex-col h-full gap-6 overflow-y-auto">
 
                     {/* HEADER MENU */}
                     <div className="flex justify-between items-center text-gray-800 dark:text-gray-100">
@@ -121,18 +174,30 @@ export default function SuperAdminHeader() {
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Empresas">Empresas</NavLink>
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Licencias">Licencias</NavLink>
                         <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Historial">Historial</NavLink>
+
+                        {/* GESTIÓN INTERNA MOBILE */}
+                        <div className="pt-2 border-t border-slate-100 dark:border-gray-800">
+                            <span className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-2 block">Gestión Interna</span>
+                            <div className="flex flex-col gap-3 pl-2">
+                                <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Gestion/estados">Estados</NavLink>
+                                <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Gestion/roles">Roles</NavLink>
+                                <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Gestion/departamentos">Departamentos</NavLink>
+                                <NavLink className={navLinkStyles} onClick={closeMenu} to="/SuperAdmin-Gestion/ciudades">Ciudades</NavLink>
+                            </div>
+                        </div>
                     </nav>
 
-                    <div className="flex-1 mt-4">
+                    <div className="mt-auto">
                         <button
                             onClick={toggleDarkMode}
-                            className="flex items-center cursor-pointer gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                            className="flex items-center cursor-pointer gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none mb-4"
                         >
                             <span className="material-symbols-outlined text-[20px]">
                                 {isDarkMode ? 'dark_mode' : 'light_mode'}
                             </span>
                             <span className="font-semibold">{isDarkMode ? 'Modo Oscuro' : 'Modo Claro'}</span>
                         </button>
+
                     </div>
 
                     {/* CTA */}

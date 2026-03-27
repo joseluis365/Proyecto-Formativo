@@ -49,8 +49,8 @@ function NavDropItem({ to, label, icon, onClick }) {
 /* ——— Nav item bottom-bar (sm) ——— */
 function NavMobileItem({ to, icon }) {
     return (
-        <NavLink to={to} end className={({ isActive }) => `size-12 rounded-2xl flex items-center justify-center transition-all ${isActive ? "bg-primary text-white shadow-lg" : "text-gray-400"}`}>
-            <span className="material-symbols-outlined text-2xl font-bold">{icon}</span>
+        <NavLink to={to} end className={({ isActive }) => `size-10 sm:size-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${isActive ? "bg-primary text-white shadow-lg" : "text-gray-400"}`}>
+            <span className="material-symbols-outlined text-xl sm:text-2xl font-bold">{icon}</span>
         </NavLink>
     );
 }
@@ -159,7 +159,7 @@ function PatientLayoutContent() {
             </div>
 
             {/* Bottom mobile nav (< md / 768px) */}
-            <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-100 dark:border-gray-800 px-6 py-4 rounded-4xl shadow-2xl flex items-center justify-around gap-8 min-w-[320px]">
+            <nav className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-100 dark:border-gray-800 px-4 py-2.5 rounded-3xl shadow-2xl flex items-center justify-around gap-4 sm:gap-8 min-w-[280px]">
                 {NAV_LINKS.map((link) => (
                     <NavMobileItem key={link.to} to={link.to} icon={link.icon} />
                 ))}

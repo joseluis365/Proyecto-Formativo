@@ -158,6 +158,8 @@ export default function PersonalReportes() {
         setCodigoIcd("");
         setPage(1);
         setIsFirstLoad(true);
+        setData([]); // Limpiar datos inmediatamente para evitar parpadeo de columnas N/A
+        setLoading(true); // Mostrar skeleton inmediatamente
     }, [entity]);
 
     const fetchReportData = async () => {

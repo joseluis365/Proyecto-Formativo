@@ -16,22 +16,33 @@ export default function DataTable({ columns, data }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row, i) => (
-                        <tr
-                            key={i}
-                            className="bg-white dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 odd:bg-white even:bg-gray-50"
-                        >
-                            {columns.map((col) => (
-                                <td
-                                    key={col.key}
-                                    className={`px-6 py-4 dark:bg-gray-900  ${col.align === "center" ? "text-center" : ""
-                                        }`}
-                                >
-                                    {col.render ? col.render(row) : (row[col.key] || "-")}
-                                </td>
-                            ))}
+                    {data.length === 0 ? (
+                        <tr>
+                            <td colSpan={columns.length} className="px-6 py-10 text-center text-gray-500 dark:text-gray-400 italic">
+                                <div className="flex flex-col items-center gap-2">
+                                    <span className="material-symbols-outlined text-4xl opacity-20">search_off</span>
+                                    <span>No se encontraron resultados que coincidan con los filtros aplicados.</span>
+                                </div>
+                            </td>
                         </tr>
-                    ))}
+                    ) : (
+                        data.map((row, i) => (
+                            <tr
+                                key={i}
+                                className="bg-white dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 odd:bg-white even:bg-gray-50"
+                            >
+                                {columns.map((col) => (
+                                    <td
+                                        key={col.key}
+                                        className={`px-6 py-4 dark:bg-gray-900  ${col.align === "center" ? "text-center" : ""
+                                            }`}
+                                    >
+                                        {col.render ? col.render(row) : (row[col.key] || "-")}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
 

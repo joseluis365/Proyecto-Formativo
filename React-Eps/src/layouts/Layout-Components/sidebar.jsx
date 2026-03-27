@@ -68,6 +68,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <SidebarSubItem to="/usuarios/farmaceuticos" label="Farmaceuticos" />
                   </SidebarDropdown>
                   <SidebarItem to="/citas/agenda" icon="calendar_month" label="Agenda de Citas" />
+                  <SidebarItem to="/pqrs" icon="forum" label="PQRS" />
                   <SidebarItem to="/reportes" icon="bar_chart" label="Reportes" />
                 </>
               )}

@@ -34,4 +34,19 @@ class MovimientoInventario extends Model
     {
         return $this->belongsTo(Dispensacion::class, 'id_dispensacion', 'id_dispensacion');
     }
+
+    /**
+     * Relación indirecta con la farmacia a través del lote.
+     */
+    public function farmacia()
+    {
+        return $this->hasOneThrough(
+            Farmacia::class,
+            LoteMedicamento::class,
+            'id_lote', // FK en LoteMedicamento
+            'nit',     // FK en Farmacia (nit)
+            'id_lote', // Local key en MovimientoInventario
+            'nit_farmacia' // Local key en LoteMedicamento
+        );
+    }
 }

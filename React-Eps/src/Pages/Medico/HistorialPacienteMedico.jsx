@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";
 import useHistorial from "../../hooks/useHistorial";
@@ -14,8 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import api from "@/Api/axios";
 import { AnimatePresence, motion } from "framer-motion";
-import DetalleRemisionModal from "@/components/Modals/DetalleRemisionModal";
+import CitaDetalleMedicoModal from "@/components/Modals/CitaModal/CitaDetalleMedicoModal";
+import DetalleExamenResultModal from "@/components/Modals/DetalleExamenResultModal";
 import DetalleRecetaModal from "@/components/Modals/DetalleRecetaModal";
+import ModalHeader from "@/components/Modals/ModalHeader";
+import EvolucionPacienteModal from "@/components/Modals/EvolucionPacienteModal";
 
 const schema = z.object({
     email: z.string().email("Correo electrónico inválido"),
@@ -49,238 +52,6 @@ const ErrorMsg = ({ error }) => {
 };
 
 
-// ── Cita Detail Modal (reutilizable) ─────────────────────────────────────────
-function CitaDetalleModal({ cita, onClose }) {
-    if (!cita) return null;
-    const det = cita.historialDetalle || cita.historial_detalle;
-    const paciente = cita.paciente;
-    const [downloading, setDownloading] = useState(false);
-    const [selectedRemision, setSelectedRemision] = useState(null);
-    const [selectedReceta, setSelectedReceta] = useState(null);
-
-    const getUnit = (key) => {
-        const k = key.toUpperCase().replace(/_/g, " ");
-        switch (k) {
-            case 'FC':
-            case 'FRECUENCIA CARDIACA': return 'lpm';
-            case 'FR':
-            case 'FRECUENCIA RESPIRATORIA': return 'rpm';
-            case 'PESO': return 'kg';
-            case 'TALLA':
-            case 'ESTATURA': return 'm';
-            case 'TEMPERATURA': return '°C';
-            case 'TA SISTOLICA': return 'mmHG';
-            case 'TA DIASTOLICA': return 'mmHG';
-            case 'PRESION ARTERIAL': return 'mmHG';
-            case 'SATURACION O2':
-            case 'SATURACION OXIGENO': return '%';
-            case 'IMC': return 'kg/m²';
-            default: return '';
-        }
-    };
-
-    const downloadPdf = async () => {
-        if (!cita.id_cita) return;
-        setDownloading(true);
-        try {
-            const resp = await api.get(`/pdf/cita/${cita.id_cita}`, { responseType: "blob" });
-            const url = window.URL.createObjectURL(new Blob([resp], { type: "application/pdf" }));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `cita_${cita.id_cita}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-        } catch { /* silent */ } finally { setDownloading(false); }
-    };
-
-    return (
-        <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={onClose}
-        >
-            <motion.div
-                className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-5 relative max-h-[90vh] overflow-y-auto"
-                initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={e => e.stopPropagation()}
-            >
-                <ModalHeader
-                    title={`Consulta #${cita.id_cita} — ${cita.fecha} ${cita.hora_inicio?.slice(0, 5)}`}
-                    subtitle={paciente ? `${paciente.primer_nombre} ${paciente.primer_apellido} · Doc: ${paciente.documento}${cita.especialidad?.nombre_especialidad ? ` · ${cita.especialidad.nombre_especialidad}` : ""}` : cita.doc_paciente}
-                    onClose={onClose}
-                    icon="clinical_notes"
-                />
-
-                {det ? (
-                    <div className="space-y-3">
-                        {[{label:"Motivo / Subjetivo",icon:"person_raised_hand",value:det.subjetivo},{label:"Diagnóstico",icon:"stethoscope",value:det.diagnostico},{label:"Tratamiento",icon:"medication",value:det.tratamiento},{label:"Observaciones",icon:"notes",value:det.observaciones}]
-                            .map(({label, icon, value}) => value ? (
-                                <div key={label} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">{icon}</span> {label}
-                                    </h3>
-                                    <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{value}</p>
-                                </div>
-                            ) : null)}
-
-                        {det.signos_vitales && Object.keys(det.signos_vitales).length > 0 && (
-                            <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
-                                <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">monitor_heart</span> Signos Vitales
-                                </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    {Object.entries(det.signos_vitales).map(([k, v]) => (
-                                        <div key={k} className="bg-white dark:bg-gray-800 rounded-lg p-2.5 shadow-sm border border-blue-50/50 dark:border-gray-700">
-                                            <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider mb-0.5 truncate" title={k.replace(/_/g, " ")}>
-                                                {k.replace(/_/g, " ")}
-                                            </p>
-                                            <p className="text-sm font-black text-blue-700 dark:text-blue-300 flex items-baseline gap-1">
-                                                {v} <span className="text-[10px] font-medium text-blue-500/70">{getUnit(k)}</span>
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {det.enfermedades?.length > 0 && (
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">vaccines</span> Diagnósticos CIE-11
-                                </h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {det.enfermedades.map(enf => (
-                                        <span key={enf.codigo_icd} className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">
-                                            [{enf.codigo_icd}] {enf.nombre}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {det.remisiones?.length > 0 && (
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">outpatient</span> Remisiones ({det.remisiones.length})
-                                </h3>
-                                <div className="space-y-3">
-                                    {det.remisiones.map((r, i) => (
-                                        <div key={r.id_remision || i} className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 flex items-start justify-between gap-4">
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1.5">
-                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.tipo_remision === 'examen' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-                                                        {r.tipo_remision === 'examen' ? 'EXAMEN' : 'INTERCONSULTA'}
-                                                    </span>
-                                                    {r.id_remision && <span className="text-xs font-bold text-gray-400">#{r.id_remision}</span>}
-                                                </div>
-                                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                                                    {r.especialidad?.especialidad || (r.categoriaExamen || r.categoria_examen)?.categoria || "Requiere asignación"}
-                                                </p>
-                                                {(r.cita?.fecha || r.examen?.fecha) && (
-                                                    <p className="text-[10px] font-bold text-primary mt-0.5 flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-xs">calendar_month</span>
-                                                        {r.cita?.fecha || r.examen?.fecha} — { (r.cita?.hora_inicio || r.examen?.hora_inicio)?.slice(0,5) }
-                                                    </p>
-                                                )}
-                                                {r.notas && <p className="text-xs text-gray-500 mt-0.5 line-clamp-1" title={r.notas}>{r.notas}</p>}
-                                            </div>
-                                            <button
-                                                onClick={(e) => { e.stopPropagation(); setSelectedRemision(r); }}
-                                                className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20"
-                                            >
-                                                <span className="material-symbols-outlined text-sm">open_in_full</span> Ver Detalles
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {det.receta && (
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
-                                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">medication</span> Receta Médica
-                                </h3>
-                                <div className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 flex items-start justify-between gap-4">
-                                    <div className="w-full">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-100 text-purple-700">
-                                                RECETA
-                                            </span>
-                                        {det.receta.id_receta && <span className="text-xs font-bold text-gray-400">#{det.receta.id_receta}</span>}
-                                        </div>
-                                        {(det.receta.recetaDetalles || det.receta.receta_detalles)?.length > 0 ? (
-                                            <ul className="list-disc pl-4 space-y-1">
-                                                {(det.receta.recetaDetalles || det.receta.receta_detalles).map((rd, i) => (
-                                                    <li key={i} className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                                        {rd.presentacion?.medicamento?.nombre}
-                                                        <span className="text-gray-400 font-normal ml-1">({rd.dosis} por {rd.duracion})</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p className="text-sm text-gray-500">Sin medicamentos</p>
-                                        )}
-                                    </div>
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); setSelectedReceta(det.receta); }}
-                                        className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20 mt-1"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">open_in_full</span> Ver Detalles
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <p className="text-sm text-gray-400 text-center py-4">Sin detalles clínicos registrados para esta cita.</p>
-                )}
-
-                {/* Footer del Modal - Botón PDF */}
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-                    <button
-                        onClick={downloadPdf}
-                        disabled={downloading}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all ${
-                            downloading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
-                        }`}
-                    >
-                        {downloading ? (
-                            <span className="material-symbols-outlined animate-spin">refresh</span>
-                        ) : (
-                            <span className="material-symbols-outlined">description</span>
-                        )}
-                        {downloading ? "Generando..." : "Descargar PDF"}
-                    </button>
-                </div>
-            </motion.div>
-
-            {/* Sub-modales de detalles usando AnimatePresence */}
-            <AnimatePresence>
-                {selectedRemision && (
-                    <DetalleRemisionModal
-                        key="modal-remision"
-                        remision={selectedRemision}
-                        cita={cita}
-                        onClose={() => setSelectedRemision(null)}
-                    />
-                )}
-                {selectedReceta && (
-                    <DetalleRecetaModal
-                        key="modal-receta"
-                        receta={selectedReceta}
-                        cita={cita}
-                        onClose={() => setSelectedReceta(null)}
-                    />
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
-}
-
 export default function HistorialPacienteMedico() {
     const { doc } = useParams();
     const navigate = useNavigate();
@@ -302,8 +73,65 @@ export default function HistorialPacienteMedico() {
     const canEdit = searchParams.get('editable') === 'true';
     const [selectedCita, setSelectedCita] = useState(null);
     const [rawCitas, setRawCitas] = useState([]);
-    const [selectedRemision, setSelectedRemision] = useState(null);
-    const [selectedReceta, setSelectedReceta] = useState(null);
+    const [selectedResultExamen, setSelectedResultExamen] = useState(null);
+    const [selectedResultCita, setSelectedResultCita]     = useState(null);
+    const [selectedReceta, setSelectedReceta]             = useState(null);
+    const [downloading, setDownloading] = useState(false);
+    const [showEvolucion, setShowEvolucion] = useState(false);
+
+    // Filter states
+    const [filterCitas, setFilterCitas] = useState({ date: '', text: '' });
+    const [filterRemisiones, setFilterRemisiones] = useState({ date: '', text: '' });
+    const [filterRecetas, setFilterRecetas] = useState({ date: '', text: '' });
+
+    // Filtered arrays
+    const filteredCitas = useMemo(() => {
+        if (!citas) return [];
+        return citas.filter(c => {
+            const matchDate = !filterCitas.date || c.fecha?.includes(filterCitas.date);
+            const matchText = !filterCitas.text || JSON.stringify(c).toLowerCase().includes(filterCitas.text.toLowerCase());
+            return matchDate && matchText;
+        });
+    }, [citas, filterCitas]);
+
+    const filteredRemisiones = useMemo(() => {
+        if (!remisiones) return [];
+        return remisiones.filter(r => {
+            const matchDate = !filterRemisiones.date || r.fecha?.includes(filterRemisiones.date);
+            const matchText = !filterRemisiones.text || JSON.stringify(r).toLowerCase().includes(filterRemisiones.text.toLowerCase());
+            return matchDate && matchText;
+        });
+    }, [remisiones, filterRemisiones]);
+
+    const filteredRecetas = useMemo(() => {
+        if (!recetas) return [];
+        return recetas.filter(r => {
+            const matchDate = !filterRecetas.date || r.fecha?.includes(filterRecetas.date);
+            const matchText = !filterRecetas.text || JSON.stringify(r).toLowerCase().includes(filterRecetas.text.toLowerCase());
+            return matchDate && matchText;
+        });
+    }, [recetas, filterRecetas]);
+
+    const handleDownloadPdf = async () => {
+        if (!doc) return;
+        setDownloading(true);
+        try {
+            const resp = await api.get(`/paciente/${doc}/historial/pdf`, { responseType: "blob" });
+            const url = window.URL.createObjectURL(new Blob([resp], { type: "application/pdf" }));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `historial_clinico_${doc}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Error generating PDF", error);
+            Swal.fire("Error", "No se pudo generar el documento PDF.", "error");
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(schema),
@@ -474,7 +302,7 @@ export default function HistorialPacienteMedico() {
         { key: "especialidad", header: "Especialidad", render: (c) => <span className="text-primary font-bold">{c.especialidad}</span> },
         { key: "diagnostico", header: "Diagnóstico", render: (c) => <span className="font-semibold text-gray-800 dark:text-gray-200 line-clamp-2">{c.diagnostico}</span> },
         { key: "actions", header: "Acciones", align: "center", render: (c) => {
-            const raw = rawCitas.find(r => r.fecha === c.fecha);
+            const raw = rawCitas.find(r => r.id_cita === c.id_cita);
             return (
                 <button
                     onClick={() => raw && setSelectedCita(raw)}
@@ -491,33 +319,22 @@ export default function HistorialPacienteMedico() {
     const remisionesColumns = [
         { key: "fecha", header: "Fecha", render: (r) => r.fecha || 'N/A' },
         { key: "tipo", header: "Tipo", render: (r) => <span className="font-bold">{r.tipo}</span> },
-        { key: "descripcion", header: "Descripción", render: (r) => r.descripcion },
-        { key: "estado", header: "Estado", render: (r) => (
-            <span className={`px-2 py-1 rounded-lg text-xs font-bold ${r.estado === 'Activa' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                {r.estado}
-            </span>
-        )},
-        { key: "actions", header: "Ver", align: "center", render: (r) => {
-            // Buscar la remision raw en los rawCitas para obtener el objeto completo
-            const rawRemision = rawCitas.flatMap(c => c.historialDetalle?.remisiones || []).find(rem => rem.id_remision === r.id);
-            const rawCita = rawCitas.find(c => (c.historialDetalle?.remisiones || []).some(rem => rem.id_remision === r.id));
-            return (
-                <button
-                    onClick={() => rawRemision && setSelectedRemision({ remision: rawRemision, cita: rawCita })}
-                    className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
-                    title="Ver detalles de remisión"
-                    disabled={!rawRemision}
-                >
-                    <span className="material-symbols-outlined text-base">open_in_full</span>
-                </button>
-            );
-        }}
+        { key: "destino", header: "Especialidad / Examen", render: (r) => r.destino },
+        { key: "actions", header: "Ver Resultados", align: "center", render: (r) => (
+            <button
+                onClick={() => handleViewRemision(r)}
+                className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
+                title="Ver resultados"
+            >
+                <span className="material-symbols-outlined text-base">assignment_turned_in</span>
+            </button>
+        )}
     ];
 
     const recetasColumns = [
         { key: "fecha", header: "Fecha", render: (r) => r.fecha || 'N/A' },
         { key: "estado", header: "Estado", render: (r) => (
-            <span className={`px-2 py-1 rounded-lg text-xs font-bold ${r.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30' : 'bg-green-100 text-green-700 dark:bg-green-900/30'}`}>
+            <span className={`px-2 py-1 rounded-lg text-xs font-bold ${r.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700/30' : 'bg-green-100 text-green-700 dark:bg-green-900/30'}`}>
                 {r.estado}
             </span>
         ) },
@@ -525,26 +342,46 @@ export default function HistorialPacienteMedico() {
             <div className="flex flex-col gap-1">
                 {r.medicamentos?.map((m, i) => (
                     <span key={i} className="text-xs text-gray-600 dark:text-gray-300">
-                        • <b>{m.medicamento}</b>: {m.dosis}
+                        • <b>{m.medicamento}</b>: {m.dosis} - {m.frecuencia}
                     </span>
                 ))}
             </div>
         ) },
-        { key: "actions", header: "Ver", align: "center", render: (r) => {
-            const rawReceta = rawCitas.flatMap(c => c.historialDetalle?.receta ? [c.historialDetalle.receta] : []).find(rec => rec.id_receta === r.id);
-            const rawCita = rawCitas.find(c => c.historialDetalle?.receta?.id_receta === r.id);
-            return (
-                <button
-                    onClick={() => rawReceta && setSelectedReceta({ receta: rawReceta, cita: rawCita })}
-                    className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
-                    title="Ver detalles de receta"
-                    disabled={!rawReceta}
-                >
-                    <span className="material-symbols-outlined text-base">open_in_full</span>
-                </button>
-            );
-        }}
+        { key: "actions", header: "Ver Receta", align: "center", render: (r) => (
+            <button
+                onClick={() => handleViewReceta(r)}
+                className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
+                title="Ver detalles de receta"
+            >
+                <span className="material-symbols-outlined text-base">open_in_full</span>
+            </button>
+        )}
     ];
+
+    const handleViewRemision = (r) => {
+        if (r.tipo === "Examen Clínico") {
+            if (r.raw?.examen) {
+                setSelectedResultExamen({ examen: r.raw.examen, citaOrigen: r.cita_raw });
+            } else {
+                Swal.fire("Pendiente", "Los resultados de este examen aún no han sido cargados.", "info");
+            }
+        } else {
+            // Especialista: usar r.raw.cita si existe (ya tiene historialDetalle cargado desde el backend)
+            const resultCita = r.raw?.cita;
+            
+            if (resultCita && (resultCita.historialDetalle || resultCita.historial_detalle)) {
+                setSelectedResultCita({ cita: resultCita, citaOrigen: r.cita_raw });
+            } else {
+                Swal.fire("Pendiente", "Esta remisión aún no ha sido atendida por el especialista.", "info");
+            }
+        }
+    };
+
+    const handleViewReceta = (r) => {
+        if (r.raw && r.cita_raw) {
+            setSelectedReceta({ receta: r.raw, cita: r.cita_raw });
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto space-y-4 pb-12">
@@ -557,7 +394,7 @@ export default function HistorialPacienteMedico() {
             </button>
 
             <div className="bg-white dark:bg-gray-900/50 rounded-xl shadow-lg border border-neutral-gray-border/20 dark:border-gray-800 pb-4">
-                <div className="bg-primary-green/90 dark:bg-primary-green/50 backdrop-blur-sm text-white p-6 rounded-t-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="bg-primary/90 dark:bg-primary/50 backdrop-blur-sm text-white p-6 rounded-t-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <span className="material-symbols-outlined text-3xl">clinical_notes</span>
                         <h2 className="text-xl sm:text-2xl font-bold">HISTORIAL CLÍNICO – {nombre}</h2>
@@ -571,6 +408,19 @@ export default function HistorialPacienteMedico() {
                 </div>
                 <div className="p-6 sm:p-8 space-y-8">
                     <PersonalInfo Info={infoArray} />
+                    
+                    {/* Botón Evolución del paciente */}
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => setShowEvolucion(true)}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-blue-500 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-200 dark:shadow-blue-900/30 hover:from-blue-600 hover:to-indigo-700 transition-all cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-lg">monitoring</span>
+                            Ver Evolución del Paciente
+                        </button>
+                    </div>
+                    
                     <hr className="border-gray-300 dark:border-gray-700" />
                     
                     {isEditing ? (
@@ -714,25 +564,57 @@ export default function HistorialPacienteMedico() {
                     <hr className="border-gray-300 dark:border-gray-700" />
                     
                     <div className="space-y-12">
-                        <MedicalInfo title="Registro de Atenciones (Citas)" tableData={
-                            <DataTable columns={citasColumns} data={citas} searchPlaceholder="Buscar diagnóstico o médico..." />
-                        } />
+                        <MedicalInfo 
+                            title="Registro de Atenciones (Citas)" 
+                            headerContent={
+                                <>
+                                    <input type="date" className="p-2 border border-gray-200 dark:border-gray-700 bg-white dark:text-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto" value={filterCitas.date} onChange={e => setFilterCitas(prev => ({...prev, date: e.target.value}))} />
+                                    <input type="text" placeholder="Buscar por médico u otros..." className="p-2 border border-gray-200 dark:text-white dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto min-w-[200px]" value={filterCitas.text} onChange={e => setFilterCitas(prev => ({...prev, text: e.target.value}))} />
+                                </>
+                            }
+                            tableData={
+                                <DataTable columns={citasColumns} data={filteredCitas} searchPlaceholder="Buscar diagnóstico o médico (Interno)..." noGlobalSearch />
+                            } 
+                        />
                         
                         {(remisiones?.length > 0) && (
-                            <MedicalInfo title="Remisiones y Exámenes" tableData={
-                                <DataTable columns={remisionesColumns} data={remisiones} searchPlaceholder="Buscar remisión..." />
-                            } />
+                            <MedicalInfo 
+                                title="Remisiones y Exámenes" 
+                                headerContent={
+                                    <>
+                                        <input type="date" className="p-2 border border-gray-200 dark:text-white dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto" value={filterRemisiones.date} onChange={e => setFilterRemisiones(prev => ({...prev, date: e.target.value}))} />
+                                        <input type="text" placeholder="Buscar por tipo, destino..." className="p-2 border border-gray-200 dark:text-white dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto min-w-[200px]" value={filterRemisiones.text} onChange={e => setFilterRemisiones(prev => ({...prev, text: e.target.value}))} />
+                                    </>
+                                }
+                                tableData={
+                                    <DataTable columns={remisionesColumns} data={filteredRemisiones} searchPlaceholder="Buscar remisión (Interno)..." noGlobalSearch />
+                                } 
+                            />
                         )}
 
                         {(recetas?.length > 0) && (
-                            <MedicalInfo title="Historial Farmacológico" tableData={
-                                <DataTable columns={recetasColumns} data={recetas} searchPlaceholder="Buscar receta..." />
-                            } />
+                            <MedicalInfo 
+                                title="Historial Farmacológico" 
+                                headerContent={
+                                    <>
+                                        <input type="date" className="p-2 border border-gray-200 dark:text-white dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto" value={filterRecetas.date} onChange={e => setFilterRecetas(prev => ({...prev, date: e.target.value}))} />
+                                        <input type="text" placeholder="Buscar por medicamento..." className="p-2 border border-gray-200 dark:text-white dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg text-sm w-full sm:w-auto min-w-[200px]" value={filterRecetas.text} onChange={e => setFilterRecetas(prev => ({...prev, text: e.target.value}))} />
+                                    </>
+                                }
+                                tableData={
+                                    <DataTable columns={recetasColumns} data={filteredRecetas} searchPlaceholder="Buscar receta (Interno)..." noGlobalSearch />
+                                } 
+                            />
                         )}
                     </div>
                     
                     <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4 mt-8">
-                        <WhiteButton icon="download_2" text="Exportar Pdf Completo" onClick={() => window.print()} />
+                        <WhiteButton 
+                            icon="download_2" 
+                            text={downloading ? "Generando PDF..." : "Exportar Pdf Completo"} 
+                            onClick={handleDownloadPdf} 
+                            disabled={downloading}
+                        />
                         {!isEditing && canEdit && (
                             <div onClick={() => setIsEditing(true)}>
                                 <Button icon="edit_document" text="Actualizar Antecedentes" />
@@ -749,19 +631,51 @@ export default function HistorialPacienteMedico() {
             </div>
 
             <AnimatePresence>
-                {selectedCita && <CitaDetalleModal cita={selectedCita} onClose={() => setSelectedCita(null)} />}
-            </AnimatePresence>
-
-            <AnimatePresence>
-                {selectedRemision && (
-                    <DetalleRemisionModal
-                        remision={selectedRemision.remision}
-                        cita={selectedRemision.cita}
-                        onClose={() => setSelectedRemision(null)}
+                {selectedCita && (
+                    <CitaDetalleMedicoModal
+                        cita={selectedCita}
+                        onClose={() => setSelectedCita(null)}
+                        onViewRemision={(r) => {
+                            // Convertir objeto de DB a formato de la tabla
+                            const formatted = {
+                                tipo: r.tipo_remision === "cita" ? "Especialista" : "Examen Clínico",
+                                raw: r,
+                                cita_raw: selectedCita,
+                                fecha: r.created_at?.slice(0, 10)
+                            };
+                            handleViewRemision(formatted);
+                        }}
+                        onViewReceta={(rec) => {
+                            setSelectedReceta({ receta: rec, cita: selectedCita });
+                        }}
                     />
                 )}
             </AnimatePresence>
 
+            {/* Modal: Resultados Especialista (Atención derivada) */}
+            <AnimatePresence>
+                {selectedResultCita && (
+                    <CitaDetalleMedicoModal
+                        cita={selectedResultCita.cita}
+                        citaOrigen={selectedResultCita.citaOrigen}
+                        onClose={() => setSelectedResultCita(null)}
+                        onViewRemision={(r) => {
+                             const formatted = {
+                                tipo: r.tipo_remision === "cita" ? "Especialista" : "Examen Clínico",
+                                raw: r,
+                                cita_raw: selectedResultCita.cita,
+                                fecha: r.created_at?.slice(0, 10)
+                            };
+                            handleViewRemision(formatted);
+                        }}
+                        onViewReceta={(rec) => {
+                            setSelectedReceta({ receta: rec, cita: selectedResultCita.cita });
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal: Receta Original */}
             <AnimatePresence>
                 {selectedReceta && (
                     <DetalleRecetaModal
@@ -771,6 +685,26 @@ export default function HistorialPacienteMedico() {
                     />
                 )}
             </AnimatePresence>
+
+            {/* Modal: Resultados Examen (PDF + Info) */}
+            <AnimatePresence>
+                {selectedResultExamen && (
+                    <DetalleExamenResultModal
+                        examen={selectedResultExamen.examen}
+                        citaOrigen={selectedResultExamen.citaOrigen}
+                        onClose={() => setSelectedResultExamen(null)}
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Modal: Evolución Clínica del Paciente */}
+            {showEvolucion && (
+                <EvolucionPacienteModal
+                    doc={doc}
+                    pacienteNombre={nombre}
+                    onClose={() => setShowEvolucion(false)}
+                />
+            )}
         </div>
     );
 }

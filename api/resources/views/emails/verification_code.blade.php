@@ -24,7 +24,7 @@
         </div>
         <div class="content">
             <p>Hola,</p>
-            <p>Hemos detectado un intento de inicio de sesión en tu cuenta de SuperAdmin de <strong>Proyecto EPS</strong>. Para continuar y verificar tu identidad, ingresa el siguiente código:</p>
+            <p>Hemos detectado un intento de inicio de sesión en tu cuenta de Administrador de <strong>Proyecto EPS</strong>. Para continuar y verificar tu identidad, ingresa el siguiente código:</p>
             
             <div class="code-box">
                 <p class="code">{{ $code }}</p>

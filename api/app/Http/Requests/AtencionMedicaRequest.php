@@ -79,7 +79,7 @@ class AtencionMedicaRequest extends FormRequest
                 Rule::exists('categoria_examen', 'id_categoria_examen'),
             ],
             'remisiones.*.id_motivo'           => 'required_with:remisiones|integer|exists:motivo_consulta,id_motivo',
-            'remisiones.*.notas'               => 'required_if:remisiones.*.id_motivo,51|nullable|string|max:1000',
+            'remisiones.*.notas'               => 'required|string|min:5|max:1000',
             'remisiones.*.id_prioridad'        => 'nullable|exists:prioridad,id_prioridad',
             'remisiones.*.fecha'               => 'required_with:remisiones|date|after_or_equal:today',
             'remisiones.*.hora_inicio'         => 'required_with:remisiones|date_format:H:i',

@@ -79,15 +79,27 @@ class DispensacionController extends Controller
 
             // 2. Descontar del lote
             $lote->decrement('stock_actual', $request->cantidad);
+            $lote->refresh();
 
-            // 3. Descontar del inventario general
+            // 3. Si el lote queda en 0, eliminarlo automáticamente
+            $idLote          = $lote->id_lote;
+            $idPresentacion  = $lote->id_presentacion;
+            if ($lote->stock_actual <= 0) {
+                $lote->delete();
+            }
+
+            // 4. Recalcular inventario general como suma de lotes activos
+            $nuevoTotal = LoteMedicamento::where('nit_farmacia', $farmacia->nit)
+                ->where('id_presentacion', $idPresentacion)
+                ->sum('stock_actual');
+
             InventarioFarmacia::where('nit_farmacia', $farmacia->nit)
-                ->where('id_presentacion', $detalle->id_presentacion)
-                ->decrement('stock_actual', $request->cantidad);
+                ->where('id_presentacion', $idPresentacion)
+                ->update(['stock_actual' => $nuevoTotal]);
 
-            // 4. Registrar movimiento de inventario vinculado a la dispensación
+            // 5. Registrar movimiento de inventario vinculado a la dispensación
             MovimientoInventario::create([
-                'id_lote'         => $lote->id_lote,
+                'id_lote'         => $idLote,
                 'tipo_movimiento' => 'Salida',
                 'cantidad'        => $request->cantidad,
                 'fecha'           => now()->toDateString(),
@@ -96,7 +108,7 @@ class DispensacionController extends Controller
                 'id_dispensacion' => $dispensacion->id_dispensacion,
             ]);
 
-            // 5. Verificar estado de la receta y actualizar
+            // 6. Verificar estado de la receta y actualizar
             $receta = $detalle->receta;
             $totalDetalles = $receta->detalles()->count();
             $dispensados = \App\Models\Dispensacion::whereIn('id_detalle_receta', $receta->detalles->pluck('id_detalle_receta'))->count();
