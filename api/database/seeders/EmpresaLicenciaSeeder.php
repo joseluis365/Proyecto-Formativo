@@ -3,31 +3,27 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\EmpresaLicencia;
-use App\Models\Empresa;
-use App\Models\Licencia;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EmpresaLicenciaSeeder extends Seeder
 {
     public function run(): void
     {
-        $empresa = Empresa::where('nit', '900123456-7')->first();
-        $licencia = Licencia::where('tipo', 'BASICA')->first();
-
-        if (!$empresa || !$licencia) return;
-
-        EmpresaLicencia::updateOrCreate(
+        $data = [
             [
-                'nit' => $empresa->nit
-            ],
-            [
-                'id_empresa_licencia' => 'L_0000000001', 
-                'id_tipo_licencia' => $licencia->id_tipo_licencia,
-                'fecha_inicio' => Carbon::now(),
-                'fecha_fin' => Carbon::now()->addMonths(12),
-                'id_estado' => 1
+                'id_empresa_licencia' => 'LIC-0001',
+                'nit' => '900123456-5',
+                'id_tipo_licencia' => 23, // Anual
+                'fecha_inicio' => '2024-01-01',
+                'fecha_fin' => '2030-12-31',
+                'id_estado' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
-        );
+        ];
+
+        foreach ($data as $item) {
+            DB::table('empresa_licencia')->updateOrInsert(['id_empresa_licencia' => $item['id_empresa_licencia']], $item);
+        }
     }
 }

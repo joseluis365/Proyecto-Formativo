@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('contrasena', 500);
             $table->string('registro_profesional', 50)->nullable();
             $table->unsignedBigInteger('id_especialidad')->nullable();
-            $table->unsignedBigInteger('id_farmacia')->nullable();
+            $table->string('id_farmacia', 20)->nullable();
             $table->string('nit', 20);
             $table->unsignedBigInteger('id_rol');
             $table->unsignedBigInteger('id_estado');

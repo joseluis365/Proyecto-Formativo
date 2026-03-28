@@ -9,27 +9,71 @@ class EstadoSeeder extends Seeder
 {
     public function run(): void
     {
-        $estados = [
-            ['id_estado' => 1, 'nombre_estado' => 'Activa'],
-            ['id_estado' => 2, 'nombre_estado' => 'Inactiva'],
-            ['id_estado' => 4, 'nombre_estado' => 'Expira pronto'],
-            ['id_estado' => 5, 'nombre_estado' => 'Expirada'],
-            ['id_estado' => 6, 'nombre_estado' => 'Pendiente'],
+        $data = [
+            [
+                'id_estado' => 1,
+                'nombre_estado' => 'Activo',
+            ],
+            [
+                'id_estado' => 2,
+                'nombre_estado' => 'Inactivo',
+            ],
+            [
+                'id_estado' => 3,
+                'nombre_estado' => 'Sin Licencia',
+            ],
+            [
+                'id_estado' => 4,
+                'nombre_estado' => 'Expira Pronto',
+            ],
+            [
+                'id_estado' => 5,
+                'nombre_estado' => 'Licencia Expirada',
+            ],
+            [
+                'id_estado' => 6,
+                'nombre_estado' => 'Licencia Bloqueada',
+            ],
+            [
+                'id_estado' => 9,
+                'nombre_estado' => 'Agendada',
+            ],
+            [
+                'id_estado' => 10,
+                'nombre_estado' => 'Atendida',
+            ],
+            [
+                'id_estado' => 11,
+                'nombre_estado' => 'Cancelada',
+            ],
+            [
+                'id_estado' => 12,
+                'nombre_estado' => 'Activa',
+            ],
+            [
+                'id_estado' => 13,
+                'nombre_estado' => 'Pendiente',
+            ],
+            [
+                'id_estado' => 14,
+                'nombre_estado' => 'Parcialmente Entregada',
+            ],
+            [
+                'id_estado' => 15,
+                'nombre_estado' => 'Entregada',
+            ],
+            [
+                'id_estado' => 16,
+                'nombre_estado' => 'Inasistencia',
+            ],
+            [
+                'id_estado' => 17,
+                'nombre_estado' => 'wad',
+            ],
         ];
 
-        foreach ($estados as $estado) {
-            DB::table('estado')->updateOrInsert(
-                ['id_estado' => $estado['id_estado']],
-                $estado
-            );
+        foreach ($data as $item) {
+            DB::table('estado')->updateOrInsert(['id_estado' => $item['id_estado']], $item);
         }
-
-        DB::statement("
-            SELECT setval(
-                pg_get_serial_sequence('estado', 'id_estado'),
-                COALESCE((SELECT MAX(id_estado) FROM estado), 1),
-                true
-            );
-        ");
     }
 }

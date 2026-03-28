@@ -9,26 +9,32 @@ class PrioridadSeeder extends Seeder
 {
     public function run(): void
     {
-        $prioridades = [
-            ['id_prioridad' => 1, 'prioridad' => 'Alta', 'id_estado' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['id_prioridad' => 2, 'prioridad' => 'Media', 'id_estado' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['id_prioridad' => 3, 'prioridad' => 'Baja', 'id_estado' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['id_prioridad' => 4, 'prioridad' => 'Urgente', 'id_estado' => 2, 'created_at' => now(), 'updated_at' => now()],
+        $data = [
+            [
+                'id_prioridad' => 1,
+                'prioridad' => 'Normal',
+                'id_estado' => 1,
+                'created_at' => '2026-03-01 19:57:14',
+                'updated_at' => '2026-03-06 16:48:56',
+            ],
+            [
+                'id_prioridad' => 2,
+                'prioridad' => 'Baja',
+                'id_estado' => 1,
+                'created_at' => '2026-03-06 16:49:15',
+                'updated_at' => '2026-03-06 16:50:22',
+            ],
+            [
+                'id_prioridad' => 3,
+                'prioridad' => 'Alta',
+                'id_estado' => 1,
+                'created_at' => '2026-03-06 16:50:31',
+                'updated_at' => '2026-03-06 16:50:31',
+            ],
         ];
 
-        foreach ($prioridades as $prioridad) {
-            DB::table('prioridad')->updateOrInsert(
-                ['id_prioridad' => $prioridad['id_prioridad']],
-                $prioridad
-            );
+        foreach ($data as $item) {
+            DB::table('prioridad')->updateOrInsert(['id_prioridad' => $item['id_prioridad']], $item);
         }
-
-        DB::statement("
-            SELECT setval(
-                pg_get_serial_sequence('prioridad', 'id_prioridad'),
-                COALESCE((SELECT MAX(id_prioridad) FROM prioridad), 1),
-                true
-            );
-        ");
     }
 }

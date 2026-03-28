@@ -6,23 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('medicamento', function (Blueprint $table) {
-            //
+        Schema::create('forma_farmaceutica', function (Blueprint $table) {
+            $table->id('id_forma');
+            $table->string('forma_farmaceutica', 50)->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('medicamento', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('forma_farmaceutica');
     }
 };

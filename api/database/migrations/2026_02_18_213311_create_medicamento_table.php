@@ -11,14 +11,10 @@ return new class extends Migration
         Schema::create('medicamento', function (Blueprint $table) {
             $table->id('id_medicamento');
             $table->string('nombre', 150)->nullable();
-            $table->string('presentacion', 100)->nullable();
             $table->text('descripcion')->nullable();
-            $table->integer('stock_disponible')->nullable();
-            $table->decimal('precio_unitario', 11, 2)->nullable();
             $table->unsignedBigInteger('id_categoria')->nullable();
-            $table->unsignedBigInteger('id_estado')->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->unsignedBigInteger('id_estado')->default(1)->nullable();
+            $table->timestamps();
 
             $table->foreign('id_categoria')
                   ->references('id_categoria')

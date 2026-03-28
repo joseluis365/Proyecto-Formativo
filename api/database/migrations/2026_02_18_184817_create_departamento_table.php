@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('departamento', function (Blueprint $table) {
             $table->integer('codigo_DANE')->primary();
             $table->string('nombre', 50)->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->unsignedBigInteger('id_estado')->default(1)->nullable();
+            $table->timestamps();
+
+            $table->foreign('id_estado')->references('id_estado')->on('estado')->onDelete('restrict');
         });
     }
 

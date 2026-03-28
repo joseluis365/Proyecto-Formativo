@@ -8,23 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ciudad', function (Blueprint $table) {
-            $table->integer('codigo_postal')->primary();
-            $table->string('nombre', 50)->nullable();
-            $table->integer('id_departamento')->nullable();
+        Schema::create('tipo_documento', function (Blueprint $table) {
+            $table->id('id_tipo_documento');
+            $table->string('tipo_documento', 100)->nullable();
             $table->unsignedBigInteger('id_estado')->default(1)->nullable();
             $table->timestamps();
 
             $table->foreign('id_estado')->references('id_estado')->on('estado')->onDelete('restrict');
-            $table->foreign('id_departamento')
-                  ->references('codigo_DANE')
-                  ->on('departamento')
-                  ->onDelete('restrict');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('ciudad');
+        Schema::dropIfExists('tipo_documento');
     }
 };
