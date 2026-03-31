@@ -17,7 +17,8 @@ class MovimientoInventario extends Model
         'fecha',
         'documento',
         'motivo',
-        'id_dispensacion'
+        'id_dispensacion',
+        'nit_farmacia'
     ];
 
     public function loteMedicamento()

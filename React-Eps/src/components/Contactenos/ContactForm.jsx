@@ -94,6 +94,12 @@ export default function ContactForm({config}) {
                     <FormInput 
                         {...fields[2]} 
                         {...register("phone")}
+                        maxLength={10}
+                        onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                                e.preventDefault();
+                            }
+                        }}
                         error={errors.phone?.message}
                     />
                     <FormSelect 

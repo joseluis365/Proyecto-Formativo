@@ -21,9 +21,17 @@ import ModalHeader from "@/components/Modals/ModalHeader";
 import EvolucionPacienteModal from "@/components/Modals/EvolucionPacienteModal";
 
 const schema = z.object({
-    email: z.string().email("Correo electrónico inválido"),
-    telefono: z.string().regex(/^\d+$/, "El teléfono solo debe contener números"),
-    direccion: z.string().min(1, "La dirección es obligatoria"),
+    email: z.string()
+        .min(1, "El correo es obligatorio")
+        .email("Email inválido")
+        .min(12, "El correo debe tener al menos 12 caracteres")
+        .max(150, "El correo debe tener como máximo 150 caracteres"),
+    telefono: z.string()
+        .regex(/^3\d{9}$/, "El teléfono debe empezar con 3 y tener exactamente 10 dígitos (solo números)"),
+    direccion: z.string()
+        .min(7, "La dirección debe tener al menos 7 caracteres")
+        .max(150, "La dirección debe tener como máximo 150 caracteres")
+        .regex(/^(?=.*[a-zA-ZáéíóúÁÉÍÓÚñÑ])(?=.*\d)[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s#\-\.,]*$/, "Debe contener letras, al menos un número y solo permite caracteres: # - . ,"),
     sexo: z.string().min(1, "Selecciona el sexo"),
     fecha_nacimiento: z.string().min(1, "Fecha obligatoria").refine((val) => {
         const date = new Date(val);
@@ -31,14 +39,14 @@ const schema = z.object({
         return date <= today;
     }, "La fecha de nacimiento no puede ser futura"),
     grupo_sanguineo: z.string().min(1, "Selecciona el grupo sanguíneo"),
-    antecedentes_personales: z.string().optional(),
-    antecedentes_familiares: z.string().optional(),
-    alergias: z.string().optional(),
+    antecedentes_personales: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
+    antecedentes_familiares: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
+    alergias: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
     habitos_vida: z.object({
-        tabaco: z.string().optional(),
-        alcohol: z.string().optional(),
-        ejercicio: z.string().optional(),
-        dieta: z.string().optional()
+        tabaco: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
+        alcohol: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
+        ejercicio: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional(),
+        dieta: z.string().regex(/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:\-\(\)\/]*$/, "No se permiten caracteres especiales").optional()
     })
 });
 
@@ -217,7 +225,7 @@ export default function HistorialPacienteMedico() {
                 telefono: paciente?.telefono || "",
                 direccion: paciente?.direccion || "",
                 sexo: paciente?.sexo || "",
-                fecha_nacimiento: paciente?.fecha_nacimiento || "",
+                fecha_nacimiento: paciente?.fecha_nacimiento ? paciente.fecha_nacimiento.substring(0, 10) : "",
                 grupo_sanguineo: paciente?.grupo_sanguineo || ""
             });
         }
@@ -451,8 +459,8 @@ export default function HistorialPacienteMedico() {
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Sexo</label>
                                     <select {...register('sexo')} className={`w-full mt-1 p-2.5 rounded-lg border bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 ${errors.sexo ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 dark:border-gray-700 focus:ring-primary/20'}`}>
                                         <option value="">Seleccione</option>
-                                        <option value="M">Masculino</option>
-                                        <option value="F">Femenino</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Femenino">Femenino</option>
                                     </select>
                                     <ErrorMsg error={errors.sexo} />
                                 </div>
@@ -489,6 +497,7 @@ export default function HistorialPacienteMedico() {
                                         className="w-full text-sm p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none h-32 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm"
                                         placeholder="Cirugías, enfermedades crónicas, hospitalizaciones..."
                                     />
+                                    <ErrorMsg error={errors.antecedentes_personales} />
                                 </div>
                                 <div>
                                     <label className="text-xs font-black text-primary uppercase tracking-widest mb-2 block">Alergias</label>
@@ -497,6 +506,7 @@ export default function HistorialPacienteMedico() {
                                         className="w-full text-sm p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none h-32 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm"
                                         placeholder="Medicamentos, alimentos, ambientales..."
                                     />
+                                    <ErrorMsg error={errors.alergias} />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="text-xs font-black text-primary uppercase tracking-widest mb-2 block">Antecedentes Familiares</label>
@@ -505,6 +515,7 @@ export default function HistorialPacienteMedico() {
                                         className="w-full text-sm p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 resize-none h-24 focus:ring-2 focus:ring-primary/20 outline-none shadow-sm"
                                         placeholder="Enfermedades hereditarias, causas de fallecimiento en padres/abuelos..."
                                     />
+                                    <ErrorMsg error={errors.antecedentes_familiares} />
                                 </div>
                             </div>
                             
@@ -514,19 +525,23 @@ export default function HistorialPacienteMedico() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Tabaco / Fumador</label>
-                                    <input type="text" {...register('habitos_vida.tabaco')} className="w-full mt-1 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Ej: No, Ocasional..." />
+                                    <input type="text" {...register('habitos_vida.tabaco')} className={`w-full mt-1 p-2.5 rounded-lg border bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 ${errors.habitos_vida?.tabaco ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 dark:border-gray-700 focus:ring-primary/20'}`} placeholder="Ej: No, Ocasional..." />
+                                    <ErrorMsg error={errors.habitos_vida?.tabaco} />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Alcohol</label>
-                                    <input type="text" {...register('habitos_vida.alcohol')} className="w-full mt-1 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Ej: Fines de semana" />
+                                    <input type="text" {...register('habitos_vida.alcohol')} className={`w-full mt-1 p-2.5 rounded-lg border bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 ${errors.habitos_vida?.alcohol ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 dark:border-gray-700 focus:ring-primary/20'}`} placeholder="Ej: Fines de semana" />
+                                    <ErrorMsg error={errors.habitos_vida?.alcohol} />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Actividad Física</label>
-                                    <input type="text" {...register('habitos_vida.ejercicio')} className="w-full mt-1 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Ej: Sedentario" />
+                                    <input type="text" {...register('habitos_vida.ejercicio')} className={`w-full mt-1 p-2.5 rounded-lg border bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 ${errors.habitos_vida?.ejercicio ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 dark:border-gray-700 focus:ring-primary/20'}`} placeholder="Ej: Sedentario" />
+                                    <ErrorMsg error={errors.habitos_vida?.ejercicio} />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Dieta</label>
-                                    <input type="text" {...register('habitos_vida.dieta')} className="w-full mt-1 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Ej: Balanceada" />
+                                    <input type="text" {...register('habitos_vida.dieta')} className={`w-full mt-1 p-2.5 rounded-lg border bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 ${errors.habitos_vida?.dieta ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-200 dark:border-gray-700 focus:ring-primary/20'}`} placeholder="Ej: Balanceada" />
+                                    <ErrorMsg error={errors.habitos_vida?.dieta} />
                                 </div>
                             </div>
 

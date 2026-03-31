@@ -222,6 +222,7 @@ class InventarioFarmaciaController extends Controller
                 'fecha'           => now()->toDateString(),
                 'documento'       => $user->documento,
                 'motivo'          => $request->motivo ?? 'Entrada de inventario',
+                'nit_farmacia'    => $farmacia->nit,
             ]);
         });
 

@@ -77,6 +77,13 @@ class PqrController extends Controller
             $pqr->id_estado = 10; // 10 = Atendido
             $pqr->save();
 
+            event(new \App\Events\SystemActivityEvent(
+                "PQR respondida: {$pqr->asunto}",
+                'orange',
+                'support_agent',
+                'admin-feed'
+            ));
+
             // Enviar correo de respuesta al usuario
             Mail::to($pqr->email)->send(new PqrRespuestaMail($pqr));
 

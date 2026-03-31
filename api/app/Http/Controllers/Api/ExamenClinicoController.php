@@ -93,6 +93,13 @@ class ExamenClinicoController extends Controller
                 'resultado_pdf' => $path 
             ]);
 
+            event(new \App\Events\SystemActivityEvent(
+                "Resultado de examen subido: {$examen->paciente->primer_nombre} {$examen->paciente->primer_apellido}",
+                'blue',
+                'biotech',
+                'admin-feed'
+            ));
+
             // Enviar Correo con el PDF adjunto
             try {
                 if ($examen->paciente && $examen->paciente->email) {

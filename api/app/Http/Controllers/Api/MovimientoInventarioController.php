@@ -122,10 +122,9 @@ class MovimientoInventarioController extends Controller
             $idPresentacion = $lote->id_presentacion;
             $nitFarmacia    = $lote->nit_farmacia;
 
-            // Si el lote queda en 0, eliminarlo automáticamente
-            if ($lote->stock_actual <= 0) {
-                $lote->delete();
-            }
+            // Si el lote queda en 0, no se elimina físicamente para conservar
+            // el historial y evitar errores de llave foránea en movimiento_inventario.
+            // Los lotes con stock_actual = 0 se ignoran automáticamente en el frontend.
 
             // Recalcular inventario general como suma de lotes activos
             $nuevoTotal = LoteMedicamento::where('nit_farmacia', $nitFarmacia)
@@ -144,6 +143,7 @@ class MovimientoInventarioController extends Controller
                 'fecha'           => now()->toDateString(),
                 'documento'       => $user->documento,
                 'motivo'          => $request->motivo,
+                'nit_farmacia'    => $nitFarmacia,
             ]);
         });
 

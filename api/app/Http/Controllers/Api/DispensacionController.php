@@ -81,12 +81,10 @@ class DispensacionController extends Controller
             $lote->decrement('stock_actual', $request->cantidad);
             $lote->refresh();
 
-            // 3. Si el lote queda en 0, eliminarlo automáticamente
+            // 3. Obtener IDs para actualizar inventario y registrar movimiento
             $idLote          = $lote->id_lote;
             $idPresentacion  = $lote->id_presentacion;
-            if ($lote->stock_actual <= 0) {
-                $lote->delete();
-            }
+            // Nota: No se elimina el lote físicamente para no romper llaves foráneas y preservar historial.
 
             // 4. Recalcular inventario general como suma de lotes activos
             $nuevoTotal = LoteMedicamento::where('nit_farmacia', $farmacia->nit)
@@ -106,6 +104,7 @@ class DispensacionController extends Controller
                 'documento'       => $user->documento,
                 'motivo'          => 'Dispensación de receta #' . $detalle->id_receta,
                 'id_dispensacion' => $dispensacion->id_dispensacion,
+                'nit_farmacia'    => $farmacia->nit,
             ]);
 
             // 6. Verificar estado de la receta y actualizar
@@ -120,21 +119,28 @@ class DispensacionController extends Controller
             }
         });
 
-        // 6. Notificar al paciente por correo
+        // 6. Notificar al paciente por correo y registrar evento
         try {
             $receta = $detalle->receta;
             // Refrescar para obtener el estado actualizado
             $receta->refresh();
             
+            $medicamentoNombre = $lote->presentacion->medicamento->nombre ?? 'Medicamento';
+            if (isset($lote->presentacion->concentracion->concentracion)) {
+                $medicamentoNombre .= ' ' . $lote->presentacion->concentracion->concentracion;
+            }
+
+            event(new \App\Events\SystemActivityEvent(
+                "Medicamento despachado: {$medicamentoNombre} ({$request->cantidad} uds)",
+                'purple',
+                'vaccines',
+                'admin-feed'
+            ));
+            
             $cita = $receta->historialDetalle->cita ?? null;
             if ($cita) {
                 $paciente = \App\Models\Usuario::find($cita->doc_paciente);
                 if ($paciente && $paciente->email) {
-                    $medicamentoNombre = $lote->presentacion->medicamento->nombre ?? 'Medicamento';
-                    if (isset($lote->presentacion->concentracion->concentracion)) {
-                        $medicamentoNombre .= ' ' . $lote->presentacion->concentracion->concentracion;
-                    }
-                    
                     \Illuminate\Support\Facades\Mail::to($paciente->email)->send(
                         new \App\Mail\RecetaEntregadaMail($paciente, $receta, $medicamentoNombre, $request->cantidad, $farmacia)
                     );

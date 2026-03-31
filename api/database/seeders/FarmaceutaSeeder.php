@@ -10,45 +10,35 @@ class FarmaceutaSeeder extends Seeder
 {
     public function run(): void
     {
+        $pass = Hash::make('Qwerty123.');
+
+        // Exact Role 6 user from final.sql
         $data = [
             [
-                'documento' => 1001234567,
-                'primer_nombre' => 'Juan',
-                'segundo_nombre' => 'Camilo',
-                'primer_apellido' => 'Garcia',
-                'segundo_apellido' => 'Perez',
-                'email' => 'farmaceuta1@eps.com',
-                'telefono' => '3151234567',
-                'direccion' => 'Calle 100 # 15-20',
-                'sexo' => 'Masculino',
-                'fecha_nacimiento' => '1988-03-25',
-                'grupo_sanguineo' => 'O-',
-                'contrasena' => Hash::make('Qwerty123.'),
-                'nit' => '900123456-5',
-                'id_rol' => 2,
-                'id_estado' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'documento'          => 11111111,
+                'primer_nombre'      => 'Nubia',
+                'segundo_nombre'     => 'Jhoana',
+                'primer_apellido'    => 'Avila',
+                'segundo_apellido'   => 'Pinilla',
+                'email'              => 'farmaceutico@gmail.com',
+                'telefono'           => '3121212121',
+                'direccion'          => 'carrera 50 143 - 39',
+                'sexo'               => 'Femenino',
+                'fecha_nacimiento'   => '2007-06-06',
+                'grupo_sanguineo'    => null,
+                'contrasena'         => $pass,
+                'registro_profesional'=> null,
+                'nit'                => '900123456-5',
+                'id_rol'             => 6,
+                'id_estado'          => 1,
+                'id_especialidad'    => null,
+                'id_farmacia'        => '900123456-7',
+                'id_consultorio'     => null,
+                'id_tipo_documento'  => 1,
+                'examenes'           => false,
+                'created_at'         => '2026-03-21 21:55:01',
+                'updated_at'         => '2026-03-21 22:00:33',
             ],
-            [
-                'documento' => 2987654321,
-                'primer_nombre' => 'Jose',
-                'segundo_nombre' => null,
-                'primer_apellido' => 'Martinez',
-                'segundo_apellido' => null,
-                'email' => 'joser223@gmail.com',
-                'telefono' => '23',
-                'direccion' => 'calle 24',
-                'sexo' => null,
-                'fecha_nacimiento' => null,
-                'grupo_sanguineo' => null,
-                'contrasena' => Hash::make('Qwerty123.'),
-                'nit' => '900123456-5',
-                'id_rol' => 2,
-                'id_estado' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
         ];
 
         foreach ($data as $item) {

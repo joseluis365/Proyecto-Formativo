@@ -45,6 +45,8 @@ use App\Http\Controllers\Api\ExamenClinicoController;
 use App\Http\Controllers\Api\PdfMedicoController;
 use App\Http\Controllers\Api\ConsultorioController;
 use App\Http\Controllers\Api\ExamenReporteController;
+use App\Http\Controllers\Api\NotificacionPacienteController;
+
 
 
 /*
@@ -223,6 +225,8 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
 
     // Médicos disponibles (para agendar cita desde el portal paciente)
     Route::get('/medicos-disponibles', [UsuarioController::class, 'medicosDisponibles']);
+    Route::get('/paciente/alertas', [NotificacionPacienteController::class, 'getAlertas']);
+
 
     /*
     |--------------------------------------------------------------------------

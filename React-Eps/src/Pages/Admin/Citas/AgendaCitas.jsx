@@ -18,6 +18,9 @@ import Swal from "sweetalert2";
 export default function AgendaCitas() {
     const { setTitle, setSubtitle } = useLayout();
 
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const isAdmin = user.id_rol === 2;
+
     useHelp({
         title: "Agenda General de Citas",
         description: "Esta es tu herramienta principal para gestionar todas las citas consultadas de clínicas de forma global. Utiliza el calendario lateral para navegar entre días y ver todas las interacciones.",
@@ -28,8 +31,8 @@ export default function AgendaCitas() {
                 items: [
                     "Calendario interactivo: Selecciona cualquier día del mes para ver sus citas correspondientes. En pantallas pequeñas el calendario puede desplegarse usando el botón lateral izquierdo.",
                     "Filtros avanzados: Filtra por Especialidad, por rango de Horas y busca directamente por nombre de paciente o médico usando la barra de búsqueda.",
-                    "Agendar Cita: Permite crear una nueva reserva para un paciente."
-                ]
+                    !isAdmin && "Agendar Cita: Permite crear una nueva reserva para un paciente."
+                ].filter(Boolean)
             },
             {
                 title: "Estados de Cita",
@@ -157,13 +160,17 @@ export default function AgendaCitas() {
                         text={`Citas del ${selectedDate}`}
                         number={totalCitas}
                     />
-                    <button 
-                        onClick={() => setIsAgendarModalOpen(true)}
-                        className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors w-full md:w-auto"
-                    >
-                        <span className="material-symbols-outlined text-xl">add_circle</span>
-                        Agendar Cita
-                    </button>
+                    
+                    {/* El botón Agendar Cita no aparecerá para el rol Administrador (id_rol = 2) */}
+                    {!isAdmin && (
+                        <button 
+                            onClick={() => setIsAgendarModalOpen(true)}
+                            className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors w-full md:w-auto"
+                        >
+                            <span className="material-symbols-outlined text-xl">add_circle</span>
+                            Agendar Cita
+                        </button>
+                    )}
                 </div>
 
                 {/* Recuadro de Filtros Abajo del Título/Botón */}

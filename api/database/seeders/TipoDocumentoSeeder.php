@@ -9,25 +9,14 @@ class TipoDocumentoSeeder extends Seeder
 {
     public function run(): void
     {
-        $tipos = [
-            ['id_tipo_documento' => 1, 'tipo_documento' => 'Cedula de Ciudadania', 'id_estado' => 1],
-            ['id_tipo_documento' => 2, 'tipo_documento' => 'Tarjeta de Identidad', 'id_estado' => 1],
-            ['id_tipo_documento' => 3, 'tipo_documento' => 'Cedula Extranjeria', 'id_estado' => 1],
-            ['id_tipo_documento' => 4, 'tipo_documento' => 'Pasaporte', 'id_estado' => 1],
-            ['id_tipo_documento' => 5, 'tipo_documento' => 'Registro Civil', 'id_estado' => 1],
-            ['id_tipo_documento' => 6, 'tipo_documento' => 'Permiso Especial de Permanencia', 'id_estado' => 1],
+        $data = [
+            ['id_tipo_documento' => 1, 'tipo_documento' => 'Cedula de Ciudadania', 'id_estado' => 1, 'created_at' => null, 'updated_at' => null],
+            ['id_tipo_documento' => 2, 'tipo_documento' => 'Tarjeta de Identidad',  'id_estado' => 1, 'created_at' => null, 'updated_at' => null],
+            ['id_tipo_documento' => 3, 'tipo_documento' => 'Cedula Extranjeria',     'id_estado' => 1, 'created_at' => '2026-03-21 14:05:41', 'updated_at' => '2026-03-21 14:05:41'],
         ];
 
-        foreach ($tipos as $tipo) {
-            DB::table('tipo_documento')->updateOrInsert(
-                ['id_tipo_documento' => $tipo['id_tipo_documento']],
-                [
-                    'tipo_documento' => $tipo['tipo_documento'],
-                    'id_estado' => $tipo['id_estado'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
+        foreach ($data as $item) {
+            DB::table('tipo_documento')->updateOrInsert(['id_tipo_documento' => $item['id_tipo_documento']], $item);
         }
     }
 }

@@ -10,6 +10,7 @@ export default function SearchableSelect({
     required = false,
     onSearchChange,
     loading = false,
+    error = false,
 }) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -91,8 +92,10 @@ export default function SearchableSelect({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex items-center justify-between border ${isOpen ? 'border-primary ring-2 ring-primary/20' : 'border-gray-300 dark:border-gray-700'
-                    } bg-white dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none text-left transition-all`}
+                className={`w-full flex items-center justify-between border ${
+                    isOpen ? 'border-primary ring-2 ring-primary/20' : 
+                    error ? 'border-red-500 ring-1 ring-red-500/20' : 'border-gray-300 dark:border-gray-700'
+                } bg-white dark:bg-gray-800 rounded-lg px-3 py-2.5 text-sm outline-none text-left transition-all`}
             >
                 <span className={`block truncate ${!selectedOption ? 'text-gray-400' : 'text-gray-900 dark:text-white'}`}>
                     {selectedOption ? selectedOption.label : placeholder}

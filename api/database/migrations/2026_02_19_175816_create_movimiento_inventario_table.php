@@ -12,6 +12,8 @@ return new class extends Migration
         Schema::create('movimiento_inventario', function (Blueprint $table) {
             $table->id('id_movimiento');
             $table->unsignedBigInteger('id_medicamento')->nullable();
+            $table->unsignedBigInteger('id_lote')->nullable();
+            $table->unsignedBigInteger('id_dispensacion')->nullable();
             $table->string('tipo_movimiento', 20)->nullable();
             $table->integer('cantidad')->nullable();
             $table->date('fecha')->nullable();
@@ -23,6 +25,16 @@ return new class extends Migration
             $table->foreign('id_medicamento')
                   ->references('id_medicamento')
                   ->on('medicamento')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_lote')
+                  ->references('id_lote')
+                  ->on('lote_medicamento')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_dispensacion')
+                  ->references('id_dispensacion')
+                  ->on('dispensacion_farmacia')
                   ->onDelete('restrict');
 
             $table->foreign('documento')

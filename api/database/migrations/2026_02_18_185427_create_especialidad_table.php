@@ -11,6 +11,9 @@ return new class extends Migration
         Schema::create('especialidad', function (Blueprint $table) {
             $table->id('id_especialidad');
             $table->string('especialidad', 150);
+            $table->integer('id_estado')->nullable();
+            $table->boolean('acceso_directo')->default(false);
+            $table->timestamps();
         });
     }
 

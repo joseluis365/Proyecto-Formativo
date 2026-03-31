@@ -27,7 +27,7 @@ export const CONTACT_FIELDS = [
     id: "phone",
     name: "phone",
     label: "Teléfono de Contacto",
-    placeholder: "300 123 4567",
+    placeholder: "3123456789",
     type: "tel"
   }
 ];

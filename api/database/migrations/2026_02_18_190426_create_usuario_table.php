@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('contrasena', 500);
             $table->string('registro_profesional', 50)->nullable();
             $table->unsignedBigInteger('id_especialidad')->nullable();
+            $table->unsignedBigInteger('id_consultorio')->nullable();
+            $table->unsignedBigInteger('id_tipo_documento')->nullable();
+            $table->boolean('examenes')->default(false);
             $table->string('id_farmacia', 20)->nullable();
             $table->string('nit', 20);
             $table->unsignedBigInteger('id_rol');
@@ -51,6 +54,16 @@ return new class extends Migration
             $table->foreign('id_especialidad')
                   ->references('id_especialidad')
                   ->on('especialidad')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_consultorio')
+                  ->references('id_consultorio')
+                  ->on('consultorio')
+                  ->onDelete('restrict');
+
+            $table->foreign('id_tipo_documento')
+                  ->references('id_tipo_documento')
+                  ->on('tipo_documento')
                   ->onDelete('restrict');
 
             $table->foreign('id_farmacia')

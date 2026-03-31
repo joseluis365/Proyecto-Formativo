@@ -195,6 +195,13 @@ class AtencionMedicaController extends Controller
             // ── 4. Cambiar estado de la cita a "Atendida" ────────────────────
             $cita->update(['id_estado' => $estadoAtendida->id_estado]);
 
+            event(new \App\Events\SystemActivityEvent(
+                "Cita médica finalizada: {$cita->paciente->primer_nombre} {$cita->paciente->primer_apellido}",
+                'green',
+                'check_circle',
+                'admin-feed'
+            ));
+
             $detalle->load(
                 'remisiones.especialidad', 
                 'remisiones.examen', 

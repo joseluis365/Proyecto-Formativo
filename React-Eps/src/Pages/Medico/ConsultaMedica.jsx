@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useForm, useFieldArray, useWatch } from "react-hook-form";
+import { useForm, useFieldArray, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import BlueButton from "@/components/UI/BlueButton";
@@ -17,25 +17,36 @@ import SearchableSelect from "@/components/UI/SearchableSelect";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 
 const vitalSignSchema = (min, max, minMsg, maxMsg) => 
-    z.preprocess(val => (val === "" || val === null || val === undefined) ? undefined : Number(val), 
-    z.number().min(min, minMsg).max(max, maxMsg).optional());
+    z.string({ required_error: "Campo obligatorio" })
+     .min(1, "Campo obligatorio")
+     .refine(val => !isNaN(Number(val)), { message: "Debe ser un número" })
+     .transform(val => Number(val))
+     .pipe(z.number().min(min, minMsg).max(max, maxMsg));
+
+const validateDateNotPast = (val) => {
+    if (!val) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const inputDate = new Date(`${val}T00:00:00`);
+    return inputDate >= today;
+};
 
 const schema = z.object({
-    subjetivo: z.string().optional(),
+    subjetivo: z.string().min(1, "El subjetivo es obligatorio"),
     signos_vitales: z.object({
-        ta_sistolica: vitalSignSchema(70, 250, "Verifique tensión (Mín 70)", "Verifique tensión (Máx 250)"),
-        ta_diastolica: vitalSignSchema(40, 150, "Verifique tensión (Mín 40)", "Verifique tensión (Máx 150)"),
-        fc: vitalSignSchema(30, 220, "Verifique el pulso (Mín 30)", "Verifique el pulso (Máx 220)"),
-        fr: vitalSignSchema(8, 60, "Verifique frecuencia (Mín 8)", "Verifique frecuencia (Máx 60)"),
-        temperatura: vitalSignSchema(30, 45, "Verifique la temperatura del paciente", "Verifique la temperatura del paciente"),
+        ta_sistolica: vitalSignSchema(90, 190, "Verifique tensión (Mín 90)", "Verifique tensión (Máx 190)"),
+        ta_diastolica: vitalSignSchema(60, 110, "Verifique tensión (Mín 60)", "Verifique tensión (Máx 110)"),
+        fc: vitalSignSchema(50, 120, "Verifique el pulso (Mín 50)", "Verifique el pulso (Máx 120)"),
+        fr: vitalSignSchema(10, 35, "Verifique frecuencia (Mín 10)", "Verifique frecuencia (Máx 35)"),
+        temperatura: vitalSignSchema(34, 43, "Verifique la temperatura (Mín 34°C)", "Verifique la temperatura (Máx 43°C)"),
         peso: vitalSignSchema(1, 400, "Verifique el peso (Mín 1 kg)", "Verifique el peso (Máx 400 kg)"),
         talla: vitalSignSchema(30, 250, "Verifique la talla (Mín 30 cm)", "Verifique la talla (Máx 250 cm)"),
-        saturacion_o2: vitalSignSchema(50, 100, "Verifique saturación (Mín 50)", "Máximo 100%"),
-    }).optional(),
-    diagnostico: z.string().optional(),
+        saturacion_o2: vitalSignSchema(85, 100, "Verifique saturación (Mín 85%)", "Máximo 100%"),
+    }),
+    diagnostico: z.string().min(1, "El análisis y diagnóstico es obligatorio"),
     enfermedades: z.array(z.object({
         codigo_icd: z.string()
-    })).optional(),
+    })).min(1, "Debe seleccionar al menos un diagnóstico CIE-11"),
     tratamiento: z.string().min(1, "El tratamiento es obligatorio"),
     observaciones: z.string().optional(),
     notas_medicas: z.string().optional(),
@@ -44,10 +55,10 @@ const schema = z.object({
         id_especialidad: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         doc_medico: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
         id_categoria_examen: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
-        id_motivo: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().min(1, "Motivo principal requerido")),
+        id_motivo: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().min(1, "El campo es obligatorio")),
         requiere_ayuno: z.boolean().optional(),
         id_prioridad: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().optional()),
-        fecha: z.string().min(1, "La fecha es obligatoria").refine((val) => new Date(val) >= new Date(new Date().setHours(0,0,0,0)), "No puede ser pasada"),
+        fecha: z.string().min(1, "La fecha es obligatoria").refine(validateDateNotPast, "No puede ser pasada"),
         hora_inicio: z.string().min(1, "La hora es obligatoria"),
         notas: z.string().min(5, "La justificación es obligatoria (mín. 5 caracteres)")
     })).superRefine((data, ctx) => {
@@ -67,12 +78,12 @@ const schema = z.object({
         });
     }).optional(),
     recetas: z.array(z.object({
-        id_presentacion: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().min(1, "Medicamento requerido")),
-        nit_farmacia: z.preprocess(val => (val === "" || val === null) ? undefined : String(val), z.string().min(1, "Farmacia requerida")),
+        id_presentacion: z.preprocess(val => String(val ?? ""), z.string().min(1, "Medicamento requerido")),
+        nit_farmacia: z.preprocess(val => String(val ?? ""), z.string().min(1, "Farmacia requerida")),
         cantidad_dispensar: z.coerce.number().min(1, "Obligatorio (mínimo 1)"),
         dosis: z.string().min(1, "Dosis requerida"),
         frecuencia: z.string().min(1, "Frecuencia requerida"),
-        duracion: z.string().min(1, "Fecha obligatoria").refine((val) => new Date(val) >= new Date(new Date().setHours(0,0,0,0)), "No pasada"),
+        duracion: z.string().min(1, "Fecha obligatoria").refine(validateDateNotPast, "No pasada"),
         observaciones: z.string().optional()
     })).optional()
 });
@@ -181,13 +192,22 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
                                         Especialidad Destino <span className="text-red-500">*</span>
                                     </label>
-                                    <SearchableSelect
-                                        options={specialties}
-                                        value={selectedEspecialidad}
-                                        onChange={(val) => setValue(`remisiones.${index}.id_especialidad`, val)}
-                                        placeholder="Buscar especialidad..."
+                                    <Controller
+                                        name={`remisiones.${index}.id_especialidad`}
+                                        control={control}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <SearchableSelect
+                                                    options={specialties}
+                                                    value={field.value}
+                                                    onChange={(val) => field.onChange(val)}
+                                                    placeholder="Buscar especialidad..."
+                                                    error={!!fieldState.error}
+                                                />
+                                                <ErrorMsg error={fieldState.error} />
+                                            </>
+                                        )}
                                     />
-                                    <ErrorMsg error={errors?.remisiones?.[index]?.id_especialidad} />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
@@ -198,15 +218,24 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                                     ) : loadingMedicos ? (
                                         <p className="text-xs text-primary italic py-2.5 px-3 border border-primary/20 rounded-lg animate-pulse">Buscando disponibilidad...</p>
                                     ) : (
-                                        <SearchableSelect
-                                            options={medicosDisponibles.map(m => ({ value: m.documento, label: `Dr. ${m.primer_nombre} ${m.primer_apellido}` }))}
-                                            value={selectedDocMedico}
-                                            onChange={(val) => setValue(`remisiones.${index}.doc_medico`, val)}
-                                            placeholder={medicosDisponibles.length === 0 ? "Sin médicos disponibles" : "Seleccionar médico..."}
-                                            noOptionsText="No hay médicos disponibles en ese horario"
+                                        <Controller
+                                            name={`remisiones.${index}.doc_medico`}
+                                            control={control}
+                                            render={({ field, fieldState }) => (
+                                                <>
+                                                    <SearchableSelect
+                                                        options={medicosDisponibles.map(m => ({ value: m.documento, label: `Dr. ${m.primer_nombre} ${m.primer_apellido}` }))}
+                                                        value={field.value}
+                                                        onChange={(val) => field.onChange(val)}
+                                                        placeholder={medicosDisponibles.length === 0 ? "Sin médicos disponibles" : "Seleccionar médico..."}
+                                                        noOptionsText="No hay médicos disponibles en ese horario"
+                                                        error={!!fieldState.error}
+                                                    />
+                                                    <ErrorMsg error={fieldState.error} />
+                                                </>
+                                            )}
                                         />
                                     )}
-                                    <ErrorMsg error={errors?.remisiones?.[index]?.doc_medico} />
                                 </div>
                             </div>
                         </>
@@ -217,13 +246,22 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
                                         Categoría de Examen <span className="text-red-500">*</span>
                                     </label>
-                                    <SearchableSelect
-                                        options={categorias || []}
-                                        value={selectedCategoriaId}
-                                        onChange={(val) => setValue(`remisiones.${index}.id_categoria_examen`, val)}
-                                        placeholder="Buscar categoría de examen..."
+                                    <Controller
+                                        name={`remisiones.${index}.id_categoria_examen`}
+                                        control={control}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <SearchableSelect
+                                                    options={categorias || []}
+                                                    value={field.value}
+                                                    onChange={(val) => field.onChange(val)}
+                                                    placeholder="Buscar categoría de examen..."
+                                                    error={!!fieldState.error}
+                                                />
+                                                <ErrorMsg error={fieldState.error} />
+                                            </>
+                                        )}
                                     />
-                                    <ErrorMsg error={errors?.remisiones?.[index]?.id_categoria_examen} />
                                 </div>
                                 <div className="space-y-1 flex items-center mt-6">
                                     <label className="inline-flex items-center cursor-default opacity-90">
@@ -296,13 +334,22 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                     <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
                         Motivo Principal <span className="text-red-500">*</span>
                     </label>
-                    <SearchableSelect
-                        options={motivosList || []}
-                        value={selectedMotivoId}
-                        onChange={(val) => setValue(`remisiones.${index}.id_motivo`, val)}
-                        placeholder="Busca o selecciona un motivo..."
+                    <Controller
+                        name={`remisiones.${index}.id_motivo`}
+                        control={control}
+                        render={({ field, fieldState }) => (
+                            <>
+                                <SearchableSelect
+                                    options={motivosList || []}
+                                    value={field.value}
+                                    onChange={(val) => field.onChange(val)}
+                                    placeholder="Busca o selecciona un motivo..."
+                                    error={!!fieldState.error}
+                                />
+                                <ErrorMsg error={fieldState.error} />
+                            </>
+                        )}
                     />
-                    <ErrorMsg error={errors?.remisiones?.[index]?.id_motivo} />
                 </div>
 
                 <div className="space-y-1 md:col-span-2">
@@ -324,14 +371,14 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
 
 function SignosVitalesRow({ register, open, errors }) {
     const signs = [
-        { name: "ta_sistolica", label: "TA Sistólica", placeholder: "mmHg", min: 70, max: 250 },
-        { name: "ta_diastolica", label: "TA Diastólica", placeholder: "mmHg", min: 40, max: 150 },
-        { name: "fc", label: "F. Cardiaca", placeholder: "lpm", min: 30, max: 220 },
-        { name: "fr", label: "F. Respirat.", placeholder: "rpm", min: 8, max: 60 },
-        { name: "temperatura", label: "Temperatura", placeholder: "°C", min: 30, max: 45 },
+        { name: "ta_sistolica", label: "TA Sistólica", placeholder: "mmHg", min: 90, max: 190 },
+        { name: "ta_diastolica", label: "TA Diastólica", placeholder: "mmHg", min: 60, max: 110 },
+        { name: "fc", label: "F. Cardiaca", placeholder: "lpm", min: 50, max: 120 },
+        { name: "fr", label: "F. Respirat.", placeholder: "rpm", min: 10, max: 35 },
+        { name: "temperatura", label: "Temperatura", placeholder: "°C", min: 34, max: 43 },
         { name: "peso", label: "Peso", placeholder: "kg", min: 1, max: 400 },
         { name: "talla", label: "Talla", placeholder: "cm", min: 30, max: 250 },
-        { name: "saturacion_o2", label: "SpO₂ (%)", placeholder: "%", min: 50, max: 100 },
+        { name: "saturacion_o2", label: "SpO₂ (%)", placeholder: "%", min: 85, max: 100 },
     ];
 
     return (
@@ -513,8 +560,9 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
                     <SearchableSelect
                         options={medicamentosOptions}
                         value={String(selectedMed || "")}
-                        onChange={(val) => setValue(`recetas.${index}.id_presentacion`, val)}
+                        onChange={(val) => setValue(`recetas.${index}.id_presentacion`, val, { shouldValidate: true })}
                         placeholder="Buscar medicamento..."
+                        error={!!errors?.recetas?.[index]?.id_presentacion}
                     />
                     <ErrorMsg error={errors?.recetas?.[index]?.id_presentacion} />
                 </div>
@@ -531,9 +579,10 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
                         <SearchableSelect
                             options={farmaciaOptions}
                             value={String(selectedFarmacia || "")}
-                            onChange={(val) => setValue(`recetas.${index}.nit_farmacia`, val)}
+                            onChange={(val) => setValue(`recetas.${index}.nit_farmacia`, val, { shouldValidate: true })}
                             placeholder={medFarmacias.length === 0 ? "Sin stock en farmacias" : "Seleccionar farmacia..."}
                             noOptionsText="No hay farmacias con stock para este medicamento"
+                            error={!!errors?.recetas?.[index]?.nit_farmacia}
                         />
                     )}
                     <ErrorMsg error={errors?.recetas?.[index]?.nit_farmacia} />
@@ -632,7 +681,7 @@ export default function ConsultaMedica() {
     const [loadingCita, setLoadingCita] = useState(true);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("soap");
-    const [signosOpen, setSignosOpen] = useState(false);
+    const [signosOpen, setSignosOpen] = useState(true);
     const [presentaciones, setPresentaciones] = useState([]);
 
     const { specialties } = useEspecialidades();
@@ -820,6 +869,31 @@ export default function ConsultaMedica() {
 
             navigate("/medico/agenda");
         } catch (error) {
+            // Manejar errores de validación del backend (HTTP 422)
+            if (error.response?.status === 422 && error.response.data.errors) {
+                const apiErrors = error.response.data.errors;
+                
+                // Mapear cada error del API al campo correspondiente en react-hook-form
+                Object.keys(apiErrors).forEach((key) => {
+                    setError(key, {
+                        type: "manual",
+                        message: apiErrors[key][0],
+                    });
+                });
+
+                // Auto-cambio de pestaña para que el médico vea el error
+                const firstErrorKey = Object.keys(apiErrors)[0];
+                if (firstErrorKey.startsWith('remisiones') && activeTab !== 'remisiones') {
+                    setActiveTab('remisiones');
+                } else if (firstErrorKey.startsWith('recetas') && activeTab !== 'recetas') {
+                    setActiveTab('recetas');
+                } else if (['subjetivo', 'diagnostico', 'tratamiento', 'enfermedades', 'signos_vitales'].some(k => firstErrorKey.startsWith(k)) && activeTab !== 'soap') {
+                    setActiveTab('soap');
+                }
+
+                return; // No mostrar el Swal general para errores de validación
+            }
+
             const msg = error.response?.data?.message || "No se pudo registrar la atención.";
             const isIdempotencia = msg.includes("ya fue atendida");
             const isAuth = error.response?.status === 403;
@@ -948,7 +1022,12 @@ export default function ConsultaMedica() {
                                         <span className="size-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">S</span>
                                         Subjetivo — Motivo de Consulta
                                     </label>
-                                    <textarea {...register("subjetivo")} rows={2} placeholder="Relato del paciente..." className={TEXTAREA_BASE} />
+                                    <textarea
+                                        {...register("subjetivo")}
+                                        rows={2}
+                                        placeholder="Relato del paciente..."
+                                        className={`${TEXTAREA_BASE} ${errors.subjetivo ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
+                                    />
                                     <ErrorMsg error={errors.subjetivo} />
                                 </div>
 
@@ -1000,7 +1079,7 @@ export default function ConsultaMedica() {
                                         {...register("diagnostico")}
                                         rows={3}
                                         placeholder="Apreciación diagnóstica y análisis del caso..."
-                                        className={TEXTAREA_BASE}
+                                        className={`${TEXTAREA_BASE} ${errors.diagnostico ? 'border-red-500 ring-1 ring-red-500/20' : ''}`}
                                     />
                                     <ErrorMsg error={errors.diagnostico} />
                                 </div>
@@ -1030,14 +1109,14 @@ export default function ConsultaMedica() {
                                     <p className="text-sm text-gray-500">Agrega remisiones o exámenes opcionales.</p>
                                     <button
                                         type="button"
-                                        onClick={() => append({ tipo_remision: "cita", id_especialidad: "", doc_medico: "", id_categoria_examen: "", requiere_ayuno: false, id_prioridad: "", notas: "", fecha: "", hora_inicio: "" })}
+                                        onClick={() => append({ tipo_remision: "cita", id_motivo: String(cita.id_motivo || ""), id_especialidad: "", doc_medico: "", id_categoria_examen: "", requiere_ayuno: false, id_prioridad: "", notas: "", fecha: "", hora_inicio: "" })}
                                         className="flex items-center gap-1.5 text-sm font-bold text-primary hover:bg-primary/5 px-3 py-2 rounded-lg cursor-pointer transition-colors"
                                     >
                                         <span className="material-symbols-outlined">add_circle</span> Agregar Remisión
                                     </button>
                                 </div>
 
-                                <AnimatePresence>
+                                <div className="space-y-4">
                                     {fields.map((field, index) => (
                                         <RemisionRow
                                             key={field.id}
@@ -1055,7 +1134,7 @@ export default function ConsultaMedica() {
                                             errors={errors}
                                         />
                                     ))}
-                                </AnimatePresence>
+                                </div>
 
                                 {fields.length === 0 && (
                                     <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl">

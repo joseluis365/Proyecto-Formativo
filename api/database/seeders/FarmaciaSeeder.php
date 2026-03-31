@@ -9,33 +9,38 @@ class FarmaciaSeeder extends Seeder
 {
     public function run(): void
     {
+        // Exact data from final.sql
         $data = [
             [
-                'nit' => '900123456-5', // Linked EPS
-                'nombre' => 'Farmacia Saluvanta Central',
-                'direccion' => 'Calle 100 # 45-67 PBX',
-                'telefono' => '3001234567',
-                'email' => 'farmacia@saluvanta.com',
-                'nombre_contacto' => 'Pedro Hernandez',
-                'horario_apertura' => '06:00:00',
-                'horario_cierre' => '22:00:00',
-                'abierto_24h' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'nit'            => '900123456-7',
+                'nombre'         => 'FarmaTodo',
+                'direccion'      => 'calle 23 askjs',
+                'telefono'       => '123456',
+                'email'          => 'e@gmail.c',
+                'nombre_contacto'=> 'Jose #443',
+                'horario_apertura'=> '08:00:00',
+                'horario_cierre' => '16:00:00',
+                'abierto_24h'    => true,
+                'nit_empresa'    => '909090909-1',
+                'id_estado'      => 1,
+                'created_at'     => '2026-03-01 20:07:37',
+                'updated_at'     => '2026-03-01 20:07:37',
             ],
             [
-                'nit' => '901234567-8', // Secondary
-                'nombre' => 'Farmacia Saluvanta 24H',
-                'direccion' => 'Avenida Principal # 12-34',
-                'telefono' => '3209876543',
-                'email' => 'urgencias@saluvanta.com',
-                'nombre_contacto' => 'Maria Fernandez',
-                'horario_apertura' => '00:00:00',
-                'horario_cierre' => '23:59:00',
-                'abierto_24h' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+                'nit'            => '298765432-1',
+                'nombre'         => 'Sanitas',
+                'direccion'      => 'calle 14 # 2-42',
+                'telefono'       => '3124567890',
+                'email'          => 'admin@gmail.com',
+                'nombre_contacto'=> 'Jose asasas',
+                'horario_apertura'=> '06:00:00',
+                'horario_cierre' => '22:00:00',
+                'abierto_24h'    => true,
+                'nit_empresa'    => '900123456-5',
+                'id_estado'      => 1,
+                'created_at'     => '2026-03-06 18:56:36',
+                'updated_at'     => '2026-03-06 18:56:36',
+            ],
         ];
 
         foreach ($data as $item) {

@@ -74,6 +74,8 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
             align: "center",
             render: (d) => {
                 const isDone = isAtendido(d.estado?.nombre_estado);
+                const todayStr = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0') + '-' + String(new Date().getDate()).padStart(2, '0');
+                const isSameDay = d.fecha === todayStr;
 
                 return (
                     <div className="flex items-center justify-center gap-2">
@@ -85,11 +87,19 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
                             >
                                 <span className="material-symbols-outlined text-[20px]">check_circle</span>
                             </button>
-                        ) : (
+                        ) : isSameDay ? (
                             <button
                                 onClick={() => onAtender(d)}
                                 className="p-2 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-all flex items-center justify-center cursor-pointer"
                                 title="Atender Examen"
+                            >
+                                <span className="material-symbols-outlined text-[20px]">science</span>
+                            </button>
+                        ) : (
+                            <button
+                                disabled
+                                className="p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
+                                title="Solo se puede atender el mismo día del examen"
                             >
                                 <span className="material-symbols-outlined text-[20px]">science</span>
                             </button>

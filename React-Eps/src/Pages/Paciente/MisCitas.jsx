@@ -29,6 +29,8 @@ export default function MisCitas() {
     const [filterMedico, setFilterMedico]                   = useState("");
     const [filterFecha, setFilterFecha]                     = useState("");
 
+    const [activeTab, setActiveTab] = useState("programadas");
+
     const { citas, loading: loadingCitas, cancelCita, reagendarCita } = useCitas({ doc_paciente: user.documento });
     
     const [examenes, setExamenes] = useState([]);
@@ -139,16 +141,22 @@ export default function MisCitas() {
                 }
                 
                 const matchFecha = !filterFecha || item.fecha === filterFecha;
-                const matchEstado = item.estado?.nombre_estado !== "Cancelada";
+                
+                // Mantiene el estatus 'Cancelada' oculto
+                const noCancelada = item.estado?.nombre_estado !== "Cancelada";
+                
+                // Dividir entre Programadas y Finalizadas
+                const isFinalizada = item.estado?.nombre_estado === "Atendida";
+                const matchTab = activeTab === "programadas" ? (!isFinalizada && noCancelada) : isFinalizada;
 
-                return matchTipo && matchEspMedico && matchMedico && matchFecha && matchEstado;
+                return matchTipo && matchEspMedico && matchMedico && matchFecha && matchTab;
             })
             .sort((a, b) => {
                 const dateA = a.fecha ? new Date(`${a.fecha}T${a.hora_inicio || '00:00'}`) : new Date(8640000000000000);
                 const dateB = b.fecha ? new Date(`${b.fecha}T${b.hora_inicio || '00:00'}`) : new Date(8640000000000000);
                 return dateB - dateA;
             });
-    }, [citas, examenes, filterEspecialidad, filterEspecialidadMedico, filterMedico, filterFecha]);
+    }, [citas, examenes, filterEspecialidad, filterEspecialidadMedico, filterMedico, filterFecha, activeTab]);
 
     const handleViewRemision = (r, parentCita) => {
         if (r.tipo_remision === 'examen') {
@@ -195,6 +203,22 @@ export default function MisCitas() {
                     subtext="Estas son tus gestiones, incluyendo pasadas y canceladas."
                     number={misServiciosActivos.length}
                 />
+            </div>
+
+            {/* Tabs de Programadas vs Finalizadas */}
+            <div className="flex bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl w-fit drop-shadow-sm">
+                <button
+                    onClick={() => setActiveTab("programadas")}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'programadas' ? 'bg-white dark:bg-gray-700 text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                >
+                    Programadas
+                </button>
+                <button
+                    onClick={() => setActiveTab("finalizadas")}
+                    className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'finalizadas' ? 'bg-white dark:bg-gray-700 text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                >
+                    Finalizadas
+                </button>
             </div>
 
             {/* Filtros */}
@@ -274,8 +298,10 @@ export default function MisCitas() {
                         <div className="size-20 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-6">
                             <span className="material-symbols-outlined text-4xl text-gray-200">event_busy</span>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No se encontraron citas</h3>
-                        <p className="text-gray-500 dark:text-gray-400 max-w-sm text-sm">Prueba ajustando los filtros de búsqueda para encontrar lo que necesitas.</p>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                            {activeTab === 'programadas' ? 'Ninguna cita programada' : 'No hay citas finalizadas'}
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400 max-w-sm text-sm">Prueba ajustando los filtros de búsqueda para encontrar lo que necesitas o agenda una nueva cita.</p>
                     </motion.div>
                 ) : (
                     <motion.div

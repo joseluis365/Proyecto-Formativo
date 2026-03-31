@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('rol', function (Blueprint $table) {
             $table->id('id_rol');
             $table->string('tipo_usu', 50)->unique();
+            $table->unsignedBigInteger('id_estado')->default(1);
         });
     }
 

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('historial_enfermedads', function (Blueprint $table) {
+        Schema::create('historial_enfermedades', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('historial_detalle_id');
             $table->string('enfermedad_codigo_icd');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('historial_enfermedads');
+        Schema::dropIfExists('historial_enfermedades');
     }
 };

@@ -9,28 +9,14 @@ class CategoriaExamenSeeder extends Seeder
 {
     public function run(): void
     {
-        $categorias = [
-            ['id_categoria_examen' => 1, 'categoria' => 'Sangre', 'requiere_ayuno' => true, 'id_estado' => 1],
-            ['id_categoria_examen' => 2, 'categoria' => 'Orina', 'requiere_ayuno' => false, 'id_estado' => 1],
-            ['id_categoria_examen' => 3, 'categoria' => 'Fisicos', 'requiere_ayuno' => false, 'id_estado' => 1],
-            ['id_categoria_examen' => 4, 'categoria' => 'Imagenología', 'requiere_ayuno' => false, 'id_estado' => 1],
-            ['id_categoria_examen' => 5, 'categoria' => 'Cardiología', 'requiere_ayuno' => false, 'id_estado' => 1],
-            ['id_categoria_examen' => 6, 'categoria' => 'Endoscopia', 'requiere_ayuno' => true, 'id_estado' => 1],
-            ['id_categoria_examen' => 7, 'categoria' => 'Neurología', 'requiere_ayuno' => false, 'id_estado' => 1],
-            ['id_categoria_examen' => 8, 'categoria' => 'Heces', 'requiere_ayuno' => false, 'id_estado' => 1],
+        $data = [
+            ['id_categoria_examen' => 2, 'categoria' => 'Orina',   'id_estado' => 1, 'created_at' => '2026-03-06 16:51:39', 'updated_at' => '2026-03-06 16:51:39', 'requiere_ayuno' => false],
+            ['id_categoria_examen' => 3, 'categoria' => 'Fisicos', 'id_estado' => 1, 'created_at' => '2026-03-06 16:51:59', 'updated_at' => '2026-03-06 16:51:59', 'requiere_ayuno' => false],
+            ['id_categoria_examen' => 1, 'categoria' => 'Sangre',  'id_estado' => 1, 'created_at' => '2026-03-01 20:01:15', 'updated_at' => '2026-03-01 20:01:15', 'requiere_ayuno' => true],
         ];
 
-        foreach ($categorias as $cat) {
-            DB::table('categoria_examen')->updateOrInsert(
-                ['id_categoria_examen' => $cat['id_categoria_examen']],
-                [
-                    'categoria' => $cat['categoria'],
-                    'requiere_ayuno' => $cat['requiere_ayuno'],
-                    'id_estado' => $cat['id_estado'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
+        foreach ($data as $item) {
+            DB::table('categoria_examen')->updateOrInsert(['id_categoria_examen' => $item['id_categoria_examen']], $item);
         }
     }
 }

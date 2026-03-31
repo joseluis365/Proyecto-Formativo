@@ -144,4 +144,9 @@ class Usuario extends Authenticatable
     {
         return $this->fecha_nacimiento ? \Carbon\Carbon::parse($this->fecha_nacimiento)->age : null;
     }
+
+    public function getNombreCompletoAttribute()
+    {
+        return trim("{$this->primer_nombre} {$this->segundo_nombre} {$this->primer_apellido} {$this->segundo_apellido}");
+    }
 }

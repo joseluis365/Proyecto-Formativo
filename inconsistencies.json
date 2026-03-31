@@ -1,0 +1,36 @@
+{
+    "receta_detalle": {
+        "missing_columns": [
+            "cantidad_dispensar"
+        ]
+    },
+    "examen": {
+        "missing_columns": [
+            "doc_paciente",
+            "fecha",
+            "hora_inicio",
+            "hora_fin",
+            "id_estado",
+            "resultado_pdf"
+        ]
+    },
+    "failed_jobs": "Table missing in DB",
+    "historial_enfermedades": "Table missing in DB",
+    "job_batches": "Table missing in DB",
+    "jobs": "Table missing in DB",
+    "movimiento_inventario": {
+        "missing_columns": [
+            "id_lote",
+            "id_dispensacion"
+        ]
+    },
+    "password_reset_tokens": "Table missing in DB",
+    "products": "Table missing in DB",
+    "sessions": "Table missing in DB",
+    "usuario": {
+        "missing_columns": [
+            "examenes",
+            "id_tipo_documento"
+        ]
+    }
+}

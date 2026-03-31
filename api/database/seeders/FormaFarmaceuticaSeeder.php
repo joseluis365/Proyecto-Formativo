@@ -9,31 +9,14 @@ class FormaFarmaceuticaSeeder extends Seeder
 {
     public function run(): void
     {
-        $formas = [
-            'Tableta',
-            'Cápsula',
-            'Jarabe',
-            'Ampolla',
-            'Suspensión',
-            'Crema',
-            'Ungüento',
-            'Supositorio',
-            'Inhalador',
-            'Gotas',
-            'Solución inyectable',
-            'Polvo para suspensión',
-            'Gel',
-            'Loción',
-            'Óvulos',
+        $data = [
+            ['id_forma' => 1, 'forma_farmaceutica' => 'Pastillas'],
+            ['id_forma' => 2, 'forma_farmaceutica' => 'Crema'],
+            ['id_forma' => 3, 'forma_farmaceutica' => 'Jarabe'],
         ];
 
-        foreach ($formas as $index => $forma) {
-            DB::table('forma_farmaceutica')->updateOrInsert(
-                ['id_forma' => $index + 1],
-                [
-                    'forma_farmaceutica' => $forma,
-                ]
-            );
+        foreach ($data as $item) {
+            DB::table('forma_farmaceutica')->updateOrInsert(['id_forma' => $item['id_forma']], $item);
         }
     }
 }

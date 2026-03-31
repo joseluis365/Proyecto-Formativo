@@ -30,16 +30,16 @@
 
         <div class="section" style="margin-top: 30px;">
             <div class="data-row">
-                <span class="data-label">Documento del Paciente:</span>
-                <span class="data-value">{{ $cita->doc_paciente }}</span>
+                <span class="data-label">Paciente:</span>
+                <span class="data-value">{{ $cita->paciente->nombre_completo ?? $cita->doc_paciente }}</span>
             </div>
             <div class="data-row">
-                <span class="data-label">Documento del Médico:</span>
-                <span class="data-value">{{ $cita->doc_medico ?? 'Sin Asignar' }}</span>
+                <span class="data-label">Médico:</span>
+                <span class="data-value">{{ $cita->medico->nombre_completo ?? 'Sin Asignar' }}</span>
             </div>
             <div class="data-row">
                 <span class="data-label">Fecha Programada:</span>
-                <span class="data-value">{{ \Carbon\Carbon::parse($cita->fecha)->format('d \d\e F, Y') }}</span>
+                <span class="data-value">{{ \Carbon\Carbon::parse($cita->fecha)->translatedFormat('d \d\e F, Y') }}</span>
             </div>
             @if($cita->hora_inicio)
             <div class="data-row">

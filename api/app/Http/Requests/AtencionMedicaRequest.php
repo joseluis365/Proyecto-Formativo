@@ -177,6 +177,8 @@ class AtencionMedicaRequest extends FormRequest
             'tratamiento.max'              => 'El tratamiento no debe exceder los 3000 caracteres.',
             'remisiones.*.tipo_remision.in' => 'El tipo de remisión debe ser "cita" o "examen".',
             'remisiones.*.id_motivo.required_with' => 'El motivo es obligatorio.',
+            'remisiones.*.id_motivo.integer'       => 'El campo es obligatorio.',
+            'remisiones.*.id_motivo.exists'        => 'Seleccione un motivo válido.',
             'remisiones.*.notas.required_if' => 'Debe especificar el motivo en las notas si selecciona "Otro".',
         ];
     }

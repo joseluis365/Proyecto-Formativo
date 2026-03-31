@@ -30,8 +30,8 @@
 
         <div class="section" style="margin-top: 30px;">
             <div class="data-row">
-                <span class="data-label">Documento del Paciente:</span>
-                <span class="data-value">{{ $examen->doc_paciente }}</span>
+                <span class="data-label">Paciente:</span>
+                <span class="data-value">{{ $examen->paciente->nombre_completo ?? $examen->doc_paciente }}</span>
             </div>
             <div class="data-row">
                 <span class="data-label">Tipo de Examen:</span>
@@ -39,7 +39,7 @@
             </div>
             <div class="data-row">
                 <span class="data-label">Fecha Programada:</span>
-                <span class="data-value">{{ \Carbon\Carbon::parse($examen->fecha)->format('d \d\e F, Y') }}</span>
+                <span class="data-value">{{ \Carbon\Carbon::parse($examen->fecha)->translatedFormat('d \d\e F, Y') }}</span>
             </div>
             @if($examen->hora_inicio)
             <div class="data-row">

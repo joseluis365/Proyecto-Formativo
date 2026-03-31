@@ -31,7 +31,7 @@
         <div class="section" style="margin-top: 30px;">
             <div class="data-row">
                 <span class="data-label">Fecha Programada:</span>
-                <span class="data-value">{{ \Carbon\Carbon::parse($registro->fecha)->format('d \d\e F, Y') }}</span>
+                <span class="data-value">{{ \Carbon\Carbon::parse($registro->fecha)->translatedFormat('d \d\e F, Y') }}</span>
             </div>
             
             @if($registro->hora_inicio)
@@ -52,8 +52,8 @@
                     <span class="data-value">{{ $registro->motivo ?? 'Consulta General' }}</span>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">Documento del Médico:</span>
-                    <span class="data-value">{{ $registro->doc_medico ?? 'Sin Especificar' }}</span>
+                    <span class="data-label">Médico:</span>
+                    <span class="data-value">{{ $registro->medico->nombre_completo ?? 'Sin Especificar' }}</span>
                 </div>
             @endif
         </div>

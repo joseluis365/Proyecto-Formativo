@@ -512,7 +512,7 @@ export default function Movimientos() {
             {/* Modal Salida */}
             {showSalidaModal && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <span className="material-symbols-outlined text-red-600">indeterminate_check_box</span>
                             Registrar Salida Manual

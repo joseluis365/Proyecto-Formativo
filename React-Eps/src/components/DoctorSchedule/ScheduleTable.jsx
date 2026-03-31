@@ -77,13 +77,13 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
 
             {isActionable && onAtender && onNoAsistio && (
               <>
-                <button
-                  onClick={() => onAtender(d)}
-                  className="p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center cursor-pointer"
-                  title="Atender Paciente"
-                >
-                  <span className="material-symbols-outlined text-base font-bold">medical_information</span>
-                </button>
+                    <button
+                      onClick={() => onAtender(d)}
+                      className="p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center cursor-pointer"
+                      title="Atender Paciente"
+                    >
+                      <span className="material-symbols-outlined text-base font-bold">medical_information</span>
+                    </button>
                 {isWithinAttendanceWindow(d.fecha, d.hora_inicio) ? (
                     <button
                       onClick={() => onNoAsistio(d)}

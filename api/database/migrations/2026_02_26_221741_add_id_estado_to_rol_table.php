@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('rol', function (Blueprint $table) {
-            $table->unsignedBigInteger('id_estado')->default(1)->after('tipo_usu');
+        if (!Schema::hasColumn('rol', 'id_estado')) {
+            Schema::table('rol', function (Blueprint $table) {
+                $table->unsignedBigInteger('id_estado')->default(1)->after('tipo_usu');
 
-            $table->foreign('id_estado')
-                  ->references('id_estado')
-                  ->on('estado')
-                  ->onDelete('restrict');
-        });
+                $table->foreign('id_estado')
+                    ->references('id_estado')
+                    ->on('estado')
+                    ->onDelete('restrict');
+            });
+        }
     }
 
     /**
