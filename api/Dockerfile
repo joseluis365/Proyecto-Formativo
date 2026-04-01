@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
+RUN docker-php-ext-install mbstring tokenizer ctype
+
 WORKDIR /var/www/html
 
 COPY . .
