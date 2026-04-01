@@ -10,12 +10,10 @@ RUN apt-get update && apt-get install -y \
     nginx \
     libonig-dev \
     libxml2-dev \
-    && docker-php-ext-install pdo_pgsql pdo bcmath zip
+    && docker-php-ext-install pdo_pgsql pdo bcmath zip mbstring
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-
-RUN docker-php-ext-install mbstring tokenizer ctype
 
 WORKDIR /var/www/html
 
