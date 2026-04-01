@@ -1,12 +1,13 @@
 FROM php:8.2-cli
 
-# Instalar extensiones PHP necesarias
+# Instalar dependencias necesarias para extensiones
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_pgsql bcmath zip
+    libpq-dev \
+    && docker-php-ext-install pdo_pgsql pdo bcmath zip
 
 # Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
