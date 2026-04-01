@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpq-dev \
     nginx \
+    libonig-dev \
+    libxml2-dev \
     && docker-php-ext-install pdo_pgsql pdo bcmath zip
 
 # Instalar Composer
