@@ -1,11 +1,9 @@
-[phases.setup]
-nixPkgs = ["php", "php83Packages.composer"]
-
-[phases.install]
-cmds = ["composer install --no-dev --optimize-autoloader"]
-
 [phases.build]
-cmds = ["php artisan config:cache", "php artisan route:cache"]
+cmds = [
+  "apt-get update",
+  "apt-get install -y php-bcmath",
+  "composer install --optimize-autoloader --no-dev --no-interaction"
+]
 
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
