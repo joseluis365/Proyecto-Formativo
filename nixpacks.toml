@@ -1,7 +1,28 @@
-[phases.build]
+# nixpacks.toml definitivo para monorepo Laravel + React
+
+[phases.setup]
 cmds = [
-  "cd api && composer install --ignore-platform-req=ext-bcmath"
+  "apt-get update",
+  "apt-get install -y php-bcmath php-xml php-mbstring git unzip curl"
 ]
 
-[start]
-cmd = "cd api && php artisan serve --host=0.0.0.0 --port=$PORT"
+[phases.install]
+# Verifica que bcmath está disponible y luego instala Composer deps
+cmds = [
+  "cd api && php -m | grep bcmath",  # línea opcional para debug en logs
+  "cd api && composer install --optimize-autoloader --no-interaction",
+  "cd ../React-Eps && npm install"
+]
+
+[phases.build]
+# Ejecuta migraciones de Laravel y build de React
+cmds = [
+  "cd api && php artisan migrate --force",
+  "cd ../React-Eps && npm run build"
+]
+
+[phases.start]
+# Inicia el servidor de Laravel en el puerto que asigna Railway
+cmds = [
+  "cd api && php artisan serve --host=0.0.0.0 --port $PORT"
+]
