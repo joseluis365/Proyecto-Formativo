@@ -15,6 +15,10 @@ use App\Http\Requests\Auth\SuperadminSendRecoveryCodeRequest;
 use App\Http\Requests\Auth\SuperadminVerifyRecoveryCodeRequest;
 use App\Http\Requests\Auth\SuperadminResetPasswordRequest;
 
+/**
+ * Controlador de autenticacion de superadministrador.
+ * Maneja login y sesiones del perfil de superadmin.
+ */
 class SuperadminAuthController extends Controller
 {
     /**

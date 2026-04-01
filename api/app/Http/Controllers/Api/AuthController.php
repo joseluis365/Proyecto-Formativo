@@ -15,6 +15,17 @@ use App\Http\Requests\Auth\SendRecoveryCodeRequest;
 use App\Http\Requests\Auth\VerifyRecoveryCodeRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 
+/**
+ * Backend: Endpoints de autenticación y gestión de sesión de usuario.
+ * - login: autentica a los usuarios y emite tokens
+ * - verify2FA: valida la verificación en dos pasos para administradores
+ * - me: devuelve el usuario autenticado con sus datos relacionados
+ * - logout: revoca el token de acceso actual
+ * - flujo de recuperación de contrasena: sendRecoveryCode, verifyRecoveryCode, resetPassword
+ *
+ * Este controlador coordina con modelos como Usuario, Empresa y otros para hacer cumplir
+ * permisos, roles y control de acceso en la aplicación.
+ */
 class AuthController extends Controller
 {
     /**

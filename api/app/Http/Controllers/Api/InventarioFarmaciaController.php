@@ -11,6 +11,10 @@ use App\Http\Requests\Farmacia\StoreMovimientoInventarioRequest;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+/**
+ * Controlador de inventario de farmacia.
+ * Permite visualizar, ajustar y controlar existencias por farmacia.
+ */
 class InventarioFarmaciaController extends Controller
 {
     /**

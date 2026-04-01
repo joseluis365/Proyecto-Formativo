@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: licencia activada para admin.
+ * Notifica al administrador sobre activacion de licencia.
+ */
 class LicenciaActivadaAdmin extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

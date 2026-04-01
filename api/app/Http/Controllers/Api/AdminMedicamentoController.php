@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Medicamento;
 
+/**
+ * Controlador administrativo de medicamentos.
+ * Expone operaciones de gestion para el catalogo farmaceutico.
+ */
 class AdminMedicamentoController extends Controller
 {
     public function index(Request $request)

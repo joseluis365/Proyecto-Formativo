@@ -5,6 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueIgnoreCase;
 
+/**
+ * Request de actualizacion de usuario.
+ * Controla campos editables y reglas de consistencia.
+ */
 class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool

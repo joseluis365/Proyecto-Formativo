@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request de inicio de sesion de usuario general.
+ */
 class LoginRequest extends FormRequest
 {
     public function authorize(): bool

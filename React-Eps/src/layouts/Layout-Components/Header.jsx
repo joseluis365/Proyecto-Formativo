@@ -1,3 +1,7 @@
+/*
+ * Header compartido de layouts internos.
+ * Muestra titulo, accesos rapidos y ayuda contextual.
+ */
 import { Link } from "react-router-dom";
 import AdminLogoutButton from "../../components/UI/AdminLogoutButton";
 import HelpModal from "../../components/UI/HelpModal";

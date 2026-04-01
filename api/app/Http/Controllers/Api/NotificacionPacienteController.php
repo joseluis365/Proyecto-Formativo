@@ -9,6 +9,10 @@ use App\Models\Receta;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+/**
+ * Controlador de notificaciones al paciente.
+ * Gestiona consulta y envio de notificaciones relacionadas con su atencion.
+ */
 class NotificacionPacienteController extends Controller
 {
     /**

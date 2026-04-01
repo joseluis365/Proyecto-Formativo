@@ -1,3 +1,7 @@
+/*
+ * Layout de medico.
+ * Contenedor principal para modulos clinicos del profesional.
+ */
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { LayoutProvider, useLayout } from "../LayoutContext";

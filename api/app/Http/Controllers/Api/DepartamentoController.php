@@ -9,6 +9,10 @@ use App\Http\Requests\StoreDepartamentoRequest;
 use App\Http\Requests\UpdateDepartamentoRequest;
 use App\Http\Resources\DepartamentoResource;
 
+/**
+ * Controlador de departamentos.
+ * Gestiona informacion territorial para registros y filtros.
+ */
 class DepartamentoController extends Controller
 {
     /**

@@ -10,6 +10,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: examen agendado.
+ * Envia confirmacion de fecha y datos de examen clinico.
+ */
 class ExamenAgendadoMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

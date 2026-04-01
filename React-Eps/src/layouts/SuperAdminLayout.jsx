@@ -1,3 +1,7 @@
+/*
+ * Layout de superadministrador.
+ * Contenedor de alto nivel para vistas de gobierno de plataforma.
+ */
 import SuperAdminHeader from "./Layout-Components/SuperAdminHeader";
 import { Outlet } from "react-router-dom";
 

@@ -1,3 +1,7 @@
+/*
+ * Agenda general de citas.
+ * Gestion centralizada de citas para personal administrativo.
+ */
 import { useEffect, useState } from 'react';
 import api from "../../../Api/axios";
 import { useLayout } from "../../../LayoutContext";

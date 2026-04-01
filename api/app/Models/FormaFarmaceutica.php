@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo FormaFarmaceutica.
+ * Catalogo de formas farmaceuticas de presentacion.
+ */
 class FormaFarmaceutica extends Model
 {
     protected $table = 'forma_farmaceutica';

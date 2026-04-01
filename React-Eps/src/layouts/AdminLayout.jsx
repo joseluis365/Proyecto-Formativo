@@ -1,3 +1,7 @@
+/*
+ * Layout administrativo.
+ * Define estructura base para navegacion y contenido del rol admin.
+ */
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { LayoutProvider, useLayout } from "../LayoutContext";

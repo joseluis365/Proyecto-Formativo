@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * Servicio de reportes.
+ * Contiene logica de negocio para consolidar indicadores y reportes.
+ */
 class ReportService
 {
     /**

@@ -10,6 +10,10 @@ use App\Models\InventarioFarmacia;
 use App\Http\Requests\Farmacia\StoreSalidaManualRequest;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controlador de movimientos de inventario.
+ * Registra entradas, salidas y trazabilidad de stock en farmacia.
+ */
 class MovimientoInventarioController extends Controller
 {
     /**

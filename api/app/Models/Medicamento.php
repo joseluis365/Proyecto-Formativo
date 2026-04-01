@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Medicamento.
+ * Catalogo principal de medicamentos.
+ */
 class Medicamento extends Model
 {
     protected $table = 'medicamento';

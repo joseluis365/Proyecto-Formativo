@@ -9,6 +9,10 @@ use App\Http\Requests\StoreRolRequest;
 use App\Http\Requests\UpdateRolRequest;
 use App\Http\Resources\RolResource;
 
+/**
+ * Controlador de roles.
+ * Mantiene roles del sistema y su estado.
+ */
 class RolController extends Controller
 {
     /**

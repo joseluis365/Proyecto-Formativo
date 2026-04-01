@@ -7,6 +7,10 @@ use App\Models\TipoDocumento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Controlador de tipos de documento.
+ * Expone endpoints para listar, crear y actualizar tipos documentales.
+ */
 class TipoDocumentoController extends Controller
 {
     /**

@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Farmacia.
+ * Representa farmacias asociadas a una empresa y su operacion.
+ */
 class Farmacia extends Model
 {
     use HasFactory;

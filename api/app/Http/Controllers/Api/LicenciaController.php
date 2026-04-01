@@ -13,6 +13,10 @@ use App\Models\EmpresaLicencia;
 use App\Models\Empresa;
 use App\Events\SystemActivityEvent;
 
+/**
+ * Controlador de licencias.
+ * Gestiona ciclo de vida de licencias y su asignacion a empresas.
+ */
 class LicenciaController extends Controller
 {
     /**

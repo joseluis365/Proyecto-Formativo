@@ -1,3 +1,7 @@
+/*
+ * Configuracion de WebSocket (Laravel Echo + Pusher).
+ * Permite recibir eventos en tiempo real en el frontend.
+ */
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 

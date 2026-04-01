@@ -1,3 +1,7 @@
+/*
+ * Layout de autenticacion.
+ * Envuelve pantallas de login, recuperacion y verificacion.
+ */
 import { Outlet } from "react-router-dom";
 import LeftSection from "../components/Login/LeftSection";
 

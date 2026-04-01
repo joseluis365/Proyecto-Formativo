@@ -1,3 +1,7 @@
+/*
+ * Dashboard del modulo farmacia.
+ * Resume alertas de inventario y accesos operativos rapidos.
+ */
 import { useLayout } from "../../LayoutContext";
 import { useEffect, useState } from "react";
 import { useHelp } from "../../hooks/useHelp";

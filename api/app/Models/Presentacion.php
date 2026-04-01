@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Presentacion.
+ * Define presentaciones comerciales de medicamentos.
+ */
 class Presentacion extends Model
 {
     protected $table = 'presentacion_medicamento';

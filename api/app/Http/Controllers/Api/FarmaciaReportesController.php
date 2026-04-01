@@ -11,6 +11,10 @@ use App\Models\LoteMedicamento;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
+/**
+ * Controlador de reportes de farmacia.
+ * Administra filtros y exportes de informacion farmaceutica.
+ */
 class FarmaciaReportesController extends Controller
 {
     /**

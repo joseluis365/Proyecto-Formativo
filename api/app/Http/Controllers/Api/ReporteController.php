@@ -4,6 +4,10 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Usuario;
 use App\Http\Controllers\Controller; 
+/**
+ * Controlador de reportes generales.
+ * Centraliza endpoints para consulta y salida de informacion analitica.
+ */
 class ReporteController extends Controller
 {
     public function generarPdf()

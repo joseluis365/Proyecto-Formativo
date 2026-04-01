@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: licencia activada para empresa.
+ * Informa activacion o cambio de estado de licencia empresarial.
+ */
 class LicenciaActivadaEmpresa extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

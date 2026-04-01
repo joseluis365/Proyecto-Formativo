@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo InventarioFarmacia.
+ * Representa existencias actuales por farmacia y producto.
+ */
 class InventarioFarmacia extends Model
 {
     protected $table = 'inventario_farmacia';

@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Pqr.
+ * Almacena peticiones, quejas y reclamos de usuarios.
+ */
 class Pqr extends Model
 {
     protected $table = 'pqr';

@@ -5,6 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * Request de atencion medica.
+ * Valida datos clinicos requeridos para registrar una atencion.
+ */
 class AtencionMedicaRequest extends FormRequest
 {
     public function authorize(): bool

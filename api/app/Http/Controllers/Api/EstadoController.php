@@ -9,6 +9,10 @@ use App\Http\Requests\StoreEstadoRequest;
 use App\Http\Requests\UpdateEstadoRequest;
 use App\Http\Resources\EstadoResource;
 
+/**
+ * Controlador de estados.
+ * Administra catalogo de estados de negocio del sistema.
+ */
 class EstadoController extends Controller
 {
     /**

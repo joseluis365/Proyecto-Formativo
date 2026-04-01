@@ -7,6 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: contacto.
+ * Notifica mensajes provenientes del formulario de contacto.
+ */
 class ContactoMail extends Mailable
 {
     use Queueable, SerializesModels;

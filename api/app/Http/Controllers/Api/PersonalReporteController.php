@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
+/**
+ * Controlador de reportes de personal.
+ * Genera indicadores y listados operativos para talento humano.
+ */
 class PersonalReporteController extends Controller
 {
     /**

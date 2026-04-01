@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 
+/**
+ * Recurso API para serializar empresas.
+ */
 class EmpresaResource extends JsonResource
 {
 

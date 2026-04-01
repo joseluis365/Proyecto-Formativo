@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo LoteMedicamento.
+ * Gestiona lotes, fechas y trazabilidad de medicamentos.
+ */
 class LoteMedicamento extends Model
 {
     protected $table = 'lote_medicamento';

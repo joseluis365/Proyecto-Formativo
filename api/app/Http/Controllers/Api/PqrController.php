@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\PqrRespuestaMail;
 
+/**
+ * Controlador de PQR.
+ * Administra peticiones, quejas y reclamos de usuarios.
+ */
 class PqrController extends Controller
 {
     // Obtener todas las PQR ordenadas por las más recientes

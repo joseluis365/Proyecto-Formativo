@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Ciudad.
+ * Catalogo territorial de ciudades/municipios.
+ */
 class Ciudad extends Model
 {
     protected $table = 'ciudad';

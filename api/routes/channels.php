@@ -1,5 +1,12 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Canales de Broadcast
+|--------------------------------------------------------------------------
+| Configura autorizacion de canales privados para eventos en tiempo real.
+*/
+
 use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {

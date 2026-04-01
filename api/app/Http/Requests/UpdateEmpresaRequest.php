@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Rules\UniqueIgnoreCase;
 
+/**
+ * Request de actualizacion de empresa.
+ * Valida cambios en informacion corporativa.
+ */
 class UpdateEmpresaRequest extends FormRequest
 {
     public function authorize(): bool

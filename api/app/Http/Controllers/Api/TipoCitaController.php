@@ -9,6 +9,10 @@ use App\Http\Requests\StoreTipoCitaRequest;
 use App\Http\Requests\UpdateTipoCitaRequest;
 use App\Http\Resources\TipoCitaResource;
 
+/**
+ * Controlador de tipos de cita.
+ * Administra catalogo de tipos de cita y su disponibilidad.
+ */
 class TipoCitaController extends Controller
 {
     public function index(Request $request)

@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+/**
+ * Controlador de examenes clinicos.
+ * Maneja solicitudes, resultados y estados de examenes.
+ */
 class ExamenClinicoController extends Controller
 {
     /**

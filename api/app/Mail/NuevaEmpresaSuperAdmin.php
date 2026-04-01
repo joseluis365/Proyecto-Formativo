@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: nueva empresa para superadmin.
+ * Informa registro de nueva empresa al superadministrador.
+ */
 class NuevaEmpresaSuperAdmin extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

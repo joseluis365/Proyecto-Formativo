@@ -12,6 +12,10 @@ use App\Models\MovimientoInventario;
 use App\Http\Requests\Farmacia\StoreDispensacionRequest;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controlador de dispensacion.
+ * Registra entrega de medicamentos y afecta inventario.
+ */
 class DispensacionController extends Controller
 {
     /**

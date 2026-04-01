@@ -1,3 +1,7 @@
+/*
+ * Modulo de consulta medica.
+ * Registra evaluacion clinica, remisiones, examenes y receta.
+ */
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray, useWatch, Controller } from "react-hook-form";

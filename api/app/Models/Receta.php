@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Receta.
+ * Encapsula la formula medica creada en una atencion.
+ */
 class Receta extends Model
 {
     protected $table = 'receta';

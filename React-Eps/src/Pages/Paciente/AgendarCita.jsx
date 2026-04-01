@@ -1,3 +1,7 @@
+/*
+ * Vista de agendamiento del paciente.
+ * Flujo por pasos para seleccionar servicio, fecha, hora y medico.
+ */
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";

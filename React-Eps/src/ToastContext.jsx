@@ -1,3 +1,7 @@
+/*
+ * Contexto global de notificaciones.
+ * Provee utilidades para mostrar mensajes toast de estado.
+ */
 import { createContext, useContext, useState } from "react";
 import Toast from "./components/UI/Toast";
 

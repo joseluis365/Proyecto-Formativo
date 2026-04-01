@@ -11,6 +11,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: resultado de examen.
+ * Notifica disponibilidad de resultado clinico al destinatario.
+ */
 class ResultadoExamenMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request para restablecer contrasena de superadmin.
+ */
 class SuperadminResetPasswordRequest extends FormRequest
 {
     public function authorize(): bool

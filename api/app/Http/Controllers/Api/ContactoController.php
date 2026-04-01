@@ -8,6 +8,10 @@ use App\Mail\ContactoMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Controlador de contacto.
+ * Recibe y procesa mensajes de contacto desde canales externos.
+ */
 class ContactoController extends Controller
 {
     public function send(StoreContactoRequest $request)

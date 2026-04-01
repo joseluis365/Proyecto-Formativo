@@ -1,3 +1,7 @@
+/*
+ * Dashboard de superadmin.
+ * Consolida actividad global y metricas de plataforma.
+ */
 import StatsPanel from "../../components/Dashboard/StatsPanel";
 import { superAdminStats } from "../../data/dashboardStats";
 import LineChart from "../../components/Charts/LineChart";

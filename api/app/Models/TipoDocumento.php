@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo TipoDocumento.
+ * Catalogo de tipos de identificacion para usuarios.
+ */
 class TipoDocumento extends Model
 {
     use HasFactory;

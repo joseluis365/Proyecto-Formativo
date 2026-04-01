@@ -1,3 +1,7 @@
+/*
+ * Componente raiz del frontend.
+ * Centraliza rutas, modulos y layouts por rol.
+ */
 import { Routes, Route } from "react-router-dom"
 import DashboardLayout from "./layouts/AdminLayout"
 import Personal from "./Pages/Admin/Personal"

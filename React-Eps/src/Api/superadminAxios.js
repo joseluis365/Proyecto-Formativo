@@ -1,3 +1,7 @@
+/*
+ * Cliente HTTP para superadmin.
+ * Centraliza peticiones y configuracion de autenticacion de superadmin.
+ */
 import axios from "axios";
 import Swal from "sweetalert2";
 

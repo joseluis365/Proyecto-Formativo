@@ -1,3 +1,7 @@
+/*
+ * Layout de farmacia.
+ * Estructura base para dashboard, inventario y movimientos.
+ */
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { LayoutProvider, useLayout } from "../LayoutContext";

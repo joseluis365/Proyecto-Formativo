@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request para solicitar codigo de recuperacion de superadmin.
+ */
 class SuperadminSendRecoveryCodeRequest extends FormRequest
 {
     public function authorize(): bool

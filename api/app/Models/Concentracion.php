@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Concentracion.
+ * Catalogo de concentraciones para presentaciones de medicamentos.
+ */
 class Concentracion extends Model
 {
     protected $table = 'concentracion';

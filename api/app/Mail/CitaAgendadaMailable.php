@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: cita agendada.
+ * Confirma al paciente la creacion de una nueva cita.
+ */
 class CitaAgendadaMailable extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Constants\RolConstants;
 use Barryvdh\DomPDF\Facade\Pdf;
 
+/**
+ * Backend: Historial Clínico del paciente.
+ * - show: mostrar resumen del historial
+ * - detalles: listar últimos detalles de atención
+ * - completo: historial completo con citas, remisiones y recetas
+ * - updateAntecedentes: actualizar antecedentes y datos demográficos
+ * - misPacientes: lista de pacientes del médico autenticado
+ * - exportPdf: exportar historial completo a PDF
+ * - evolucion / exportEvolucionPdf: evolución clínica (con signos y diagnósticos)
+ */
 class HistorialClinicoController extends Controller
 {
     /**

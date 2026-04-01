@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo HistorialReporte.
+ * Registra historico de generacion y consulta de reportes.
+ */
 class HistorialReporte extends Model
 {
     protected $table = 'historial_reportes';

@@ -1,3 +1,7 @@
+/*
+ * Layout publico de inicio.
+ * Estructura para landing, informacion y rutas abiertas.
+ */
 import { Outlet } from "react-router-dom";
 import IndexHeader from "./Layout-Components/IndexHeader";
 import IndexFooter from "./Layout-Components/IndexFooter";

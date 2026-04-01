@@ -5,6 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueIgnoreCase;
 
+/**
+ * Request de creacion de usuario.
+ * Valida informacion base de registro para usuarios del sistema.
+ */
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Modelo HistorialClinico
+ * Almacena antecedentes y referencias básicas del historial de un paciente.
+ * Relaciones: paciente (Usuario) y detalles (HistorialDetalle)
+ */
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;

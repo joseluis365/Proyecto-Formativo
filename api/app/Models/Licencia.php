@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Licencia.
+ * Define tipos/estados de licencia y su vigencia operativa.
+ */
 class Licencia extends Model
 {
     protected $table = 'tipo_licencia';
@@ -20,4 +24,3 @@ class Licencia extends Model
     return $this->hasMany(EmpresaLicencia::class, 'id_tipo_licencia', 'id_tipo_licencia');
 }
 }
-

@@ -19,6 +19,10 @@ use App\Mail\RegistroEmpresaRepresentante;
 use App\Mail\RegistroEmpresaAdmin;
 use App\Mail\NuevaEmpresaSuperAdmin;
 
+/**
+ * Controlador de registro de empresas.
+ * Orquesta la creacion de empresa, usuarios base y notificaciones de alta.
+ */
 class RegistroEmpresaController extends Controller
 {
     public function store(StoreEmpresaRequest $request)

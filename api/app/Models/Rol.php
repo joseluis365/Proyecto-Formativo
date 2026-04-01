@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Rol.
+ * Define perfiles de acceso y permisos funcionales.
+ */
 class Rol extends Model
 {
     protected $table = 'rol';

@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request para verificar codigo de recuperacion.
+ */
 class VerifyRecoveryCodeRequest extends FormRequest
 {
     public function authorize(): bool

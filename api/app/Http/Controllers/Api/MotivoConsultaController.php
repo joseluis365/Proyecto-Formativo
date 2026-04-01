@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 use App\Models\MotivoConsulta;
 
+/**
+ * Controlador de motivos de consulta.
+ * Expone mantenimiento del catalogo de motivos clinicos.
+ */
 class MotivoConsultaController extends Controller
 {
     public function index(Request $request)

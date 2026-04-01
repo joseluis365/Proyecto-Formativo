@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Consultorio.
+ * Define consultorios disponibles para atencion medica.
+ */
 class Consultorio extends Model
 {
     use HasFactory;

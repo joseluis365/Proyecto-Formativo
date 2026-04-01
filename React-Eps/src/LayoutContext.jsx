@@ -1,3 +1,7 @@
+/*
+ * Contexto global de layout.
+ * Comparte titulo, subtitulo y ayuda contextual entre vistas.
+ */
 import { createContext, useContext, useState, useEffect } from "react";
 
 const LayoutContext = createContext(null);

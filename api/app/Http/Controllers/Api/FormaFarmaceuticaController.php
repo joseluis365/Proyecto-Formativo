@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FormaFarmaceutica;
 
+/**
+ * Controlador de formas farmaceuticas.
+ * Mantiene el catalogo de presentaciones farmaceuticas.
+ */
 class FormaFarmaceuticaController extends Controller
 {
     public function index(Request $request)

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request de reagendamiento de cita.
+ * Valida nueva fecha/hora respetando reglas de negocio.
+ */
 class ReagendarCitaRequest extends FormRequest
 {
     public function authorize(): bool

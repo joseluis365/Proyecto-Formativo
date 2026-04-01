@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Presentacion;
 use Illuminate\Validation\Rule;
 
+/**
+ * Controlador administrativo de presentaciones.
+ * Gestiona presentaciones de medicamentos para administracion del catalogo.
+ */
 class AdminPresentacionController extends Controller
 {
     public function index(Request $request)

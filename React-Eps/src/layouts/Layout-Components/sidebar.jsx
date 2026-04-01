@@ -1,3 +1,7 @@
+/*
+ * Sidebar principal del modulo administrativo.
+ * Renderiza navegacion dinamica segun rol.
+ */
 import SidebarDropdown from "./SidebarDropdown";
 import SidebarItem from "./SidebarItem";
 import SidebarSubItem from "./SidebarSubItem";

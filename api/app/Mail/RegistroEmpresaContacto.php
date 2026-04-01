@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: registro de empresa para contacto.
+ * Notificacion inicial de onboarding para el contacto principal.
+ */
 class RegistroEmpresaContacto extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

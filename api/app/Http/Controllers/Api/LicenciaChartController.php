@@ -8,6 +8,10 @@ use App\Models\EmpresaLicencia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controlador de graficas de licencias.
+ * Construye datos para visualizaciones de estado y vigencia de licencias.
+ */
 class LicenciaChartController extends Controller
 {
     public function getMonthlyStats()

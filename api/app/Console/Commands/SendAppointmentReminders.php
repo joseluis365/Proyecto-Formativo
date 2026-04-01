@@ -10,6 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RecordatorioCitaMail;
 
+/**
+ * Comando de recordatorios de citas.
+ * Ejecuta envio programado de recordatorios pendientes.
+ */
 class SendAppointmentReminders extends Command
 {
     /**

@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Enfermedad;
 
+/**
+ * Controlador de enfermedades.
+ * Gestiona catalogo ICD y su uso en diagnosticos clinicos.
+ */
 class EnfermedadController extends Controller
 {
     /**

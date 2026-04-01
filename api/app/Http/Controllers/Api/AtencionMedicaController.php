@@ -12,6 +12,10 @@ use App\Http\Requests\AtencionMedicaRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Controlador de atencion medica.
+ * Administra registro y consulta de atenciones asociadas a citas e historial.
+ */
 class AtencionMedicaController extends Controller
 {
     /**

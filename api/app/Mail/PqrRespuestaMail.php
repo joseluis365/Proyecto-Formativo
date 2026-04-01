@@ -8,6 +8,10 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Pqr;
 
+/**
+ * Correo: respuesta a PQR.
+ * Envia la respuesta oficial de una solicitud/queja/reclamo.
+ */
 class PqrRespuestaMail extends Mailable
 {
     use Queueable, SerializesModels;

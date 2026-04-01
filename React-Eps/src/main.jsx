@@ -1,3 +1,7 @@
+/*
+ * Punto de entrada del frontend.
+ * Inicializa React y monta la aplicacion en el DOM.
+ */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'

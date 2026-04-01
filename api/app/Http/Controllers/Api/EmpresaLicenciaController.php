@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\LicenciaActivadaEmpresa;
 use App\Mail\LicenciaActivadaAdmin;
 
+/**
+ * Controlador de relacion empresa-licencia.
+ * Maneja asignacion, consulta y estado de licencias por empresa.
+ */
 class EmpresaLicenciaController extends Controller
 {
     public function index(\Illuminate\Http\Request $request)

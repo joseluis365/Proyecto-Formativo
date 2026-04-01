@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo TipoCita.
+ * Define categorias de citas medicas en el sistema.
+ */
 class TipoCita extends Model
 {
     use HasFactory;

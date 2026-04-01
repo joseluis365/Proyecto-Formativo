@@ -9,6 +9,10 @@ use App\Models\InventarioFarmacia;
 use App\Models\MovimientoInventario;
 use Carbon\Carbon;
 
+/**
+ * Controlador de dashboard de farmacia.
+ * Entrega metricas operativas para paneles del modulo farmaceutico.
+ */
 class FarmaciaDashboardController extends Controller
 {
     /**

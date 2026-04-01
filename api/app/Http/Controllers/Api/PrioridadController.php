@@ -9,6 +9,10 @@ use App\Http\Requests\StorePrioridadRequest;
 use App\Http\Requests\UpdatePrioridadRequest;
 use App\Http\Resources\PrioridadResource;
 
+/**
+ * Controlador de prioridades.
+ * Gestiona niveles de prioridad usados en procesos clinicos/operativos.
+ */
 class PrioridadController extends Controller
 {
     public function index(Request $request)

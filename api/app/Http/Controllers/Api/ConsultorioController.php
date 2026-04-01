@@ -7,6 +7,10 @@ use App\Models\Consultorio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Controlador de consultorios.
+ * Mantiene el catalogo y disponibilidad de consultorios.
+ */
 class ConsultorioController extends Controller
 {
     /**

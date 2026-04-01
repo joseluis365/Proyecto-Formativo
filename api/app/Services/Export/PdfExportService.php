@@ -5,6 +5,10 @@ namespace App\Services\Export;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
 
+/**
+ * Servicio de exportacion PDF.
+ * Encapsula construccion y salida de documentos en formato PDF.
+ */
 class PdfExportService
 {
     /**

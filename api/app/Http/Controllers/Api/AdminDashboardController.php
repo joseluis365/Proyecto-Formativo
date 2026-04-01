@@ -8,6 +8,10 @@ use App\Models\Cita;
 use App\Models\Pqr;
 use Carbon\Carbon;
 
+/**
+ * Controlador de dashboard administrativo.
+ * Consolida metricas globales para el panel de administracion.
+ */
 class AdminDashboardController extends Controller
 {
     /**

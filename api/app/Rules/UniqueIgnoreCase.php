@@ -5,6 +5,10 @@ namespace App\Rules;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Regla de validacion personalizada.
+ * Verifica unicidad ignorando mayusculas y minusculas.
+ */
 class UniqueIgnoreCase implements Rule
 {
     protected $table;

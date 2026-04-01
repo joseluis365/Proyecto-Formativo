@@ -1,3 +1,7 @@
+/*
+ * Seccion principal de login.
+ * Controla formulario, validacion y redireccion por rol.
+ */
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import FormWithIcons from "../UI/FormWithIcons";

@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * Modelo HistorialDetalle.
+ * Almacena cada atencion clinica asociada al historial de un paciente.
+ */
 class HistorialDetalle extends Model
 {
     use HasFactory;

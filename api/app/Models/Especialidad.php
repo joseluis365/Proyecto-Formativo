@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Especialidad.
+ * Define especialidades medicas para asignacion de profesionales.
+ */
 class Especialidad extends Model
 {
     protected $table = 'especialidad';

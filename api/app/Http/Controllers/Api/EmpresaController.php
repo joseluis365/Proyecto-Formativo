@@ -19,6 +19,10 @@ use App\Mail\RegistroEmpresaContacto;
 use App\Mail\RegistroEmpresaRepresentante;
 use App\Mail\RegistroEmpresaAdmin;
 
+/**
+ * Controlador de empresas.
+ * Gestiona operaciones CRUD y consultas administrativas de empresas.
+ */
 class EmpresaController extends Controller
 {
     /**

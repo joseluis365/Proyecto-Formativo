@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo EmpresaLicencia.
+ * Vincula empresas con licencias activas/historicas.
+ */
 class EmpresaLicencia extends Model
 {
     protected $table = 'empresa_licencia';

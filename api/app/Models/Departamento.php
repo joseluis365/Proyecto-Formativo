@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Departamento.
+ * Catalogo territorial de departamentos.
+ */
 class Departamento extends Model
 {
     protected $table = 'departamento';

@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Concentracion;
 
+/**
+ * Controlador de concentraciones.
+ * Gestiona concentraciones de medicamentos para formulacion y despacho.
+ */
 class ConcentracionController extends Controller
 {
     public function index(Request $request)

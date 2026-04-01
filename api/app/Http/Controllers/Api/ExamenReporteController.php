@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
+/**
+ * Controlador de reportes de examenes.
+ * Genera listados e indicadores sobre examenes clinicos.
+ */
 class ExamenReporteController extends Controller
 {
     /**

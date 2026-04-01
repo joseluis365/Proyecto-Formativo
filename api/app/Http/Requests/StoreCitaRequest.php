@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request de creacion de cita.
+ * Valida datos requeridos para agendamiento.
+ */
 class StoreCitaRequest extends FormRequest
 {
     /**

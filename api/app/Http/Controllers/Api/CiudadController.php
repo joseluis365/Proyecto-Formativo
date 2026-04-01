@@ -9,6 +9,10 @@ use App\Http\Requests\StoreCiudadRequest;
 use App\Http\Requests\UpdateCiudadRequest;
 use App\Http\Resources\CiudadResource;
 
+/**
+ * Controlador de ciudades.
+ * Mantiene ciudades asociadas a departamentos para el sistema.
+ */
 class CiudadController extends Controller
 {
     /**

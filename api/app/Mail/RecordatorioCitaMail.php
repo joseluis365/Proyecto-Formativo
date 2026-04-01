@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: recordatorio de cita.
+ * Envio programado previo a la fecha/hora de atencion.
+ */
 class RecordatorioCitaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

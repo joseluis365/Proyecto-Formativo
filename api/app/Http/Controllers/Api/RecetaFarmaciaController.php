@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Receta;
 use App\Models\RecetaDetalle;
 
+/**
+ * Controlador de recetas en farmacia.
+ * Permite consultar y actualizar el estado de recetas para dispensacion.
+ */
 class RecetaFarmaciaController extends Controller
 {
     /**

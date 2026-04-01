@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: remision agendada.
+ * Informa al paciente sobre una remision generada y programada.
+ */
 class RemisionAgendadaMail extends Mailable
 {
     use Queueable, SerializesModels;

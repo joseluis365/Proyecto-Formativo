@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Enfermedad.
+ * Catalogo diagnostico (incluye codigos ICD).
+ */
 class Enfermedad extends Model
 {
     protected $table = 'enfermedades';

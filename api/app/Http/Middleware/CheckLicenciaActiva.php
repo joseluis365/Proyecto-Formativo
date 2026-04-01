@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
+/**
+ * Middleware de licencia activa.
+ * Bloquea acceso cuando la empresa no tiene licencia valida.
+ */
 class CheckLicenciaActiva
 {
     /**

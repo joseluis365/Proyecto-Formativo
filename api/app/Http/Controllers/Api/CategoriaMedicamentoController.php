@@ -9,6 +9,10 @@ use App\Http\Requests\StoreCategoriaMedicamentoRequest;
 use App\Http\Requests\UpdateCategoriaMedicamentoRequest;
 use App\Http\Resources\CategoriaMedicamentoResource;
 
+/**
+ * Controlador de categorias de medicamento.
+ * Administra clasificacion del catalogo de medicamentos.
+ */
 class CategoriaMedicamentoController extends Controller
 {
     public function index(Request $request)

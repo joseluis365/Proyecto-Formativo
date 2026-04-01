@@ -8,6 +8,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * Modelo Superadmin.
+ * Usuario de nivel superior para administracion global de plataforma.
+ */
 class Superadmin extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;

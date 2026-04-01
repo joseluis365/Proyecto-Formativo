@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request de actualizacion de cita.
+ * Valida cambios permitidos sobre una cita existente.
+ */
 class UpdateCitaRequest extends FormRequest
 {
     /**

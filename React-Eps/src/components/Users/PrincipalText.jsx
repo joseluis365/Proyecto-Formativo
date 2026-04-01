@@ -1,3 +1,7 @@
+/*
+ * Encabezado reutilizable de modulo.
+ * Muestra icono, titulo y contador opcional.
+ */
 export default function PrincipalText({ icon, text, number }) {
     return (
         <div className="flex items-center gap-3">

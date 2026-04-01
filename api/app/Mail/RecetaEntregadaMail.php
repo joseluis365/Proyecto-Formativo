@@ -9,6 +9,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Correo: receta entregada.
+ * Confirma que la formula fue dispensada al paciente.
+ */
 class RecetaEntregadaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

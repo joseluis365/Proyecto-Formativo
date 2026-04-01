@@ -11,6 +11,10 @@ use App\Models\Concentracion;
 use App\Models\FormaFarmaceutica;
 use App\Models\Estado;
 
+/**
+ * Controlador de medicamentos.
+ * Maneja catalogo, consulta y operaciones del modulo farmaceutico.
+ */
 class MedicamentoController extends Controller
 {
     /**

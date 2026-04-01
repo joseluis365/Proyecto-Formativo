@@ -11,6 +11,10 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Correo: consulta finalizada.
+ * Informa que una atencion medica ha sido cerrada.
+ */
 class ConsultaFinalizadaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;

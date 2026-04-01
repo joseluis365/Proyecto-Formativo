@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Rules\UniqueIgnoreCase;
 
+/**
+ * Request de creacion de empresa.
+ * Valida datos legales y administrativos de la empresa.
+ */
 class StoreEmpresaRequest extends FormRequest
 {
     public function authorize(): bool

@@ -9,6 +9,10 @@ use App\Models\Receta;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
+/**
+ * Controlador de PDFs medicos.
+ * Gestiona la exportacion de documentos clinicos en formato PDF.
+ */
 class PdfMedicoController extends Controller
 {
     // ─────────────────────────────────────────────────────────────────────

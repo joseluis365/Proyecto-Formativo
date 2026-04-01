@@ -1,3 +1,7 @@
+/*
+ * Vista de citas del paciente.
+ * Consulta historico, detalle y acciones sobre sus citas.
+ */
 import { useEffect, useState, useMemo } from "react";
 import { useLayout } from "../../LayoutContext";
 import useCitas from "../../hooks/useCitas";

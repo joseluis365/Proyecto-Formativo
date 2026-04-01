@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Examen.
+ * Representa examenes clinicos solicitados y sus resultados.
+ */
 class Examen extends Model
 {
     protected $table = 'examen';

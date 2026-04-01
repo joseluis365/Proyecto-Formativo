@@ -1,3 +1,7 @@
+/*
+ * Cliente HTTP principal del frontend.
+ * Configura Axios base para consumo de API general.
+ */
 import axios from "axios";
 import Swal from "sweetalert2";
 

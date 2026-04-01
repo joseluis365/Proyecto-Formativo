@@ -8,6 +8,10 @@ use App\Models\Ciudad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Controlador de ubicaciones.
+ * Gestiona datos geograficos (departamentos/ciudades) para formularios y filtros.
+ */
 class LocationController extends Controller
 {
     public function getDepartamentos()

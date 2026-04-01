@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Modelo Usuario
+ * Representa a usuarios del sistema (pacientes, médicos, admin, etc.).
+ * Notas: el password real se almacena en el campo `contrasena` y se usa getAuthPassword() para Laravel.
+ * Relaciones: tipoDocumento, rol, estado, empresa, especialidad, consultorio, etc.
+ */
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable; 

@@ -9,6 +9,10 @@ use App\Http\Requests\StoreEspecialidadRequest;
 use App\Http\Requests\UpdateEspecialidadRequest;
 use App\Http\Resources\EspecialidadResource;
 
+/**
+ * Controlador de especialidades.
+ * Gestiona catalogo de especialidades medicas.
+ */
 class EspecialidadesController extends Controller
 {
     public function index(Request $request)

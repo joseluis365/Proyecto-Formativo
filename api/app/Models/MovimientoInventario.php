@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo MovimientoInventario.
+ * Traza entradas y salidas de inventario por medicamento/lote.
+ */
 class MovimientoInventario extends Model
 {
     protected $table = 'movimiento_inventario';

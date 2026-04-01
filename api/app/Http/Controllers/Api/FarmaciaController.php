@@ -9,6 +9,10 @@ use App\Http\Requests\StoreFarmaciaRequest;
 use App\Http\Requests\UpdateFarmaciaRequest;
 use App\Http\Resources\FarmaciaResource;
 
+/**
+ * Controlador de farmacias.
+ * Administra sedes farmaceuticas y su informacion operativa.
+ */
 class FarmaciaController extends Controller
 {
     /**

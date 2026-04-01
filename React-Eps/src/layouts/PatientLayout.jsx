@@ -1,3 +1,7 @@
+/*
+ * Layout de paciente.
+ * Organiza navegacion y paneles de autoservicio del paciente.
+ */
 import { useState } from "react";
 import { Outlet, Link, NavLink } from "react-router-dom";
 import { LayoutProvider, useLayout } from "../LayoutContext";

@@ -1,3 +1,7 @@
+/*
+ * Dashboard administrativo.
+ * Presenta metricas, graficas y feed operativo.
+ */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLayout } from "../../LayoutContext";

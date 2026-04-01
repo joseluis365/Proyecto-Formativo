@@ -1,285 +1,199 @@
-Stack Tecnológico
-🔹 Backend
+# PROJECT CONTEXT - Proyecto Formativo
+
+## 1) Estado general actual
+
+Repositorio monorepo con dos aplicaciones principales:
+
+- `api/`: backend Laravel 12 (API REST + auth + reportes + PDFs + eventos realtime).
+- `React-Eps/`: frontend React + Vite (modulos por rol: SuperAdmin, Admin, Medico, Paciente, Farmacia, Examenes).
 
-Laravel 12
+El proyecto esta orientado a gestion integral tipo EPS/IPS: usuarios, empresas/licencias, citas, atencion medica, historia clinica, examenes, farmacia, PQRS, reportes y paneles.
+
+---
+
+## 2) Stack tecnologico vigente
+
+### Backend (`api`)
+
+- Laravel 12
+- PHP ^8.2
+- Laravel Sanctum (tokens)
+- Laravel Reverb + broadcasting (actividad en tiempo real)
+- barryvdh/laravel-dompdf (exportacion PDF)
+- Mews Purifier
+- Pest para pruebas
 
-PostgreSQL
+DB soportada por Laravel config (sqlite/mysql/mariadb/pgsql/sqlsrv), con uso real de patrones orientados a PostgreSQL en algunas consultas (`ILIKE`).
 
-Laravel Sanctum
+### Frontend (`React-Eps`)
 
-Arquitectura moderna (bootstrap/app.php)
+- React 19
+- React Router DOM 7
+- Vite (rolldown-vite)
+- Tailwind CSS 4
+- Axios
+- React Hook Form + Zod
+- Framer Motion
+- Recharts
+- SweetAlert2
+- Laravel Echo + Pusher JS (realtime)
+
+---
+
+## 3) Arquitectura backend (actual)
 
-Middleware personalizado licencia.activa
+### Capas principales
+
+- Rutas: `api/routes/api.php` (principal), `web.php`, `console.php`, `channels.php`
+- Controladores: `api/app/Http/Controllers/Api/*`
+- Modelos Eloquent: `api/app/Models/*`
+- Validaciones: `api/app/Http/Requests/*` y `api/app/Http/Requests/Auth/*`
+- Recursos JSON: `api/app/Http/Resources/*`
+- Servicios: `api/app/Services/*`
+- Mailables: `api/app/Mail/*`
+- Middleware custom: `CheckLicenciaActiva`
+- Eventos: `SystemActivityEvent`
 
-API Resources (uso mayoritario, en proceso de estandarización total)
+### Modulos funcionales backend
+
+- Autenticacion usuario general (`/login`, 2FA admin, recovery password)
+- Autenticacion superadmin (`/superadmin/*`, flujo separado)
+- Usuarios y gestion empresarial
+- Licencias y relacion empresa-licencia
+- Agenda de citas (crear, actualizar, reagendar, no asistio, autocancelacion)
+- Atencion medica e historia clinica (resumen, completo, evolucion, export PDF)
+- Examenes clinicos (agenda, atencion, resultado)
+- Farmacia (inventario, movimientos, dispensacion, dashboard, reportes)
+- Catalogos internos (roles, estados, tipos, prioridades, especialidades, ubicaciones, etc.)
+- PQRS y contacto
+- Reporteria
+
+### Seguridad y sesiones
 
-FormRequest (uso casi total, estructura consolidada)
+- Usuario general: token Sanctum en `localStorage` (frontend)
+- Superadmin: token/session separados en `sessionStorage` (frontend)
+- Middleware aplicado en rutas protegidas: `auth:sanctum` + `licencia.activa`
 
-Servicios desacoplados (inicio de arquitectura ReportService)
+---
 
-Configuración extensible vía config/*.php (nuevo patrón para reportes)
+## 4) Arquitectura frontend (actual)
 
-🔹 Frontend
+### Estructura principal
 
-React + React Router v6
+- Entrada: `React-Eps/src/main.jsx`
+- Ruteo principal: `React-Eps/src/App.jsx`
+- Contextos globales:
+  - `LayoutContext.jsx`
+  - `ToastContext.jsx`
+- Clientes API:
+  - `src/Api/axios.js`
+  - `src/Api/superadminAxios.js`
+  - `src/Api/bloqueoAgenda.js`
+- Realtime:
+  - `src/lib/echo.js`
 
-Arquitectura con Layouts anidados (<Outlet />)
+### Layouts activos por dominio
 
-Separación estricta Admin / SuperAdmin
+- `AdminLayout`
+- `DoctorLayout`
+- `PatientLayout`
+- `FarmaciaLayout`
+- `SuperAdminLayout`
+- `LoginLayout`
+- `IndexLayout`
 
-axios.js para Admin
+### Modulos de paginas
 
-superadminAxios.js para SuperAdmin
+- `Pages/Inicio/*`
+- `Pages/Admin/*`
+- `Pages/Medico/*`
+- `Pages/Paciente/*`
+- `Pages/Farmacia/*`
+- `Pages/Examenes/*`
+- `Pages/Personal/*`
+- `Pages/SuperAdmin/*`
 
-Hooks reutilizables (useTableData, hooks por entidad)
+### Patrones de frontend
 
-framer-motion para animaciones UI
+- Guardas de ruta por rol (`components/Routes/*`)
+- Hooks de dominio para carga y estado (`src/hooks/*`)
+- Validaciones con esquemas (`src/schemas/*`, `src/utils/validations/*`)
+- Componentizacion por areas (`src/components/*`)
 
-Módulo Gestión Interna consolidado
+---
 
-Módulo Reportes en arquitectura profesional escalable
+## 5) Dominio funcional consolidado
 
-🏗 Arquitectura General
-🔹 Backend
+El sistema hoy cubre de forma integrada:
 
-Separación clara MVC
+- Registro y autenticacion de actores
+- Gestion de empresas y licencias
+- Agenda y atencion medica
+- Historia clinica y evolucion
+- Remisiones y examenes
+- Recetas y modulo farmacia
+- PQRS/contacto
+- Reportes y exportaciones PDF
+- Actividad en tiempo real para paneles
 
-Soft delete lógico mediante id_estado
+---
 
-Seeders estructurados, idempotentes y portables
+## 6) Convenciones y reglas de trabajo
 
-Secuencias PostgreSQL sincronizadas dentro de Seeders (no en migraciones)
+- Mantener separacion de sesiones entre usuario general y superadmin.
+- No mezclar clientes Axios de dominios distintos.
+- Respetar contratos JSON actuales para no romper frontend/backend.
+- Evitar cambios de nombres de columnas/campos sin plan de migracion completo.
+- Priorizar uso de FormRequest, Resources y servicios para logica reutilizable.
+- Mantener compatibilidad funcional de rutas protegidas con licencia activa.
 
-Middleware de licencia aplicado a rutas protegidas
+---
 
-Contratos JSON estandarizados con API Resources
+## 7) Riesgos y deuda tecnica vigente
 
-Inicio de arquitectura desacoplada para reportes:
+- Dependencia parcial a PostgreSQL por consultas con `ILIKE`.
+- Existen segmentos con hardcodes de estados/roles que deben migrar a constantes/enums.
+- Hay heterogeneidad en algunos hooks/componentes heredados del frontend.
+- Falta estandarizacion total de algunos contratos y capas de reporte.
 
-config/reportables.php
+---
 
-ReportService
+## 8) Objetivo de evolucion (corto/mediano plazo)
 
-ReportController
+- Estandarizar completamente:
+  - validaciones
+  - respuestas API
+  - manejo de errores
+- Reducir dependencia de SQL dialect-specific donde aplique.
+- Consolidar reporteria configurable (filtros + exportes).
+- Mantener estabilidad funcional antes de refactors grandes.
 
-⚠ Riesgo actual:
+Principio rector:
 
-Dependencia a PostgreSQL por uso de ILIKE (pendiente abstracción con Trait HasSearch)
+1. Estabilidad primero.
+2. Estandarizacion despues.
+3. Optimizacion al final.
 
-🔹 Frontend
+---
 
-Layouts jerárquicos:
+## 9) Documentacion interna actual disponible
 
-DashboardLayout
+### Backend
 
-SuperAdminLayout
+- `api/COMMENTARY-backend.md`
+- `api/COMMENTARY-secciones.md`
 
-IndexLayout
+### Frontend
 
-Módulos implementados:
+- `React-Eps/COMMENTARY-frontend.md`
+- `React-Eps/COMMENTARY-secciones-frontend.md`
+- `React-Eps/src/Api/COMMENTARY-api.md`
+- `React-Eps/src/Pages/COMMENTARY-pages.md`
+- `React-Eps/src/components/COMMENTARY-components.md`
+- `React-Eps/src/hooks/COMMENTARY-hooks.md`
+- `React-Eps/src/layouts/COMMENTARY-layouts.md`
+- `React-Eps/src/schemas/COMMENTARY-schemas.md`
+- `React-Eps/src/data/COMMENTARY-data.md`
+- `React-Eps/src/utils/COMMENTARY-utils.md`
 
-Gestión Interna (CRUD completo):
-
-Prioridades
-
-Tipos de Cita
-
-Categorías de Examen
-
-Categorías de Medicamento
-
-Especialidades
-
-Farmacias
-
-Departamentos
-
-Ciudades
-
-Roles
-
-Estados
-
-Hook centralizado:
-
-useTableData para paginación, filtros y búsqueda
-
-Deuda técnica controlada:
-
-Duplicación parcial en modales CRUD
-
-Algunos hooks aún no totalmente unificados
-
-Refactorización futura planificada, no urgente
-
-🔐 Autenticación
-Usuario Normal
-
-POST /api/login
-
-Tabla: usuario
-
-Campo: contrasena (mutator automático hash)
-
-Sesión: localStorage
-
-Middleware: auth:sanctum + licencia.activa
-
-SuperAdmin
-
-POST /api/superadmin/login
-
-Tabla: superadmin
-
-Sesión: sessionStorage
-
-Flujo independiente
-
-Axios independiente
-
-No comparte token con Admin normal
-
-📏 Reglas Arquitectónicas Activas
-
-NO mezclar sesiones Admin y SuperAdmin.
-
-NO modificar UserFormConfig.js sin autorización.
-
-NO cambiar estructura de payload.
-
-NO asumir campos inexistentes.
-
-NO cambiar nombres de columnas.
-
-Respetar consistencia de id_estado.
-
-Filtrar registros activos con id_estado = 1.
-
-No introducir lógica de negocio en controladores.
-
-Mantener compatibilidad total con migrate:fresh --seed.
-
-No usar migraciones para sincronizar secuencias.
-
-Las secuencias se sincronizan dentro de Seeders.
-
-🧱 Estado Actual del Backend
-✅ Fortalezas
-
-Middleware de licencia estable.
-
-Seeders completamente portables.
-
-Secuencias PostgreSQL sincronizadas correctamente.
-
-Uso mayoritario de FormRequest.
-
-Soft delete homogéneo por id_estado.
-
-CRUD estandarizados.
-
-Arquitectura lista para escalar.
-
-Inicio de sistema profesional de reportes configurable.
-
-⚠ Riesgos Detectados
-
-Uso de ILIKE (dependencia PostgreSQL).
-
-Hardcoding parcial de id_estado = 1.
-
-Algunos endpoints aún no usan Resource consistentemente.
-
-Búsquedas no abstractas (pendiente Trait HasSearch).
-
-🖥 Estado Actual del Frontend
-✅ Fortalezas
-
-Rutas anidadas funcionales.
-
-Layout persistente estable.
-
-Separación modular clara.
-
-CRUD consistentes.
-
-Módulo Gestión Interna consolidado.
-
-Arquitectura preparada para módulo Reportes profesional.
-
-⚠ Deuda Técnica
-
-Duplicación en modales CRUD.
-
-Unificación futura pendiente.
-
-Algunas inconsistencias menores en hooks de catálogos.
-
-🌱 Seeders Portables
-
-El sistema debe funcionar correctamente con:
-
-php artisan migrate:fresh --seed
-
-Y dejar automáticamente:
-
-Empresa activa (id_estado = 1)
-
-Licencia activa con fechas válidas
-
-Usuario admin activo
-
-Estados base creados
-
-Roles base creados
-
-Secuencias sincronizadas
-
-Sin errores 23505
-
-Sin errores de FK
-
-🎯 Nuevo Objetivo Arquitectónico (2026)
-Consolidación y Profesionalización
-🔹 Backend
-
-Implementar Trait HasSearch para eliminar dependencia ILIKE
-
-Estandarizar 100% API Resources
-
-Eliminar validaciones manuales en controllers
-
-Migrar hardcodes a constantes / Enums
-
-Implementar módulo Reportes configurable (Opción C)
-
-config/reportables.php
-
-ReportService
-
-Exportación PDF y Excel
-
-Mantener portabilidad total
-
-🔹 Frontend
-
-Implementar módulo Reportes profesional
-
-Filtros dinámicos
-
-Exportación PDF y Excel
-
-Mantener coherencia visual
-
-No romper formularios existentes
-
-Refactorización progresiva controlada
-
-🏛 Principio Rector del Proyecto
-
-Primero estabilidad.
-Luego estandarización.
-Luego optimización.
-Nunca refactorizar sin diagnóstico completo.
-No parches temporales.
-Arquitectura limpia antes que rapidez.
+Estas referencias sirven como mapa rapido para onboarding y mantenimiento.

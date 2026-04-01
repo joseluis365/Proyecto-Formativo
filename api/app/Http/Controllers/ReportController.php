@@ -7,6 +7,10 @@ use App\Services\ReportService;
 use Illuminate\Http\Request;
 use Exception;
 
+/**
+ * Controlador web de reportes.
+ * Encapsula endpoints de salida para reportes no API.
+ */
 class ReportController extends Controller
 {
     protected $reportService;

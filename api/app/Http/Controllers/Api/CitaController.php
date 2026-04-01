@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Events\SystemActivityEvent;
 use Illuminate\Http\Request;
 
+/**
+ * Backend: Gestión de Citas (agendamiento, consulta, actualización, cancelación y reagendado).
+ * - index: lista citas con filtros y lógica de auto-cancelación
+ * - show/store/update/destroy: CRUD de citas
+ * - reagendar: cambios de fecha/hora manteniendo médico y motivo
+ * - noAsistio: marcar como inasistencia con validaciones de tiempos
+ */
 class CitaController extends Controller
 {
     public function index(Request $request)

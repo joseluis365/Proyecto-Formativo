@@ -1,5 +1,12 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Rutas de Consola
+|--------------------------------------------------------------------------
+| Define comandos Artisan y tareas programadas (scheduler) del backend.
+*/
+
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 

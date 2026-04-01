@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Remision.
+ * Registra remisiones a especialistas o examenes derivados de una atencion.
+ */
 class Remision extends Model
 {
     protected $table = 'remision';

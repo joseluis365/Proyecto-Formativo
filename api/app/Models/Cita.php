@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Modelo Cita
+ * Representa una cita médica en el sistema.
+ * Relaciones principales:
+ * - paciente: Usuario (doc_paciente)
+ * - medico: Usuario (doc_medico)
+ * - estado: Estado de la cita
+ * - historialDetalle: Detalle de historial asociado
+ * - especialidad: Especialidad relacionada
+ * - motivoConsulta: Motivo de la consulta
+ */
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;

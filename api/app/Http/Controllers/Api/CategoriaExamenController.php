@@ -9,6 +9,10 @@ use App\Http\Requests\StoreCategoriaExamenRequest;
 use App\Http\Requests\UpdateCategoriaExamenRequest;
 use App\Http\Resources\CategoriaExamenResource;
 
+/**
+ * Controlador de categorias de examen.
+ * Mantiene clasificacion de examenes clinicos.
+ */
 class CategoriaExamenController extends Controller
 {
     public function index(Request $request)

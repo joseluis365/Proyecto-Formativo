@@ -10,6 +10,13 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Events\SystemActivityEvent;
 use App\Constants\RolConstants;
 
+/**
+ * Backend: Gestión de usuarios (médicos, pacientes, administrativos).
+ * - index: listado con filtros por rol y estado, búsqueda
+ * - medicosDisponibles: médicos activos sin citas en una fecha/hora dadas
+ * - show/store/update/destroy: operaciones CRUD sobre usuarios
+ - updateEstado: cambiar estado del usuario
+*/
 class UsuarioController extends Controller
 {
     /**

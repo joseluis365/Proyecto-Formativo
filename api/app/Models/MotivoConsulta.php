@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo MotivoConsulta.
+ * Catalogo de motivos usados al agendar y atender citas.
+ */
 class MotivoConsulta extends Model
 {
     use HasFactory;

@@ -4,6 +4,9 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Request para restablecer contrasena.
+ */
 class ResetPasswordRequest extends FormRequest
 {
     public function authorize(): bool

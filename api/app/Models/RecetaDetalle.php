@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo RecetaDetalle.
+ * Detalla medicamentos, dosis y frecuencia de una receta.
+ */
 class RecetaDetalle extends Model
 {
     protected $table = 'receta_detalle';

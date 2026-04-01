@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Dispensacion.
+ * Representa la entrega de medicamentos al paciente.
+ */
 class Dispensacion extends Model
 {
     protected $table = 'dispensacion_farmacia';
