@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql bcmath zip
+    && docker-php-ext-install pdo pdo_pgsql bcmath zip
 
 # Instalar Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
