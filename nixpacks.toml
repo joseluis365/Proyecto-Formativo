@@ -1,9 +1,8 @@
 [phases.setup]
-nixPkgs = ["php", "composer", "nodejs"]
+nixPkgs = ["php", "phpExtensions.bcmath", "composer"]
 
 [phases.build]
 cmds = [
-  "cd api",
   "composer install --no-dev --optimize-autoloader",
   "php artisan config:cache",
   "php artisan route:cache",
@@ -11,4 +10,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd api && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
