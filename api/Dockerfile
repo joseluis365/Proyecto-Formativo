@@ -1,21 +1,28 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
+# Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
     libzip-dev \
     libpq-dev \
+    nginx \
     && docker-php-ext-install pdo_pgsql pdo bcmath zip
 
-WORKDIR /app
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-EXPOSE 8080
+WORKDIR /var/www/html
 
 COPY . .
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+RUN composer install --optimize-autoloader --no-interaction --no-scripts \
+    && chmod -R 777 storage bootstrap/cache
 
-RUN composer install --optimize-autoloader --no-interaction --no-scripts
+# Copiar configuración de Nginx
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
-CMD php -S 0.0.0.0:8080 -t public
+EXPOSE 8080
+
+CMD service nginx start && php-fpm
