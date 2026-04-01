@@ -1,8 +1,6 @@
 [phases.build]
 cmds = [
-  "apt-get update",
-  "apt-get install -y php-bcmath",
-  "cd api && composer install --optimize-autoloader --no-dev --no-interaction"
+  "cd api && composer install --ignore-platform-req=ext-bcmath"
 ]
 
 [start]
