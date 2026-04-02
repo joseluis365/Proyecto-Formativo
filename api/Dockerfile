@@ -3,7 +3,7 @@ FROM php:8.2-fpm
 WORKDIR /var/www/html
 
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y pkg-config \
     nginx \
     libpq-dev \
     git unzip curl \
