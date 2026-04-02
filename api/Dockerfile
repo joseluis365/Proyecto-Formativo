@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     nginx \
     libpq-dev \
     git unzip curl \
-    && docker-php-ext-install pdo pdo_pgsql bcmath
+    && docker-php-ext-install pdo pdo_pgsql bcmath mbstring tokenizer xml ctype
+
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
