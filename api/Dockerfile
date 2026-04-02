@@ -19,8 +19,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 
 
-RUN mkdir -p /var/www/html/storage/logs \
-    && ln -sf /dev/stderr /var/www/html/storage/logs/laravel.log
+RUN mkdir -p storage/logs \
+    && ln -sf /dev/stderr storage/logs/laravel.log
 
 
 RUN composer install --optimize-autoloader --no-interaction --no-scripts \
