@@ -19,7 +19,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 
 
-RUN mkdir -p storage/logs \
+RUN mkdir -p storage/logs && chmod -R 777 storage \
     && ln -sf /dev/stderr storage/logs/laravel.log
 
 
