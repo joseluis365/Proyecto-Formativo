@@ -28,7 +28,9 @@ RUN composer install --optimize-autoloader --no-interaction --no-scripts \
     && php artisan config:clear \
     && php artisan config:cache \
     && php artisan route:cache \
-    && php artisan view:cache
+    && php artisan view:cache \
+    && php artisan migrate --force \
+    && php artisan db:seed --force
 
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
