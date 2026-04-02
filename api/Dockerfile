@@ -16,8 +16,8 @@ COPY . .
 
 RUN composer install --optimize-autoloader --no-interaction --no-scripts \
     && chmod -R 777 storage bootstrap/cache \
-    && php artisan config:clear && php artisan config:cache && php artisan cache:clear \
-    && php artisan route:cache && php artisan view:cache
+    && php artisan config:clear && php artisan cache:clear \
+    && php artisan config:cache && php artisan route:cache && php artisan view:cache
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
