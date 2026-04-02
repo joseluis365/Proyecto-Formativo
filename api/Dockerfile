@@ -28,9 +28,7 @@ RUN composer install --optimize-autoloader --no-interaction --no-scripts \
     && php artisan config:clear \
     && php artisan config:cache \
     && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan migrate --force \
-    && php artisan db:seed --force
+    && php artisan view:cache
 
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
@@ -44,4 +42,4 @@ EXPOSE 8080
 RUN apt-get update && apt-get install -y procps net-tools
 
 
-CMD ps aux && netstat -tlnp && php-fpm -D && nginx -g 'daemon off;'
+CMD php artisan migrate --force && php artisan db:seed --force && ps aux && netstat -tlnp && php-fpm -D && nginx -g 'daemon off;'
