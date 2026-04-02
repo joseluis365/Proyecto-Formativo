@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     nginx \
     libpq-dev \
     git unzip curl \
+    libonig-dev \        # <-- esta línea es la clave
     && docker-php-ext-install pdo pdo_pgsql bcmath mbstring tokenizer xml ctype
 
 
