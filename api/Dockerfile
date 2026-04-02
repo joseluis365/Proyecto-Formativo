@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     git unzip curl \
     && docker-php-ext-install pdo pdo_pgsql bcmath
 
+RUN ln -sf /dev/stderr /var/www/html/storage/logs/laravel.log
+
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
