@@ -28,5 +28,4 @@ RUN echo "listen = 9000" >> /usr/local/etc/php-fpm.d/zz-docker.conf
 EXPOSE 8080
 
 RUN apt-get update && apt-get install -y net-tools
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ps aux && netstat -tlnp && php-fpm -D && nginx -g 'daemon off;'
