@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y pkg-config \
     libpq-dev \
     git unzip curl \
     libonig-dev \
+    libxml2-dev \
     && docker-php-ext-install pdo pdo_pgsql bcmath mbstring xml ctype
 
 
