@@ -25,7 +25,6 @@ class MedicoSeeder extends Seeder
             8  => 'Neumología',
             9  => 'Dermatología',
             10 => 'Oftalmología',
-            11 => 'Cardiologia',
         ];
 
         // Exact Role 4 users from final.sql
