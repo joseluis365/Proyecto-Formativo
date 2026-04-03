@@ -25,11 +25,7 @@ RUN mkdir -p storage/logs \
 
 
 RUN composer install --optimize-autoloader --no-interaction --no-scripts \
-    && chmod -R 777 storage bootstrap/cache \
-    && php artisan config:clear \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+    && chmod -R 777 storage bootstrap/cache
 
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
