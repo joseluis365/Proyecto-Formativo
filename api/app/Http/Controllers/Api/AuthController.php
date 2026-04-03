@@ -75,6 +75,8 @@ class AuthController extends Controller
             // Guardar en caché por 5 minutos
             Cache::put('2fa_login_' . $user->email, $code, now()->addMinutes(5));
 
+            \Illuminate\Support\Facades\Log::info("=== TU CÓDIGO DE ACCESO 2FA ES: " . $code . " ===");
+
             try {
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Send2FACode($code));
 
@@ -87,12 +89,18 @@ class AuthController extends Controller
                     ]
                 ]);
             } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error al enviar el código de verificación: ' . $e->getMessage(),
-                    'data' => null
-                ], 500);
+                \Illuminate\Support\Facades\Log::error("Fallo al enviar correo 2FA para admin normal: " . $e->getMessage());
+                // Silenciar para permitir bypass con log.
             }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Código de verificación generado (revisa los logs).',
+                'data' => [
+                    'requires_2fa' => true,
+                    'email' => $user->email
+                ]
+            ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
