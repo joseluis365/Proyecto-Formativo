@@ -74,7 +74,14 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
-        $sequences = \Illuminate\Support\Facades\DB::select("SELECT sequencename, tablename FROM pg_sequences WHERE schemaname = 'public'");
+        $sequences = \Illuminate\Support\Facades\DB::select("
+            SELECT c.relname AS sequencename, t.relname AS tablename
+            FROM pg_class c
+            JOIN pg_namespace n ON n.oid = c.relnamespace
+            JOIN pg_depend d ON d.objid = c.oid
+            JOIN pg_class t ON d.refobjid = t.oid
+            WHERE c.relkind = 'S' AND n.nspname = 'public'
+        ");
 
         foreach ($sequences as $seq) {
             $seqName = $seq->sequencename;
