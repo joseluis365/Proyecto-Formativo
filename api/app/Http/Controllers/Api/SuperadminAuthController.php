@@ -41,10 +41,7 @@ class SuperadminAuthController extends Controller
         );
 
         try {
-            Mail::send('emails.verification_code', ['code' => $code], function ($message) use ($superadmin) {
-                $message->to($superadmin->email)
-                        ->subject('Código de verificación - Proyecto EPS');
-            });
+            \Illuminate\Support\Facades\Mail::to($superadmin->email)->send(new \App\Mail\Send2FACode($code));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -194,10 +191,7 @@ class SuperadminAuthController extends Controller
         Cache::put('superadmin_recovery_' . $request->email, $code, now()->addMinutes(10));
 
         try {
-            Mail::send('emails.recovery_code', ['code' => $code], function ($message) use ($superadmin) {
-                $message->to($superadmin->email)
-                        ->subject('Recuperación de Contraseña - Proyecto EPS');
-            });
+            \Illuminate\Support\Facades\Mail::to($superadmin->email)->send(new \App\Mail\SendRecoveryCodeMail($code));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

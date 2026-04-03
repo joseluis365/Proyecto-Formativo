@@ -76,10 +76,7 @@ class AuthController extends Controller
             Cache::put('2fa_login_' . $user->email, $code, now()->addMinutes(5));
 
             try {
-                Mail::send('emails.verification_code', ['code' => $code], function ($message) use ($user) {
-                    $message->to($user->email)
-                            ->subject('Código de Acceso (2FA) - Saluvanta EPS');
-                });
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\Send2FACode($code));
 
                 return response()->json([
                     'success' => true,
@@ -251,10 +248,7 @@ class AuthController extends Controller
         Cache::put('user_recovery_' . $request->email, $code, now()->addMinutes(10));
 
         try {
-            Mail::send('emails.recovery_code', ['code' => $code], function ($message) use ($user) {
-                $message->to($user->email)
-                        ->subject('Recuperación de Contraseña - Proyecto EPS');
-            });
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SendRecoveryCodeMail($code));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
