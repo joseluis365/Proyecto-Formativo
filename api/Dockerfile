@@ -39,4 +39,9 @@ EXPOSE 8080
 RUN apt-get update && apt-get install -y procps net-tools
 
 
-CMD php artisan migrate --force && php artisan db:seed --force && ps aux && netstat -tlnp && php-fpm -D && nginx -g 'daemon off;'
+CMD php artisan migrate --force && \
+    php artisan db:seed --force && \
+    php artisan queue:work --daemon & \
+    php artisan reverb:start --host=0.0.0.0 --port=8081 & \
+    php-fpm -D && \
+    nginx -g 'daemon off;'
