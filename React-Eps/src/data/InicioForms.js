@@ -1,12 +1,16 @@
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+
 // forms/login.form.js
 export const loginForm = {
   buttonText: "Ingresar al portal",
-  buttonIcon: "arrow_forward",
+  buttonIcon: <ArrowForwardRoundedIcon />,
   fields: [
     {
       name: "email",
       label: "Correo electrónico",
-      icon: "email",
+      icon: <EmailRoundedIcon />,
       type: "email",
       placeholder: "correo@ejemplo.com",
       autoComplete: "username",
@@ -15,7 +19,7 @@ export const loginForm = {
     {
       name: "password",
       label: "Contraseña",
-      icon: "lock",
+      icon: <LockRoundedIcon />,
       type: "password",
       placeholder: "••••••••",
       autoComplete: "current-password",
@@ -26,12 +30,12 @@ export const loginForm = {
 
 export const emailForm = {
     buttonText: "Continuar",
-    buttonIcon: "arrow_forward",
+    buttonIcon: <ArrowForwardRoundedIcon />,
     fields: [
         {
             name: "email",
             label: "Correo electrónico",
-            icon: "email",
+            icon: <EmailRoundedIcon />,
             type: "email",
             placeholder: "correo@ejemplo.com",
             autoComplete: "username",
@@ -42,12 +46,12 @@ export const emailForm = {
 
 export const codeForm = {
     buttonText: "Verificar",
-    buttonIcon: "arrow_forward",
+    buttonIcon: <ArrowForwardRoundedIcon />,
     fields: [
         {
             name: "code",
             label: "Código de verificación",
-            icon: "lock",
+            icon: <LockRoundedIcon />,
             type: "text",
             placeholder: "XXX - XXX",
             autoComplete: "one-time-code",
@@ -58,12 +62,12 @@ export const codeForm = {
 
 export const resetPasswordForm = {
     buttonText: "Restablecer contraseña",
-    buttonIcon: "arrow_forward",
+    buttonIcon: <ArrowForwardRoundedIcon />,
     fields: [
         {
             name: "password",
             label: "Contraseña",
-            icon: "lock",
+            icon: <LockRoundedIcon />,
             type: "password",
             placeholder: "••••••••",
             autoComplete: "current-password",
@@ -72,7 +76,7 @@ export const resetPasswordForm = {
         {
             name: "confirmPassword",
             label: "Confirmar contraseña",
-            icon: "lock",
+            icon: <LockRoundedIcon />,
             type: "password",
             placeholder: "••••••••",
             autoComplete: "current-password",

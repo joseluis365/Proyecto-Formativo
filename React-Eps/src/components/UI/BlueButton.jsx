@@ -26,7 +26,6 @@ export default function BlueButton({
     >
       {loading ? (
         <>
-          {/* Spinner */}
           <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
           <span>{text === "Actualizar Cambios" || text === "Actualizar" ? "Actualizando..." : "Guardando..."}</span>
         </>
@@ -34,9 +33,15 @@ export default function BlueButton({
         <>
           <span>{text}</span>
           {icon && (
-            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
-              {icon}
-            </span>
+            typeof icon === 'string' ? (
+              <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
+                {icon}
+              </span>
+            ) : (
+              <span className="flex items-center group-hover:translate-x-1 transition-transform">
+                {icon}
+              </span>
+            )
           )}
         </>
       )}

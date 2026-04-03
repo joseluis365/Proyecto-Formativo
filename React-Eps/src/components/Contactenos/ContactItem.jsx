@@ -1,8 +1,20 @@
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
+import MailRoundedIcon from '@mui/icons-material/MailRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+
+const iconMap = {
+    call: CallRoundedIcon,
+    mail: MailRoundedIcon,
+    schedule: ScheduleRoundedIcon,
+};
+
 export default function ContactItem({icon, title, description}) {
+    const IconComponent = iconMap[icon] || CallRoundedIcon;
+
     return (
         <div className="flex gap-3">
             <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-base">{icon}</span>
+                <IconComponent sx={{ fontSize: '1rem' }} />
             </div>
             <div>
                 <p className="text-xs font-bold text-slate-900 dark:text-white">{title}</p>

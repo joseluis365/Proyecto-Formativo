@@ -1,4 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+
 
 /**
  * IconInput Component
@@ -113,8 +117,12 @@ export default function IconInput({
 
             <div className="relative">
                 {icon && !isCheckboxType && (
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
-                        {icon}
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] flex items-center justify-center">
+                        {typeof icon === 'string' ? (
+                            <span className="material-symbols-outlined text-xl">{icon}</span>
+                        ) : (
+                            React.cloneElement(icon, { sx: { fontSize: '1.25rem', ...icon.props?.sx } })
+                        )}
                     </span>
                 )}
 
@@ -142,16 +150,12 @@ export default function IconInput({
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-[#4c669a] hover:text-[#0d121b] dark:hover:text-white transition-colors focus:outline-none flex items-center justify-center p-1"
                         title={showPassword ? "Ocultar" : "Mostrar"}
                     >
-                        <span className="material-symbols-outlined text-[22px]">
-                            {showPassword ? 'visibility' : 'visibility_off'}
-                        </span>
+                        {showPassword ? <VisibilityOffRoundedIcon sx={{ fontSize: '1.25rem' }} /> : <VisibilityRoundedIcon sx={{ fontSize: '1.25rem' }} />}
                     </button>
                 )}
 
                 {isSelectType && (
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]">
-                        expand_more
-                    </span>
+                    <ExpandMoreRoundedIcon className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]" sx={{ fontSize: '1.25rem' }} />
                 )}
             </div>
 

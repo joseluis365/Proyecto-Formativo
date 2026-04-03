@@ -1,5 +1,7 @@
 import ContactForm from "./ContactForm";
 import ContactItem from "./ContactItem";
+import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
+
 
 export default function FormSection({canales, emails, horarios, config}) {
     
@@ -19,7 +21,7 @@ export default function FormSection({canales, emails, horarios, config}) {
                         </div>
                     </div>
                     <div className="bg-primary rounded-xl p-4 text-white flex items-center gap-4">
-                        <span className="material-symbols-outlined text-3xl opacity-80">support_agent</span>
+                        <SupportAgentRoundedIcon sx={{ fontSize: '2rem' }} className="opacity-80" />
                         <div>
                             <p className="text-xs font-bold">¿Necesitas ayuda urgente?</p>
                             <p className="text-[10px] opacity-90">Chatea con un asesor en tiempo real ahora mismo.</p>

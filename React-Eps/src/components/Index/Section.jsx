@@ -1,6 +1,9 @@
 import PrincipalText from "./PrincipalText";
 import BlueButton from "../UI/BlueButton";
 import WhiteButton from "../UI/WhiteButton";
+import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+
 
 export default function Section({image, title, subtitle, description}) {
     return (
@@ -9,7 +12,7 @@ export default function Section({image, title, subtitle, description}) {
                 <div className="flex flex-col gap-6 flex-1">
                     <PrincipalText title={title} subtitle={subtitle} description={description}/>
                     <div className="flex flex-wrap gap-3 w-xs">
-                        <BlueButton text="Afíliate Ahora" icon="arrow_forward"/>
+                        <BlueButton text="Afíliate Ahora" icon={<ArrowForwardRoundedIcon sx={{ fontSize: '1.2rem' }} />} />
                         <WhiteButton text="Conoce Servicios"/>
                     </div>
                 </div>
@@ -21,7 +24,7 @@ export default function Section({image, title, subtitle, description}) {
                     </div>
                     <div className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-700 p-4 rounded-xl shadow-lg flex items-center gap-3 border border-slate-100 dark:border-slate-600 z-10">
                         <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-full text-green-600">
-                            <span className="material-symbols-outlined text-xl leading-none">verified_user</span>
+                            <VerifiedUserRoundedIcon sx={{ fontSize: '1.25rem' }} />
                         </div>
                         <div>
                             <p className="text-xs font-bold text-slate-900 dark:text-white">Certificados</p>

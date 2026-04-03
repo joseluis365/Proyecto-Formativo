@@ -12,6 +12,26 @@ class ExamenClinicoController extends Controller
      */
     public function agenda(Request $request)
     {
+        // ---------------------------------------------------------
+        // Lógica de auto-cancelación de exámenes no atendidos
+        // ---------------------------------------------------------
+        $estadoAgendada = \App\Models\Estado::where('nombre_estado', 'Agendada')->first();
+        $estadoCancelada = \App\Models\Estado::where('nombre_estado', 'Cancelada')->first();
+
+        if ($estadoAgendada && $estadoCancelada) {
+            $now = \Carbon\Carbon::now();
+            $cutoff = $now->copy()->subMinutes(30);
+            \App\Models\Examen::where('id_estado', $estadoAgendada->id_estado)
+                ->where(function ($query) use ($now, $cutoff) {
+                    $query->where('fecha', '<', $now->toDateString())
+                          ->orWhere(function ($q) use ($now, $cutoff) {
+                              $q->where('fecha', $now->toDateString())
+                                ->whereTime('hora_inicio', '<=', $cutoff->toTimeString());
+                          });
+                })->update(['id_estado' => $estadoCancelada->id_estado]);
+        }
+        // ---------------------------------------------------------
+
         $fecha = $request->query('fecha');
 
         $query = \App\Models\Examen::with(['paciente', 'categoriaExamen', 'estado']);
@@ -35,6 +55,26 @@ class ExamenClinicoController extends Controller
      */
     public function misExamenes(Request $request)
     {
+        // ---------------------------------------------------------
+        // Lógica de auto-cancelación de exámenes no atendidos
+        // ---------------------------------------------------------
+        $estadoAgendada = \App\Models\Estado::where('nombre_estado', 'Agendada')->first();
+        $estadoCancelada = \App\Models\Estado::where('nombre_estado', 'Cancelada')->first();
+
+        if ($estadoAgendada && $estadoCancelada) {
+            $now = \Carbon\Carbon::now();
+            $cutoff = $now->copy()->subMinutes(30);
+            \App\Models\Examen::where('id_estado', $estadoAgendada->id_estado)
+                ->where(function ($query) use ($now, $cutoff) {
+                    $query->where('fecha', '<', $now->toDateString())
+                          ->orWhere(function ($q) use ($now, $cutoff) {
+                              $q->where('fecha', $now->toDateString())
+                                ->whereTime('hora_inicio', '<=', $cutoff->toTimeString());
+                          });
+                })->update(['id_estado' => $estadoCancelada->id_estado]);
+        }
+        // ---------------------------------------------------------
+
         $doc = $request->query('doc_paciente');
         
         if (!$doc) {

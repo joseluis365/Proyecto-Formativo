@@ -11,6 +11,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userLoginSchema } from "../../schemas/authSchemas";
 import { handleApiErrors } from "../../utils/formHandlers";
+import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
+
 
 export default function LoginSection() {
     const navigate = useNavigate();
@@ -140,7 +143,7 @@ export default function LoginSection() {
             </FormWithIcons>
             <div className="pt-6 border-t border-[#e7ebf3] dark:border-white/5 flex flex-col gap-4">
                 <div className="flex items-start gap-3 p-3 bg-background-light dark:bg-white/5 rounded-lg border border-[#cfd7e7] dark:border-white/10">
-                    <span className="material-symbols-outlined text-primary text-xl mt-0.5">verified_user</span>
+                    <VerifiedUserRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary mt-0.5" />
                     <div className="flex flex-col gap-1">
                         <p className="text-[#0d121b] dark:text-white text-xs font-bold">Acceso protegido</p>
                         <p className="text-[#4c669a] text-[11px] leading-relaxed">
@@ -151,7 +154,7 @@ export default function LoginSection() {
                 </div>
                 <div className="flex justify-center gap-6 mt-2">
                     <Link className="text-[#4c669a] text-xs hover:text-primary flex items-center gap-1" to="#">
-                        <span className="material-symbols-outlined text-sm">support_agent</span>
+                        <SupportAgentRoundedIcon sx={{ fontSize: '1rem' }} />
                         Ayuda
                     </Link>
                 </div>

@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+
 
 export default function Layout({title, description, children}) {
     return (
@@ -7,7 +9,7 @@ export default function Layout({title, description, children}) {
                 {/* Logo and Back Button for Mobile */}
                 <div className="lg:hidden flex items-center justify-start gap-2 mb-2">
                     <Link to="/" className="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors group">
-                        <span className="material-symbols-outlined text-2xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                        <ArrowBackRoundedIcon className="text-2xl group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-bold uppercase tracking-widest hidden sm:inline">Volver</span>
                     </Link>
                     <div className="flex items-center gap-3">

@@ -4,6 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Swal from "sweetalert2";
 import api from "../../Api/axios";
 import { contactSchema } from "../../utils/validations/contactSchema";
+import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
+
 
 import FormInput from "../UI/FormInput";
 import FormSelect from "../UI/FormSelect";
@@ -74,7 +78,7 @@ export default function ContactForm({config}) {
     return (
         <div className="bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
             <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">{icon}</span>
+                {icon === 'edit_note' ? <EditNoteRoundedIcon className="text-primary" /> : <EditNoteRoundedIcon className="text-primary" />}
                 {title}
             </h2>
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -128,7 +132,7 @@ export default function ContactForm({config}) {
 
                 <BlueButton 
                     text={submitting ? "Enviando..." : submitButton.text} 
-                    icon={submitting ? "hourglass_empty" : submitButton.icon} 
+                    icon={submitting ? <HourglassEmptyRoundedIcon sx={{ fontSize: '1.2rem' }} /> : <SendRoundedIcon sx={{ fontSize: '1.2rem' }} />} 
                     type="submit"
                     disabled={submitting || isOverLimit}
                 />

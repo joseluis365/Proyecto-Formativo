@@ -9,6 +9,8 @@ import Swal from 'sweetalert2';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import VerifiedRoundedIcon from '@mui/icons-material/VerifiedRounded';
+
 
 const verify2FASchema = z.object({
     code: z.string().min(6, "El código debe tener 6 dígitos").max(6, "El código debe tener 6 dígitos").regex(/^\d+$/, "Solo se permiten números")
@@ -86,7 +88,7 @@ export default function LoginVerify2FA() {
                 onSubmit={onSubmit}
             >
                 <div className="flex flex-col gap-4">
-                    <BlueButton text="Verificar Código" icon="verified" type="submit" loading={loading} />
+                    <BlueButton text="Verificar Código" icon={<VerifiedRoundedIcon />} type="submit" loading={loading} />
                     <button 
                         type="button"
                         onClick={() => navigate("/login")}

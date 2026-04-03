@@ -5,6 +5,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import api from "../../Api/axios";
 
+// Imports de MUI Icons
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import EventIcon from '@mui/icons-material/Event';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import HistoryIcon from '@mui/icons-material/History';
+import MedicationIcon from '@mui/icons-material/Medication';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CallIcon from '@mui/icons-material/Call';
+import InfoIcon from '@mui/icons-material/Info';
+
+const renderAlertaIcon = (iconName) => {
+    switch(iconName) {
+        case 'event': return <EventIcon />;
+        case 'medication': return <MedicationIcon />;
+        case 'history': return <HistoryIcon />;
+        default: return <InfoIcon />;
+    }
+};
+
 export default function IndexPaciente() {
     const { setTitle, setSubtitle, setHelpContent } = useLayout();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -52,28 +73,28 @@ export default function IndexPaciente() {
         {
             title: "Agendar Cita",
             desc: "Busca un médico y reserva tu espacio en segundos.",
-            icon: "add_circle",
+            icon: AddCircleIcon,
             color: "bg-blue-500",
             to: "/paciente/agendar"
         },
         {
             title: "Mis Citas",
             desc: "Visualiza tus próximas citas y gestiona cancelaciones.",
-            icon: "calendar_month",
+            icon: CalendarMonthIcon,
             color: "bg-emerald-500",
             to: "/paciente/citas"
         },
         {
             title: "Mi Historial",
             desc: "Consulta diagnósticos y tratamientos de citas previas.",
-            icon: "history",
+            icon: HistoryIcon,
             color: "bg-purple-500",
             to: "/paciente/historial"
         },
         {
             title: "Mis Medicamentos",
             desc: "Revisa tus recetas activas y medicamentos recetados por tu médico.",
-            icon: "medication",
+            icon: MedicationIcon,
             color: "bg-orange-500",
             to: "/paciente/medicamentos"
         }
@@ -102,7 +123,7 @@ export default function IndexPaciente() {
                     >
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary">notifications_active</span>
+                                <NotificationsActiveIcon className="text-primary" />
                                 Avisos importantes
                             </h2>
                             <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -131,7 +152,7 @@ export default function IndexPaciente() {
                                             alerta.color === 'indigo' ? 'bg-indigo-500 shadow-indigo-500/20' :
                                             'bg-orange-500 shadow-orange-500/20'
                                         }`}>
-                                            <span className="material-symbols-outlined">{alerta.icon}</span>
+                                            {renderAlertaIcon(alerta.icon)}
                                         </div>
 
                                         <div className="flex-1 min-w-0">
@@ -145,7 +166,7 @@ export default function IndexPaciente() {
                                             <div className="mt-2 flex items-center gap-3">
                                                 {alerta.fecha && (
                                                     <span className="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 text-gray-500 dark:text-gray-500">
-                                                        <span className="material-symbols-outlined text-[14px]">event</span>
+                                                        <EventIcon style={{ fontSize: '14px' }} />
                                                         {alerta.fecha} {alerta.hora && `| ${alerta.hora}`}
                                                     </span>
                                                 )}
@@ -153,7 +174,7 @@ export default function IndexPaciente() {
                                         </div>
 
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <span className="material-symbols-outlined text-gray-400">chevron_right</span>
+                                            <ChevronRightIcon className="text-gray-400" />
                                         </div>
                                     </Link>
                                 </motion.div>
@@ -177,14 +198,14 @@ export default function IndexPaciente() {
                             className="block bg-white dark:bg-gray-900 p-6 rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden relative border border-gray-100 dark:border-gray-800"
                         >
                             <div className={`${card.color} size-12 rounded-2xl flex items-center justify-center text-white mb-5 shadow-lg shadow-${card.color.split('-')[1]}-500/20`}>
-                                <span className="material-symbols-outlined text-2xl font-bold">{card.icon}</span>
+                                <card.icon style={{ fontSize: '1.5rem' }} />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{card.title}</h3>
                             <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed line-clamp-2">{card.desc}</p>
 
                             <div className="mt-4 flex items-center text-primary font-bold text-xs">
                                 Gestionar
-                                <span className="material-symbols-outlined ml-1.5 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                <ArrowForwardIcon className="ml-1.5 group-hover:translate-x-1 transition-transform" style={{ fontSize: '14px' }} />
                             </div>
                         </Link>
                     </motion.div>
@@ -203,7 +224,7 @@ export default function IndexPaciente() {
                     <p className="text-gray-600 dark:text-gray-400 max-w-xl text-lg">En <span className="text-primary font-bold">Saluvanta EPS</span> estamos para cuidarte. Accede a teleconsultas, descarga resultados y gestiona tus citas desde la comodidad de tu hogar.</p>
                     <div className="pt-2 flex flex-wrap gap-4">
                         <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-4 py-2 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                            <span className="material-symbols-outlined text-emerald-500">call</span>
+                            <CallIcon className="text-emerald-500" />
                             <span className="text-sm font-bold text-gray-700 dark:text-gray-300">+57 601 234 5678</span>
                         </div>
                     </div>

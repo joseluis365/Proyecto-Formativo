@@ -9,6 +9,8 @@ import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userRecoveryEmailSchema } from "../../schemas/authSchemas";
+import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+
 
 export default function EmailSection() {
     const navigate = useNavigate();
@@ -84,7 +86,7 @@ export default function EmailSection() {
 
             <div className="pt-6 border-t border-[#e7ebf3] dark:border-white/5 flex flex-col gap-4">
                 <div className="flex items-start gap-3 p-3 bg-background-light dark:bg-white/5 rounded-lg border border-[#cfd7e7] dark:border-white/10">
-                    <span className="material-symbols-outlined text-primary text-xl mt-0.5">verified_user</span>
+                    <VerifiedUserRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary mt-0.5" />
                     <div className="flex flex-col gap-1">
                         <p className="text-[#0d121b] dark:text-white text-xs font-bold">Acceso protegido</p>
                         <p className="text-[#4c669a] text-[11px] leading-relaxed">

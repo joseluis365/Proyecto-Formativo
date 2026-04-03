@@ -1,4 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import PaymentsRoundedIcon from '@mui/icons-material/PaymentsRounded';
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
+import MapRoundedIcon from '@mui/icons-material/MapRounded';
+
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../Api/axios";
 import { useToast } from "../../ToastContext";
@@ -252,7 +256,7 @@ export default function Pago() {
       <div key="location-group-depto" className="flex flex-col gap-1.5 pb-3">
         <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor="id_departamento">{field.label}</label>
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{field.icon}</span>
+          <LocationOnRoundedIcon sx={{ fontSize: '1.25rem' }} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a]" />
           <select
             {...register("id_departamento")}
             className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? 'border-red-500 bg-red-50' : 'border-[#cfd7e7] dark:border-white/10'} bg-white dark:bg-gray-800/50 h-12 pl-12 pr-4 text-base font-normal`}
@@ -271,7 +275,7 @@ export default function Pago() {
       <div key="location-group-ciudad" className="flex flex-col gap-1.5 pb-3">
         <label className="text-[#0d121b] dark:text-white text-sm font-semibold leading-normal" htmlFor="id_ciudad">{field.label}</label>
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">{field.icon}</span>
+          <MapRoundedIcon sx={{ fontSize: '1.25rem' }} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a]" />
           <select
             {...register("id_ciudad")}
             id="id_ciudad"
@@ -427,7 +431,7 @@ export default function Pago() {
               >
                 {loading ? "Procesando Registro..." : (
                   <>
-                    <span className="material-symbols-outlined">payments</span>
+                    <PaymentsRoundedIcon sx={{ fontSize: '1.25rem' }} />
                     Pagar y Registrar Empresa
                   </>
                 )}
