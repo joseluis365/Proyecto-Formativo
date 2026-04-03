@@ -18,7 +18,8 @@
         "laravel/tinker": "^2.10.1",
         "mews/purifier": "^3.4",
         "resend/resend-laravel": "^1.3",
-        "symfony/brevo-mailer": "^7.4"
+        "symfony/brevo-mailer": "^7.4",
+        "symfony/http-client": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
