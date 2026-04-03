@@ -25,5 +25,15 @@ class AppServiceProvider extends ServiceProvider
         if (env('APP_ENV') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
+
+        \Illuminate\Support\Facades\Mail::extend('brevo', function (array $config = []) {
+            return (new \Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory())->create(
+                new \Symfony\Component\Mailer\Transport\Dsn(
+                    'brevo+api',
+                    'default',
+                    env('BREVO_API_KEY')
+                )
+            );
+        });
     }
 }
