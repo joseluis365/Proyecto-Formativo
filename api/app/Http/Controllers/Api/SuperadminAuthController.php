@@ -42,12 +42,7 @@ class SuperadminAuthController extends Controller
 
         \Illuminate\Support\Facades\Log::info("=== TU CÓDIGO DE ACCESO 2FA ES: " . $code . " ===");
 
-        try {
-            \Illuminate\Support\Facades\Mail::to($superadmin->email)->send(new \App\Mail\Send2FACode($code));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Fallo al enviar correo 2FA: " . $e->getMessage());
-            // Retornar éxito silenciando el error del correo para que puedan usar el log generado.
-        }
+        \Illuminate\Support\Facades\Mail::to($superadmin->email)->send(new \App\Mail\Send2FACode($code));
 
         return response()->json([
             'success' => true,

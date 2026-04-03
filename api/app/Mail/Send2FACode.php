@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class Send2FACode extends Mailable implements ShouldQueue
+class Send2FACode extends Mailable
 {
     use Queueable, SerializesModels;
 
