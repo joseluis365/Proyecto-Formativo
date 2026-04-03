@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import superAdminApi from "../../Api/superadminAxios";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTheme } from "../../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 import SuperAdminLogoutButton from "../../components/UI/SuperAdminLogoutButton";
 

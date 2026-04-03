@@ -1,6 +1,6 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useTheme } from "../../../hooks/useTheme";
+import { useTheme } from "../../hooks/useTheme";
 
 export default function IndexHeader() {
     const [open, setOpen] = useState(false);
