@@ -108,6 +108,13 @@ class DatabaseSeeder extends Seeder
             // Obtener el ID máximo actual
             $maxId = \Illuminate\Support\Facades\DB::table($tableName)->max($pk);
 
+            if ($maxId !== null && !is_numeric($maxId)) {
+                // Si el ID máximo es un string alfanumérico (ej: '559744GDPNTZ'), ignorar
+                continue;
+            }
+
+            $maxId = (int) $maxId;
+
             if ($maxId > 0) {
                 // Sincronizar la secuencia con el maxId (true indica que ya se usó este valor)
                 \Illuminate\Support\Facades\DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);

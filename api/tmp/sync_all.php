@@ -40,6 +40,13 @@ foreach ($sequences as $seq) {
     $pk = $pkResults[0]->attname;
     $maxId = DB::table($tableName)->max($pk);
 
+    if ($maxId !== null && !is_numeric($maxId)) {
+        echo "Skipping non-numeric PK '$maxId' for table $tableName" . PHP_EOL;
+        continue;
+    }
+
+    $maxId = (int) $maxId;
+
     if ($maxId > 0) {
         echo "Syncing $tableName ($pk) -> Seq $seqName to $maxId" . PHP_EOL;
         DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);
