@@ -105,11 +105,16 @@ class DatabaseSeeder extends Seeder
 
             $pk = $pkResults[0]->attname;
             
-            // Obtener el ID máximo actual o 0 si está vacía
-            $maxId = \Illuminate\Support\Facades\DB::table($tableName)->max($pk) ?: 0;
+            // Obtener el ID máximo actual
+            $maxId = \Illuminate\Support\Facades\DB::table($tableName)->max($pk);
 
-            // Sincronizar la secuencia
-            \Illuminate\Support\Facades\DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);
+            if ($maxId > 0) {
+                // Sincronizar la secuencia con el maxId (true indica que ya se usó este valor)
+                \Illuminate\Support\Facades\DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);
+            } else {
+                // Si la tabla está vacía, iniciarlo en 1 (false indica que no se ha usado)
+                \Illuminate\Support\Facades\DB::statement("SELECT setval(?, 1, false)", [$seqName]);
+            }
         }
     }
 }

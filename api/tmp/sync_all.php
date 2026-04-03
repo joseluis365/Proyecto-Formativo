@@ -38,10 +38,15 @@ foreach ($sequences as $seq) {
     }
 
     $pk = $pkResults[0]->attname;
-    $maxId = DB::table($tableName)->max($pk) ?: 0;
+    $maxId = DB::table($tableName)->max($pk);
 
-    echo "Syncing $tableName ($pk) -> Seq $seqName to $maxId" . PHP_EOL;
-    DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);
+    if ($maxId > 0) {
+        echo "Syncing $tableName ($pk) -> Seq $seqName to $maxId" . PHP_EOL;
+        DB::statement("SELECT setval(?, ?, true)", [$seqName, $maxId]);
+    } else {
+        echo "Syncing empty table $tableName ($pk) -> Seq $seqName to 1 (false)" . PHP_EOL;
+        DB::statement("SELECT setval(?, 1, false)", [$seqName]);
+    }
 }
 
 echo "Synchronization complete!" . PHP_EOL;
