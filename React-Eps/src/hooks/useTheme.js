@@ -23,5 +23,13 @@ export function useTheme() {
 
     const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
-    return { isDarkMode, toggleDarkMode };
+    // Retornamos ambos nombres para compatibilidad con componentes que usan isDark/toggleTheme
+    return { 
+        isDarkMode, 
+        toggleDarkMode,
+        isDark: isDarkMode,
+        toggleTheme: toggleDarkMode
+    };
 }
+
+export default useTheme;
