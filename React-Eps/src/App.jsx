@@ -115,16 +115,11 @@ import PersonalAdminDashboard from "./Pages/Personal/PersonalAdminDashboard"
 import PqrsList from "./Pages/Personal/PqrsList"
 import PersonalReportes from "./Pages/Personal/PersonalReportes"
 
+import { useTheme } from "./hooks/useTheme";
+
 export default function App() {
-  // Global Dark Mode Initialization
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  // Global Dark Mode Initialization via useTheme hook
+  useTheme();
   return (
     <Routes>
       <Route path="/SuperAdmin-Login" element={<SuperAdminLogin />} />

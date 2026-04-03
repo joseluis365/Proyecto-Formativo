@@ -1,35 +1,27 @@
 import { useState, useEffect } from "react";
 
-export default function useTheme() {
-    const getTheme = () =>
-        localStorage.getItem("theme") === "dark" ||
-        (!("theme" in localStorage) &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-    const [isDark, setIsDark] = useState(getTheme());
+export function useTheme() {
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            return savedTheme === "dark";
+        }
+        // Fallback a detectar la preferencia del sistema
+        return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    });
 
     useEffect(() => {
-        const handleStorageChange = () => {
-            setIsDark(getTheme());
-        };
-
-        window.addEventListener("storage", handleStorageChange);
-        return () => window.removeEventListener("storage", handleStorageChange);
-    }, []);
-
-    const toggleTheme = () => {
-        const root = window.document.documentElement;
-        if (isDark) {
-            root.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-            setIsDark(false);
-        } else {
+        const root = document.documentElement;
+        if (isDarkMode) {
             root.classList.add("dark");
             localStorage.setItem("theme", "dark");
-            setIsDark(true);
+        } else {
+            root.classList.remove("dark");
+            localStorage.setItem("theme", "light");
         }
-        window.dispatchEvent(new Event("storage"));
-    };
+    }, [isDarkMode]);
 
-    return { isDark, toggleTheme };
+    const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
+
+    return { isDarkMode, toggleDarkMode };
 }

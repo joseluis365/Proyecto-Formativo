@@ -1,12 +1,11 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTheme } from "../../../hooks/useTheme";
 
 export default function IndexHeader() {
     const [open, setOpen] = useState(false);
 
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        return localStorage.getItem("theme") === "dark";
-    });
+    const { isDarkMode, toggleDarkMode } = useTheme();
 
     const [user, setUser] = useState(null);
 
@@ -20,12 +19,6 @@ export default function IndexHeader() {
             }
         }
     }, []);
-
-    const toggleDarkMode = () => {
-        const isDark = document.documentElement.classList.toggle("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        setIsDarkMode(isDark);
-    };
 
     // Bloquear scroll cuando el menú está abierto
     useEffect(() => {
