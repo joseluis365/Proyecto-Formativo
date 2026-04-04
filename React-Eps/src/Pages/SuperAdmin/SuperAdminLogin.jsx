@@ -10,6 +10,8 @@ import { superAdminLoginSchema } from "../../schemas/authSchemas";
 import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
 
 
+import superAdminApi from "../../Api/superadminAxios";
+
 export default function SuperAdminLogin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -28,14 +30,8 @@ export default function SuperAdminLogin() {
     const token = sessionStorage.getItem("superadmin_token");
     if (token) {
       // Ejecutamos logout en backend enviando el token
-      fetch("http://127.0.0.1:8000/api/superadmin/logout", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        }
-      }).catch(() => console.log("Logout backend fallido o sesión ya muerta"));
+      superAdminApi.post("/superadmin/logout")
+        .catch(() => console.log("Logout backend fallido o sesión ya muerta"));
     }
 
     sessionStorage.removeItem("superadmin_token");
@@ -53,51 +49,27 @@ export default function SuperAdminLogin() {
     try {
       setLoading(true); // 🔒 Bloquear botón inmediatamente
 
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/superadmin/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            email: data.email,
-            password: data.password,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-
-        if (response.status === 422) {
-          const backendErrors = result.errors;
-          Object.keys(backendErrors).forEach((key) => {
-            setError(key, {
-              type: "server",
-              message: backendErrors[key][0],
-            });
-          });
-          setLoading(false);
-          return;
-        }
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: result.message || "Error Inesperado",
-          showConfirmButton: true,
-        });
-        setLoading(false); // 🔓 Libera si falla
-        return;
-      }
+      const result = await superAdminApi.post("/superadmin/login", {
+        email: data.email,
+        password: data.password,
+      });
 
       // 👉 Guardamos email y redirigimos INMEDIATO
       sessionStorage.setItem("superadmin_email", data.email);
       navigate("/SuperAdmin-Verify");
     } catch (error) {
-      alert("Error de conexión con el servidor");
+      if (error.response && error.response.status === 422) {
+        const backendErrors = error.response.data.errors;
+        Object.keys(backendErrors).forEach((key) => {
+          setError(key, {
+            type: "server",
+            message: backendErrors[key][0],
+          });
+        });
+      } else {
+        // El interceptor de axios ya muestra el SweetAlert de error general
+        console.error("Login fallido:", error);
+      }
       setLoading(false);
     }
   };

@@ -64,7 +64,7 @@ export default function SuperAdminHistorial() {
             if (status) queryParams.append("id_estado", status);
             const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
 
-            const response = await fetch(`http://localhost:8000/api/superadmin/licencias/historial/pdf${queryString}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"}/api/superadmin/licencias/historial/pdf${queryString}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -1,4 +1,4 @@
-﻿import DomainRoundedIcon from '@mui/icons-material/DomainRounded';
+import DomainRoundedIcon from '@mui/icons-material/DomainRounded';
 import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
 import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
 import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
@@ -60,7 +60,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
     const handleDownloadPdf = async () => {
         try {
             const token = sessionStorage.getItem("superadmin_token");
-            const response = await fetch(`http://localhost:8000/api/superadmin/empresa/${company.nit}/pdf`, {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"}/api/superadmin/empresa/${company.nit}/pdf`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

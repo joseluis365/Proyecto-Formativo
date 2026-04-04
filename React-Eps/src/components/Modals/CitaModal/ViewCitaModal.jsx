@@ -232,7 +232,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                                 Resultados del Examen
                             </h3>
                             <a 
-                                href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/storage/${cita.resultado_pdf.replace('app/', '')}`} 
+                                href={`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${cita.resultado_pdf.replace('app/', '')}`} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/30 rounded-2xl hover:bg-indigo-100 transition-colors group"

@@ -1,12 +1,4 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import FormWithIcons from "../../components/UI/FormWithIcons";
-import BlueButton from "../../components/UI/BlueButton";
-import Swal from 'sweetalert2';
-import { superAdminVerify } from "../../data/SuperAdminForms";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { superAdmin2FASchema } from "../../schemas/authSchemas";
+import superAdminApi from "../../Api/superadminAxios";
 
 export default function SuperAdminVerify() {
   const navigate = useNavigate();
@@ -27,14 +19,8 @@ export default function SuperAdminVerify() {
     const token = sessionStorage.getItem("superadmin_token");
     if (token) {
       // Ejecutamos logout en backend enviando el token (si el usuario retrocedió)
-      fetch("http://127.0.0.1:8000/api/superadmin/logout", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        }
-      }).catch(() => console.log("Logout backend fallido o sesión ya muerta"));
+      superAdminApi.post("/superadmin/logout")
+        .catch(() => console.log("Logout backend fallido o sesión ya muerta"));
 
       sessionStorage.removeItem("superadmin_token");
       sessionStorage.removeItem("superadmin_user");
@@ -51,40 +37,19 @@ export default function SuperAdminVerify() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/superadmin/verificar-codigo",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            email: data.email,
-            code: data.code,
-          }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Código incorrecto o expirado, por favor intentalo nuevamente',
-          showConfirmButton: true,
-        });
-        setLoading(false);
-        return;
-      }
+      const result = await superAdminApi.post("/superadmin/verificar-codigo", {
+        email: data.email,
+        code: data.code,
+      });
 
       // ✅ Autenticación completa - Guardar Token
-      if (result.data && result.data.access_token) {
-        sessionStorage.setItem("superadmin_token", result.data.access_token);
-        // Opcional: Guardar usuario si se devuelve
-        if (result.data.user) {
-          sessionStorage.setItem("superadmin_user", JSON.stringify(result.data.user));
+      // Nota: El interceptor de superAdminApi ya extrae response.data.data si existe.
+      // Si el backend devuelve { success: true, data: { access_token: ... } }
+      // result será { access_token: ... }
+      if (result && result.access_token) {
+        sessionStorage.setItem("superadmin_token", result.access_token);
+        if (result.user) {
+          sessionStorage.setItem("superadmin_user", JSON.stringify(result.user));
         }
       }
 
@@ -99,10 +64,11 @@ export default function SuperAdminVerify() {
 
       navigate("/SuperAdmin-Dashboard");
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error de conexión con el servidor';
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Error de conexión con el servidor',
+        text: errorMessage,
         showConfirmButton: false,
         timer: 1200,
       });

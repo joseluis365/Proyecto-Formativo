@@ -170,7 +170,7 @@ export default function SuperAdminEmpresas() {
       const queryString = queryParams.toString() ? `?${queryParams.toString()}` : "";
 
       const response = await fetch(
-        `http://localhost:8000/api/superadmin/empresas/pdf${queryString}`,
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"}/api/superadmin/empresas/pdf${queryString}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
