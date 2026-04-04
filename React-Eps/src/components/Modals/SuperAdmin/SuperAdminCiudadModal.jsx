@@ -22,6 +22,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
         handleSubmit,
         setError,
         reset,
+        setValue,
         formState: { errors, isSubmitting }
     } = useForm({
         resolver: zodResolver(ciudadSchema),
@@ -42,13 +43,20 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
         }
     }, [isOpen]);
 
+    // Sincronizar el valor del select cuando los departamentos terminan de cargar
+    useEffect(() => {
+        if (isEdit && departamentos.length > 0 && editData) {
+            setValue("id_departamento", String(editData.id_departamento));
+        }
+    }, [departamentos, isEdit, editData, setValue]);
+
     useEffect(() => {
         if (isOpen) {
             if (editData) {
                 reset({
                     codigo_postal: editData.codigo_postal || "",
                     nombre: editData.nombre || "",
-                    id_departamento: editData.id_departamento || "",
+                    id_departamento: String(editData.id_departamento) || "",
                     id_estado: editData.id_estado || 1
                 });
             } else {
@@ -66,7 +74,8 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
         setLoadingDeps(true);
         try {
             const response = await superAdminApi.get("/configuracion/departamentos"); // USAR superAdminApi
-            setDepartamentos(response.data || response || []);
+            const data = response.data || response || [];
+            setDepartamentos(data);
         } catch (error) {
             console.error("Error al cargar departamentos (SuperAdmin):", error);
         } finally {
@@ -153,7 +162,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
                 icon="location_city"
                 onClose={onClose}
             />
-            <div className="p-6">
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <FormWithIcons
                     config={config}
                     register={register}
