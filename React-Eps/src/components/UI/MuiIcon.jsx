@@ -73,6 +73,9 @@ import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
+import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
+
 
 const iconMapping = {
   home: HomeRoundedIcon,
@@ -153,6 +156,8 @@ const iconMapping = {
   folder: FolderRoundedIcon,
   groups: GroupsRoundedIcon,
   inventory_2: Inventory2RoundedIcon,
+  dark_mode: DarkModeRoundedIcon,
+  light_mode: LightModeRoundedIcon,
 };
 
 /**
