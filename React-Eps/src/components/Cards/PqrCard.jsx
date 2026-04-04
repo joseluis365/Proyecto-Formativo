@@ -1,5 +1,6 @@
 import React from 'react';
 import Badge from '../UI/Badge';
+import MuiIcon from '../UI/MuiIcon';
 
 export default function PqrCard({ pqr, onViewDetails }) {
     const isAtendido = pqr.id_estado === 10;
@@ -36,7 +37,7 @@ export default function PqrCard({ pqr, onViewDetails }) {
                 onClick={onViewDetails}
                 className="w-full mt-2 py-2 px-4 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 text-primary dark:text-blue-400 font-medium text-sm transition-colors border border-gray-200 dark:border-gray-600 flex justify-center items-center gap-2"
             >
-                <span className="material-symbols-outlined text-sm">visibility</span>
+                <MuiIcon name="visibility" sx={{ fontSize: '1.25rem' }} />
                 Ver Detalles
             </button>
         </div>

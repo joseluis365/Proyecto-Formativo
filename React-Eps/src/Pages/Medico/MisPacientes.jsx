@@ -8,6 +8,9 @@ import DataTable from "../../components/UI/DataTable";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { motion } from "framer-motion";
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 
 export default function MisPacientes() {
     const navigate = useNavigate();
@@ -111,7 +114,7 @@ export default function MisPacientes() {
                     className="p-2 rounded-lg hover:bg-primary/10 text-primary transition-colors flex items-center gap-1 font-bold text-xs cursor-pointer"
                     onClick={() => navigate(`/medico/pacientes/${p.documento}/historial`)}
                 >
-                    <span className="material-symbols-outlined text-base">history</span>
+                    <HistoryRoundedIcon sx={{ fontSize: '1rem' }} />
                     Historial
                 </button>
             )
@@ -134,7 +137,7 @@ export default function MisPacientes() {
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-neutral-gray-border/10 dark:border-gray-800">
                 <div className="mb-8">
                     <PrincipalText
-                        icon="groups"
+                        icon={<GroupsRoundedIcon sx={{ fontSize: '2.5rem' }} />}
                         text="Pacientes Registrados"
                         number={pacientes.length}
                     />
@@ -154,9 +157,7 @@ export default function MisPacientes() {
                     <TableSkeleton rows={5} columns={5} />
                 ) : filteredPacientes.length === 0 ? (
                     <div className="text-center py-20 bg-gray-50 dark:bg-gray-800/20 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-                        <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-                            person_search
-                        </span>
+                        <PersonSearchRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-600 mb-4 block mx-auto" />
                         <p className="text-gray-500 dark:text-gray-400 font-medium">
                             No hay pacientes registrados en el sistema.
                         </p>

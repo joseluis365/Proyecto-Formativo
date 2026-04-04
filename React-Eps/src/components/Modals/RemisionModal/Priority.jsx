@@ -1,4 +1,5 @@
 import usePrioridades from "@/hooks/usePrioridades";
+import MuiIcon from "../../UI/MuiIcon";
 
 export default function Priority({ priority, onChange }) {
   const { prioridades, loading } = usePrioridades();
@@ -6,9 +7,7 @@ export default function Priority({ priority, onChange }) {
   return (
     <div>
       <div className="flex items-center gap-3 mb-3">
-        <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">
-          priority_high
-        </span>
+        <MuiIcon name="priority_high" className="text-gray-500 dark:text-gray-400" sx={{ fontSize: '1.25rem' }} />
         <h3 className="text-gray-800 dark:text-gray-200 text-sm font-bold uppercase tracking-wider">
           Prioridad
         </h3>

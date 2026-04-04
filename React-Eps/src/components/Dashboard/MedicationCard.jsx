@@ -1,3 +1,5 @@
+import MuiIcon from "../UI/MuiIcon";
+
 /**
  * MedicationCard
  * Props:
@@ -28,9 +30,7 @@ export default function MedicationCard({ name, dosage, frequency, status }) {
             {/* Header row */}
             <div className="flex items-center justify-between">
                 <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary" style={{ fontSize: '18px' }}>
-                        medication
-                    </span>
+                    <MuiIcon name="medication" sx={{ fontSize: '18px' }} className="text-primary" />
                 </div>
                 {isActive && (
                     <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full uppercase tracking-wider">
@@ -47,9 +47,7 @@ export default function MedicationCard({ name, dosage, frequency, status }) {
 
             {/* Frequency */}
             <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-gray-800/50 rounded-lg px-3 py-2">
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                    {getFrequencyIcon(frequency)}
-                </span>
+                <MuiIcon name={getFrequencyIcon(frequency)} sx={{ fontSize: '14px' }} />
                 <span className="text-xs font-medium">{frequency}</span>
             </div>
         </div>

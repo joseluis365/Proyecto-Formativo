@@ -14,6 +14,23 @@ import { preventDoubleSpaces, normalizeText } from "../../utils/textUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
+import SouthWestRoundedIcon from '@mui/icons-material/SouthWestRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import IndeterminateCheckBoxRoundedIcon from '@mui/icons-material/IndeterminateCheckBoxRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
+import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import WaterDropRoundedIcon from '@mui/icons-material/WaterDropRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import DateRangeRoundedIcon from '@mui/icons-material/DateRangeRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const TIPOS = [
     { value: "", label: "Todos los tipos" },
@@ -267,9 +284,9 @@ export default function Movimientos() {
     };
 
     const tipoConfig = {
-        Ingreso: { cls: "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: "north_east" },
-        Salida: { cls: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400", icon: "south_west" },
-        Reserva: { cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: "lock" },
+        Ingreso: { cls: "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400", icon: <NorthEastRoundedIcon sx={{ fontSize: '0.875rem' }} /> },
+        Salida:  { cls: "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400", icon: <SouthWestRoundedIcon sx={{ fontSize: '0.875rem' }} /> },
+        Reserva: { cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400", icon: <LockRoundedIcon sx={{ fontSize: '0.875rem' }} /> },
     };
 
     const columns = [
@@ -280,7 +297,7 @@ export default function Movimientos() {
                 const cfg = tipoConfig[row.tipo_movimiento] ?? tipoConfig.Salida;
                 return (
                     <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${cfg.cls}`}>
-                        <span className="material-symbols-outlined text-[14px]">{cfg.icon}</span>
+                        {cfg.icon}
                         {row.tipo_movimiento}
                     </div>
                 );
@@ -328,7 +345,7 @@ export default function Movimientos() {
                     className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                     title="Ver detalles"
                 >
-                    <span className="material-symbols-outlined text-[18px]">visibility</span>
+                    <VisibilityRoundedIcon sx={{ fontSize: '1.125rem' }} />
                 </button>
             ),
         },
@@ -338,27 +355,27 @@ export default function Movimientos() {
         <>
             <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="swap_horiz" text="Historial de Movimientos" number={total} />
+                <PrincipalText icon={<SwapHorizRoundedIcon sx={{ fontSize: '2.5rem' }} />} text="Historial de Movimientos" number={total} />
                 <div className="flex flex-wrap gap-3">
                     <button
                         onClick={handleOpenEntrada}
                         className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-5 py-3 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-green-600/20"
                     >
-                        <span className="material-symbols-outlined text-lg">add_box</span>
+                        <AddBoxRoundedIcon sx={{ fontSize: '1.125rem' }} />
                         <span className="hidden sm:inline">Registrar Entrada</span>
                     </button>
                     <button
                         onClick={handleOpenSalida}
                         className="bg-red-600 hover:bg-red-700 text-white rounded-xl px-5 py-3 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-red-600/20"
                     >
-                        <span className="material-symbols-outlined text-lg">indeterminate_check_box</span>
+                        <IndeterminateCheckBoxRoundedIcon sx={{ fontSize: '1.125rem' }} />
                         <span className="hidden sm:inline">Salida Manual</span>
                     </button>
                     <button
                         onClick={() => setShowAtenderModal(true)}
                         className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-3 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-600/20"
                     >
-                        <span className="material-symbols-outlined text-lg">vaccines</span>
+                        <VaccinesRoundedIcon sx={{ fontSize: '1.125rem' }} />
                         Atender Orden
                     </button>
                 </div>
@@ -388,7 +405,7 @@ export default function Movimientos() {
                     <TableSkeleton rows={8} cols={6} />
                 ) : movimientos.length === 0 ? (
                     <div className="py-16 text-center text-gray-400 dark:text-gray-600">
-                        <span className="material-symbols-outlined text-4xl mb-2 block">swap_horiz</span>
+                        <SwapHorizRoundedIcon sx={{ fontSize: '2.5rem' }} className="mb-2 block mx-auto" />
                         No hay movimientos registrados
                     </div>
                 ) : (
@@ -439,7 +456,7 @@ export default function Movimientos() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-green-600">add_box</span>
+                            <AddBoxRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-green-600" />
                             Registrar Entrada
                         </h3>
                         <form onSubmit={handleSubmitEntrada(handleRegistrarEntrada, handleValidationErrors)} className="space-y-4">
@@ -501,7 +518,7 @@ export default function Movimientos() {
                             <div className="flex gap-3 pt-2">
                                 <button type="button" onClick={() => { setShowEntradaModal(false); resetEntrada(); }} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
                                 <button type="submit" disabled={saving} className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                    {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Registrar</>}
+                                    {saving ? "Guardando..." : <><SaveRoundedIcon sx={{ fontSize: '1.125rem' }} /> Registrar</>}
                                 </button>
                             </div>
                         </form>
@@ -514,7 +531,7 @@ export default function Movimientos() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-red-600">indeterminate_check_box</span>
+                            <IndeterminateCheckBoxRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-red-600" />
                             Registrar Salida Manual
                         </h3>
                         <form onSubmit={handleSubmitSalida(handleRegistrarSalida, handleValidationErrors)} className="space-y-4">
@@ -569,7 +586,7 @@ export default function Movimientos() {
                             <div className="flex gap-3 pt-2">
                                 <button type="button" onClick={() => { setShowSalidaModal(false); resetSalida(); }} className="flex-1 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Cancelar</button>
                                 <button type="submit" disabled={saving} className="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                    {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Registrar</>}
+                                    {saving ? "Guardando..." : <><SaveRoundedIcon sx={{ fontSize: '1.125rem' }} /> Registrar</>}
                                 </button>
                             </div>
                         </form>
@@ -582,13 +599,13 @@ export default function Movimientos() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">info</span>
+                            <InfoRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             Detalles del Movimiento
                         </h3>
 
                         <div className="space-y-4 mb-6 relative">
                             <div className={`absolute top-0 right-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${tipoConfig[selectedMovimiento.tipo_movimiento]?.cls ?? tipoConfig.Salida.cls}`}>
-                                <span className="material-symbols-outlined text-[14px]">{(tipoConfig[selectedMovimiento.tipo_movimiento] ?? tipoConfig.Salida).icon}</span>
+                                {(tipoConfig[selectedMovimiento.tipo_movimiento] ?? tipoConfig.Salida).icon}
                                 {selectedMovimiento.tipo_movimiento}
                             </div>
                             <div>
@@ -623,7 +640,7 @@ export default function Movimientos() {
                                 <div>
                                     <p className="text-xs font-bold text-gray-500 uppercase mb-1">Responsable</p>
                                     <p className="text-gray-900 dark:text-white text-sm flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">person</span>
+                                        <PersonRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                         {selectedMovimiento.responsable}
                                     </p>
                                 </div>
@@ -646,12 +663,12 @@ export default function Movimientos() {
                         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3 relative">
                                 <div className="size-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                    <span className="material-symbols-outlined">vaccines</span>
+                                    <VaccinesRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 Atender Orden (Receta)
                             </h3>
                             <button onClick={() => { setShowAtenderModal(false); setRecetaData(null); setIdRecetaSearch(""); }} className="p-2 text-gray-400 hover:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                <span className="material-symbols-outlined">close</span>
+                                <CloseRoundedIcon sx={{ fontSize: '1.5rem' }} />
                             </button>
                         </div>
 
@@ -687,7 +704,7 @@ export default function Movimientos() {
 
                                     <div>
                                         <h4 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-gray-400">medication</span>
+                                            <MedicationRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-gray-400" />
                                             Medicamentos a Entregar
                                         </h4>
                                         <div className="space-y-3">
@@ -698,15 +715,15 @@ export default function Movimientos() {
                                                             {item.medicamento}
                                                         </h5>
                                                         <div className="flex gap-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                                            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">water_drop</span>{item.dosis}</span>
-                                                            <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">schedule</span>{item.frecuencia}</span>
-                                                            <span className="flex items-center gap-1">Fin tratamiento: <span className="material-symbols-outlined text-[14px]">date_range</span>{item.duracion}</span>
+                                                            <span className="flex items-center gap-1"><WaterDropRoundedIcon sx={{ fontSize: '0.875rem' }} />{item.dosis}</span>
+                                                            <span className="flex items-center gap-1"><ScheduleRoundedIcon sx={{ fontSize: '0.875rem' }} />{item.frecuencia}</span>
+                                                            <span className="flex items-center gap-1">Fin tratamiento: <DateRangeRoundedIcon sx={{ fontSize: '0.875rem' }} />{item.duracion}</span>
                                                         </div>
                                                     </div>
 
                                                     {item.dispensado ? (
                                                         <span className="px-3 py-1.5 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 text-xs font-bold flex items-center gap-1">
-                                                            <span className="material-symbols-outlined text-[16px]">check_circle</span> Entregado
+                                                            <CheckCircleRoundedIcon sx={{ fontSize: '1rem' }} /> Entregado
                                                         </span>
                                                     ) : (
                                                         <div className="flex items-center gap-2 w-48">

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 function NavItem({ to, label, icon }) {
     return (
@@ -17,7 +18,7 @@ function NavItem({ to, label, icon }) {
                 }
             `}
         >
-            <span className="material-symbols-outlined text-lg">{icon}</span>
+            <MuiIcon name={icon} sx={{ fontSize: '1.125rem' }} />
             <span>{label}</span>
         </NavLink>
     );
@@ -95,7 +96,7 @@ export default function UserHeader() {
                         onClick={() => setIsHelpOpen(true)}
                         className="p-2 cursor-pointer rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors flex items-center justify-center"
                     >
-                        <span className="material-symbols-outlined text-[22px]">help</span>
+                        <MuiIcon name="help" sx={{ fontSize: '1.375rem' }} />
                     </button>
 
                     <button
@@ -103,9 +104,10 @@ export default function UserHeader() {
                         className="p-2 cursor-pointer rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors focus:outline-none flex items-center justify-center"
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
-                        <span className="material-symbols-outlined text-[20px]">
-                            {isDarkMode ? 'dark_mode' : 'light_mode'}
-                        </span>
+                        <MuiIcon 
+                            name={isDarkMode ? 'dark_mode' : 'light_mode'} 
+                            sx={{ fontSize: '1.25rem' }} 
+                        />
                     </button>
                 </div>
 
@@ -156,9 +158,10 @@ export default function UserHeader() {
                             onClick={toggleDarkMode}
                             className="flex items-center cursor-pointer gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none"
                         >
-                            <span className="material-symbols-outlined text-[20px]">
-                                {isDarkMode ? 'dark_mode' : 'light_mode'}
-                            </span>
+                            <MuiIcon 
+                                name={isDarkMode ? 'dark_mode' : 'light_mode'} 
+                                sx={{ fontSize: '1.25rem' }} 
+                            />
                             <span className="font-semibold">{isDarkMode ? 'Modo Oscuro' : 'Modo Claro'}</span>
                         </button>
                     </div>

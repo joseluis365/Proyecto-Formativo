@@ -1,12 +1,13 @@
 
 
 import BackgroundItem from "./BackgroundItem";
+import MuiIcon from "../UI/MuiIcon";
 
 export default function BackgroundInfo({icon, title, data}) {
     return (
         <section>
             <div className="flex items-center gap-3 mb-4">
-                <span className="material-symbols-outlined text-primary text-2xl">{icon}</span>
+                <MuiIcon name={icon} className="text-primary" sx={{ fontSize: '1.5rem' }} />
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">{title}
                 </h3>
             </div>

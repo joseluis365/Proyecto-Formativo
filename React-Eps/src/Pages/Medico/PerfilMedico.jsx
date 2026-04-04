@@ -4,6 +4,15 @@ import { useHelp } from "../../hooks/useHelp";
 import useTheme from "../../hooks/useTheme";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { motion } from "framer-motion";
+import VerifiedRoundedIcon from '@mui/icons-material/VerifiedRounded';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
+import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
+
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function PerfilMedico() {
     const { setTitle, setSubtitle } = useLayout();
@@ -24,7 +33,11 @@ export default function PerfilMedico() {
     function ActivityItem({ icon, label, value }) {
         return (
             <div className="flex items-start gap-3 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                <span className="material-symbols-outlined text-gray-400 text-lg mt-0.5">{icon}</span>
+                {typeof icon === 'string' ? (
+                    <MuiIcon name={icon} className="text-gray-400 mt-0.5" sx={{ fontSize: '1.125rem' }} />
+                ) : (
+                    <div className="text-gray-400 mt-0.5 flex items-center">{icon}</div>
+                )}
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{label}</span>
                     <span className="text-sm font-semibold text-gray-800 dark:text-white">{value}</span>
@@ -83,7 +96,7 @@ export default function PerfilMedico() {
                                         Dr. {user.primer_nombre} {user.primer_apellido}
                                     </h2>
                                     <p className="text-primary font-bold flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-base">verified</span>
+                                        <VerifiedRoundedIcon sx={{ fontSize: '1rem' }} />
                                         {user.especialidad?.especialidad || user.nombre_especialidad || "Especialista"}
                                     </p>
                                 </div>
@@ -119,7 +132,7 @@ export default function PerfilMedico() {
                     </div>
 
                     <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 border border-neutral-gray-border/10 dark:border-gray-800 shadow-sm">
-                        <PrincipalText icon="badge" text="Datos Administrativos" />
+                        <PrincipalText icon={<BadgeRoundedIcon sx={{ fontSize: '2.5rem' }} />} text="Datos Administrativos" />
                         <div className="mt-6 space-y-4">
                             <div className="flex justify-between items-center py-2 border-b border-gray-50 dark:border-gray-800">
                                 <span className="text-gray-500 dark:text-gray-400 text-sm">Estado de Cuenta</span>
@@ -138,7 +151,7 @@ export default function PerfilMedico() {
                     {/* Sesión */}
                     <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-xl border border-neutral-gray-border/5">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-primary">history</span>
+                            <HistoryRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter">Actividad</h2>
                         </div>
 
@@ -153,7 +166,7 @@ export default function PerfilMedico() {
                             </div>
 
                             <ActivityItem 
-                                icon="login" 
+                                icon={<LoginRoundedIcon sx={{ fontSize: '1.125rem' }} />} 
                                 label="Última Sesión" 
                                 value={formatNow()} 
                             />
@@ -163,14 +176,14 @@ export default function PerfilMedico() {
                     {/* Preferencias */}
                     <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-xl border border-neutral-gray-border/5">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-primary">settings</span>
+                            <SettingsRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter">Preferencias</h2>
                         </div>
 
                         <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 transition-all border border-transparent hover:border-primary/20">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-primary">dark_mode</span>
+                                    <DarkModeRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900 dark:text-white">Modo Oscuro</p>
@@ -188,8 +201,8 @@ export default function PerfilMedico() {
 
                     {/* Soporte */}
                     <div className="bg-white dark:bg-gray-900 rounded-[3.5rem] p-8 border border-neutral-gray-border/10 dark:border-gray-800 shadow-sm flex flex-col justify-center items-center text-center">
-                        <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 text-4xl">
-                            <span className="material-symbols-outlined">support_agent</span>
+                        <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4">
+                            <SupportAgentRoundedIcon sx={{ fontSize: '2.5rem' }} />
                         </div>
                         <h4 className="text-xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter">Soporte IT</h4>
                         <p className="text-gray-500 dark:text-gray-400 text-xs mb-6 px-4">

@@ -9,8 +9,15 @@ import Input from "@/components/UI/Input";
 import Filter from "@/components/UI/Filter";
 import TableSkeleton from "@/components/UI/TableSkeleton";
 import EspecialidadModal from "@/components/Modals/EspecialidadModal";
+import MuiIcon from "@/components/UI/MuiIcon";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 const statusOptions = [
     { value: "", label: "Todos" },
@@ -148,16 +155,14 @@ export default function Especialidades() {
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Editar"
                     >
-                        <span className="material-symbols-outlined text-base">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                     <button
                         onClick={() => handleToggleStatus(item)}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title={item.id_estado === 1 ? "Inactivar" : "Activar"}
                     >
-                        <span className="material-symbols-outlined text-base">
-                            {item.id_estado === 1 ? "visibility_off" : "visibility"}
-                        </span>
+                        <MuiIcon name={item.id_estado === 1 ? "visibility_off" : "visibility"} sx={{ fontSize: '1rem' }} />
                     </button>
                 </div>
             )

@@ -1,3 +1,8 @@
+﻿import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
+import VerifiedRoundedIcon from '@mui/icons-material/VerifiedRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import BaseModal from "./BaseModal";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
@@ -70,10 +75,10 @@ export default function DetalleExamenResultModal({ examen, citaOrigen, onClose }
                         <>
                             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 p-2 opacity-5">
-                                    <span className="material-symbols-outlined text-4xl">history</span>
+                                    <HistoryRoundedIcon sx={{ fontSize: "2.25rem" }} />
                                 </div>
                                 <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-3 flex items-center gap-1.5">
-                                    <span className="material-symbols-outlined text-sm">history_edu</span>
+                                    <HistoryEduRoundedIcon sx={{ fontSize: "0.875rem" }} />
                                     Consulta de Origen
                                 </h3>
                                 <div className="grid grid-cols-2 gap-4">
@@ -100,7 +105,7 @@ export default function DetalleExamenResultModal({ examen, citaOrigen, onClose }
                     />
 
                     <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex gap-3 items-start">
-                        <span className="material-symbols-outlined text-primary text-xl mt-0.5">verified</span>
+                        <VerifiedRoundedIcon sx={{ fontSize: "1.25rem" }} className="text-primary mt-0.5" />
                         <div>
                             <p className="text-sm font-bold text-primary mb-1">Resultados Listos</p>
                             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -117,7 +122,7 @@ export default function DetalleExamenResultModal({ examen, citaOrigen, onClose }
                         disabled={loading}
                         className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all disabled:opacity-50 cursor-pointer"
                     >
-                        <span className="material-symbols-outlined text-base">visibility</span>
+                        <VisibilityRoundedIcon sx={{ fontSize: "1rem" }} />
                         Visualizar
                     </button>
                     <button
@@ -125,7 +130,7 @@ export default function DetalleExamenResultModal({ examen, citaOrigen, onClose }
                         disabled={loading}
                         className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold bg-primary text-white rounded-xl shadow-md hover:bg-primary/90 transition-all disabled:opacity-50 cursor-pointer"
                     >
-                        <span className="material-symbols-outlined text-base">download</span>
+                        <DownloadRoundedIcon sx={{ fontSize: "1rem" }} />
                         {loading ? "Cargando..." : "Descargar"}
                     </button>
                 </div>

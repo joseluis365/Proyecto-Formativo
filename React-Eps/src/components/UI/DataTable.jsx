@@ -1,3 +1,4 @@
+import SearchOffRoundedIcon from '@mui/icons-material/SearchOffRounded';
 export default function DataTable({ columns, data }) {
     return (
         <div className="overflow-x-auto w-full">
@@ -20,7 +21,7 @@ export default function DataTable({ columns, data }) {
                         <tr>
                             <td colSpan={columns.length} className="px-6 py-10 text-center text-gray-500 dark:text-gray-400 italic">
                                 <div className="flex flex-col items-center gap-2">
-                                    <span className="material-symbols-outlined text-4xl opacity-20">search_off</span>
+                                    <SearchOffRoundedIcon sx={{ fontSize: '2.5rem' }} className="opacity-20" />
                                     <span>No se encontraron resultados que coincidan con los filtros aplicados.</span>
                                 </div>
                             </td>

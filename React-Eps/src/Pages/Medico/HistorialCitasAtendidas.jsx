@@ -8,7 +8,12 @@ import SearchableSelect from "@/components/UI/SearchableSelect";
 import DetalleRemisionModal from "@/components/Modals/DetalleRemisionModal";
 import DetalleRecetaModal from "@/components/Modals/DetalleRecetaModal";
 import CitaDetalleMedicoModal from "@/components/Modals/CitaModal/CitaDetalleMedicoModal";
-
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import FilterListOffRoundedIcon from '@mui/icons-material/FilterListOffRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 // ── PDF Generation (via browser print) ─────────────────────────────────────
 function generatePdfContent(items, title) {
     const rows = items.map(c => {
@@ -219,7 +224,7 @@ export default function HistorialCitasAtendidas() {
             {/* Filtros */}
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 space-y-4">
                 <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-base text-primary">filter_list</span> Filtros
+                    <FilterListRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" /> Filtros
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 max-[1090px]:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div className="space-y-1">
@@ -268,7 +273,7 @@ export default function HistorialCitasAtendidas() {
                         onClick={() => { setFilters({ fecha: "", busqueda: "", codigo_enfermedad: "", id_motivo: "" }); setPage(1); }}
                         className="text-xs font-bold text-red-500 hover:underline flex items-center gap-1"
                     >
-                        <span className="material-symbols-outlined text-sm">filter_list_off</span> Limpiar filtros
+                        <FilterListOffRoundedIcon sx={{ fontSize: '0.875rem' }} /> Limpiar filtros
                     </button>
                 )}
             </div>
@@ -283,9 +288,11 @@ export default function HistorialCitasAtendidas() {
                     disabled={citas.length === 0 || downloadingReport}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-primary border border-primary/30 hover:bg-primary/5 rounded-xl transition-colors disabled:opacity-40"
                 >
-                    <span className={`material-symbols-outlined text-base ${downloadingReport ? 'animate-spin' : ''}`}>
-                        {downloadingReport ? 'refresh' : 'download'}
-                    </span>
+                    {downloadingReport ? (
+                        <RefreshRoundedIcon className="animate-spin" sx={{ fontSize: '1rem' }} />
+                    ) : (
+                        <DownloadRoundedIcon sx={{ fontSize: '1rem' }} />
+                    )}
                     {downloadingReport ? 'Generando...' : 'Descargar Reporte'}
                 </button>
             </div>
@@ -318,7 +325,7 @@ export default function HistorialCitasAtendidas() {
                             ) : citas.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="text-center py-12 text-gray-400">
-                                        <span className="material-symbols-outlined text-4xl block mb-2">history</span>
+                                        <HistoryRoundedIcon sx={{ fontSize: '2.5rem' }} className="mb-2 block mx-auto" />
                                         No se encontraron citas atendidas
                                     </td>
                                 </tr>
@@ -358,7 +365,7 @@ export default function HistorialCitasAtendidas() {
                                                     className="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors"
                                                     title="Ver detalles"
                                                 >
-                                                    <span className="material-symbols-outlined text-base">open_in_full</span>
+                                                    <OpenInFullRoundedIcon sx={{ fontSize: '1rem' }} />
                                                 </button>
                                             </td>
                                         </tr>

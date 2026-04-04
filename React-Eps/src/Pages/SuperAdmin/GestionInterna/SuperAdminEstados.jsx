@@ -7,6 +7,7 @@ import TableSkeleton from "@/components/UI/TableSkeleton";
 import SuperAdminEstadoModal from "@/components/Modals/SuperAdmin/SuperAdminEstadoModal";
 import { AnimatePresence, motion } from "framer-motion";
 import useSuperAdminTableData from "@/hooks/useSuperAdminTableData";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 
 export default function SuperAdminEstados() {
 
@@ -58,7 +59,7 @@ export default function SuperAdminEstados() {
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                         title="Editar"
                     >
-                        <span className="material-symbols-outlined text-base">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: '1rem' }} />
                     </button>
                 </div>
             )

@@ -6,6 +6,20 @@ import api from "../Api/axios";
 import AdminLogoutButton from "../components/UI/AdminLogoutButton";
 import MotionSpinner from "../components/UI/Spinner";
 import Swal from "sweetalert2";
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import ApartmentRoundedIcon from '@mui/icons-material/ApartmentRounded';
+import LocalPharmacyRoundedIcon from '@mui/icons-material/LocalPharmacyRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import HourglassEmptyRoundedIcon from '@mui/icons-material/HourglassEmptyRounded';
+import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
+import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -119,7 +133,7 @@ function SelectField({ label, name, value, editMode, onChange, options }) {
 function ActivityItem({ icon, label, value }) {
     return (
         <div className="flex items-start gap-3 py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
-            <span className="material-symbols-outlined text-gray-400 text-lg mt-0.5">{icon}</span>
+            <div className="text-gray-400 mt-0.5">{icon}</div>
             <div className="flex flex-col">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{label}</span>
                 <span className="text-sm font-semibold text-gray-800 dark:text-white">{value}</span>
@@ -396,23 +410,23 @@ export default function Perfil() {
                         </div>
                         <div className="mt-3 flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             <span className="flex items-center gap-1.5 shrink-0">
-                                <span className="material-symbols-outlined text-base">badge</span>
+                                <BadgeRoundedIcon sx={{ fontSize: '1rem' }} />
                                 Doc: {user.documento}
                             </span>
                             {user.nit && user.id_rol === 2 && (
                                 <span className="flex items-center gap-1.5 break-all">
-                                    <span className="material-symbols-outlined text-base">apartment</span>
+                                    <ApartmentRoundedIcon sx={{ fontSize: '1rem' }} />
                                     NIT: {user.nit}
                                 </span>
                             )}
                             {user.nit_farmacia && user.id_rol === 6 && (
                                 <span className="flex items-center gap-1.5 break-all">
-                                    <span className="material-symbols-outlined text-base">local_pharmacy</span>
+                                    <LocalPharmacyRoundedIcon sx={{ fontSize: '1rem' }} />
                                     NIT: {user.nit_farmacia}
                                 </span>
                             )}
                             <span className="flex items-center gap-1.5 shrink-0">
-                                <span className="material-symbols-outlined text-base">calendar_month</span>
+                                <CalendarMonthRoundedIcon sx={{ fontSize: '1rem' }} />
                                 Reg: {formatDate(user.created_at)}
                             </span>
                         </div>
@@ -424,7 +438,7 @@ export default function Perfil() {
                             onClick={() => setEditMode(true)}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold transition shrink-0"
                         >
-                            <span className="material-symbols-outlined text-base">edit</span>
+                            <EditRoundedIcon sx={{ fontSize: '1rem' }} />
                             Editar Perfil
                         </button>
                     )}
@@ -437,7 +451,7 @@ export default function Perfil() {
                 {/* ── INFORMACIÓN PERSONAL ────────────────────────── */}
                 <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
                     <div className="flex items-center gap-2 mb-5">
-                        <span className="material-symbols-outlined text-primary">person</span>
+                        <PersonRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary" />
                         <h2 className="text-base font-bold text-gray-900 dark:text-white">Información Personal</h2>
                     </div>
 
@@ -523,7 +537,7 @@ export default function Perfil() {
                     <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-800">
                         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-gray-400 text-xl">lock</span>
+                                <LockRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-gray-400" />
                                 <div>
                                     <p className="text-sm font-semibold text-gray-800 dark:text-white">Contraseña</p>
                                     <p className="text-xs text-gray-400 dark:text-gray-500">
@@ -543,9 +557,7 @@ export default function Perfil() {
                                 disabled={saving}
                                 className="flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                <span className="material-symbols-outlined text-base">
-                                    {saving ? "hourglass_empty" : "published_with_changes"}
-                                </span>
+                                {saving ? <HourglassEmptyRoundedIcon sx={{ fontSize: '1rem' }} /> : <PublishedWithChangesRoundedIcon sx={{ fontSize: '1rem' }} />}
                                 {saving ? "Guardando..." : "Guardar Cambios"}
                             </button>
                             <button
@@ -562,7 +574,7 @@ export default function Perfil() {
                 <div className="flex flex-col gap-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5">
                         <div className="flex items-center gap-2 mb-4">
-                            <span className="material-symbols-outlined text-primary">history</span>
+                            <HistoryRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary" />
                             <h2 className="text-base font-bold text-gray-900 dark:text-white">Actividad</h2>
                         </div>
 
@@ -575,22 +587,22 @@ export default function Perfil() {
                             </div>
                         </div>
 
-                        <ActivityItem icon="login" label="Último acceso" value={formatNow()} />
+                        <ActivityItem icon={<LoginRoundedIcon sx={{ fontSize: '1.125rem' }} />} label="Último acceso" value={formatNow()} />
                         <ActivityItem
-                            icon="manage_accounts"
+                            icon={<ManageAccountsRoundedIcon sx={{ fontSize: '1.125rem' }} />}
                             label="Rol de acceso"
                             value={rolLabel}
                         />
                         {user.empresa && user.id_rol === 2 && (
                             <ActivityItem
-                                icon="apartment"
+                                icon={<ApartmentRoundedIcon sx={{ fontSize: '1.125rem' }} />}
                                 label="Empresa"
                                 value={user.empresa.nombre_empresa || user.nit}
                             />
                         )}
                         {user.farmacia && user.id_rol === 6 && (
                              <ActivityItem
-                                icon="local_pharmacy"
+                                icon={<LocalPharmacyRoundedIcon sx={{ fontSize: '1.125rem' }} />}
                                 label="Farmacia asignada"
                                 value={`${user.farmacia.nombre} (NIT: ${user.farmacia.nit})`}
                             />
@@ -600,13 +612,13 @@ export default function Perfil() {
                     {/* ── PREFERENCIAS ─────────────────────────────────── */}
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-5 mt-2">
                         <div className="flex items-center gap-2 mb-4">
-                            <span className="material-symbols-outlined text-primary">settings</span>
+                            <SettingsRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary" />
                             <h2 className="text-base font-bold text-gray-900 dark:text-white">Preferencias</h2>
                         </div>
 
                         <div className="flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-700">
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-gray-400 text-lg">dark_mode</span>
+                                <DarkModeRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-gray-400" />
                                 <div className="flex flex-col">
                                     <span className="text-sm font-semibold text-gray-800 dark:text-white">Modo Oscuro</span>
                                     <span className="text-[10px] text-gray-400 dark:text-gray-500">Apariencia visual de la plataforma</span>

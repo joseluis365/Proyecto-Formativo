@@ -11,6 +11,9 @@ import TableSkeleton from "../../components/UI/TableSkeleton";
 import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 
 /**
  * Formatea una fecha YYYY-MM-DD al locale español sin problemas de timezone.
@@ -114,7 +117,7 @@ export default function AgendaMedico() {
                 onClick={() => navigate('/usuarios/medicos')}
                 className="flex items-center w-fit gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors mb-2 font-medium"
             >
-                <span className="material-symbols-outlined text-xl">arrow_back</span>
+                <ArrowBackRoundedIcon sx={{ fontSize: '1.25rem' }} />
                 Volver a Médicos
             </button>
 
@@ -204,7 +207,7 @@ export default function AgendaMedico() {
                                 onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
                                 className="flex items-center gap-1.5 text-sm font-bold text-primary hover:text-primary/80 px-3 py-2 rounded-xl hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer whitespace-nowrap"
                             >
-                                <span className="material-symbols-outlined text-base">today</span>
+                                <TodayRoundedIcon sx={{ fontSize: '1rem' }} />
                                 Volver a hoy
                             </button>
                         )}
@@ -232,9 +235,7 @@ export default function AgendaMedico() {
                                     transition={{ duration: 0.2 }}
                                     className="text-center py-16 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800"
                                 >
-                                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-                                        event_busy
-                                    </span>
+                                    <EventBusyRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-600 mb-4 block mx-auto" />
                                     <p className="text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider text-sm">
                                         {citas.length > 0
                                             ? "No hay citas que coincidan con los filtros."

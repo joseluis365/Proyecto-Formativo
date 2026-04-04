@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import BlueButton from "../UI/BlueButton";
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 
 export default function Form({
   fields = [],
@@ -67,9 +70,7 @@ export default function Form({
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none flex items-center justify-center p-1"
                 title={showPasswords[field.name] ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
-                <span className="material-symbols-outlined text-[20px]">
-                  {showPasswords[field.name] ? 'visibility' : 'visibility_off'}
-                </span>
+                {showPasswords[field.name] ? <VisibilityRoundedIcon sx={{ fontSize: '1.25rem' }} /> : <VisibilityOffRoundedIcon sx={{ fontSize: '1.25rem' }} />}
               </button>
             )}
           </div>
@@ -113,7 +114,7 @@ export default function Form({
                     transition-all flex items-center justify-center gap-2
                     shadow-lg shadow-red-600/20"
           >
-            <span className="material-symbols-outlined">delete</span>
+            <DeleteRoundedIcon />
             Eliminar
           </button>
         )}

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import MuiIcon from "./MuiIcon";
 
 export default function BlueButton({
   text,
@@ -34,9 +35,11 @@ export default function BlueButton({
           <span>{text}</span>
           {icon && (
             typeof icon === 'string' ? (
-              <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">
-                {icon}
-              </span>
+              <MuiIcon 
+                name={icon} 
+                sx={{ fontSize: '1.125rem' }} 
+                className="group-hover:translate-x-1 transition-transform" 
+              />
             ) : (
               <span className="flex items-center group-hover:translate-x-1 transition-transform">
                 {icon}

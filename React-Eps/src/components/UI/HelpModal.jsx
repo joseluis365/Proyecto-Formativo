@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useLayout } from "../../LayoutContext";
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import LightbulbRoundedIcon from '@mui/icons-material/LightbulbRounded';
+import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 // ── Renderizadores por tipo de sección ───────────────────────────────────────
 
@@ -12,9 +17,7 @@ function ListSection({ items }) {
         <ul className="space-y-1.5">
             {items.map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-                    <span className="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0">
-                        chevron_right
-                    </span>
+                    <ChevronRightRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary mt-0.5 shrink-0" />
                     <span>{item}</span>
                 </li>
             ))}
@@ -57,9 +60,7 @@ function ImageSection({ src, alt, caption }) {
 function WarningSection({ content }) {
     return (
         <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 rounded-xl p-4">
-            <span className="material-symbols-outlined text-amber-500 dark:text-amber-400 text-[20px] shrink-0 mt-0.5">
-                warning
-            </span>
+            <WarningAmberRoundedIcon className="text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" sx={{ fontSize: '1.25rem' }} />
             <p className="text-sm text-amber-700 dark:text-amber-300 leading-relaxed">{content}</p>
         </div>
     );
@@ -68,9 +69,7 @@ function WarningSection({ content }) {
 function TipSection({ content }) {
     return (
         <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/40 rounded-xl p-4">
-            <span className="material-symbols-outlined text-blue-500 dark:text-blue-400 text-[20px] shrink-0 mt-0.5">
-                lightbulb
-            </span>
+            <LightbulbRoundedIcon className="text-blue-500 dark:text-blue-400 shrink-0 mt-0.5" sx={{ fontSize: '1.25rem' }} />
             <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">{content}</p>
         </div>
     );
@@ -142,7 +141,7 @@ export default function HelpModal() {
                 {/* Header del modal */}
                 <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-linear-to-r from-primary/5 to-transparent dark:from-primary/10 shrink-0">
                     <div className="size-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary text-[22px]">help</span>
+                        <HelpRoundedIcon className="text-primary" sx={{ fontSize: '1.375rem' }} />
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-primary uppercase tracking-wider">Guía de ayuda</p>
@@ -155,7 +154,7 @@ export default function HelpModal() {
                         className="shrink-0 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
                         title="Cerrar"
                     >
-                        <span className="material-symbols-outlined text-[20px]">close</span>
+                        <CloseRoundedIcon sx={{ fontSize: '1.25rem' }} />
                     </button>
                 </div>
 

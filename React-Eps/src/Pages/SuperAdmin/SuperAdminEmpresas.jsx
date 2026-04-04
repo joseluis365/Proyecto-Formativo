@@ -10,6 +10,8 @@ import AssignLicenciaModal from "../../components/Modals/LicenciaModal/AsignarLi
 import CompanyDetailsModal from "../../components/Modals/EmpresaModal/CompanyDetailsModal";
 import Swal from 'sweetalert2';
 import MotionSpinner from "../../components/UI/Spinner";
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 
 export default function SuperAdminEmpresas() {
   // 🔹 Estados
@@ -209,7 +211,7 @@ export default function SuperAdminEmpresas() {
             onClick={exportarPDF}
             className="bg-red-600 hover:bg-red-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all shadow-lg flex items-center gap-2"
           >
-            <span className="material-symbols-outlined">download</span>
+            <DownloadRoundedIcon />
             Exportar PDF
           </button>
 
@@ -218,7 +220,7 @@ export default function SuperAdminEmpresas() {
             className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20"
           >
             Agregar Empresa
-            <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
+            <AddRoundedIcon sx={{ fontSize: '1.125rem' }} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

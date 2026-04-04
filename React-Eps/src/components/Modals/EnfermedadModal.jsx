@@ -1,3 +1,4 @@
+﻿import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import api from "@/Api/axios";
@@ -74,7 +75,7 @@ export default function EnfermedadModal({ isOpen, onClose, onSuccess, editData }
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2">
                         <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary dark:bg-primary/50 dark:text-blue-400">
-                            <span className="material-symbols-outlined text-3xl">vaccines</span>
+                            <VaccinesRoundedIcon sx={{ fontSize: "1.875rem" }} />
                         </div>
                         <h2 className="text-xl font-bold dark:text-white">
                             {editData ? "Editar Enfermedad" : "Nueva Enfermedad"}
@@ -84,7 +85,7 @@ export default function EnfermedadModal({ isOpen, onClose, onSuccess, editData }
                         onClick={onClose}
                         className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors"
                     >
-                        <span className="material-symbols-outlined">close</span>
+                        <CloseRoundedIcon />
                     </button>
                 </div>
 
@@ -157,7 +158,7 @@ export default function EnfermedadModal({ isOpen, onClose, onSuccess, editData }
                             className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                         >
                             {loading ? (
-                                <span className="material-symbols-outlined animate-spin shadow-sm">refresh</span>
+                                <AutorenewRoundedIcon className="animate-spin shadow-sm" />
                             ) : editData ? (
                                 "Actualizar"
                             ) : (

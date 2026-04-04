@@ -1,3 +1,6 @@
+﻿import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import BaseModal from "./BaseModal";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
@@ -87,7 +90,7 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
                 {/* Tipo-específico */}
                 {isExamen && remision.requiere_ayuno && (
                     <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex gap-3 items-start">
-                        <span className="material-symbols-outlined text-red-500 text-xl mt-0.5">warning</span>
+                        <WarningAmberRoundedIcon sx={{ fontSize: "1.25rem" }} className="text-red-500 mt-0.5" />
                         <div>
                             <p className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">Requiere Ayuno</p>
                             <p className="text-sm text-red-600 dark:text-red-300">Este examen requiere ayuno mínimo de 8 horas. No consuma alimentos ni bebidas azucaradas. Puede tomar agua.</p>
@@ -106,7 +109,7 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
                 {/* Instrucciones para el paciente */}
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
                     <h4 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm">info</span>
+                        <InfoRoundedIcon sx={{ fontSize: "0.875rem" }} />
                         Instrucciones para el Paciente
                     </h4>
                     <p className="text-sm text-blue-600 dark:text-blue-300 leading-relaxed">
@@ -131,7 +134,7 @@ export default function DetalleRemisionModal({ remision, cita, onClose }) {
                         disabled={downloading}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-primary text-white rounded-md shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
                     >
-                        <span className="material-symbols-outlined text-base">download</span>
+                        <DownloadRoundedIcon sx={{ fontSize: "1rem" }} />
                         {downloading ? "Generando..." : "Descargar PDF"}
                     </button>
                 )}

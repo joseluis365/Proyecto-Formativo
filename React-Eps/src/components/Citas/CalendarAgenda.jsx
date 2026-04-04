@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import MuiIcon from '../UI/MuiIcon';
 
 const DAYS_OF_WEEK = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -92,7 +93,7 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
                             className="flex pr-2 items-center justify-center text-gray-500 hover:text-gray-900 border-r border-gray-200 dark:border-gray-700 dark:text-gray-400 dark:hover:text-white transition cursor-pointer"
                             title="Ocultar calendario"
                         >
-                            <span className="material-symbols-outlined text-[20px]">first_page</span>
+                            <MuiIcon name="first_page" sx={{ fontSize: '20px' }} />
                         </button>
                     )}
                     <h2 className="text-lg font-bold text-gray-800 dark:text-white">Calendario</h2>
@@ -103,13 +104,13 @@ export default function CalendarAgenda({ selectedDate, onDateSelect, onClose }) 
                         disabled={currentMonthOffset === 0}
                         className={`p-1.5 rounded-lg border ${currentMonthOffset === 0 ? 'text-gray-300 border-gray-200 dark:border-gray-700 dark:text-gray-600' : 'text-gray-600 border-gray-300 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800'} transition cursor-pointer`}
                     >
-                        <span className="material-symbols-outlined text-sm">keyboard_arrow_up</span>
+                        <MuiIcon name="keyboard_arrow_up" sx={{ fontSize: '14px' }} />
                     </button>
                     <button
                         onClick={handleNext}
                         className="p-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800 transition cursor-pointer"
                     >
-                        <span className="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                        <MuiIcon name="keyboard_arrow_down" sx={{ fontSize: '14px' }} />
                     </button>
                 </div>
             </div>

@@ -5,6 +5,8 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../Api/axios";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 
 export default function DoctorsTable({ users, fetchUsers }) {
   const [editingUserId, setEditingUserId] = useState(null);
@@ -104,12 +106,12 @@ export default function DoctorsTable({ users, fetchUsers }) {
         <div className="flex items-center justify-center gap-2">
           <button onClick={() => setEditingUserId(u.documento)} className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
 
-            <span className="material-symbols-outlined text-base">edit</span>
+            <EditRoundedIcon sx={{ fontSize: '1rem' }} />
           </button>
 
           <button onClick={() => handleToggleStatus(u)}
             className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">refresh</span>
+            <RefreshRoundedIcon sx={{ fontSize: '1rem' }} />
           </button>
         </div>
       ),

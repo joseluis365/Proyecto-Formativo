@@ -6,6 +6,10 @@ import BarChartCitas from "../../components/Charts/BarChartCitas";
 import StatsPanel from "../../components/Dashboard/StatsPanel";
 import MotionSpinner from "../../components/UI/Spinner";
 import api from "../../Api/axios";
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import HelpCenterRoundedIcon from '@mui/icons-material/HelpCenterRounded';
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function PersonalAdminDashboard() {
   const { setTitle, setSubtitle } = useLayout();
@@ -107,9 +111,7 @@ export default function PersonalAdminDashboard() {
                 </h3>
               </div>
               <div className="p-3 bg-primary/10 rounded-2xl">
-                <span className="material-symbols-outlined text-primary text-2xl">
-                  {stat.icon}
-                </span>
+                <MuiIcon name={stat.icon} sx={{ fontSize: '1.5rem' }} className="text-primary" />
               </div>
             </div>
           </div>
@@ -121,7 +123,7 @@ export default function PersonalAdminDashboard() {
         <div className="lg:col-span-8 bg-white dark:bg-gray-900 p-6 rounded-4xl border border-neutral-gray-border/10 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
             <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined">bar_chart</span>
+              <BarChartRoundedIcon />
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-none">Citas de la Semana</h3>
@@ -146,13 +148,13 @@ export default function PersonalAdminDashboard() {
               className="group relative flex items-center gap-4 p-5 bg-white dark:bg-gray-800 rounded-3xl border border-neutral-gray-border/10 dark:border-gray-700 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all text-left overflow-hidden cursor-pointer w-full"
             >
               <div className={`size-12 rounded-2xl bg-linear-to-br ${action.color} text-white flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0 group-hover:scale-110 transition-transform`}>
-                <span className="material-symbols-outlined text-2xl">{action.icon}</span>
+                <MuiIcon name={action.icon} sx={{ fontSize: '1.5rem' }} />
               </div>
               <div className="grow">
                 <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors text-sm">{action.label}</h4>
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium mt-0.5 line-clamp-1">{action.desc}</p>
               </div>
-              <span className="material-symbols-outlined text-gray-300 dark:text-gray-600 group-hover:text-primary group-hover:translate-x-1 transition-all">chevron_right</span>
+              <ChevronRightRoundedIcon className="text-gray-300 dark:text-gray-600 group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </button>
           ))}
 
@@ -163,7 +165,7 @@ export default function PersonalAdminDashboard() {
               <h4 className="text-sm font-bold leading-tight">¿Tienes dudas con el sistema?</h4>
               <p className="text-[10px] opacity-70 leading-relaxed max-w-[150px]">Consulta la ayuda integrada en la parte superior derecha.</p>
             </div>
-            <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl opacity-10 rotate-12">help_center</span>
+            <HelpCenterRoundedIcon className="absolute -right-4 -bottom-4 opacity-10 rotate-12" sx={{ fontSize: '5rem' }} />
           </div>
         </div>
       </div>

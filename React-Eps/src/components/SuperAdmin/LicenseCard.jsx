@@ -1,6 +1,7 @@
 import BlueButton from "../UI/BlueButton";
 import { useState } from "react";
 import EditLicenciaModal from "../Modals/LicenciaModal/EditLicenciaModal";
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 
 export default function LicensePlanCard({
   id,
@@ -82,9 +83,7 @@ export default function LicensePlanCard({
           className="w-12 h-12 rounded-lg flex items-center justify-center
                      border-2 border-primary text-primary"
         >
-          <span className="material-symbols-outlined text-2xl">
-            calendar_month
-          </span>
+          <CalendarMonthRoundedIcon sx={{ fontSize: '1.5rem' }} />
 
         </div>
         <p className="text-lg font-bold text-gray-800 dark:text-gray-200">{tipo}</p>

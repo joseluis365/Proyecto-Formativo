@@ -3,7 +3,16 @@ import { useEffect, useState } from "react";
 import { useHelp } from "../../hooks/useHelp";
 import { Link } from "react-router-dom";
 import api from "../../Api/axios";
-
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
+import ListAltRoundedIcon from '@mui/icons-material/ListAltRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 export default function Dashboard() {
     const { setTitle, setSubtitle } = useLayout();
 
@@ -64,7 +73,7 @@ export default function Dashboard() {
                     <div className="absolute top-0 left-0 w-8 h-8 rounded-tl-2xl border-t-4 border-l-4 border-red-500" />
                     <div className="flex justify-between items-start mb-4">
                         <div className="size-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-red-500">
-                            <span className="material-symbols-outlined">cancel</span>
+                            <CancelRoundedIcon sx={{ fontSize: '1.5rem' }} />
                         </div>
                         <span className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold px-3 py-1 rounded-full">
                             CRÍTICO
@@ -79,7 +88,7 @@ export default function Dashboard() {
                         </p>
                     )}
                     <Link to="/farmacia/inventario?estado=Vencido" className="text-primary hover:text-primary-dark text-sm font-semibold flex items-center gap-1 w-max">
-                        Ver inventario <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        Ver inventario <ArrowForwardRoundedIcon sx={{ fontSize: '0.875rem' }} />
                     </Link>
                 </div>
 
@@ -88,7 +97,7 @@ export default function Dashboard() {
                     <div className="absolute top-0 left-0 w-8 h-8 rounded-tl-2xl border-t-4 border-l-4 border-yellow-500" />
                     <div className="flex justify-between items-start mb-4">
                         <div className="size-12 rounded-full bg-yellow-100 dark:bg-yellow-900/50 flex items-center justify-center text-yellow-600">
-                            <span className="material-symbols-outlined">event</span>
+                            <CalendarTodayRoundedIcon sx={{ fontSize: '1.5rem' }} />
                         </div>
                         <span className="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-500 text-xs font-bold px-3 py-1 rounded-full">
                             PREVENTIVO
@@ -103,7 +112,7 @@ export default function Dashboard() {
                         </p>
                     )}
                     <Link to="/farmacia/inventario?estado=Próximo" className="text-primary hover:text-primary-dark text-sm font-semibold flex items-center gap-1 w-max">
-                        Ver inventario <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        Ver inventario <ArrowForwardRoundedIcon sx={{ fontSize: '0.875rem' }} />
                     </Link>
                 </div>
 
@@ -112,7 +121,7 @@ export default function Dashboard() {
                     <div className="absolute top-0 left-0 w-8 h-8 rounded-tl-2xl border-t-4 border-l-4 border-orange-400" />
                     <div className="flex justify-between items-start mb-4">
                         <div className="size-12 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center text-orange-500">
-                            <span className="material-symbols-outlined">inventory_2</span>
+                            <Inventory2RoundedIcon sx={{ fontSize: '1.5rem' }} />
                         </div>
                         <span className="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
                             REPONER
@@ -127,7 +136,7 @@ export default function Dashboard() {
                         </p>
                     )}
                     <Link to="/farmacia/inventario?estado=Bajo" className="text-primary hover:text-primary-dark text-sm font-semibold flex items-center gap-1 w-max">
-                        Ver inventario <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        Ver inventario <ArrowForwardRoundedIcon sx={{ fontSize: '0.875rem' }} />
                     </Link>
                 </div>
             </div>
@@ -153,7 +162,7 @@ export default function Dashboard() {
                                 <div key={lote.id_lote} className="bg-white dark:bg-gray-800 p-4 border border-gray-100 dark:border-gray-700 rounded-2xl flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-4">
                                         <div className="size-12 rounded-full bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center text-yellow-600">
-                                            <span className="material-symbols-outlined">medication</span>
+                                            <MedicationRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-gray-900 dark:text-white">{lote.medicamento}</h4>
@@ -178,7 +187,7 @@ export default function Dashboard() {
                             ))
                         ) : (
                             <div className="bg-white dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 rounded-2xl text-center text-gray-400 dark:text-gray-500">
-                                <span className="material-symbols-outlined text-3xl mb-2 block mr-2">check_circle</span>
+                                <CheckCircleRoundedIcon sx={{ fontSize: '1.875rem' }} className="mb-2 block mx-auto" />
                                 Sin medicamentos próximos a vencer en los próximos 30 días
                             </div>
                         )}
@@ -193,28 +202,28 @@ export default function Dashboard() {
                         <div className="grid grid-cols-2 gap-4">
                             <Link to="/farmacia/movimientos" className="bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-shadow">
                                 <div className="size-12 rounded-2xl bg-green-50 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
-                                    <span className="material-symbols-outlined">add_box</span>
+                                    <AddBoxRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 <span className="text-sm font-bold text-gray-900 dark:text-white">Entrada</span>
                             </Link>
 
                             <Link to="/farmacia/movimientos?action=atender" className="bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-shadow">
                                 <div className="size-12 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center">
-                                    <span className="material-symbols-outlined">vaccines</span>
+                                    <VaccinesRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 <span className="text-sm font-bold text-gray-900 dark:text-white text-center leading-tight">Atender<br />Orden</span>
                             </Link>
 
                             <Link to="/farmacia/inventario" className="bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-shadow">
                                 <div className="size-12 rounded-2xl bg-cyan-50 dark:bg-cyan-900/30 text-cyan-500 flex items-center justify-center">
-                                    <span className="material-symbols-outlined">list_alt</span>
+                                    <ListAltRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 <span className="text-sm font-bold text-gray-900 dark:text-white">Inventario</span>
                             </Link>
 
                             <Link to="/farmacia/reportes" className="bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center gap-2 hover:shadow-lg transition-shadow">
                                 <div className="size-12 rounded-2xl bg-purple-50 dark:bg-purple-900/30 text-purple-500 flex items-center justify-center">
-                                    <span className="material-symbols-outlined">history</span>
+                                    <HistoryRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 <span className="text-sm font-bold text-gray-900 dark:text-white">Historial</span>
                             </Link>

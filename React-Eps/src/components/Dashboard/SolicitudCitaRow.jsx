@@ -1,3 +1,5 @@
+import MuiIcon from "../UI/MuiIcon";
+
 /**
  * SolicitudCitaRow
  * Props:
@@ -16,9 +18,7 @@ export default function SolicitudCitaRow({ solicitud, onCancel, onViewDetails })
             {/* Left info */}
             <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-amber-500 dark:text-amber-400" style={{ fontSize: '20px' }}>
-                        favorite
-                    </span>
+                    <MuiIcon name="favorite" sx={{ fontSize: '20px' }} className="text-amber-500 dark:text-amber-400" />
                 </div>
                 <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">

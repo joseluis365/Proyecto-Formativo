@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
@@ -69,7 +69,7 @@ export default function FormaFarmaceuticaModal({ isOpen, onClose, onSuccess, edi
                         onClick={onClose}
                         className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors"
                     >
-                        <span className="material-symbols-outlined">close</span>
+                        <CloseRoundedIcon />
                     </button>
                 </div>
 
@@ -109,7 +109,7 @@ export default function FormaFarmaceuticaModal({ isOpen, onClose, onSuccess, edi
                             className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                         >
                             {loading ? (
-                                <span className="material-symbols-outlined animate-spin">refresh</span>
+                                <AutorenewRoundedIcon className="animate-spin" />
                             ) : editData ? (
                                 "Actualizar"
                             ) : (

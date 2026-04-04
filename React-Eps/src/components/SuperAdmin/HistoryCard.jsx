@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 
 export default function HistoryCard({ history, onClick }) {
     const { empresa, tipo_licencia, fecha_inicio, fecha_fin, id_estado } = history;
@@ -52,11 +54,11 @@ export default function HistoryCard({ history, onClick }) {
             {/* Fechas */}
             <div className="flex-1 flex flex-col items-start md:items-center">
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                    <span className="material-symbols-outlined text-base">calendar_today</span>
+                    <CalendarTodayRoundedIcon sx={{ fontSize: '1rem' }} />
                     <span>{fecha_inicio ? new Date(fecha_inicio).toISOString().split('T')[0] : 'N/A'}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mt-1">
-                    <span className="material-symbols-outlined text-base">event_busy</span>
+                    <EventBusyRoundedIcon sx={{ fontSize: '1rem' }} />
                     <span>{fecha_fin ? new Date(fecha_fin).toISOString().split('T')[0] : 'N/A'}</span>
                 </div>
             </div>

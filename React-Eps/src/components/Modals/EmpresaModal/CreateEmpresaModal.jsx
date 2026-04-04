@@ -1,9 +1,11 @@
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 import React, { useState, useEffect } from "react";
 import superAdminApi from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
 import ModalFooter from "../ModalFooter";
 import FormWithIcons from "../../UI/FormWithIcons";
+import MuiIcon from "../../UI/MuiIcon";
 import { createEmpresaFormConfig } from "../../../EmpresaFormConfig";
 import Swal from "sweetalert2";
 import { useForm } from "react-hook-form";
@@ -135,7 +137,7 @@ export default function CreateEmpresaModal({
             <div key="location-group-depto" className="space-y-1 pb-3">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_departamento">{field.label}</label>
                 <div className="relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
+                    <MuiIcon name={field.icon} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" sx={{ fontSize: '1.25rem' }} />
                     <select
                         {...register("id_departamento")}
                         className={`border rounded-lg pl-10 pr-3 py-2 w-full focus:ring-2 focus:ring-blue-500 outline-none transition-all ${error ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-gray-300 dark:border-gray-700"} bg-white dark:bg-gray-800 text-gray-900 dark:text-white`}
@@ -154,7 +156,7 @@ export default function CreateEmpresaModal({
             <div key="location-group-ciudad" className="space-y-1 pb-3">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-200" htmlFor="id_ciudad">{field.label}</label>
                 <div className="relative">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">{field.icon}</span>
+                    <MuiIcon name={field.icon} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" sx={{ fontSize: '1.25rem' }} />
                     <select
                         {...register("id_ciudad")}
                         id="id_ciudad"
@@ -193,7 +195,7 @@ export default function CreateEmpresaModal({
                                 disabled={saving}
                                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2 transition-colors disabled:opacity-50"
                             >
-                                <span className="material-symbols-outlined">save</span>
+                                <SaveRoundedIcon />
                                 {saving ? "Guardando..." : "Guardar"}
                             </button>
                         </div>

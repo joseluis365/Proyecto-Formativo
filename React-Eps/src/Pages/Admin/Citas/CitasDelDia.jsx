@@ -5,6 +5,8 @@ import { useHelp } from "../../../hooks/useHelp";
 import AppointmentCard from "../../../components/Citas/AppointmentCard";
 import PrincipalText from "../../../components/Users/PrincipalText";
 import ViewCitaModal from "../../../components/Modals/CitaModal/ViewCitaModal";
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 
 export default function CitasDelDia() {
     const { setTitle, setSubtitle } = useLayout();
@@ -73,11 +75,11 @@ export default function CitasDelDia() {
 
             {loading ? (
                 <div className="flex justify-center p-12">
-                    <span className="material-symbols-outlined animate-spin text-4xl text-primary">autorenew</span>
+                    <AutorenewRoundedIcon sx={{ fontSize: '2.5rem' }} className="animate-spin text-primary" />
                 </div>
             ) : citas.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">event_busy</span>
+                    <EventBusyRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-600 mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">No hay citas para hoy</h3>
                     <p className="text-gray-500 dark:text-gray-400 mt-1 text-center">Tómate un descanso o revisa la agenda general.</p>
                 </div>

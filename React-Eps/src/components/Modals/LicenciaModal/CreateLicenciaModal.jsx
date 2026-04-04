@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import superAdminApi from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
 import ModalHeader from "../ModalHeader";
@@ -117,7 +117,7 @@ export default function CreateLicenciaModal({
                                     className="mb-4 flex items-center gap-2 rounded-lg bg-green-100 text-green-800 px-4 py-3"
                                     onClick={!saving ? onClose : undefined}
                                 >
-                                    <span className="material-symbols-outlined">check_circle</span>
+                                    <CheckCircleRoundedIcon />
                                     <span className="font-medium">Plan creado correctamente</span>
                                 </motion.div>
                             )}

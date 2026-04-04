@@ -7,6 +7,7 @@ import MotionSpinner from "../../components/UI/Spinner";
 import HistoryCard from "../../components/SuperAdmin/HistoryCard";
 import HistoryDetailsModal from "../../components/Modals/LicenciaModal/HistoryDetailsModal";
 import { AnimatePresence, motion } from "framer-motion";
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 
 export default function SuperAdminHistorial() {
     const [history, setHistory] = useState([]);
@@ -101,7 +102,7 @@ export default function SuperAdminHistorial() {
                     onClick={handleDownloadHistory}
                     className="bg-red-600 hover:bg-red-700 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all shadow-lg flex items-center gap-2"
                 >
-                    <span className="material-symbols-outlined">description</span>
+                    <DescriptionRoundedIcon />
                     Descargar Historial
                 </button>
             </div>

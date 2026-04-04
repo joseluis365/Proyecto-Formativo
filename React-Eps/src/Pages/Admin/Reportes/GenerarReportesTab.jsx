@@ -10,6 +10,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import useReports from "@/hooks/useReports";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 
 // ─── Opciones de entidad ────────────────────────────────────────────────────
 const entityOptions = [
@@ -399,7 +407,7 @@ export default function GenerarReportesTab() {
         <div className="bg-white dark:bg-gray-900 rounded-xl">
             {/* ── Encabezado ─────────────────────────────────────────────────── */}
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="analytics" text={meta?.report_title || entityOptions.find(o => o.value === entity)?.label || "Reporte"} number={currentTotal} />
+                <PrincipalText icon={<AnalyticsRoundedIcon sx={{ fontSize: '2.5rem' }} />} text={meta?.report_title || entityOptions.find(o => o.value === entity)?.label || "Reporte"} number={currentTotal} />
                 <div className="w-full sm:w-auto flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 p-2.5 px-4 rounded-xl border border-neutral-gray-border/20 dark:border-gray-700">
                     <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">Ver reporte de:</span>
                     <select
@@ -438,7 +446,7 @@ export default function GenerarReportesTab() {
                             onClick={handleExportPDF}
                             className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm shadow-red-200 dark:shadow-none"
                         >
-                            <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                            <PictureAsPdfRoundedIcon sx={{ fontSize: '1.125rem' }} />
                             <span className="hidden sm:inline">Exportar PDF</span>
                         </button>
 
@@ -464,7 +472,7 @@ export default function GenerarReportesTab() {
                                             <option value="">Todos los roles</option>
                                             {roles.map(r => <option key={r.id_rol} value={r.id_rol}>{r.tipo_usu}</option>)}
                                         </select>
-                                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none">expand_more</span>
+                                        <ExpandMoreRoundedIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none" />
                                     </div>
                                 </motion.div>
                             )}
@@ -497,7 +505,7 @@ export default function GenerarReportesTab() {
                                             <option value="">Todas las farmacias</option>
                                             {farmacias.map(f => <option key={f.nit} value={f.nit}>{f.nombre}</option>)}
                                         </select>
-                                        <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none">storefront</span>
+                                        <StorefrontRoundedIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none" />
                                     </div>
                                 </motion.div>
                             )}
@@ -547,7 +555,7 @@ export default function GenerarReportesTab() {
                     {(isCitas(entity) || meta?.has_dates) && (
                         <motion.div key="dates" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center bg-primary/5 dark:bg-primary/10 p-4 rounded-xl border border-primary/10">
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary text-xl">calendar_month</span>
+                                <CalendarMonthRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary" />
                                 <span className="text-sm font-semibold text-primary/80">Rango de fechas:</span>
                             </div>
                             <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
@@ -570,7 +578,7 @@ export default function GenerarReportesTab() {
                     <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         {currentData.length === 0 ? (
                             <div className="text-center py-20 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-                                <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-700 mb-4 block">query_stats</span>
+                                <QueryStatsRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-700 mb-4 block mx-auto" />
                                 <p className="text-gray-500 dark:text-gray-400 font-medium">No se encontraron resultados para los criterios seleccionados.</p>
                             </div>
                         ) : (
@@ -583,7 +591,7 @@ export default function GenerarReportesTab() {
                         {currentLastPage > 1 && (
                             <div className="flex justify-center items-center gap-2 mt-8">
                                 <button disabled={currentPage === 1} onClick={() => currentSetPage(p => Math.max(1, p - 1))} className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
-                                    <span className="material-symbols-outlined align-middle">chevron_left</span>
+                                    <ChevronLeftRoundedIcon />
                                 </button>
                                 <div className="flex gap-1">
                                     {Array.from({ length: Math.min(currentLastPage, 7) }, (_, i) => i + 1).map(p => (
@@ -591,7 +599,7 @@ export default function GenerarReportesTab() {
                                     ))}
                                 </div>
                                 <button disabled={currentPage === currentLastPage} onClick={() => currentSetPage(p => Math.min(currentLastPage, p + 1))} className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
-                                    <span className="material-symbols-outlined align-middle">chevron_right</span>
+                                    <ChevronRightRoundedIcon />
                                 </button>
                             </div>
                         )}

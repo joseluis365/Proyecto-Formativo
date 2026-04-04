@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
@@ -11,6 +11,12 @@ import ConcentracionModal from "@/components/Modals/ConcentracionModal";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
 import useTableData from "@/hooks/useTableData";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 export default function Concentraciones() {
     const { setTitle, setSubtitle } = useLayout();
@@ -90,14 +96,14 @@ export default function Concentraciones() {
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Editar"
                     >
-                        <span className="material-symbols-outlined text-base">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                     <button
                         onClick={() => handleDelete(item)}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Eliminar"
                     >
-                        <span className="material-symbols-outlined text-base">delete</span>
+                        <DeleteRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                 </div>
             )

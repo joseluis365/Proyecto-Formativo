@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useMatch, useLocation } from "react-router-dom";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function SidebarDropdown({ icon, label, basePath, children }) {
   const location = useLocation();
@@ -26,14 +27,13 @@ export default function SidebarDropdown({ icon, label, basePath, children }) {
           }
         `}
       >
-        <span className="material-symbols-outlined">{icon}</span>
+        <MuiIcon name={icon} sx={{ fontSize: '1.25rem' }} />
         <p className="text-sm font-medium leading-normal">{label}</p>
-        <span
-          className={`material-symbols-outlined ml-auto transition-transform ${open ? "rotate-180" : ""
-            }`}
-        >
-          expand_more
-        </span>
+        <MuiIcon 
+          name="expand_more" 
+          sx={{ fontSize: '1.25rem' }} 
+          className={`ml-auto transition-transform ${open ? "rotate-180" : ""}`} 
+        />
       </button>
 
       <ul

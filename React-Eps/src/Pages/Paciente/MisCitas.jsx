@@ -11,6 +11,10 @@ import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 
 export default function MisCitas() {
     const { setTitle, setSubtitle, setHelpContent } = useLayout();
@@ -198,7 +202,7 @@ export default function MisCitas() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <PrincipalText
-                    icon="calendar_month"
+                    icon={<CalendarMonthRoundedIcon />}
                     text="Historial de Citas y Exámenes"
                     subtext="Estas son tus gestiones, incluyendo pasadas y canceladas."
                     number={misServiciosActivos.length}
@@ -224,7 +228,7 @@ export default function MisCitas() {
             {/* Filtros */}
             <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
                 <div className="flex items-center gap-2 text-primary">
-                    <span className="material-symbols-outlined text-xl">filter_list</span>
+                    <FilterListRoundedIcon sx={{ fontSize: '1.25rem' }} />
                     <span className="text-xs font-black uppercase tracking-widest">Filtros de búsqueda</span>
                 </div>
                 
@@ -285,7 +289,7 @@ export default function MisCitas() {
                         className="flex justify-center p-20"
                     >
                         <div className="flex flex-col items-center gap-4">
-                            <span className="material-symbols-outlined animate-spin text-4xl text-primary">autorenew</span>
+                            <AutorenewRoundedIcon sx={{ fontSize: '2.5rem' }} className="animate-spin text-primary" />
                             <span className="text-gray-400 font-bold uppercase tracking-widest text-xs">Cargando resultados...</span>
                         </div>
                     </motion.div>
@@ -296,7 +300,7 @@ export default function MisCitas() {
                         className="flex flex-col items-center justify-center p-20 bg-white dark:bg-gray-900 rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800 text-center shadow-inner"
                     >
                         <div className="size-20 rounded-full bg-gray-50 dark:bg-gray-800 flex items-center justify-center mb-6">
-                            <span className="material-symbols-outlined text-4xl text-gray-200">event_busy</span>
+                            <EventBusyRoundedIcon sx={{ fontSize: '2.5rem' }} className="text-gray-200" />
                         </div>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                             {activeTab === 'programadas' ? 'Ninguna cita programada' : 'No hay citas finalizadas'}

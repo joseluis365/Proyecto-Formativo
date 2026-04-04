@@ -7,6 +7,13 @@ import DataTable from "../../components/UI/DataTable";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import MedicationLiquidRoundedIcon from '@mui/icons-material/MedicationRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 
 export default function Medicamentos() {
     const { setTitle, setSubtitle } = useLayout();
@@ -129,7 +136,7 @@ export default function Medicamentos() {
             render: (row) => (
                 <div className="flex items-center gap-3">
                     <div className="size-9 rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-sm">folder</span>
+                        <FolderRoundedIcon sx={{ fontSize: '0.875rem' }} />
                     </div>
                     <div>
                         <p className="font-bold text-gray-900 dark:text-white">{row.nombre}</p>
@@ -158,13 +165,13 @@ export default function Medicamentos() {
                         className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         title="Ver detalles"
                     >
-                        <span className="material-symbols-outlined text-[18px]">visibility</span>
+                        <VisibilityRoundedIcon sx={{ fontSize: '1.125rem' }} />
                     </button>
                     <button
                         className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         title="Editar medicamento"
                     >
-                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: '1.125rem' }} />
                     </button>
                 </div>
             ),
@@ -175,13 +182,13 @@ export default function Medicamentos() {
         <>
             <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="medication" text="Medicamentos Registrados" number={total} />
+                <PrincipalText icon={<MedicationRoundedIcon sx={{ fontSize: '2.5rem' }} />} text="Medicamentos Registrados" number={total} />
                 <button
                     onClick={() => setShowModal(true)}
                     className="bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-3 font-bold text-sm transition-all flex items-center gap-2 group shadow-lg shadow-primary/20"
                 >
                     Registrar Nuevo
-                    <span className="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">add</span>
+                    <AddRoundedIcon sx={{ fontSize: '1.125rem' }} className="group-hover:rotate-90 transition-transform" />
                 </button>
             </div>
 
@@ -219,7 +226,7 @@ export default function Medicamentos() {
                     <TableSkeleton rows={8} cols={5} />
                 ) : presentaciones.length === 0 ? (
                     <div className="py-16 text-center text-gray-400 dark:text-gray-600">
-                        <span className="material-symbols-outlined text-4xl mb-2 block">medication_liquid</span>
+                        <MedicationLiquidRoundedIcon sx={{ fontSize: '2.5rem' }} className="mb-2 block mx-auto" />
                         No se encontraron medicamentos
                     </div>
                 ) : (
@@ -272,7 +279,7 @@ export default function Medicamentos() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">medication</span>
+                            <MedicationRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             Nuevo Medicamento
                         </h3>
                         <form onSubmit={handleSave} className="space-y-4">
@@ -321,7 +328,7 @@ export default function Medicamentos() {
                                 </button>
                                 <button type="submit" disabled={saving}
                                     className="flex-1 py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                    {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Guardar</>}
+                                    {saving ? "Guardando..." : <><SaveRoundedIcon sx={{ fontSize: '1.125rem' }} /> Guardar</>}
                                 </button>
                             </div>
                         </form>

@@ -1,6 +1,7 @@
 import React from 'react';
 import api from '../../Api/superadminAxios';
 import { useNavigate } from 'react-router-dom';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -32,9 +33,7 @@ const LogoutButton = () => {
         bg-primary text-white hover:bg-primary/90 
         transition cursor-pointer"
     >
-      <span className="material-symbols-outlined text-3xl">
-        person
-      </span>
+      <PersonRoundedIcon sx={{ fontSize: '1.875rem' }} />
     </button>
   );
 };

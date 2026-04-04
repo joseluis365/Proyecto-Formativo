@@ -1,3 +1,9 @@
+﻿import DomainRoundedIcon from '@mui/icons-material/DomainRounded';
+import WorkspacePremiumRoundedIcon from '@mui/icons-material/WorkspacePremiumRounded';
+import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
+import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
+import GavelRoundedIcon from '@mui/icons-material/GavelRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import EditEmpresaModal from "./EditEmpresaModal";
@@ -108,7 +114,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                 <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary">
-                            <span className="material-symbols-outlined text-3xl">domain</span>
+                            <DomainRoundedIcon sx={{ fontSize: "1.875rem" }} />
                         </div>
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -123,7 +129,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                         onClick={onClose}
                         className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer"
                     >
-                        <span className="material-symbols-outlined">close</span>
+                        <CloseRoundedIcon />
                     </button>
                 </div>
 
@@ -133,7 +139,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     {/* Columna Izquierda: Info Empresa */}
                     <section className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">business</span>
+                            <BusinessRoundedIcon className="text-primary" />
                             Información de la Empresa
                         </h3>
                         <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-3">
@@ -159,7 +165,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     {/* Columna Derecha: Representante Legal */}
                     <section className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">gavel</span>
+                            <GavelRoundedIcon className="text-primary" />
                             Representante Legal
                         </h3>
                         <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl space-y-3">
@@ -187,7 +193,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     {/* Licencia */}
                     <section className="space-y-4 md:col-span-1">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">workspace_premium</span>
+                            <WorkspacePremiumRoundedIcon className="text-primary" />
                             Licencia Actual
                         </h3>
                         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl space-y-3 border border-blue-100 dark:border-blue-800">
@@ -238,7 +244,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                     {/* Admin del Sistema */}
                     <section className="space-y-4 md:col-span-1">
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">admin_panel_settings</span>
+                            <AdminPanelSettingsRoundedIcon className="text-primary" />
                             Admin del Sistema
                         </h3>
                         <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl space-y-3 border border-purple-100 dark:border-purple-800">
@@ -271,7 +277,7 @@ export default function CompanyDetailsModal({ company, onClose }) {
                         onClick={handleDownloadPdf}
                         className="mr-5 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium cursor-pointer flex items-center gap-2"
                     >
-                        <span className="material-symbols-outlined text-lg">download</span>
+                        <DownloadRoundedIcon sx={{ fontSize: "1.125rem" }} />
                         Descargar PDF
                     </button>
                     <button

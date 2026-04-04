@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import MuiIcon from '../UI/MuiIcon';
+
 /**
  * CalendarSelector — Calendario compacto para el Portal del Médico.
  *
@@ -48,7 +51,7 @@ export default function CalendarSelector({ selectedDate, onDateSelect }) {
                     disabled={offset <= MIN_OFFSET}
                     className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 >
-                    <span className="material-symbols-outlined text-xl">chevron_left</span>
+                    <MuiIcon name="chevron_left" sx={{ fontSize: '1.25rem' }} />
                 </button>
 
                 <div className="text-center">
@@ -63,7 +66,7 @@ export default function CalendarSelector({ selectedDate, onDateSelect }) {
                     disabled={offset >= MAX_OFFSET}
                     className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 >
-                    <span className="material-symbols-outlined text-xl">chevron_right</span>
+                    <MuiIcon name="chevron_right" sx={{ fontSize: '1.25rem' }} />
                 </button>
             </div>
 
@@ -140,5 +143,3 @@ export default function CalendarSelector({ selectedDate, onDateSelect }) {
     );
 }
 
-// ── Import necesario ──────────────────────────────────────────────────────────
-import { useState } from 'react';

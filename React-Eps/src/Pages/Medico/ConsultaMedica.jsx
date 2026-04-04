@@ -16,6 +16,23 @@ import useCategoriasExamen from "@/hooks/useCategoriasExamen";
 import SearchableSelect from "@/components/UI/SearchableSelect";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import LocalHospitalRoundedIcon from '@mui/icons-material/LocalHospitalRounded';
+import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
+import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import MedicalInformationRoundedIcon from '@mui/icons-material/MedicalInformationRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+
 const vitalSignSchema = (min, max, minMsg, maxMsg) => 
     z.string({ required_error: "Campo obligatorio" })
      .min(1, "Campo obligatorio")
@@ -148,7 +165,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                 onClick={() => remove(index)}
                 className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             >
-                <span className="material-symbols-outlined text-xl">delete</span>
+                <DeleteRoundedIcon sx={{ fontSize: '1.25rem' }} />
             </button>
 
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
@@ -281,7 +298,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                                 
                                 {requiereAyuno && (
                                     <div className="md:col-span-2 mt-2 inline-flex items-center gap-2 bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400 font-bold px-3 py-2 rounded-lg border border-orange-200 dark:border-orange-800/30 text-sm">
-                                        <span className="material-symbols-outlined text-base">warning</span>
+                                        <WarningRoundedIcon sx={{ fontSize: '1rem' }} />
                                         El paciente debe presentarse en ayunas para este examen.
                                     </div>
                                 )}
@@ -294,7 +311,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2 bg-white dark:bg-gray-800/80 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50">
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">calendar_month</span> Fecha de {tipo === 'cita' ? 'Cita' : 'Examen'}
+                            <CalendarMonthRoundedIcon sx={{ fontSize: '0.875rem' }} /> Fecha de {tipo === 'cita' ? 'Cita' : 'Examen'}
                             <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -310,7 +327,7 @@ function RemisionRow({ index, field, register, control, setValue, remove, specia
                     </div>
                     <div className="space-y-1">
                         <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">schedule</span> Hora de Inicio
+                            <ScheduleRoundedIcon sx={{ fontSize: '0.875rem' }} /> Hora de Inicio
                             <span className="text-red-500">*</span>
                         </label>
                         <select
@@ -438,7 +455,7 @@ function BuscadorEnfermedades({ fields, append, remove, errors, options }) {
         <div className="space-y-3">
             <div className="space-y-1.5">
                 <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm text-primary">search</span>
+                    <SearchRoundedIcon sx={{ fontSize: '0.875rem' }} className="text-primary" />
                     Diagnóstico CIE-11
                 </label>
                 <SearchableSelect
@@ -464,7 +481,7 @@ function BuscadorEnfermedades({ fields, append, remove, errors, options }) {
                                     exit={{ opacity: 0, scale: 0.8 }}
                                     className="inline-flex items-center gap-1.5 bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-light px-3 py-1.5 rounded-lg border border-primary/20 shadow-sm"
                                 >
-                                    <span className="material-symbols-outlined text-sm font-bold">medical_services</span>
+                                    <MedicalServicesRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                     <div className="flex flex-col">
                                         <span className="text-[10px] font-black leading-none opacity-70">{field.codigo_icd}</span>
                                         <span className="text-xs font-bold leading-tight max-w-[200px] truncate">
@@ -476,7 +493,7 @@ function BuscadorEnfermedades({ fields, append, remove, errors, options }) {
                                         onClick={() => remove(idx)}
                                         className="ml-1 p-0.5 rounded-full hover:bg-primary/20 text-primary transition-colors"
                                     >
-                                        <span className="material-symbols-outlined text-sm font-bold">close</span>
+                                        <CloseRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                     </button>
                                 </motion.div>
                             );
@@ -549,7 +566,7 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
                 onClick={() => remove(index)}
                 className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             >
-                <span className="material-symbols-outlined text-xl">delete</span>
+                <DeleteRoundedIcon sx={{ fontSize: '1.25rem' }} />
             </button>
 
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Medicamento #{index + 1}</p>
@@ -652,9 +669,9 @@ function RecetaRow({ index, field, register, control, setValue, errors, remove, 
 }
 
 const TABS = [
-    { id: "soap", icon: "clinical_notes", label: "SOAP Clínico" },
-    { id: "remisiones", icon: "outpatient", label: "Remisiones" },
-    { id: "recetas", icon: "medication", label: "Recetas" },
+    { id: "soap", icon: <MedicalInformationRoundedIcon sx={{ fontSize: '1.25rem' }} />, label: "SOAP Clínico" },
+    { id: "remisiones", icon: <LocalHospitalRoundedIcon sx={{ fontSize: '1.25rem' }} />, label: "Remisiones" },
+    { id: "recetas", icon: <MedicationRoundedIcon sx={{ fontSize: '1.25rem' }} />, label: "Recetas" },
 ];
 
 export default function ConsultaMedica() {
@@ -926,13 +943,13 @@ export default function ConsultaMedica() {
                 onClick={() => navigate('/medico/agenda')}
                 className="flex items-center gap-2 text-primary font-bold hover:underline mb-4 cursor-pointer w-fit"
             >
-                <span className="material-symbols-outlined text-base">arrow_back</span>
+                <ArrowBackRoundedIcon sx={{ fontSize: '1rem' }} />
                 Volver a la agenda
             </button>
 
             <div className="mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
                 <h1 className="text-2xl font-bold flex items-center gap-2 dark:text-white">
-                    <span className="material-symbols-outlined text-primary text-3xl ">stethoscope</span>
+                    <MedicalServicesRoundedIcon sx={{ fontSize: '1.875rem' }} className="text-primary" />
                     Atender: {pacienteNombre}
                 </h1>
 
@@ -941,7 +958,7 @@ export default function ConsultaMedica() {
                     onClick={() => navigate(`/medico/pacientes/${cita.paciente?.documento}/historial?editable=true`)}
                     className="flex items-center gap-1.5 px-4 py-2 border-2 border-primary text-primary hover:bg-primary/5 rounded-xl font-bold transition-colors shadow-sm cursor-pointer"
                 >
-                    <span className="material-symbols-outlined">history</span>
+                    <HistoryRoundedIcon sx={{ fontSize: '1.25rem' }} />
                     Ver historial clínico
                 </button>
             </div>
@@ -949,15 +966,15 @@ export default function ConsultaMedica() {
             <div className="px-6 py-4 bg-primary/5 dark:bg-primary/10 border border-gray-100 dark:border-gray-800 rounded-t-xl">
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
                     <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-                        <span className="material-symbols-outlined text-base text-primary">badge</span>
+                        <BadgeRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" />
                         <span className="font-bold">{cita.paciente?.documento}</span>
                     </span>
                     <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-                        <span className="material-symbols-outlined text-base text-primary">local_hospital</span>
+                        <LocalHospitalRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" />
                         {cita.tipoCita?.tipo ?? "Consulta General"}
                     </span>
                     <span className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-                        <span className="material-symbols-outlined text-base text-primary">schedule</span>
+                        <ScheduleRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" />
                         {cita.hora_inicio?.slice(0, 5)} — {cita.fecha}
                     </span>
                 </div>
@@ -979,7 +996,7 @@ export default function ConsultaMedica() {
                                     ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"}
                                 `}
                             >
-                                <span className="material-symbols-outlined text-base">{tab.icon}</span>
+                                <div className="flex items-center justify-center">{tab.icon}</div>
                                 {tab.label}
                                 {hasErrors && (
                                     <span className="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-red-500 animate-pulse border-2 border-white dark:border-gray-900 shadow-sm" />
@@ -1038,7 +1055,7 @@ export default function ConsultaMedica() {
                                             Objetivo — Examen Físico y Signos
                                         </label>
                                         <button type="button" onClick={() => setSignosOpen(v => !v)} className="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
-                                            <span className="material-symbols-outlined text-sm">{signosOpen ? 'expand_less' : 'monitor_heart'}</span>
+                                            {signosOpen ? <ExpandLessRoundedIcon sx={{ fontSize: '0.875rem' }} /> : <MonitorHeartRoundedIcon sx={{ fontSize: '0.875rem' }} />}
                                             {signosOpen ? 'Ocultar Signos' : 'Registrar Signos Vitales'}
                                         </button>
                                     </div>
@@ -1112,7 +1129,7 @@ export default function ConsultaMedica() {
                                         onClick={() => append({ tipo_remision: "cita", id_motivo: String(cita.id_motivo || ""), id_especialidad: "", doc_medico: "", id_categoria_examen: "", requiere_ayuno: false, id_prioridad: "", notas: "", fecha: "", hora_inicio: "" })}
                                         className="flex items-center gap-1.5 text-sm font-bold text-primary hover:bg-primary/5 px-3 py-2 rounded-lg cursor-pointer transition-colors"
                                     >
-                                        <span className="material-symbols-outlined">add_circle</span> Agregar Remisión
+                                        <AddCircleRoundedIcon sx={{ fontSize: '1.25rem' }} /> Agregar Remisión
                                     </button>
                                 </div>
 
@@ -1138,7 +1155,7 @@ export default function ConsultaMedica() {
 
                                 {fields.length === 0 && (
                                     <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl">
-                                        <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 block">outpatient</span>
+                                        <LocalHospitalRoundedIcon sx={{ fontSize: '2.5rem' }} className="text-gray-300 mb-2 block mx-auto" />
                                         <p className="text-gray-400 text-sm">No se han agregado remisiones.</p>
                                     </div>
                                 )}
@@ -1154,7 +1171,7 @@ export default function ConsultaMedica() {
                                         onClick={() => appendReceta({ id_presentacion: "", nit_farmacia: "", dosis: "", frecuencia: "", duracion: "", observaciones: "" })}
                                         className="flex items-center gap-1.5 text-sm font-bold text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg cursor-pointer transition-colors"
                                     >
-                                        <span className="material-symbols-outlined">add_circle</span> Agregar Medicamento
+                                        <AddCircleRoundedIcon sx={{ fontSize: '1.25rem' }} /> Agregar Medicamento
                                     </button>
                                 </div>
 
@@ -1176,7 +1193,7 @@ export default function ConsultaMedica() {
 
                                 {recetaFields.length === 0 && (
                                     <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-xl">
-                                        <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 block">medication</span>
+                                        <MedicationRoundedIcon sx={{ fontSize: '2.5rem' }} className="text-gray-300 mb-2 block mx-auto" />
                                         <p className="text-gray-400 text-sm">No se han agregado medicamentos a la receta.</p>
                                     </div>
                                 )}
@@ -1186,7 +1203,7 @@ export default function ConsultaMedica() {
 
                     <div className="flex justify-end p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900 rounded-b-xl shrink-0">
                         <div className="w-64">
-                            <BlueButton text="Finalizar Atención" icon="task_alt" type="submit" loading={loading} />
+                            <BlueButton text="Finalizar Atención" icon={<TaskAltRoundedIcon />} type="submit" loading={loading} />
                         </div>
                     </div>
                 </form>

@@ -1,4 +1,5 @@
 import DataTable from "../UI/DataTable";
+import MuiIcon from "../UI/MuiIcon";
 
 export default function ExamenTable({ examenes, onView, onAtender }) {
     const isAtendido = (estado) => ['Atendida', 'Finalizada'].includes(estado);
@@ -40,11 +41,11 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
             render: (d) => (
                 d.requiere_ayuno ? (
                     <span className="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-max">
-                        <span className="material-symbols-outlined text-[14px]">restaurant</span> Sí
+                        <MuiIcon name="restaurant" sx={{ fontSize: '14px' }} /> Sí
                     </span>
                 ) : (
                     <span className="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-max">
-                        <span className="material-symbols-outlined text-[14px]">no_food</span> No
+                        <MuiIcon name="no_food" sx={{ fontSize: '14px' }} /> No
                     </span>
                 )
             ),
@@ -85,7 +86,7 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
                                 className="p-2 rounded-full text-green-500 cursor-not-allowed flex items-center justify-center"
                                 title="Atendido"
                             >
-                                <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                                <MuiIcon name="check_circle" sx={{ fontSize: '20px' }} />
                             </button>
                         ) : isSameDay ? (
                             <button
@@ -93,7 +94,7 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
                                 className="p-2 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 transition-all flex items-center justify-center cursor-pointer"
                                 title="Atender Examen"
                             >
-                                <span className="material-symbols-outlined text-[20px]">science</span>
+                                <MuiIcon name="science" sx={{ fontSize: '20px' }} />
                             </button>
                         ) : (
                             <button
@@ -101,7 +102,7 @@ export default function ExamenTable({ examenes, onView, onAtender }) {
                                 className="p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
                                 title="Solo se puede atender el mismo día del examen"
                             >
-                                <span className="material-symbols-outlined text-[20px]">science</span>
+                                <MuiIcon name="science" sx={{ fontSize: '20px' }} />
                             </button>
                         )}
                     </div>

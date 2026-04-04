@@ -2,6 +2,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
+import MuiIcon from "@/components/UI/MuiIcon";
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 
 export default function ConfiguracionIndex() {
     const { setTitle, setSubtitle } = useLayout();
@@ -138,7 +140,7 @@ export default function ConfiguracionIndex() {
                             className="flex flex-col p-6 bg-white dark:bg-gray-800 rounded-xl border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow group"
                         >
                             <div className={`p-3 rounded-lg w-fit mb-4 bg-${card.color}-100 dark:bg-${card.color}-900/30 text-${card.color}-600 dark:text-${card.color}-400`}>
-                                <span className="material-symbols-outlined text-3xl">{card.icon}</span>
+                                <MuiIcon name={card.icon} sx={{ fontSize: '1.875rem' }} />
                             </div>
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
                                 {card.title}
@@ -148,7 +150,7 @@ export default function ConfiguracionIndex() {
                             </p>
                             <div className="mt-6 flex items-center text-primary font-bold text-sm">
                                 Gestionar
-                                <span className="material-symbols-outlined text-sm ml-1 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                <ArrowForwardRoundedIcon sx={{ fontSize: "0.875rem" }} className="ml-1 group-hover:translate-x-1 transition-transform" />
                             </div>
                         </Link>
                     ))}

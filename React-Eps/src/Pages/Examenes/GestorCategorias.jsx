@@ -5,6 +5,12 @@ import api from "../../Api/axios";
 import Swal from "sweetalert2";
 import DataTable from "../../components/UI/DataTable";
 import { motion } from "framer-motion";
+import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
+import NoFoodRoundedIcon from '@mui/icons-material/NoFoodRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function GestorCategorias() {
     const { setTitle, setSubtitle, setHelpContent } = useLayout();
@@ -143,9 +149,9 @@ export default function GestorCategorias() {
             selector: row => row.requiere_ayuno,
             sortable: true,
             cell: row => row.requiere_ayuno ? (
-                <span className="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><span className="material-symbols-outlined text-sm">restaurant</span> Sí</span>
+                <span className="bg-orange-100 text-orange-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><RestaurantRoundedIcon sx={{ fontSize: '0.875rem' }} /> Sí</span>
             ) : (
-                <span className="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><span className="material-symbols-outlined text-sm">no_food</span> No</span>
+                <span className="bg-green-100 text-green-700 font-bold px-2 py-1 rounded text-xs flex items-center gap-1 w-fit"><NoFoodRoundedIcon sx={{ fontSize: '0.875rem' }} /> No</span>
             )
         },
         {
@@ -170,7 +176,7 @@ export default function GestorCategorias() {
                         className="p-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors cursor-pointer"
                         title="Editar"
                     >
-                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: '1.25rem' }} />
                     </button>
                     {row.estado?.nombre_estado === "Activo" && (
                         <button 
@@ -178,7 +184,7 @@ export default function GestorCategorias() {
                             className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
                             title="Desactivar"
                         >
-                            <span className="material-symbols-outlined text-[20px]">cancel</span>
+                            <CancelRoundedIcon sx={{ fontSize: '1.25rem' }} />
                         </button>
                     )}
                 </div>
@@ -201,7 +207,7 @@ export default function GestorCategorias() {
                     onClick={() => handleOpenModal()} 
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow-indigo-500/20"
                 >
-                    <span className="material-symbols-outlined">add_circle</span>
+                    <AddCircleRoundedIcon />
                     Nueva Categoría
                 </button>
             </div>
@@ -230,7 +236,7 @@ export default function GestorCategorias() {
                                 {editingCat ? "Editar Categoría" : "Nueva Categoría"}
                             </h3>
                             <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 cursor-pointer">
-                                <span className="material-symbols-outlined">close</span>
+                                <CloseRoundedIcon />
                             </button>
                         </div>
                         <form onSubmit={handleSave} className="p-6 space-y-6">

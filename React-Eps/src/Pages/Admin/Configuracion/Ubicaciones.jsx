@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
 import PrincipalText from "@/components/Users/PrincipalText";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 export default function Ubicaciones() {
     const { setTitle, setSubtitle } = useLayout();
@@ -116,7 +122,7 @@ export default function Ubicaciones() {
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-neutral-gray-border/20 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
                     <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-neutral-gray-border/20 dark:border-gray-700 flex justify-between items-center">
                         <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <span className="material-symbols-outlined text-primary">location_city</span>
+                            <LocationCityRoundedIcon sx={{ fontSize: "1.5rem" }} className="text-primary" />
                             Ciudades en el departamento
                         </h3>
                         <span className="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-full">

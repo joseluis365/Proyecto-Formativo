@@ -12,6 +12,9 @@ import AgendarCitaAdminModal from "../../../components/Modals/CitaModal/AgendarC
 import ReagendarCitaModal from "../../../components/Modals/CitaModal/ReagendarCitaModal";
 import useCitas from "../../../hooks/useCitas";
 import Swal from "sweetalert2";
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 
 
 
@@ -167,7 +170,7 @@ export default function AgendaCitas() {
                             onClick={() => setIsAgendarModalOpen(true)}
                             className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors w-full md:w-auto"
                         >
-                            <span className="material-symbols-outlined text-xl">add_circle</span>
+                            <AddCircleRoundedIcon sx={{ fontSize: '1.25rem' }} />
                             Agendar Cita
                         </button>
                     )}
@@ -214,7 +217,7 @@ export default function AgendaCitas() {
                 {/* Listado de Citas */}
                 {citas.length === 0 ? (
                     <div className="flex flex-col items-center justify-center p-12 bg-white dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 mt-4 w-full">
-                        <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">event_busy</span>
+                        <EventBusyRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-600 mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white">Día sin programar</h3>
                         <p className="text-gray-500 dark:text-gray-400 mt-1 text-center">No se encontraron citas agendadas para esta fecha.</p>
                     </div>
@@ -321,7 +324,7 @@ export default function AgendaCitas() {
                     `}
                     title="Mostrar calendario"
                 >
-                    <span className="material-symbols-outlined ml-1 text-2xl">calendar_month</span>
+                    <CalendarMonthRoundedIcon sx={{ fontSize: '1.5rem' }} className="ml-1" />
                 </button>
 
                 {/* Inner Content Container */}

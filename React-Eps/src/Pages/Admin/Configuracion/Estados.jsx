@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
 import DataTable from "@/components/UI/DataTable";
@@ -8,6 +8,12 @@ import Input from "@/components/UI/Input";
 import TableSkeleton from "@/components/UI/TableSkeleton";
 import EstadoModal from "@/components/Modals/EstadoModal";
 import { AnimatePresence, motion } from "framer-motion";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 import useEstados from "@/hooks/useEstados";
 
@@ -88,7 +94,7 @@ export default function Estados() {
                             className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                             title="Editar"
                         >
-                            <span className="material-symbols-outlined text-base">edit</span>
+                            <EditRoundedIcon sx={{ fontSize: "1rem" }} />
                         </button>
                     )}
                     {item.id_estado < 7 && (

@@ -1,5 +1,7 @@
 import DataTable from "../UI/DataTable";
-
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import MedicalInformationRoundedIcon from '@mui/icons-material/MedicalInformationRounded';
+import PersonOffRoundedIcon from '@mui/icons-material/PersonOffRounded';
 
 export default function ScheduleTable({ appointments, onView, onAtender, onNoAsistio }) {
   const columns = [
@@ -72,7 +74,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors cursor-pointer"
               title="Ver detalles"
             >
-              <span className="material-symbols-outlined text-base">visibility</span>
+              <VisibilityRoundedIcon sx={{ fontSize: '1rem' }} />
             </button>
 
             {isActionable && onAtender && onNoAsistio && (
@@ -82,7 +84,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
                       className="p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center cursor-pointer"
                       title="Atender Paciente"
                     >
-                      <span className="material-symbols-outlined text-base font-bold">medical_information</span>
+                      <MedicalInformationRoundedIcon sx={{ fontSize: '1rem' }} />
                     </button>
                 {isWithinAttendanceWindow(d.fecha, d.hora_inicio) ? (
                     <button
@@ -90,7 +92,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
                       className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
                       title="Marcar Inasistencia"
                     >
-                      <span className="material-symbols-outlined text-base">person_off</span>
+                      <PersonOffRoundedIcon sx={{ fontSize: '1rem' }} />
                     </button>
                 ) : (
                     <button
@@ -98,7 +100,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
                       className="p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
                       title="Fuera de horario para inasistencia"
                     >
-                      <span className="material-symbols-outlined text-base">person_off</span>
+                      <PersonOffRoundedIcon sx={{ fontSize: '1rem' }} />
                     </button>
                 )}
               </>

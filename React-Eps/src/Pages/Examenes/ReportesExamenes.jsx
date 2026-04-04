@@ -9,6 +9,11 @@ import TableSkeleton from "../../components/UI/TableSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
 const entityOptions = [
     { value: "realizados", label: "Exámenes Realizados" },
@@ -152,7 +157,7 @@ export default function ReportesExamenes() {
                     if (value === 'N/A') return <span className="text-gray-400 italic">Sin adjunto</span>;
                     return (
                         <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-                            <span className="material-symbols-outlined text-sm">description</span>
+                            <DescriptionRoundedIcon sx={{ fontSize: '0.875rem' }} />
                             <span className="text-xs font-medium truncate max-w-[120px]">{value}</span>
                         </div>
                     );
@@ -209,7 +214,7 @@ export default function ReportesExamenes() {
                                 onClick={handleExportPDF}
                                 className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm shadow-red-200 dark:shadow-none mr-2"
                             >
-                                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                <PictureAsPdfRoundedIcon sx={{ fontSize: '1.125rem' }} />
                                 <span>Exportar PDF</span>
                             </button>
                         )}
@@ -252,7 +257,7 @@ export default function ReportesExamenes() {
                     <motion.div key="content" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         {data.length === 0 ? (
                             <div className="text-center py-20 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-                                <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-700 mb-4 block">query_stats</span>
+                                <QueryStatsRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-700 mb-4 block mx-auto" />
                                 <p className="text-gray-500 dark:text-gray-400 font-medium">No se encontraron exámenes con los filtros aplicados.</p>
                             </div>
                         ) : (
@@ -269,7 +274,7 @@ export default function ReportesExamenes() {
                                     onClick={() => setPage(prev => Math.max(1, prev - 1))}
                                     className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
                                 >
-                                    <span className="material-symbols-outlined align-middle">chevron_left</span>
+                                    <ChevronLeftRoundedIcon />
                                 </button>
 
                                 <div className="flex gap-1 overflow-x-auto max-w-[200px] sm:max-w-none">
@@ -292,7 +297,7 @@ export default function ReportesExamenes() {
                                     onClick={() => setPage(prev => Math.min(lastPage, prev + 1))}
                                     className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all font-bold"
                                 >
-                                    <span className="material-symbols-outlined align-middle">chevron_right</span>
+                                    <ChevronRightRoundedIcon />
                                 </button>
                             </div>
                         )}

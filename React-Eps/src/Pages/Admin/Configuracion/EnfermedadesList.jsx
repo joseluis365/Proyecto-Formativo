@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
@@ -11,6 +11,12 @@ import EnfermedadModal from "@/components/Modals/EnfermedadModal";
 import EnfermedadInfoModal from "@/components/Modals/EnfermedadInfoModal";
 import { AnimatePresence, motion } from "framer-motion";
 import useTableData from "@/hooks/useTableData";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 export default function EnfermedadesList() {
     const { setTitle, setSubtitle } = useLayout();
@@ -93,14 +99,14 @@ export default function EnfermedadesList() {
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Ver Info Completa"
                     >
-                        <span className="material-symbols-outlined text-base">visibility</span>
+                        <VisibilityRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                     <button
                         onClick={() => { setSelectedItem(item); setIsFormOpen(true); }}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title="Editar"
                     >
-                        <span className="material-symbols-outlined text-base">edit</span>
+                        <EditRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                 </div>
             )

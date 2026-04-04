@@ -1,3 +1,7 @@
+import PersonOffRoundedIcon from '@mui/icons-material/PersonOffRounded';
+import HealthAndSafetyRoundedIcon from '@mui/icons-material/HealthAndSafetyRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import React, { useState, useEffect, useMemo } from 'react';
 import BaseModal from '../BaseModal';
 import ModalHeader from '../ModalHeader';
@@ -9,6 +13,7 @@ import useEspecialidades from '../../../hooks/useEspecialidades';
 import useMedicosDisponibles from '../../../hooks/useMedicosDisponibles';
 import useCitas from '../../../hooks/useCitas';
 import CalendarAgenda from '../../Citas/CalendarAgenda';
+import MuiIcon from '../../UI/MuiIcon';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -259,7 +264,7 @@ export default function AgendarCitaAdminModal({ isOpen, onClose, onSuccess }) {
                                                             }`}
                                                         >
                                                             <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${selectedEspecialidad == esp.value ? 'bg-white/20' : 'bg-primary/10 text-primary'}`}>
-                                                                <span className="material-symbols-outlined text-sm">health_and_safety</span>
+                                                                <HealthAndSafetyRoundedIcon sx={{ fontSize: "0.875rem" }} />
                                                             </div>
                                                             <span className="text-xs font-bold leading-tight">{esp.label}</span>
                                                         </button>
@@ -365,7 +370,7 @@ export default function AgendarCitaAdminModal({ isOpen, onClose, onSuccess }) {
                                                         }`}
                                                     >
                                                         <div className={`size-10 rounded-lg flex items-center justify-center shrink-0 ${selectedDoctor == (m.documento || m.value) ? 'bg-white/20' : 'bg-primary/10 text-primary'}`}>
-                                                            <span className="material-symbols-outlined text-xl">person</span>
+                                                            <PersonRoundedIcon sx={{ fontSize: "1.25rem" }} />
                                                         </div>
                                                         <div className="grow">
                                                             <p className="font-bold text-sm">Dr. {m.primer_nombre} {m.primer_apellido}</p>
@@ -373,12 +378,12 @@ export default function AgendarCitaAdminModal({ isOpen, onClose, onSuccess }) {
                                                                 {m.especialidad?.especialidad || 'Especialista'}
                                                             </p>
                                                         </div>
-                                                        {selectedDoctor == (m.documento || m.value) && <span className="material-symbols-outlined">check_circle</span>}
+                                                        {selectedDoctor == (m.documento || m.value) && <CheckCircleRoundedIcon sx={{ color: 'white' }} />}
                                                     </button>
                                                 ))
                                             ) : (
                                                 <div className="text-center py-10 space-y-2 bg-gray-50 dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
-                                                    <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600">person_off</span>
+                                                    <PersonOffRoundedIcon sx={{ fontSize: "2.25rem" }} className="text-gray-300 dark:text-gray-600" />
                                                     <p className="text-gray-500 dark:text-gray-400 text-sm font-medium px-4">No hay profesionales disponibles para esta especialidad en la hora seleccionada.</p>
                                                 </div>
                                             )}
@@ -386,38 +391,38 @@ export default function AgendarCitaAdminModal({ isOpen, onClose, onSuccess }) {
                                         {errors.doctor && <p className="text-red-500 text-xs font-bold text-center">{errors.doctor}</p>}
                                     </div>
                                 )}
-                            </motion.div>
-                        </AnimatePresence>
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
+                    </div>
+
+                    {/* Footer / Controls (Fijo al final) */}
+                    <div className="p-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/30 dark:bg-gray-800/20">
+                        <button
+                            onClick={currentStep > 1 ? prevStep : onClose}
+                            className={`flex items-center gap-2 px-4 py-2 font-black text-[11px] uppercase tracking-widest rounded-lg transition-colors ${currentStep > 1 ? 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800' : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'}`}
+                        >
+                            <MuiIcon name={currentStep > 1 ? 'arrow_back' : 'close'} sx={{ fontSize: '1.25rem' }} />
+                            {currentStep > 1 ? 'Volver' : 'Cancelar'}
+                        </button>
+
+                        {currentStep < 5 ? (
+                            <BlueButton 
+                                text="Siguiente" 
+                                icon="arrow_forward" 
+                                onClick={nextStep}
+                            />
+                        ) : (
+                            <BlueButton 
+                                text="Confirmar Cita" 
+                                icon="check_circle" 
+                                onClick={handleSave}
+                                loading={creating}
+                                disabled={!selectedDoctor || loadingMedicos}
+                            />
+                        )}
                     </div>
                 </div>
-
-                {/* Footer / Controls (Fijo al final) */}
-                <div className="p-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/30 dark:bg-gray-800/20">
-                    <button
-                        onClick={currentStep > 1 ? prevStep : onClose}
-                        className={`flex items-center gap-2 px-4 py-2 font-black text-[11px] uppercase tracking-widest rounded-lg transition-colors ${currentStep > 1 ? 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800' : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'}`}
-                    >
-                        <span className="material-symbols-outlined text-sm">{currentStep > 1 ? 'arrow_back' : 'close'}</span>
-                        {currentStep > 1 ? 'Volver' : 'Cancelar'}
-                    </button>
-
-                    {currentStep < 5 ? (
-                        <BlueButton 
-                            text="Siguiente" 
-                            icon="arrow_forward" 
-                            onClick={nextStep}
-                        />
-                    ) : (
-                        <BlueButton 
-                            text="Confirmar Cita" 
-                            icon="check_circle" 
-                            onClick={handleSave}
-                            loading={creating}
-                            disabled={!selectedDoctor || loadingMedicos}
-                        />
-                    )}
-                </div>
-            </div>
             )}
         </BaseModal>
     );

@@ -1,8 +1,11 @@
+import EventRepeatRoundedIcon from '@mui/icons-material/EventRepeatRounded';
+import HealingRoundedIcon from '@mui/icons-material/HealingRounded';
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CalendarAgenda from "../../Citas/CalendarAgenda";
 import PrincipalText from "../../Users/PrincipalText";
 import BlueButton from "../../UI/BlueButton";
+import MuiIcon from "../../UI/MuiIcon";
 import dayjs from "dayjs";
 
 /**
@@ -106,7 +109,7 @@ export default function ReagendarCitaModal({ isOpen, onClose, cita, onConfirm, l
                                 className="absolute top-5 right-6 text-white/70 hover:text-white transition-colors"
                                 aria-label="Cerrar modal"
                             >
-                                <span className="material-symbols-outlined text-2xl">close</span>
+                                <MuiIcon name="close" sx={{ fontSize: '1.5rem' }} className="text-white/70 hover:text-white" />
                             </button>
 
                             <p className="text-[10px] font-black uppercase tracking-[0.25em] text-white/60 mb-2">
@@ -211,7 +214,7 @@ export default function ReagendarCitaModal({ isOpen, onClose, cita, onConfirm, l
                                                 {/* Fecha anterior → nueva */}
                                                 <div className="flex items-start gap-4">
                                                     <div className="size-10 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shrink-0">
-                                                        <span className="material-symbols-outlined text-xl">event_repeat</span>
+                                                        <EventRepeatRoundedIcon sx={{ fontSize: "1.25rem" }} />
                                                     </div>
                                                     <div>
                                                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
@@ -234,7 +237,7 @@ export default function ReagendarCitaModal({ isOpen, onClose, cita, onConfirm, l
                                                 {/* Médico (no cambia) */}
                                                 <div className="flex items-center gap-4">
                                                     <div className="size-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center shrink-0">
-                                                        <span className="material-symbols-outlined text-xl">stethoscope</span>
+                                                        <HealingRoundedIcon sx={{ fontSize: "1.25rem" }} />
                                                     </div>
                                                     <div>
                                                         <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-0.5">
@@ -266,11 +269,9 @@ export default function ReagendarCitaModal({ isOpen, onClose, cita, onConfirm, l
                                         <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800">
                                             <button
                                                 onClick={prevStep}
-                                                className="group flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black text-[10px] uppercase tracking-widest"
+                                                className="group flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black text-[10px] uppercase tracking-widest cursor-pointer"
                                             >
-                                                <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
-                                                    arrow_back
-                                                </span>
+                                                <MuiIcon name="arrow_back" sx={{ fontSize: '1.125rem' }} className="transition-transform group-hover:-translate-x-1" />
                                                 Volver atrás
                                             </button>
                                         </div>

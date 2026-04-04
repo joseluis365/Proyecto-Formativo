@@ -1,14 +1,16 @@
+import MuiIcon from "./components/UI/MuiIcon";
+
 export default function Plantilla() {
     return (
         <div className="max-w-7xl mx-auto bg-white dark:bg-gray-900/50 rounded-xl shadow-lg border border-neutral-gray-border/20 dark:border-gray-800">
                     <div className="bg-primary-green/90 dark:bg-primary-green/50 backdrop-blur-sm text-white p-6 rounded-t-xl flex items-center gap-4">
-                        <span className="material-symbols-outlined text-3xl">clinical_notes</span>
+                        <MuiIcon name="clinical_notes" sx={{ fontSize: '1.875rem' }} />
                         <h2 className="text-xl sm:text-2xl font-bold">HISTORIAL CLÍNICO – Laura Martínez López</h2>
                     </div>
                     <div className="p-6 sm:p-8 space-y-8">
                         <section>
                             <div className="flex items-center gap-3 mb-6">
-                                <span className="material-symbols-outlined text-primary-green text-2xl">badge</span>
+                                <MuiIcon name="badge" className="text-primary-green" sx={{ fontSize: '1.5rem' }} />
                                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Datos Personales</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
@@ -48,7 +50,7 @@ export default function Plantilla() {
                         <hr className="dark:border-gray-700" />
                         <section>
                             <div className="flex items-center gap-3 mb-4">
-                                <span className="material-symbols-outlined text-primary-green text-2xl">assignment</span>
+                                <MuiIcon name="assignment" className="text-primary-green" sx={{ fontSize: '1.5rem' }} />
                                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Antecedentes Personales
                                 </h3>
                             </div>
@@ -67,8 +69,7 @@ export default function Plantilla() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <section>
                                 <div className="flex items-center gap-3 mb-4">
-                                    <span
-                                        className="material-symbols-outlined text-primary-green text-2xl">family_history</span>
+                                    <MuiIcon name="family_history" className="text-primary-green" sx={{ fontSize: '1.5rem' }} />
                                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Antecedentes
                                         Familiares</h3>
                                 </div>
@@ -83,7 +84,7 @@ export default function Plantilla() {
                             </section>
                             <section>
                                 <div className="flex items-center gap-3 mb-4">
-                                    <span className="material-symbols-outlined text-primary-green text-2xl">spa</span>
+                                    <MuiIcon name="spa" className="text-primary-green" sx={{ fontSize: '1.5rem' }} />
                                     <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Hábitos y Estilo de
                                         Vida</h3>
                                 </div>
@@ -192,8 +193,9 @@ export default function Plantilla() {
                                                         className="font-medium text-accent-teal hover:underline"
                                                         href="info-orden-medicamentos.html">Ver</a></td>
                                                 <td className="px-4 py-3 text-center"><button
-                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><span
-                                                            className="material-symbols-outlined text-lg">download</span></button>
+                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                                            <MuiIcon name="download" sx={{ fontSize: '1.125rem' }} />
+                                                        </button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -238,8 +240,9 @@ export default function Plantilla() {
                                                         className="font-medium text-accent-teal hover:underline"
                                                         href="remision-info.html">Ver</a></td>
                                                 <td className="px-4 py-3 text-center"><button
-                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><span
-                                                            className="material-symbols-outlined text-lg">download</span></button>
+                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                                            <MuiIcon name="download" sx={{ fontSize: '1.125rem' }} />
+                                                        </button>
                                                 </td>
                                             </tr>
                                             <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
@@ -253,8 +256,9 @@ export default function Plantilla() {
                                                         className="font-medium text-accent-teal hover:underline"
                                                         href="remision-info.html">Ver</a></td>
                                                 <td className="px-4 py-3 text-center"><button
-                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"><span
-                                                            className="material-symbols-outlined text-lg">download</span></button>
+                                                        className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                                            <MuiIcon name="download" sx={{ fontSize: '1.125rem' }} />
+                                                        </button>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -265,12 +269,11 @@ export default function Plantilla() {
                         <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-4">
                             <button
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 border border-primary-green text-primary-green font-semibold py-2.5 px-5 rounded-lg shadow-sm hover:bg-primary-green/5 dark:hover:bg-primary-green/10 transition-colors duration-200">
-                                <span className="material-symbols-outlined">download</span>
-                                Exportar Historial Completo
+                                <MuiIcon name="download" sx={{ fontSize: '1.25rem' }} />
                             </button>
                             <button
                                 className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary-green hover:bg-primary-green/90 text-white font-semibold py-2.5 px-5 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                                <span className="material-symbols-outlined">edit</span>
+                                <MuiIcon name="edit" sx={{ fontSize: '1.25rem' }} />
                                 Editar Información
                             </button>
                         </div>

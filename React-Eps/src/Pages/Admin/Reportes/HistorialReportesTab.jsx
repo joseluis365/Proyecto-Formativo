@@ -6,6 +6,12 @@ import "dayjs/locale/es";
 import TableSkeleton from "@/components/UI/TableSkeleton";
 import HistorialModal from "./HistorialModal";
 import Swal from "sweetalert2";
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 
 export default function HistorialReportesTab() {
     useHelp({
@@ -83,7 +89,7 @@ export default function HistorialReportesTab() {
                 <TableSkeleton rows={5} columns={1} />
             ) : data.length === 0 ? (
                 <div className="text-center py-20 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
-                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-700 mb-4 block">history</span>
+                    <HistoryRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-700 mb-4 block mx-auto" />
                     <p className="text-gray-500 dark:text-gray-400 font-medium">Aún no hay reportes generados en el sistema.</p>
                 </div>
             ) : (
@@ -97,14 +103,14 @@ export default function HistorialReportesTab() {
                             <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 dark:bg-blue-900/10 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
                             <div className="flex flex-col items-start gap-4 w-full z-10">
                                 <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
-                                    <span className="material-symbols-outlined text-2xl">description</span>
+                                    <DescriptionRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                 </div>
                                 <div className="w-full">
                                     <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-1 line-clamp-1 capitalize">
                                         Reporte de {item.tabla_relacion}
                                     </h4>
                                     <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                        <span className="material-symbols-outlined text-sm shrink-0">person</span>
+                                        <PersonRoundedIcon sx={{ fontSize: '0.875rem' }} className="shrink-0" />
                                         <span className="line-clamp-1">
                                             {item.usuario ? `${item.usuario.primer_nombre} ${item.usuario.primer_apellido}` : "Usuario Desconocido"} 
                                             {item.usuario?.rol ? ` (${item.usuario.rol.tipo_usu})` : ""}
@@ -118,7 +124,7 @@ export default function HistorialReportesTab() {
                                     {item.num_registros} registros generados
                                 </span>
                                 <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-1">
-                                    <span className="material-symbols-outlined text-[14px]">calendar_month</span>
+                                    <CalendarMonthRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                     {dayjs(item.created_at).locale("es").format("D [de] MMMM [de] YYYY, h:mm a")}
                                 </span>
                             </div>
@@ -133,7 +139,7 @@ export default function HistorialReportesTab() {
                                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                                 className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                             >
-                                <span className="material-symbols-outlined align-middle">chevron_left</span>
+                                <ChevronLeftRoundedIcon />
                             </button>
                             <div className="flex gap-1">
                                 {Array.from({ length: lastPage }, (_, i) => i + 1).map((p) => (
@@ -155,7 +161,7 @@ export default function HistorialReportesTab() {
                                 onClick={() => setPage((prev) => Math.min(lastPage, prev + 1))}
                                 className="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                             >
-                                <span className="material-symbols-outlined align-middle">chevron_right</span>
+                                <ChevronRightRoundedIcon />
                             </button>
                         </div>
                     )}

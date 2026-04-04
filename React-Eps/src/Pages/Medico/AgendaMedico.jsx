@@ -12,6 +12,10 @@ import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 import Swal from "sweetalert2";
 import api from "../../Api/axios";
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
+
 
 /**
  * Formatea una fecha YYYY-MM-DD al locale español sin problemas de timezone.
@@ -208,7 +212,7 @@ export default function AgendaMedico() {
                     {/* Header del panel */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 border-b border-gray-100 dark:border-gray-800">
                         <PrincipalText
-                            icon={isToday ? "today" : "calendar_today"}
+                            icon={isToday ? <TodayRoundedIcon /> : <CalendarTodayRoundedIcon />}
                             text={
                                 isToday
                                     ? `Hoy — ${formatDateLabel(selectedDate)}`
@@ -223,7 +227,7 @@ export default function AgendaMedico() {
                                 onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
                                 className="flex items-center gap-1.5 text-sm font-bold text-primary hover:text-primary/80 px-3 py-2 rounded-xl hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors cursor-pointer whitespace-nowrap"
                             >
-                                <span className="material-symbols-outlined text-base">today</span>
+                                <TodayRoundedIcon sx={{ fontSize: '1rem' }} />
                                 Volver a hoy
                             </button>
                         )}
@@ -251,9 +255,7 @@ export default function AgendaMedico() {
                                     transition={{ duration: 0.2 }}
                                     className="text-center py-16 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800"
                                 >
-                                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-                                        event_busy
-                                    </span>
+                                    <EventBusyRoundedIcon sx={{ fontSize: '4rem' }} className="text-gray-300 dark:text-gray-600 mb-4 block mx-auto" />
                                     <p className="text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider text-sm">
                                         {citas.length > 0
                                             ? "No hay citas que coincidan con los filtros."

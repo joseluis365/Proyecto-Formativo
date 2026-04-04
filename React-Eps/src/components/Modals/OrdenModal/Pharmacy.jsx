@@ -1,9 +1,10 @@
+﻿import LocalPharmacyRoundedIcon from '@mui/icons-material/LocalPharmacyRounded';
 export default function Pharmacy({data}) {
   
     return (
         <div> 
           <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">local_pharmacy</span>
+            <LocalPharmacyRoundedIcon className="text-gray-500 dark:text-gray-400" />
             <h3 className="text-gray-800 dark:text-gray-200 text-sm font-bold uppercase tracking-wider">Disponibilidad en
               farmacia</h3>
           </div>

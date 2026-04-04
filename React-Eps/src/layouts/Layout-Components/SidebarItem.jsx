@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function SidebarItem({ to, icon, label, onClick }) {
   return (
@@ -17,7 +18,7 @@ export default function SidebarItem({ to, icon, label, onClick }) {
         `
       }
     >
-      <span className="material-symbols-outlined">{icon}</span>
+      <MuiIcon name={icon} sx={{ fontSize: '1.25rem' }} />
       <p className="text-sm font-medium leading-normal">{label}</p>
     </NavLink>
   );

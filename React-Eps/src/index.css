@@ -19,24 +19,6 @@
 /* Force dark mode to be class-based to prevent system preference from triggering it unwantedly */
 @variant dark (&:where(.dark, .dark *));
 
-/* Material Symbols */
-.material-symbols-outlined {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-  font-size: 20px;
-}
-
-.material-symbols-outlined.fill {
-  font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}
-
 .text-3xl {
     @apply text-3xl;
 }

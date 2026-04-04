@@ -1,3 +1,6 @@
+﻿import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import LabelRoundedIcon from '@mui/icons-material/LabelRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function EnfermedadInfoModal({ isOpen, onClose, enfermedad }) {
@@ -14,7 +17,7 @@ export default function EnfermedadInfoModal({ isOpen, onClose, enfermedad }) {
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center justify-center size-12 rounded-xl bg-primary/10 text-primary dark:bg-primary/20">
-                            <span className="material-symbols-outlined text-3xl">vaccines</span>
+                            <VaccinesRoundedIcon sx={{ fontSize: "1.875rem" }} />
                         </div>
                         <div>
                             <span className="text-xs font-black text-primary uppercase tracking-widest leading-none">
@@ -29,14 +32,14 @@ export default function EnfermedadInfoModal({ isOpen, onClose, enfermedad }) {
                         onClick={onClose}
                         className="p-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        <span className="material-symbols-outlined">close</span>
+                        <CloseRoundedIcon />
                     </button>
                 </div>
 
                 <div className="p-8 space-y-6">
                     <section>
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">label</span> Nombre
+                            <LabelRoundedIcon sx={{ fontSize: "1.125rem" }} /> Nombre
                         </h3>
                         <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                             {enfermedad.nombre}
@@ -45,7 +48,7 @@ export default function EnfermedadInfoModal({ isOpen, onClose, enfermedad }) {
 
                     <section className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 border border-gray-100 dark:border-gray-700/50">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">description</span> Descripción Completa
+                            <DescriptionRoundedIcon sx={{ fontSize: "1.125rem" }} /> Descripción Completa
                         </h3>
                         <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
                             {enfermedad.descripcion || (

@@ -3,6 +3,7 @@ import AdminLogoutButton from "../../components/UI/AdminLogoutButton";
 import HelpModal from "../../components/UI/HelpModal";
 import { useEffect, useState } from "react";
 import { useLayout } from "../../LayoutContext";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function Header({ onMenuClick, title, subtitle, children, hamburger, hideLogout }) {
     const [profilePath, setProfilePath] = useState("/Perfil");
@@ -47,7 +48,7 @@ export default function Header({ onMenuClick, title, subtitle, children, hamburg
                         <button
                             onClick={onMenuClick}
                             className="lg:hidden pr-1 sm:pr-5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 shrink-0">
-                            <span className="material-symbols-outlined dark:text-white">menu</span>
+                            <MuiIcon name="menu" className="dark:text-white" sx={{ fontSize: '1.25rem' }} />
                         </button>
                     )}
                     <div className="flex flex-col gap-0.5 min-w-0 flex-1">
@@ -80,7 +81,7 @@ export default function Header({ onMenuClick, title, subtitle, children, hamburg
                                 : "text-gray-300 dark:text-gray-600 cursor-not-allowed opacity-50"
                             }`}
                     >
-                        <span className="material-symbols-outlined">help</span>
+                        <MuiIcon name="help" sx={{ fontSize: '1.25rem' }} />
                     </button>
 
                     {/* Botón de Perfil */}
@@ -89,7 +90,7 @@ export default function Header({ onMenuClick, title, subtitle, children, hamburg
                         title="Mi Perfil"
                         className="flex items-center justify-center rounded-full size-9 sm:size-10 bg-primary/10 hover:bg-primary/20 dark:bg-primary/40 text-primary transition-colors"
                     >
-                        <span className="material-symbols-outlined">account_circle</span>
+                        <MuiIcon name="account_circle" sx={{ fontSize: '1.25rem' }} />
                     </Link>
 
                     {/* Botón de Cerrar Sesión — oculto en pantallas < 768px o cuando hideLogout = true */}

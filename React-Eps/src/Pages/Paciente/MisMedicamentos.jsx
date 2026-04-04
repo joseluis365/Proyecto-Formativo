@@ -4,6 +4,13 @@ import api from "../../Api/axios";
 import PrincipalText from "../../components/Users/PrincipalText";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import { motion } from "framer-motion";
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import WaterDropRoundedIcon from '@mui/icons-material/WaterDropRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import DateRangeRoundedIcon from '@mui/icons-material/DateRangeRounded';
+import LocalPharmacyRoundedIcon from '@mui/icons-material/LocalPharmacyRounded';
 
 function EstadoBadge({ estado }) {
     const cfg = {
@@ -69,7 +76,7 @@ export default function MisMedicamentos() {
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
             <PrincipalText
-                icon="medication"
+                icon={<MedicationRoundedIcon />}
                 text="Mis Medicamentos"
                 number={recetas.length}
                 subtext="Recetas médicas emitidas para ti."
@@ -79,7 +86,7 @@ export default function MisMedicamentos() {
                 <TableSkeleton rows={4} cols={4} />
             ) : recetas.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-dashed border-gray-100 dark:border-gray-800">
-                    <span className="material-symbols-outlined text-6xl text-gray-200 dark:text-gray-700 mb-4 block">medication</span>
+                    <MedicationRoundedIcon sx={{ fontSize: '4rem' }} className="text-gray-200 dark:text-gray-700 mb-4 block mx-auto" />
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sin recetas</h3>
                     <p className="text-gray-400 dark:text-gray-500 max-w-sm mx-auto">Cuando tu médico emita una receta, aparecerá aquí.</p>
                 </div>
@@ -97,7 +104,7 @@ export default function MisMedicamentos() {
                             <div className="p-5 border-b border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-3 bg-gray-50/60 dark:bg-gray-800/40">
                                 <div>
                                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                        <span className="material-symbols-outlined text-sm text-primary">assignment</span>
+                                        <AssignmentRoundedIcon sx={{ fontSize: '0.875rem' }} className="text-primary" />
                                         Receta #{receta.id_receta}
                                         <span className="mx-1">·</span>
                                         <span>Vence: {receta.fecha_vencimiento}</span>
@@ -120,10 +127,8 @@ export default function MisMedicamentos() {
 
                                     return (
                                         <div key={det.id_detalle_receta} className="p-5 flex flex-col md:flex-row md:items-start gap-4">
-                                            <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${dispensado ? 'bg-green-100 dark:bg-green-900/30' : 'bg-orange-100 dark:bg-orange-900/30'}`}>
-                                                <span className={`material-symbols-outlined text-lg ${dispensado ? 'text-green-600' : 'text-orange-500'}`}>
-                                                    {dispensado ? 'check_circle' : 'medication'}
-                                                </span>
+                                            <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${dispensado ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-500'}`}>
+                                                {dispensado ? <CheckCircleRoundedIcon sx={{ fontSize: '1.125rem' }} /> : <MedicationRoundedIcon sx={{ fontSize: '1.125rem' }} />}
                                             </div>
 
                                             <div className="flex-1 space-y-1">
@@ -132,15 +137,15 @@ export default function MisMedicamentos() {
                                                 </p>
                                                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                                                     <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-xs">water_drop</span>
+                                                        <WaterDropRoundedIcon sx={{ fontSize: '0.75rem' }} />
                                                         {det.dosis}
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-xs">schedule</span>
+                                                        <ScheduleRoundedIcon sx={{ fontSize: '0.75rem' }} />
                                                         {det.frecuencia}
                                                     </span>
                                                     <span className="flex items-center gap-1">
-                                                        <span className="material-symbols-outlined text-xs">date_range</span>
+                                                        <DateRangeRoundedIcon sx={{ fontSize: '0.75rem' }} />
                                                         {det.duracion}
                                                     </span>
                                                 </div>
@@ -151,8 +156,8 @@ export default function MisMedicamentos() {
 
                                             <div className="text-right shrink-0">
                                                 <EstadoBadge estado={dispensado ? "Dispensado" : "Pendiente"} />
-                                                <p className="text-xs text-gray-400 mt-1">
-                                                    <span className="material-symbols-outlined text-xs align-middle">local_pharmacy</span>
+                                                <p className="text-xs text-gray-400 mt-1 flex items-center justify-end gap-1">
+                                                    <LocalPharmacyRoundedIcon sx={{ fontSize: '0.75rem' }} />
                                                     {det.farmacia?.nombre ?? det.nit_farmacia} - {det.farmacia?.direccion}
                                                 </p>
                                             </div>

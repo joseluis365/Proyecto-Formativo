@@ -1,6 +1,7 @@
 import React from 'react';
 import superAdminApi from '../../Api/superadminAxios';
 import { useNavigate } from 'react-router-dom';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 const SuperAdminLogoutButton = () => {
     const navigate = useNavigate();
@@ -32,9 +33,7 @@ const SuperAdminLogoutButton = () => {
         transition cursor-pointer"
             title="Cerrar Sesión SuperAdmin"
         >
-            <span className="material-symbols-outlined text-3xl">
-                logout
-            </span>
+            <LogoutRoundedIcon sx={{ fontSize: '1.875rem' }} />
         </button>
     );
 };

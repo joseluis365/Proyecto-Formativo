@@ -10,6 +10,7 @@ import { ciudadSchema } from "@/schemas/ciudadSchema";
 import { handleApiErrors } from "@/utils/formHandlers";
 import superAdminApi from "@/Api/superadminAxios"; // USAR superAdminApi
 import Swal from "sweetalert2";
+import MuiIcon from "../../UI/MuiIcon";
 
 export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, editData = null }) {
     const isEdit = !!editData;
@@ -123,9 +124,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
                     {field.label}
                 </label>
                 <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] text-xl">
-                        {field.icon}
-                    </span>
+                    <MuiIcon name={field.icon} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a]" sx={{ fontSize: '1.25rem' }} />
                     <select
                         {...register(field.name)}
                         id={field.name}
@@ -140,9 +139,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
                             </option>
                         ))}
                     </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]">
-                        expand_more
-                    </span>
+                    <MuiIcon name="expand_more" className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]" sx={{ fontSize: '1.25rem' }} />
                 </div>
                 {error && <span className="text-red-500 text-xs mt-1">{error.message}</span>}
             </div>

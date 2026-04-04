@@ -9,6 +9,7 @@ import Filter from "../../components/UI/Filter";
 import { AnimatePresence, motion } from "framer-motion";
 import TableSkeleton from "../../components/UI/TableSkeleton";
 import CreatePersonalModal from "../../components/Modals/UserModal/CreatePersonalModal";
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 
 const statusOptions = [
   { value: "", label: "Todos" },
@@ -115,7 +116,7 @@ export default function Personal() {
         />
         <button onClick={() => setCreating(true)} className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
           Agregar Personal
-          <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
+          <AddRoundedIcon sx={{ fontSize: '1.125rem' }} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 

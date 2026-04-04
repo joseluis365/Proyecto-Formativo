@@ -1,3 +1,5 @@
+import MuiIcon from "../UI/MuiIcon";
+
 const FEED_STYLES = {
   blue: {
     bg: "bg-blue-500/10",
@@ -30,9 +32,7 @@ export default function FeedItem({ icon, title, time, type }) {
         className={`flex items-center justify-center size-10 rounded-full
           ${styles.bg} ${styles.text}`}
       >
-        <span className="material-symbols-outlined text-xl">
-          {icon}
-        </span>
+        <MuiIcon name={icon} sx={{ fontSize: '1.25rem' }} />
       </div>
 
       <div className="flex-1">

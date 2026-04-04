@@ -1,5 +1,6 @@
 import api from '../../Api/axios';
 import { useNavigate } from 'react-router-dom';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 
 /**
  * AdminLogoutButton — Cierra sesión para usuarios normales (cualquier rol).
@@ -28,7 +29,7 @@ const AdminLogoutButton = ({ className = "", showText = false }) => {
             className={`flex items-center gap-2 cursor-pointer transition ${className}`}
             title="Cerrar Sesión"
         >
-            <span className="material-symbols-outlined">logout</span>
+            <LogoutRoundedIcon />
             {showText && <span>Cerrar Sesión</span>}
         </button>
     );

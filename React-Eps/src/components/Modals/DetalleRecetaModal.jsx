@@ -1,3 +1,7 @@
+﻿import LocalPharmacyRoundedIcon from '@mui/icons-material/LocalPharmacyRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import BaseModal from "./BaseModal";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
@@ -75,7 +79,7 @@ export default function DetalleRecetaModal({ receta, cita, onClose }) {
                 {(receta.recetaDetalles || receta.receta_detalles)?.length > 0 ? (
                     <div>
                         <div className="flex gap-3 mb-3">
-                            <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">medication</span>
+                            <MedicationRoundedIcon className="text-gray-500 dark:text-gray-400" />
                             <h3 className="text-gray-800 dark:text-gray-200 text-sm font-bold uppercase tracking-wider">
                                 Medicamentos Prescritos
                             </h3>
@@ -119,7 +123,7 @@ export default function DetalleRecetaModal({ receta, cita, onClose }) {
                                     {/* Farmacia */}
                                     {det.farmacia && (
                                         <div className="mt-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg p-2.5 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-green-600 dark:text-green-400 text-base">local_pharmacy</span>
+                                            <LocalPharmacyRoundedIcon sx={{ fontSize: "1rem" }} className="text-green-600 dark:text-green-400" />
                                             <div>
                                                 <p className="text-xs font-bold text-green-700 dark:text-green-400">{det.farmacia.nombre}</p>
                                                 {det.farmacia.direccion && (
@@ -139,7 +143,7 @@ export default function DetalleRecetaModal({ receta, cita, onClose }) {
                 {/* Instrucciones */}
                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
                     <h4 className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm">info</span>
+                        <InfoRoundedIcon sx={{ fontSize: "0.875rem" }} />
                         Cómo Reclamar sus Medicamentos
                     </h4>
                     <ol className="text-sm text-green-700 dark:text-green-300 space-y-1 list-none">
@@ -163,7 +167,7 @@ export default function DetalleRecetaModal({ receta, cita, onClose }) {
                         disabled={downloading}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-primary text-white rounded-md shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-60"
                     >
-                        <span className="material-symbols-outlined text-base">download</span>
+                        <DownloadRoundedIcon sx={{ fontSize: "1rem" }} />
                         {downloading ? "Generando..." : "Descargar PDF"}
                     </button>
                 )}

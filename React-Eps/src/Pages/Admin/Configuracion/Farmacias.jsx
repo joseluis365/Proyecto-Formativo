@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import api from "@/Api/axios";
 import { useLayout } from "@/LayoutContext";
 import { useHelp } from "@/hooks/useHelp";
@@ -11,6 +11,12 @@ import TableSkeleton from "@/components/UI/TableSkeleton";
 import FarmaciaModal from "@/components/Modals/FarmaciaModal";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
 
 import useFarmacias from "@/hooks/useFarmacias";
 
@@ -128,16 +134,14 @@ export default function Farmacias() {
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-blue-600"
                         title="Ver Info"
                     >
-                        <span className="material-symbols-outlined text-base">visibility</span>
+                        <VisibilityRoundedIcon sx={{ fontSize: "1rem" }} />
                     </button>
                     <button
                         onClick={() => handleToggleStatus(item)}
                         className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                         title={item.id_estado === 1 ? "Inactivar" : "Activar"}
                     >
-                        <span className="material-symbols-outlined text-base">
-                            {item.id_estado === 1 ? "visibility_off" : "visibility"}
-                        </span>
+                        {item.id_estado === 1 ? <VisibilityOffRoundedIcon sx={{ fontSize: '1rem' }} /> : <VisibilityRoundedIcon sx={{ fontSize: '1rem' }} />}
                     </button>
                 </div>
             )

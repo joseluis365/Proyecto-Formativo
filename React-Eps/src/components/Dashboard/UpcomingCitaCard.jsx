@@ -1,3 +1,5 @@
+import MuiIcon from "../UI/MuiIcon";
+
 /**
  * UpcomingCitaCard
  * Props:
@@ -18,9 +20,7 @@ export default function UpcomingCitaCard({ cita, onViewDetails }) {
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '20px' }}>
-                            stethoscope
-                        </span>
+                        <MuiIcon name="stethoscope" sx={{ fontSize: '20px' }} className="text-primary" />
                     </div>
                     <div>
                         <p className="text-sm font-bold text-slate-800 dark:text-white">{cita.especialidad}</p>
@@ -36,17 +36,17 @@ export default function UpcomingCitaCard({ cita, onViewDetails }) {
             <div className="flex flex-col gap-1.5 text-xs text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-gray-800/50 rounded-xl px-4 py-3">
                 <div className="flex items-center gap-4 flex-wrap">
                     <span className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>calendar_today</span>
+                        <MuiIcon name="calendar_today" sx={{ fontSize: '14px' }} />
                         {cita.date}
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>schedule</span>
+                        <MuiIcon name="schedule" sx={{ fontSize: '14px' }} />
                         {cita.time}
                     </span>
                 </div>
                 {cita.location && (
                     <span className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>location_on</span>
+                        <MuiIcon name="location_on" sx={{ fontSize: '14px' }} />
                         {cita.location}
                     </span>
                 )}
@@ -58,7 +58,7 @@ export default function UpcomingCitaCard({ cita, onViewDetails }) {
                 className="w-full cursor-pointer bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold rounded-xl py-2.5 flex items-center justify-center gap-2"
             >
                 <span>Ver detalles</span>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_forward</span>
+                <MuiIcon name="arrow_forward" sx={{ fontSize: '16px' }} />
             </button>
         </div>
     );

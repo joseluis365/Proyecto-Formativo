@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import superAdminApi from "../../Api/superadminAxios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "../../hooks/useTheme";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 import SuperAdminLogoutButton from "../../components/UI/SuperAdminLogoutButton";
 
@@ -74,7 +75,7 @@ export default function SuperAdminHeader() {
                             className={`flex items-center gap-1 cursor-pointer font-medium transition-colors whitespace-nowrap ${isInternalMenuOpen ? "text-blue-600 dark:text-blue-400" : "text-slate-600 dark:text-white"}`}
                         >
                             Gestión Interna
-                            <span className="material-symbols-outlined text-[20px]">expand_more</span>
+                            <MuiIcon name="expand_more" sx={{ fontSize: '1.25rem' }} />
                         </button>
 
                         <AnimatePresence>
@@ -86,19 +87,19 @@ export default function SuperAdminHeader() {
                                     className="absolute left-1/2 -translate-x-1/2 mt-2 w-48 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-xl shadow-lg py-2 overflow-hidden"
                                 >
                                     <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/estados">
-                                        <span className="material-symbols-outlined mr-2 text-sm">settings</span>
+                                        <MuiIcon name="settings" sx={{ fontSize: '1.25rem' }} className="mr-2" />
                                         Estados
                                     </NavLink>
                                     <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/roles">
-                                        <span className="material-symbols-outlined mr-2 text-sm">group</span>
+                                        <MuiIcon name="group" sx={{ fontSize: '1.25rem' }} className="mr-2" />
                                         Roles
                                     </NavLink>
                                     <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/departamentos">
-                                        <span className="material-symbols-outlined mr-2 text-sm">map</span>
+                                        <MuiIcon name="map" sx={{ fontSize: '1.25rem' }} className="mr-2" />
                                         Departamentos
                                     </NavLink>
                                     <NavLink className={dropdownItemStyles} to="/SuperAdmin-Gestion/ciudades">
-                                        <span className="material-symbols-outlined mr-2 text-sm">location_city</span>
+                                        <MuiIcon name="location_city" sx={{ fontSize: '1.25rem' }} className="mr-2" />
                                         Ciudades
                                     </NavLink>
                                 </motion.div>
@@ -114,13 +115,14 @@ export default function SuperAdminHeader() {
                         className="p-2 cursor-pointer rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors focus:outline-none flex items-center justify-center"
                         title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                     >
-                        <span className="material-symbols-outlined text-[20px]">
-                            {isDarkMode ? 'dark_mode' : 'light_mode'}
-                        </span>
+                        <MuiIcon 
+                            name={isDarkMode ? 'dark_mode' : 'light_mode'} 
+                            sx={{ fontSize: '1.25rem' }} 
+                        />
                     </button>
 
                     <div className="flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full mr-2">
-                        <span className="material-symbols-outlined text-sm text-blue-600 dark:text-blue-400">admin_panel_settings</span>
+                        <MuiIcon name="admin_panel_settings" sx={{ fontSize: '1.125rem' }} className="text-blue-600 dark:text-blue-400" />
                         <span className="text-xs font-bold text-slate-700 dark:text-white uppercase tracking-wider">SuperAdmin</span>
                     </div>
 
@@ -185,9 +187,10 @@ export default function SuperAdminHeader() {
                             onClick={toggleDarkMode}
                             className="flex items-center cursor-pointer gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none mb-4"
                         >
-                            <span className="material-symbols-outlined text-[20px]">
-                                {isDarkMode ? 'dark_mode' : 'light_mode'}
-                            </span>
+                            <MuiIcon 
+                                name={isDarkMode ? 'dark_mode' : 'light_mode'} 
+                                sx={{ fontSize: '1.25rem' }} 
+                            />
                             <span className="font-semibold">{isDarkMode ? 'Modo Oscuro' : 'Modo Claro'}</span>
                         </button>
 

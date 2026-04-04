@@ -1,3 +1,4 @@
+﻿import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded';
 import { useState, useEffect } from "react";
 import superAdminApi from "../../../Api/superadminAxios";
 import BaseModal from "../BaseModal";
@@ -121,7 +122,7 @@ export default function EditEmpresaModal({
                             disabled={saving}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow-md flex items-center gap-2 transition-colors disabled:opacity-50"
                         >
-                            <span className="material-symbols-outlined">published_with_changes</span>
+                            <PublishedWithChangesRoundedIcon />
                             {saving ? "Actualizando..." : "Actualizar Cambios"}
                         </button>
                     </div>

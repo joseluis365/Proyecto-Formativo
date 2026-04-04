@@ -4,6 +4,7 @@ import { LayoutProvider, useLayout } from "../LayoutContext";
 import Header from "./Layout-Components/Header";
 import HelpModal from "../components/UI/HelpModal";
 import useTheme from "../hooks/useTheme";
+import MuiIcon from "../components/UI/MuiIcon";
 
 /* ——— Nav item top-bar (lg) ——— */
 function NavItem({ to, label, icon }) {
@@ -19,7 +20,7 @@ function NavItem({ to, label, icon }) {
                 }
             `}
         >
-            <span className="material-symbols-outlined text-lg">{icon}</span>
+            <MuiIcon name={icon} sx={{ fontSize: '1.125rem' }} />
             <span>{label}</span>
         </NavLink>
     );
@@ -40,7 +41,7 @@ function NavDropItem({ to, label, icon, onClick }) {
                 }`
             }
         >
-            <span className="material-symbols-outlined">{icon}</span>
+            <MuiIcon name={icon} sx={{ fontSize: '1.25rem' }} />
             <span>{label}</span>
         </NavLink>
     );
@@ -50,7 +51,7 @@ function NavDropItem({ to, label, icon, onClick }) {
 function NavMobileItem({ to, icon }) {
     return (
         <NavLink to={to} end className={({ isActive }) => `size-10 sm:size-12 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${isActive ? "bg-primary text-white shadow-lg" : "text-gray-400"}`}>
-            <span className="material-symbols-outlined text-xl sm:text-2xl font-bold">{icon}</span>
+            <MuiIcon name={icon} sx={{ fontSize: '1.5rem' }} className="font-bold" />
         </NavLink>
     );
 }
@@ -90,9 +91,7 @@ function PatientLayoutContent() {
                             onClick={() => setMenuOpen((v) => !v)}
                             className="size-10 rounded-xl flex items-center justify-center text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
                         >
-                            <span className="material-symbols-outlined text-2xl">
-                                {menuOpen ? "close" : "menu"}
-                            </span>
+                            <MuiIcon name={menuOpen ? "close" : "menu"} sx={{ fontSize: '1.5rem' }} />
                         </button>
 
                         {menuOpen && (
@@ -139,7 +138,7 @@ function PatientLayoutContent() {
                                         to={backPath}
                                         className="size-10 md:size-12 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:text-primary transition-all shadow-sm hover:shadow-md group"
                                     >
-                                        <span className="material-symbols-outlined text-2xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                                        <MuiIcon name="arrow_back" sx={{ fontSize: '1.5rem' }} className="group-hover:-translate-x-1 transition-transform" />
                                     </Link>
                                 )}
                                 <h2 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none">

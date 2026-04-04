@@ -1,3 +1,8 @@
+﻿import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
+import ReplyRoundedIcon from '@mui/icons-material/ReplyRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import React, { useState } from 'react';
 import BaseModal from '../BaseModal';
 import ModalHeader from '../ModalHeader';
@@ -120,7 +125,7 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = f
                     {(isAtendido || !readonly) && (
                         <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                             <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary text-lg">reply</span>
+                                <ReplyRoundedIcon sx={{ fontSize: "1.125rem" }} className="text-primary" />
                                 {isAtendido ? 'Respuesta Enviada' : 'Escribir Respuesta'}
                             </h3>
                             
@@ -142,7 +147,7 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = f
                             {!isAtendido && !readonly && (
                                 <div className="mt-4">
                                     <label className="text-sm font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2 cursor-pointer">
-                                        <span className="material-symbols-outlined text-primary text-lg">attach_file</span>
+                                        <AttachFileRoundedIcon sx={{ fontSize: "1.125rem" }} className="text-primary" />
                                         Adjuntar archivo (Opcional, Máx. 5MB)
                                     </label>
                                     <input 
@@ -158,7 +163,7 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = f
                             {isAtendido && (
                                 <div className="flex flex-col gap-2 mt-2">
                                     <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                                        <CheckCircleRoundedIcon sx={{ fontSize: "0.875rem" }} />
                                         Esta petición ya fue respondida y cerrada.
                                     </p>
                                     {pqr.archivo_adjunto && (
@@ -166,7 +171,7 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = f
                                             onClick={handleVisualizar}
                                             className="flex items-center gap-2 w-fit px-4 py-2 mt-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-sm font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all border border-blue-100 dark:border-blue-800"
                                         >
-                                            <span className="material-symbols-outlined text-lg">visibility</span>
+                                            <VisibilityRoundedIcon sx={{ fontSize: "1.125rem" }} />
                                             Visualizar archivo enviado
                                         </button>
                                     )}
@@ -178,7 +183,7 @@ export default function PqrModal({ isOpen, onClose, pqr, onSuccess, readonly = f
                     {readonly && !isAtendido && (
                         <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 p-4 rounded-xl flex items-center gap-3">
-                                <span className="material-symbols-outlined text-amber-600 dark:text-amber-400">info</span>
+                                <InfoRoundedIcon className="text-amber-600 dark:text-amber-400" />
                                 <p className="text-sm text-amber-800 dark:text-amber-300 font-medium">
                                     Esta solicitud se encuentra <b>pendiente</b> de respuesta por el personal administrativo.
                                 </p>

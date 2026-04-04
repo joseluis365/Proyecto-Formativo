@@ -5,6 +5,23 @@ import PrincipalText from "../../components/Users/PrincipalText";
 import { AnimatePresence, motion } from "framer-motion";
 import DetalleRemisionModal from "@/components/Modals/DetalleRemisionModal";
 import DetalleRecetaModal from "@/components/Modals/DetalleRecetaModal";
+import ModalHeader from "../../components/Modals/ModalHeader";
+import ModalFooter from "../../components/Modals/ModalFooter";
+import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
+import MedicalInformationRoundedIcon from '@mui/icons-material/MedicalInformationRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import BiotechRoundedIcon from '@mui/icons-material/BiotechRounded';
+import ForwardToInboxRoundedIcon from '@mui/icons-material/ForwardToInboxRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
+import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
+import EmojiPeopleRoundedIcon from '@mui/icons-material/EmojiPeopleRounded';
+import TransferWithinAStationRoundedIcon from '@mui/icons-material/TransferWithinAStationRounded';
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 // ── PDF helper ────────────────────────────────────────────────────────────────
 function printCita(cita) {
@@ -91,20 +108,20 @@ function CitaDetalleModal({ cita, onClose }) {
                 <ModalHeader
                     title="Detalles de la Cita"
                     onClose={onClose}
-                    icon="clinical_notes"
+                    icon={<MedicalInformationRoundedIcon />}
                 />
 
                 {det && (
                     <div className="space-y-3">
                         {[
-                            { label: "Motivo de consulta", icon: "person_raised_hand", value: det.subjetivo },
-                            { label: "Diagnóstico", icon: "stethoscope", value: det.diagnostico },
-                            { label: "Tratamiento", icon: "medication", value: det.tratamiento },
-                            { label: "Observaciones", icon: "notes", value: det.observaciones },
+                            { label: "Motivo de consulta", icon: <EmojiPeopleRoundedIcon sx={{ fontSize: '1rem' }}/>, value: det.subjetivo },
+                            { label: "Diagnóstico", icon: <MedicalServicesRoundedIcon sx={{ fontSize: '1rem' }}/>, value: det.diagnostico },
+                            { label: "Tratamiento", icon: <MedicationRoundedIcon sx={{ fontSize: '1rem' }}/>, value: det.tratamiento },
+                            { label: "Observaciones", icon: <NotesRoundedIcon sx={{ fontSize: '1rem' }}/>, value: det.observaciones },
                         ].map(({ label, icon, value }) => value ? (
                             <div key={label} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">{icon}</span> {label}
+                                    {icon} {label}
                                 </h3>
                                 <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{value}</p>
                             </div>
@@ -113,7 +130,7 @@ function CitaDetalleModal({ cita, onClose }) {
                         {det.enfermedades?.length > 0 && (
                             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">vaccines</span> Diagnósticos CIE-11
+                                    <VaccinesRoundedIcon sx={{ fontSize: '1rem' }} /> Diagnósticos CIE-11
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
                                     {det.enfermedades.map(enf => (
@@ -128,7 +145,7 @@ function CitaDetalleModal({ cita, onClose }) {
                         {det.receta && (
                             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">medication</span> Receta Médica
+                                    <MedicationRoundedIcon sx={{ fontSize: '1rem' }} /> Receta Médica
                                 </h3>
                                 <div className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 flex items-start justify-between gap-4">
                                     <div className="w-full">
@@ -155,7 +172,7 @@ function CitaDetalleModal({ cita, onClose }) {
                                         onClick={(e) => { e.stopPropagation(); setSelectedReceta(det.receta); }}
                                         className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20 mt-1"
                                     >
-                                        <span className="material-symbols-outlined text-sm">open_in_full</span> Ver Detalles
+                                        <OpenInFullRoundedIcon sx={{ fontSize: '1rem' }} /> Ver Detalles
                                     </button>
                                 </div>
                             </div>
@@ -164,7 +181,7 @@ function CitaDetalleModal({ cita, onClose }) {
                         {det.remisiones?.length > 0 && (
                             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                    <span className="material-symbols-outlined text-sm">outpatient</span> Remisiones ({det.remisiones.length})
+                                    <TransferWithinAStationRoundedIcon sx={{ fontSize: '1rem' }} /> Remisiones ({det.remisiones.length})
                                 </h3>
                                 <div className="space-y-3">
                                     {det.remisiones.map((r, i) => (
@@ -181,7 +198,7 @@ function CitaDetalleModal({ cita, onClose }) {
                                                  </p>
                                                  {(r.cita?.fecha || r.examen?.fecha) && (
                                                      <p className="text-[10px] font-bold text-primary mt-0.5 flex items-center gap-1">
-                                                         <span className="material-symbols-outlined text-xs">calendar_month</span>
+                                                         <CalendarMonthRoundedIcon sx={{ fontSize: '1rem' }} />
                                                          {r.cita?.fecha || r.examen?.fecha} — { (r.cita?.hora_inicio || r.examen?.hora_inicio)?.slice(0,5) }
                                                      </p>
                                                  )}
@@ -191,7 +208,7 @@ function CitaDetalleModal({ cita, onClose }) {
                                                 onClick={(e) => { e.stopPropagation(); setSelectedRemision(r); }}
                                                 className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20"
                                             >
-                                                <span className="material-symbols-outlined text-sm">open_in_full</span> Ver Detalles
+                                                <OpenInFullRoundedIcon sx={{ fontSize: '1rem' }} /> Ver Detalles
                                             </button>
                                         </div>
                                     ))}
@@ -212,9 +229,7 @@ function CitaDetalleModal({ cita, onClose }) {
                         disabled={downloading}
                         className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50 text-sm font-bold"
                     >
-                        <span className="material-symbols-outlined text-base">
-                            {downloading ? 'sync' : 'download'}
-                        </span>
+                        {downloading ? <SyncRoundedIcon className="animate-spin" sx={{ fontSize: '1.25rem' }} /> : <DownloadRoundedIcon sx={{ fontSize: '1.25rem' }} />}
                         {downloading ? 'Generando...' : 'Descargar PDF Consulta'}
                     </button>
                 </ModalFooter>
@@ -306,7 +321,7 @@ export default function HistorialPaciente() {
     return (
         <div className="max-w-4xl mx-auto space-y-10 pb-20">
             <PrincipalText
-                icon="history_edu"
+                icon={<HistoryEduRoundedIcon />}
                 text="Línea de Tiempo Médica"
                 subtext="Sigue la evolución de tu salud a través de tus citas finalizadas."
             />
@@ -314,7 +329,7 @@ export default function HistorialPaciente() {
             {loading ? (
                 <div className="space-y-6">
                     <div className="flex flex-col items-center gap-3 py-4">
-                        <span className="material-symbols-outlined text-3xl text-primary animate-spin">autorenew</span>
+                        <AutorenewRoundedIcon className="text-3xl text-primary animate-spin" sx={{ fontSize: '2rem' }} />
                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Cargando resultados...</span>
                     </div>
                     {[1, 2, 3].map(i => (
@@ -326,7 +341,7 @@ export default function HistorialPaciente() {
                 </div>
             ) : citas.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-[2.5rem] border-2 border-dashed border-gray-100 dark:border-gray-800">
-                    <span className="material-symbols-outlined text-6xl text-gray-200 dark:text-gray-700 mb-4 block">medical_information</span>
+                    <MedicalInformationRoundedIcon sx={{ fontSize: '4rem' }} className="text-gray-200 dark:text-gray-700 mb-4 block mx-auto" />
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Historial vacío</h3>
                     <p className="text-gray-400 dark:text-gray-500 max-w-sm mx-auto">Cuando completes tus consultas médicas, aparecerán aquí ordenadas por fecha.</p>
                 </div>
@@ -359,7 +374,7 @@ export default function HistorialPaciente() {
                                     <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
                                         <div>
                                             <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-[0.2em] mb-3">
-                                                <span className="material-symbols-outlined text-sm">calendar_month</span>
+                                                <CalendarMonthRoundedIcon sx={{ fontSize: '1.25rem' }} />
                                                 {fechaDisplay} • {cita.hora_inicio?.slice(0, 5)}
                                             </div>
                                             <h2 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight leading-tight group-hover:text-primary transition-colors">
@@ -373,17 +388,17 @@ export default function HistorialPaciente() {
                                         <div className="flex flex-wrap gap-2">
                                             {hasRemisiones && det.remisiones.some(r => r.tipo_remision === "examen") && (
                                                 <span className="px-3 py-1 bg-blue-50 dark:bg-blue-500/10 text-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-blue-100 flex items-center gap-1.5">
-                                                    <span className="material-symbols-outlined text-xs">lab_research</span> Examen solicitado
+                                                    <BiotechRoundedIcon sx={{ fontSize: '1rem' }} /> Examen solicitado
                                                 </span>
                                             )}
                                             {hasRemisiones && det.remisiones.some(r => r.tipo_remision === "cita") && (
                                                 <span className="px-3 py-1 bg-purple-50 dark:bg-purple-500/10 text-purple-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-purple-100 flex items-center gap-1.5">
-                                                    <span className="material-symbols-outlined text-xs">forward_to_inbox</span> Interconsulta
+                                                    <ForwardToInboxRoundedIcon sx={{ fontSize: '1rem' }} /> Interconsulta
                                                 </span>
                                             )}
                                             {hasReceta && (
                                                 <span className="px-3 py-1 bg-green-50 dark:bg-green-500/10 text-green-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-100 flex items-center gap-1.5">
-                                                    <span className="material-symbols-outlined text-xs">medication</span> Receta
+                                                    <MedicationRoundedIcon sx={{ fontSize: '1rem' }} /> Receta
                                                 </span>
                                             )}
                                         </div>
@@ -416,7 +431,7 @@ export default function HistorialPaciente() {
                                             onClick={() => setSelectedCita(cita)}
                                             className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-primary border border-primary/20 hover:bg-primary/5 rounded-xl transition-colors"
                                         >
-                                            <span className="material-symbols-outlined text-base">open_in_full</span>
+                                            <OpenInFullRoundedIcon sx={{ fontSize: '1.25rem' }} />
                                             Ver Detalles completos
                                         </button>
                                     </div>

@@ -1,3 +1,4 @@
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 export default function Filter({ options = [], placeholder, value, onChange }) {
     return (
         <div className="relative">
@@ -10,8 +11,7 @@ export default function Filter({ options = [], placeholder, value, onChange }) {
                     <option key={opt.value} value={opt.value} className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-1.5">{opt.label}</option>
                 ))}
             </select>
-            <span
-                className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none">expand_more</span>
+            <ExpandMoreRoundedIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-gray-text/70 dark:text-gray-300 pointer-events-none" />
         </div>
     )
 }

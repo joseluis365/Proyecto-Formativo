@@ -1,3 +1,4 @@
+﻿import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import DataTable from "../UI/DataTable";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -57,7 +58,7 @@ export default function OrdenesTable({ ordenes }) {
       render: (o) => (
         <div className="flex items-center justify-center gap-2">
           <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span className="material-symbols-outlined text-base">download</span>
+            <DownloadRoundedIcon sx={{ fontSize: "1rem" }} />
           </button>
         </div>
       ),

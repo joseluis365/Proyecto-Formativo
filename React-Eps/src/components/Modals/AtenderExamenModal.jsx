@@ -1,3 +1,7 @@
+﻿import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
+import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../Api/axios';
@@ -87,14 +91,14 @@ export default function AtenderExamenModal({ isOpen, onClose, examen, onSuccess 
                 >
                     <div className="flex justify-between items-center p-6 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <span className="material-symbols-outlined text-indigo-600 dark:text-indigo-400">upload_file</span>
+                            <UploadFileRoundedIcon className="text-indigo-600 dark:text-indigo-400" />
                             Atender Examen
                         </h2>
                         <button
                             onClick={handleClose}
                             className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
-                            <span className="material-symbols-outlined">close</span>
+                            <CloseRoundedIcon />
                         </button>
                     </div>
 
@@ -154,13 +158,13 @@ export default function AtenderExamenModal({ isOpen, onClose, examen, onSuccess 
                                     />
                                     {file ? (
                                         <div className="flex flex-col items-center gap-2">
-                                            <span className="material-symbols-outlined text-4xl text-indigo-500">picture_as_pdf</span>
+                                            <PictureAsPdfRoundedIcon sx={{ fontSize: "2.25rem" }} className="text-indigo-500" />
                                             <p className="text-sm font-bold text-indigo-700 dark:text-indigo-300">{file.name}</p>
                                             <p className="text-xs text-indigo-500">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center gap-2">
-                                            <span className="material-symbols-outlined text-4xl text-gray-400">upload_file</span>
+                                            <UploadFileRoundedIcon sx={{ fontSize: "2.25rem" }} className="text-gray-400" />
                                             <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Haz clic para buscar un PDF</p>
                                             <p className="text-xs text-gray-500">Solo archivos .pdf format</p>
                                         </div>
@@ -183,12 +187,12 @@ export default function AtenderExamenModal({ isOpen, onClose, examen, onSuccess 
                                 >
                                     {loading ? (
                                         <>
-                                            <span className="material-symbols-outlined animate-spin text-sm">sync</span>
+                                            <SyncRoundedIcon className="animate-spin" sx={{ fontSize: "0.875rem" }} />
                                             Subiendo...
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined text-sm">cloud_upload</span>
+                                            <CloudUploadRoundedIcon sx={{ fontSize: "0.875rem" }} />
                                             Subir Resultados
                                         </>
                                     )}

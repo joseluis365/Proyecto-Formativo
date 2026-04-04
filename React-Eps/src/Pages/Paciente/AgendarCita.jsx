@@ -11,13 +11,24 @@ import dayjs from "dayjs";
 import api from "../../Api/axios";
 import SearchableSelect from "../../components/UI/SearchableSelect";
 import { motion, AnimatePresence } from "framer-motion";
+import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import HealthAndSafetyRoundedIcon from '@mui/icons-material/HealthAndSafetyRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
+import PersonOffRoundedIcon from '@mui/icons-material/PersonOffRounded';
+import EventRoundedIcon from '@mui/icons-material/EventRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 const STEPS = [
-    { id: 1, title: "Servicio y Motivo", icon: "medical_services" },
-    { id: 2, title: "Fecha", icon: "today" },
-    { id: 3, title: "Hora", icon: "schedule" },
-    { id: 4, title: "Médico", icon: "stethoscope" },
-    { id: 5, title: "Confirmar", icon: "check_circle" },
+    { id: 1, title: "Servicio y Motivo", icon: <MedicalServicesRoundedIcon /> },
+    { id: 2, title: "Fecha", icon: <TodayRoundedIcon /> },
+    { id: 3, title: "Hora", icon: <ScheduleRoundedIcon /> },
+    { id: 4, title: "Médico", icon: <MedicalServicesRoundedIcon /> },
+    { id: 5, title: "Confirmar", icon: <CheckCircleRoundedIcon /> },
 ];
 
 export default function AgendarCita() {
@@ -196,7 +207,7 @@ export default function AgendarCita() {
                         {currentStep === 1 && (
                             <div className="space-y-8 grow">
                                 <div className="space-y-4">
-                                    <PrincipalText icon="medical_services" text="¿Qué tipo de atención necesitas?" />
+                                    <PrincipalText icon={<MedicalServicesRoundedIcon />} text="¿Qué tipo de atención necesitas?" />
                                     <div className="grid grid-cols-1 gap-3">
                                         {loadingEspecialidades ? (
                                             <div className="py-10 text-center animate-pulse text-gray-400 text-xs font-bold uppercase tracking-widest">Cargando servicios...</div>
@@ -214,7 +225,7 @@ export default function AgendarCita() {
                                                     }`}
                                                 >
                                                     <div className={`size-10 rounded-xl flex items-center justify-center ${selectedEspecialidad == esp.value ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'}`}>
-                                                        <span className="material-symbols-outlined text-lg">health_and_safety</span>
+                                                        <HealthAndSafetyRoundedIcon sx={{ fontSize: '1.25rem' }} />
                                                     </div>
                                                     <div className="grow">
                                                         <p className={`font-black text-sm ${selectedEspecialidad == esp.value ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
@@ -224,7 +235,7 @@ export default function AgendarCita() {
                                                             Acceso Directo
                                                         </p>
                                                     </div>
-                                                    {selectedEspecialidad == esp.value && <span className="material-symbols-outlined text-white">check_circle</span>}
+                                                    {selectedEspecialidad == esp.value && <CheckCircleRoundedIcon className="text-white" />}
                                                 </button>
                                             ))
                                         )}
@@ -233,7 +244,7 @@ export default function AgendarCita() {
                                 </div>
 
                                 <div className="space-y-4 pb-4">
-                                    <PrincipalText icon="description" text="¿Cuál es el motivo de tu consulta?" />
+                                    <PrincipalText icon={<DescriptionRoundedIcon />} text="¿Cuál es el motivo de tu consulta?" />
                                     
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Motivo Principal</label>
@@ -272,7 +283,7 @@ export default function AgendarCita() {
                         {/* PASO 2: Calendario */}
                         {currentStep === 2 && (
                             <div className="space-y-6 grow">
-                                <PrincipalText icon="today" text="¿Cuándo deseas asistir?" />
+                                <PrincipalText icon={<TodayRoundedIcon />} text="¿Cuándo deseas asistir?" />
                                 <div className="max-w-[320px] mx-auto scale-95 origin-top">
                                     <CalendarAgenda
                                         selectedDate={selectedDate}
@@ -291,7 +302,7 @@ export default function AgendarCita() {
                         {/* PASO 3: Horas */}
                         {currentStep === 3 && (
                             <div className="space-y-6 grow">
-                                <PrincipalText icon="schedule" text="Selecciona el horario" />
+                                <PrincipalText icon={<ScheduleRoundedIcon />} text="Selecciona el horario" />
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                     {timeOptions.map(time => (
                                         <button
@@ -321,7 +332,7 @@ export default function AgendarCita() {
                         {currentStep === 4 && (
                             <div className="space-y-6 grow">
                                 <div className="flex justify-between items-end border-b border-gray-100 dark:border-gray-800 pb-4">
-                                    <PrincipalText icon="stethoscope" text="Médicos Disponibles" />
+                                    <PrincipalText icon={<MedicalServicesRoundedIcon />} text="Médicos Disponibles" />
                                     <p className="text-[10px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase">
                                         {selectedEspecialidadObj?.label || 'Especialidad'}
                                     </p>
@@ -348,7 +359,7 @@ export default function AgendarCita() {
                                                     }`}
                                                 >
                                                     <div className={`size-12 rounded-xl flex items-center justify-center ${selectedDoctor == (m.documento || m.value) ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'}`}>
-                                                        <span className="material-symbols-outlined text-2xl">person_search</span>
+                                                        <PersonSearchRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                                     </div>
                                                     <div className="grow">
                                                         <p className={`font-black text-sm ${selectedDoctor == (m.documento || m.value) ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
@@ -358,12 +369,12 @@ export default function AgendarCita() {
                                                             {m.especialidad?.especialidad || selectedEspecialidadObj?.label || 'Profesional de Salud'}
                                                         </p>
                                                     </div>
-                                                    {selectedDoctor == (m.documento || m.value) && <span className="material-symbols-outlined text-white">check_circle</span>}
+                                                    {selectedDoctor == (m.documento || m.value) && <CheckCircleRoundedIcon className="text-white" />}
                                                 </button>
                                             ))
                                         ) : (
                                             <div className="text-center py-16 space-y-3">
-                                                <span className="material-symbols-outlined text-4xl text-gray-200">person_off</span>
+                                                <PersonOffRoundedIcon sx={{ fontSize: '2.5rem' }} className="text-gray-200" />
                                                 <p className="text-gray-500 text-sm font-medium">No hay profesionales disponibles para esta especialidad en la hora seleccionada.</p>
                                                 <p className="text-primary text-[10px] font-black uppercase tracking-widest cursor-pointer" onClick={prevStep}>Volver y elegir otra hora</p>
                                             </div>
@@ -377,11 +388,11 @@ export default function AgendarCita() {
                         {/* PASO 5: Confirmación Final */}
                         {currentStep === 5 && (
                             <div className="space-y-6 grow">
-                                <PrincipalText icon="verified" text="Verifica los detalles" />
+                                <PrincipalText icon={<CheckCircleRoundedIcon />} text="Verifica los detalles" />
                                 <div className="p-8 bg-gray-50 dark:bg-gray-800/50 rounded-4xl border border-gray-100 dark:border-gray-800 space-y-6">
                                     <div className="flex items-start gap-4">
                                         <div className="size-12 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 shrink-0">
-                                            <span className="material-symbols-outlined">event</span>
+                                            <EventRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-1">Cita Programada</p>
@@ -393,7 +404,7 @@ export default function AgendarCita() {
                                     </div>
                                     <div className="flex items-start gap-4">
                                         <div className="size-12 bg-white dark:bg-gray-900 text-primary border border-primary/20 rounded-xl flex items-center justify-center shadow-sm shrink-0">
-                                            <span className="material-symbols-outlined">stethoscope</span>
+                                            <MedicalServicesRoundedIcon sx={{ fontSize: '1.5rem' }} />
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Profesional y Servicio</p>
@@ -419,7 +430,7 @@ export default function AgendarCita() {
                                     onClick={prevStep}
                                     className="group flex items-center gap-2 text-gray-400 hover:text-primary transition-all font-black text-[10px] uppercase tracking-widest"
                                 >
-                                    <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">arrow_back</span>
+                                    <ArrowBackRoundedIcon sx={{ fontSize: '1.125rem' }} className="transition-transform group-hover:-translate-x-1" />
                                     Volver atrás
                                 </button>
                             </div>

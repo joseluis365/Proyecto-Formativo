@@ -19,7 +19,18 @@ import DetalleExamenResultModal from "@/components/Modals/DetalleExamenResultMod
 import DetalleRecetaModal from "@/components/Modals/DetalleRecetaModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import EvolucionPacienteModal from "@/components/Modals/EvolucionPacienteModal";
-
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import MedicalInformationRoundedIcon from '@mui/icons-material/MedicalInformationRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
+import EditNoteRoundedIcon from '@mui/icons-material/EditNoteRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import SpaRoundedIcon from '@mui/icons-material/SpaRounded';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 const schema = z.object({
     email: z.string()
         .min(1, "El correo es obligatorio")
@@ -318,7 +329,7 @@ export default function HistorialPacienteMedico() {
                     title="Ver detalle médico"
                     disabled={!raw}
                 >
-                    <span className="material-symbols-outlined text-base">visibility</span>
+                    <VisibilityRoundedIcon sx={{ fontSize: '1rem' }} />
                 </button>
             );
         }}
@@ -334,7 +345,7 @@ export default function HistorialPacienteMedico() {
                 className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
                 title="Ver resultados"
             >
-                <span className="material-symbols-outlined text-base">assignment_turned_in</span>
+                <AssignmentTurnedInRoundedIcon sx={{ fontSize: '1rem' }} />
             </button>
         )}
     ];
@@ -361,7 +372,7 @@ export default function HistorialPacienteMedico() {
                 className="text-primary hover:bg-primary/10 p-1.5 rounded-xl transition-colors"
                 title="Ver detalles de receta"
             >
-                <span className="material-symbols-outlined text-base">open_in_full</span>
+                <OpenInFullRoundedIcon sx={{ fontSize: '1rem' }} />
             </button>
         )}
     ];
@@ -398,18 +409,18 @@ export default function HistorialPacienteMedico() {
                 className="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors mb-2 cursor-pointer"
                 title="Regresar"
             >
-                <span className="material-symbols-outlined text-xl">arrow_back</span>
+                <ArrowBackRoundedIcon sx={{ fontSize: '1.25rem' }} />
             </button>
 
             <div className="bg-white dark:bg-gray-900/50 rounded-xl shadow-lg border border-neutral-gray-border/20 dark:border-gray-800 pb-4">
                 <div className="bg-primary/90 dark:bg-primary/50 backdrop-blur-sm text-white p-6 rounded-t-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <span className="material-symbols-outlined text-3xl">clinical_notes</span>
+                        <MedicalInformationRoundedIcon sx={{ fontSize: '1.875rem' }} />
                         <h2 className="text-xl sm:text-2xl font-bold">HISTORIAL CLÍNICO – {nombre}</h2>
                     </div>
                     {canEdit && (
                         <div className="bg-white/20 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest flex items-center gap-2 shadow-sm">
-                            <span className="material-symbols-outlined text-sm">edit_square</span>
+                            <EditRoundedIcon sx={{ fontSize: '0.875rem' }} />
                             MODO CONSULTA
                         </div>
                     )}
@@ -424,7 +435,7 @@ export default function HistorialPacienteMedico() {
                             onClick={() => setShowEvolucion(true)}
                             className="flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-blue-500 to-indigo-600 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-200 dark:shadow-blue-900/30 hover:from-blue-600 hover:to-indigo-700 transition-all cursor-pointer"
                         >
-                            <span className="material-symbols-outlined text-lg">monitoring</span>
+                            <MonitorHeartRoundedIcon sx={{ fontSize: '1.125rem' }} />
                             Ver Evolución del Paciente
                         </button>
                     </div>
@@ -434,11 +445,11 @@ export default function HistorialPacienteMedico() {
                     {isEditing ? (
                         <form onSubmit={handleSubmit(handleSaveBg)} className="space-y-6 bg-gray-50/50 dark:bg-gray-800/30 p-6 rounded-2xl border border-gray-100 dark:border-gray-700">
                              <div className="flex items-center gap-3 mb-6">
-                                <span className="material-symbols-outlined text-primary text-2xl">edit_note</span>
+                                <EditNoteRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Modo Edición: Datos del Paciente y Antecedentes</h3>
                             </div>
 
-                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2"><span className="material-symbols-outlined text-sm align-middle mr-1 text-primary">person</span> Datos Demográficos</h4>
+                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2"><PersonRoundedIcon sx={{ fontSize: '0.875rem' }} className="align-middle mr-1 text-primary" /> Datos Demográficos</h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                                 <div>
                                     <label className="text-[10px] font-bold text-gray-500 uppercase">Correo Electrónico</label>
@@ -487,7 +498,7 @@ export default function HistorialPacienteMedico() {
                             </div>
                             <hr className="border-gray-200 dark:border-gray-700 my-6" />
 
-                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4"><span className="material-symbols-outlined text-sm align-middle mr-1 text-primary">medical_information</span> Antecedentes Clínicos</h4>
+                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4"><MedicalInformationRoundedIcon sx={{ fontSize: '0.875rem' }} className="align-middle mr-1 text-primary" /> Antecedentes Clínicos</h4>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
@@ -520,7 +531,7 @@ export default function HistorialPacienteMedico() {
                             </div>
                             
                             <hr className="border-gray-200 dark:border-gray-700" />
-                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4"><span className="material-symbols-outlined text-sm align-middle mr-1 text-primary">spa</span> Hábitos y Estilos de Vida</h4>
+                            <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4"><SpaRoundedIcon sx={{ fontSize: '0.875rem' }} className="align-middle mr-1 text-primary" /> Hábitos y Estilos de Vida</h4>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
@@ -555,7 +566,7 @@ export default function HistorialPacienteMedico() {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined text-[18px]">save</span>
+                                            <SaveRoundedIcon sx={{ fontSize: '1.125rem' }} />
                                             Guardar Cambios
                                         </>
                                     )}
@@ -637,7 +648,7 @@ export default function HistorialPacienteMedico() {
                         )}
                         {!canEdit && (
                             <p className="text-xs text-gray-400 italic flex items-center gap-1">
-                                <span className="material-symbols-outlined text-sm">lock</span>
+                                <LockRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                 Actualización exclusiva en consulta médica
                             </p>
                         )}

@@ -1,3 +1,9 @@
+﻿import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
+import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -184,7 +190,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                     <div className="bg-linear-to-r from-primary to-blue-600 text-white px-6 py-4 flex items-center justify-between">
                         <div>
                             <h2 className="text-lg font-black flex items-center gap-2">
-                                <span className="material-symbols-outlined text-xl">monitoring</span>
+                                <ShowChartRoundedIcon sx={{ fontSize: "1.25rem" }} />
                                 Evolución Clínica
                             </h2>
                             <p className="text-xs text-blue-100 mt-0.5">{pacienteNombre}</p>
@@ -193,7 +199,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                             onClick={onClose}
                             className="p-2 rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
                         >
-                            <span className="material-symbols-outlined">close</span>
+                            <CloseRoundedIcon />
                         </button>
                     </div>
 
@@ -207,7 +213,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                         ) : (activeVitals.length === 0 && evolucionDiagnostica.length === 0) ? (
                             // No hay ninguna cita registrada para el paciente
                             <div className="text-center py-16 space-y-3">
-                                <span className="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-600 block">event_busy</span>
+                                <EventBusyRoundedIcon sx={{ fontSize: "3rem" }} className="text-gray-300 dark:text-gray-600 block" />
                                 <p className="text-base font-bold text-gray-500 dark:text-gray-400">No hay evolución disponible</p>
                                 <p className="text-sm text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                                     Este paciente no tiene citas médicas registradas. La evolución clínica se construye a partir de las atenciones realizadas.
@@ -218,7 +224,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                                 {/* Gráficas de signos vitales */}
                                 <div>
                                     <h3 className="text-sm font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary text-base">show_chart</span>
+                                        <ShowChartRoundedIcon sx={{ fontSize: "1rem" }} className="text-primary" />
                                         Signos Vitales
                                     </h3>
                                     {activeVitals.length > 0 ? (
@@ -234,7 +240,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                                         </div>
                                     ) : (
                                         <div className="text-center py-10 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-gray-400 dark:text-gray-500">
-                                            <span className="material-symbols-outlined text-4xl block mb-2">monitor_heart</span>
+                                            <MonitorHeartRoundedIcon sx={{ fontSize: "2.25rem" }} className="block mb-2" />
                                             <p className="text-sm">No hay signos vitales registrados para este paciente.</p>
                                             <p className="text-xs mt-1 opacity-70">Los signos se registran durante cada consulta médica.</p>
                                         </div>
@@ -244,7 +250,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                                 {/* Evolución diagnóstica */}
                                 <div>
                                     <h3 className="text-sm font-black text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary text-base">history</span>
+                                        <HistoryRoundedIcon sx={{ fontSize: "1rem" }} className="text-primary" />
                                         Evolución Diagnóstica y Terapéutica
                                     </h3>
                                     {evolucionDiagnostica.length > 0 ? (
@@ -285,7 +291,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                                         </div>
                                     ) : (
                                         <div className="text-center py-8 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-gray-400 dark:text-gray-500">
-                                            <span className="material-symbols-outlined text-4xl block mb-2">medical_services</span>
+                                            <MedicalServicesRoundedIcon sx={{ fontSize: "2.25rem" }} className="block mb-2" />
                                             <p className="text-sm">No hay diagnósticos registrados.</p>
                                         </div>
                                     )}
@@ -311,7 +317,7 @@ export default function EvolucionPacienteModal({ doc, pacienteNombre, onClose })
                                 </>
                             ) : (
                                 <>
-                                    <span className="material-symbols-outlined text-lg">download</span>
+                                    <DownloadRoundedIcon sx={{ fontSize: "1.125rem" }} />
                                     Descargar Evolución (PDF)
                                 </>
                             )}

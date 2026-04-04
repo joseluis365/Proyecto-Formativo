@@ -1,5 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useToast } from "../../ToastContext";
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import ErrorRoundedIcon from '@mui/icons-material/ErrorRounded';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 
 export default function Toast() {
   const { toasts } = useToast();
@@ -24,13 +27,7 @@ export default function Toast() {
               }
             `}
           >
-            <span className="material-symbols-outlined">
-              {t.type === "success"
-                ? "check_circle"
-                : t.type === "error"
-                ? "error"
-                : "info"}
-            </span>
+            {t.type === "success" ? <CheckCircleRoundedIcon /> : t.type === "error" ? <ErrorRoundedIcon /> : <InfoRoundedIcon />}
 
             <span className="text-sm font-medium">{t.message}</span>
           </motion.div>

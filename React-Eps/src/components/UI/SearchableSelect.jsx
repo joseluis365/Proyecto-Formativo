@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 export default function SearchableSelect({
     options, // { value: string/number, label: string }
@@ -100,9 +104,7 @@ export default function SearchableSelect({
                 <span className={`block truncate ${!selectedOption ? 'text-gray-400' : 'text-gray-900 dark:text-white'}`}>
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
-                <span className={`material-symbols-outlined text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-                    expand_more
-                </span>
+                <ExpandMoreRoundedIcon className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
@@ -117,7 +119,7 @@ export default function SearchableSelect({
                         <div className="p-2 border-b border-gray-100 dark:border-gray-700">
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-400">
-                                    <span className="material-symbols-outlined text-sm">search</span>
+                                    <SearchRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                 </span>
                                 <input
                                     ref={inputRef}
@@ -134,7 +136,7 @@ export default function SearchableSelect({
                         <ul className="max-h-60 overflow-y-auto p-1">
                             {loading ? (
                                 <li className="px-3 py-3 text-sm text-gray-500 text-center flex items-center justify-center gap-2">
-                                    <span className="material-symbols-outlined animate-spin text-primary">progress_activity</span>
+                                    <AutorenewRoundedIcon className="animate-spin text-primary" />
                                     Buscando...
                                 </li>
                             ) : filteredOptions.length === 0 ? (
@@ -153,7 +155,7 @@ export default function SearchableSelect({
                                     >
                                         <span className="truncate">{opt.label}</span>
                                         {String(opt.value) === String(value) && (
-                                            <span className="material-symbols-outlined text-sm">check</span>
+                                            <CheckRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                         )}
                                     </li>
                                 ))

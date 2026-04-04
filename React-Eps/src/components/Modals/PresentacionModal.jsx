@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
 import SearchableSelect from "@/components/UI/SearchableSelect";
+import MuiIcon from "@/components/UI/MuiIcon";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 export default function PresentacionModal({ isOpen, onClose, onSuccess, editData }) {
     const [formData, setFormData] = useState({
@@ -90,9 +93,7 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2">
                     <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary dark:bg-primary/50 dark:text-blue-400">
-                        <span className="material-symbols-outlined text-3xl">
-                            home_storage
-                        </span>
+                        <MuiIcon name="inventory_2" sx={{ fontSize: '1.875rem' }} />
                     </div>
                     <h2 className="text-xl font-bold dark:text-white">
                         {editData ? "Editar Presentación" : "Nueva Presentación"}
@@ -102,7 +103,7 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                         onClick={onClose}
                         className="text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-colors"
                     >
-                        <span className="material-symbols-outlined">close</span>
+                        <CloseRoundedIcon />
                     </button>
                 </div>
 
@@ -193,7 +194,7 @@ export default function PresentacionModal({ isOpen, onClose, onSuccess, editData
                             className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
                         >
                             {loading ? (
-                                <span className="material-symbols-outlined animate-spin">refresh</span>
+                                <AutorenewRoundedIcon className="animate-spin" />
                             ) : editData ? (
                                 "Actualizar"
                             ) : (

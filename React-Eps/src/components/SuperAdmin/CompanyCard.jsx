@@ -1,3 +1,4 @@
+import CorporateFareRoundedIcon from '@mui/icons-material/CorporateFareRounded';
 export default function CompanyCard({
   company,
   email,
@@ -33,9 +34,7 @@ export default function CompanyCard({
       {/* Header */}
       <div className="flex items-center gap-4 mb-4">
         <div className="flex items-center justify-center size-12 rounded-lg bg-primary/10 text-primary">
-          <span className="material-symbols-outlined text-3xl">
-            enterprise
-          </span>
+          <CorporateFareRoundedIcon sx={{ fontSize: '1.875rem' }} />
         </div>
 
         <h2 className="text-gray-800 dark:text-gray-200 font-semibold text-xl">

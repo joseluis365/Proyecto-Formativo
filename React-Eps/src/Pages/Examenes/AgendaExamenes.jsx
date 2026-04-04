@@ -8,6 +8,8 @@ import ExamenTable from "../../components/Examenes/ExamenTable";
 import AtenderExamenModal from "../../components/Modals/AtenderExamenModal";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import ScienceRoundedIcon from '@mui/icons-material/ScienceRounded';
 
 function formatDateLabel(dateStr) {
     const [year, month, day] = dateStr.split('-').map(Number);
@@ -172,7 +174,7 @@ export default function AgendaExamenes() {
                                 onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
                                 className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-800 px-3 py-2 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
                             >
-                                <span className="material-symbols-outlined text-base">today</span>
+                                <TodayRoundedIcon sx={{ fontSize: '1rem' }} />
                                 Volver a hoy
                             </button>
                         )}
@@ -188,7 +190,7 @@ export default function AgendaExamenes() {
                                 </motion.div>
                             ) : filteredExamenes.length === 0 ? (
                                 <motion.div key={`empty-${selectedDate}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-center py-16 m-6 rounded-2xl border-2 border-dashed border-gray-200">
-                                    <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4 block">science</span>
+                                    <ScienceRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 dark:text-gray-600 mb-4 block mx-auto" />
                                     <p className="text-gray-500 font-medium text-sm">No hay exámenes para mostrar con esos filtros.</p>
                                 </motion.div>
                             ) : (

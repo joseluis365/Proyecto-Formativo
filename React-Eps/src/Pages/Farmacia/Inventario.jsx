@@ -13,6 +13,12 @@ import { entradaInventarioSchema } from "../../utils/validations/farmaciaSchemas
 import { preventDoubleSpaces, normalizeText } from "../../utils/textUtils";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import StoreRoundedIcon from '@mui/icons-material/StoreRounded';
+import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 
 export default function Inventario() {
     const { setTitle, setSubtitle } = useLayout();
@@ -182,7 +188,7 @@ export default function Inventario() {
             render: (row) => (
                 <div className="flex items-center gap-3">
                     <div className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined text-sm">medication</span>
+                        <MedicationRoundedIcon sx={{ fontSize: '0.875rem' }} className="text-primary" />
                     </div>
                     <div>
                         <p className="font-bold text-gray-900 dark:text-white">{row.nombre}</p>
@@ -254,12 +260,12 @@ export default function Inventario() {
         <>
             <div className="bg-white dark:bg-gray-900 rounded-2xl animate-fade-in p-6">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
-                <PrincipalText icon="inventory_2" text="Lotes en Inventario" number={total} />
+                <PrincipalText icon={<Inventory2RoundedIcon sx={{ fontSize: '2.5rem' }} />} text="Lotes en Inventario" number={total} />
                 <button
                     onClick={handleOpenEntrada}
                     className="bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 font-bold text-sm transition-all flex items-center gap-2 shadow-lg shadow-green-600/20"
                 >
-                    <span className="material-symbols-outlined text-lg">add_box</span>
+                    <AddBoxRoundedIcon sx={{ fontSize: '1.125rem' }} />
                     Registrar Entrada
                 </button>
             </div>
@@ -304,7 +310,7 @@ export default function Inventario() {
                 </div>
                 {nitFarmacia && (
                     <span className="text-xs text-gray-400 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">store</span>
+                        <StoreRoundedIcon sx={{ fontSize: '0.875rem' }} />
                         Farmacia: <strong className="text-gray-600 dark:text-gray-300 ml-1">{nitFarmacia}</strong>
                     </span>
                 )}
@@ -326,7 +332,7 @@ export default function Inventario() {
                     <TableSkeleton rows={8} cols={6} />
                 ) : inventario.length === 0 ? (
                     <div className="py-16 text-center text-gray-400 dark:text-gray-600">
-                        <span className="material-symbols-outlined text-4xl mb-2 block">inventory</span>
+                        <InventoryRoundedIcon sx={{ fontSize: '2.5rem' }} className="mb-2 block mx-auto" />
                         No hay lotes en el inventario
                     </div>
                 ) : (
@@ -378,7 +384,7 @@ export default function Inventario() {
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-green-600">add_box</span>
+                            <AddBoxRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-green-600" />
                             Registrar Entrada de Medicamento
                         </h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
@@ -451,7 +457,7 @@ export default function Inventario() {
                                 </button>
                                 <button type="submit" disabled={saving}
                                     className="flex-1 py-3 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
-                                    {saving ? "Guardando..." : <><span className="material-symbols-outlined text-lg">save</span> Registrar</>}
+                                    {saving ? "Guardando..." : <><SaveRoundedIcon sx={{ fontSize: '1.125rem' }} /> Registrar</>}
                                 </button>
                             </div>
                         </form>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import api from "../../Api/axios";
 import { useLayout } from "../../LayoutContext";
 import { useHelp } from "../../hooks/useHelp";
@@ -122,7 +122,7 @@ export default function Farmaceutico() {
         />
         <button onClick={() => setCreating(true)} className="bg-primary hover:bg-primary/90 text-white cursor-pointer rounded-lg px-6 py-3 font-bold text-sm transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
           Agregar Farmaceutico
-          <span className="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">add</span>
+          <AddRoundedIcon sx={{ fontSize: '1.125rem' }} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
 

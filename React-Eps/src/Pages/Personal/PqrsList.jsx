@@ -9,6 +9,9 @@ import Filter from "../../components/UI/Filter";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
 import MotionSpinner from "../../components/UI/Spinner";
+import InboxRoundedIcon from '@mui/icons-material/InboxRounded';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function PqrsList({ readonly = false }) {
     const { setTitle, setSubtitle } = useLayout();
@@ -143,9 +146,10 @@ export default function PqrsList({ readonly = false }) {
                 </div>
             ) : filteredPqrs.length === 0 ? (
                 <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800 shadow-inner">
-                    <span className="material-symbols-outlined text-6xl text-gray-200 dark:text-gray-700 mb-4">
-                        {pqrs.length === 0 ? 'inbox' : 'manage_search'}
-                    </span>
+                    {pqrs.length === 0
+                        ? <InboxRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-200 dark:text-gray-700 mb-4" />
+                        : <ManageSearchRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-200 dark:text-gray-700 mb-4" />
+                    }
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
                         {pqrs.length === 0 ? 'No hay PQRS registradas' : 'No se encontraron resultados'}
                     </h3>

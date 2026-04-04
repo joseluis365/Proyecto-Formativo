@@ -1,3 +1,5 @@
+import MuiIcon from "../UI/MuiIcon";
+
 export default function AppointmentCard({
     doctorName,
     doctorSpecialty,
@@ -56,9 +58,7 @@ export default function AppointmentCard({
                 {/* Profesional / Examen */}
                 <div className="flex items-center gap-4">
                     <div className="flex shrink-0 items-center justify-center size-12 rounded-xl bg-primary/10 text-primary shadow-inner">
-                        <span className="material-symbols-outlined text-2xl">
-                            {isExamen ? 'science' : 'stethoscope'}
-                        </span>
+                        <MuiIcon name={isExamen ? 'science' : 'stethoscope'} sx={{ fontSize: '1.5rem' }} />
                     </div>
                     <div className="min-w-0">
                         <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">
@@ -80,7 +80,7 @@ export default function AppointmentCard({
                 {patientName && (
                     <div className="flex items-center gap-4 p-3 rounded-xl bg-gray-50/50 dark:bg-gray-800/30 border border-gray-100/50 dark:border-gray-700/50">
                         <div className="flex shrink-0 items-center justify-center size-10 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 shadow-inner">
-                            <span className="material-symbols-outlined text-xl">person</span>
+                            <MuiIcon name="person" sx={{ fontSize: '1.25rem' }} />
                         </div>
                         <div className="min-w-0">
                             <p className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-0.5">Paciente</p>
@@ -101,7 +101,7 @@ export default function AppointmentCard({
             <div className="grid grid-cols-2 gap-4 mb-8 relative">
                 <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
                     <div className="flex items-center gap-2 mb-1 text-gray-400">
-                        <span className="material-symbols-outlined text-sm">calendar_today</span>
+                        <MuiIcon name="calendar_today" sx={{ fontSize: '0.875rem' }} />
                         <span className="text-[9px] font-black uppercase tracking-widest">Fecha</span>
                     </div>
                     <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
@@ -110,7 +110,7 @@ export default function AppointmentCard({
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800/40 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/50">
                     <div className="flex items-center gap-2 mb-1 text-gray-400">
-                        <span className="material-symbols-outlined text-sm">schedule</span>
+                        <MuiIcon name="schedule" sx={{ fontSize: '0.875rem' }} />
                         <span className="text-[9px] font-black uppercase tracking-widest">Horario</span>
                     </div>
                     <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
@@ -125,9 +125,10 @@ export default function AppointmentCard({
                     onClick={onView}
                     className="grow py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-gray-200 dark:shadow-none cursor-pointer flex items-center justify-center gap-2"
                 >
-                    <span className="material-symbols-outlined text-base">
-                        {status === 'Atendida' ? 'assignment_turned_in' : 'visibility'}
-                    </span>
+                    <MuiIcon 
+                        name={status === 'Atendida' ? 'assignment_turned_in' : 'visibility'} 
+                        sx={{ fontSize: '1rem' }} 
+                    />
                     {status === 'Atendida' ? 'Ver Resultados' : 'Detalles'}
                 </button>
 
@@ -139,7 +140,7 @@ export default function AppointmentCard({
                             className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20 hover:bg-primary/20 transition-all cursor-pointer flex items-center justify-center"
                             title="Reagendar Cita"
                         >
-                            <span className="material-symbols-outlined text-xl">event_repeat</span>
+                            <MuiIcon name="event_repeat" sx={{ fontSize: '1.25rem' }} />
                         </button>
 
                         {/* Botón Cancelar */}
@@ -149,7 +150,7 @@ export default function AppointmentCard({
                                 className="py-4 px-5 text-[10px] font-black uppercase tracking-[0.2em] rounded-[1.2rem] bg-red-50 dark:bg-red-500/10 text-red-600 border border-red-100 dark:border-red-900/20 hover:bg-red-100 transition-all cursor-pointer flex items-center justify-center"
                                 title="Cancelar Cita"
                             >
-                                <span className="material-symbols-outlined text-xl">close</span>
+                                <MuiIcon name="close" sx={{ fontSize: '1.25rem' }} />
                             </button>
                         )}
                     </>

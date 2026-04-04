@@ -5,6 +5,13 @@ import BlueButton from "../../components/UI/BlueButton";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
 import TableSkeleton from "../../components/UI/TableSkeleton";
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import ScienceRoundedIcon from '@mui/icons-material/ScienceRounded';
+import EventRoundedIcon from '@mui/icons-material/EventRounded';
+import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 
 export default function AtenderExamen() {
     const { id } = useParams();
@@ -136,7 +143,7 @@ export default function AtenderExamen() {
                 onClick={() => navigate('/examenes/agenda')}
                 className="flex items-center gap-2 text-indigo-600 font-bold hover:underline mb-4 cursor-pointer w-fit"
             >
-                <span className="material-symbols-outlined text-base">arrow_back</span>
+                <ArrowBackRoundedIcon sx={{ fontSize: '1rem' }} />
                 Volver a la agenda
             </button>
 
@@ -146,7 +153,7 @@ export default function AtenderExamen() {
                     <div className="flex flex-col sm:flex-row justify-between gap-4">
                         <div>
                             <h2 className="text-xl font-bold dark:text-white flex items-center gap-2">
-                                <span className="material-symbols-outlined text-indigo-500">science</span>
+                                <ScienceRoundedIcon className="text-indigo-500" />
                                 {cita.categoria_examen?.categoria || 'Laboratorio Clínico'}
                             </h2>
                             <p className="text-gray-500 mt-1">
@@ -157,14 +164,14 @@ export default function AtenderExamen() {
                         </div>
                         <div className="flex items-start gap-2">
                             <span className="bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 font-bold px-3 py-1 rounded-lg text-sm flex items-center gap-1">
-                                <span className="material-symbols-outlined text-sm">event</span>
+                                <EventRoundedIcon sx={{ fontSize: '0.875rem' }} />
                                 {cita.fecha} {cita.hora_inicio?.slice(0, 5)}
                             </span>
                         </div>
                     </div>
                     {requiresFasting && (
                         <div className="mt-4 inline-flex items-center gap-2 bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400 font-bold px-3 py-1.5 rounded-lg border border-orange-200 dark:border-orange-800/30 text-sm">
-                            <span className="material-symbols-outlined text-base">restaurant</span>
+                            <RestaurantRoundedIcon sx={{ fontSize: '1rem' }} />
                             Este examen requería ayuno previO del paciente.
                         </div>
                     )}
@@ -173,7 +180,7 @@ export default function AtenderExamen() {
                 {isCompleted ? (
                     <div className="p-12 flex flex-col items-center justify-center text-center">
                         <div className="size-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-                            <span className="material-symbols-outlined text-5xl">check_circle</span>
+                            <CheckCircleRoundedIcon sx={{ fontSize: '3rem' }} />
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Examen Completado</h3>
                         <p className="text-gray-500 dark:text-gray-400 max-w-sm">
@@ -208,7 +215,7 @@ export default function AtenderExamen() {
                             {file ? (
                                 <div className="flex flex-col items-center justify-center animate-fade-in">
                                     <div className="size-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-red-200">
-                                        <span className="material-symbols-outlined text-3xl">picture_as_pdf</span>
+                                        <PictureAsPdfRoundedIcon sx={{ fontSize: '1.875rem' }} />
                                     </div>
                                     <p className="font-bold text-gray-900 dark:text-white mb-1 truncate max-w-[250px]">{file.name}</p>
                                     <p className="text-sm text-gray-500 mb-4 bg-white dark:bg-gray-900 px-3 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
@@ -224,7 +231,7 @@ export default function AtenderExamen() {
                                 </div>
                             ) : (
                                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center justify-center h-full">
-                                    <span className="material-symbols-outlined text-5xl text-gray-400 mb-4">upload_file</span>
+                                    <UploadFileRoundedIcon sx={{ fontSize: '3rem' }} className="text-gray-400 mb-4" />
                                     <span className="text-gray-600 dark:text-gray-300 font-medium bg-white dark:bg-gray-800 px-6 py-2 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:text-indigo-600 hover:border-indigo-300 transition-colors cursor-pointer inline-flex items-center gap-2">
                                         Explorar archivos
                                     </span>

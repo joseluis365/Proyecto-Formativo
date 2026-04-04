@@ -1,3 +1,12 @@
+import MuiIcon from "@/components/UI/MuiIcon";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import BlueButton from "@/components/UI/BlueButton";
@@ -64,7 +73,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                     {/* Seccion Paciente */}
                     <div className="bg-blue-50/50 dark:bg-blue-900/10 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
                         <h3 className="text-blue-700 dark:text-blue-400 font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">person</span>
+                            <PersonRoundedIcon sx={{ fontSize: "1.125rem" }} />
                             Información del Paciente
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -82,9 +91,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                     {/* Seccion Medica / Examen */}
                     <div className={`${isExamen ? 'bg-indigo-50/50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30' : 'bg-green-50/50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30'} p-4 rounded-xl border`}>
                         <h3 className={`${isExamen ? 'text-indigo-700 dark:text-indigo-400' : 'text-green-700 dark:text-green-400'} font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2`}>
-                            <span className="material-symbols-outlined text-lg">
-                                {isExamen ? 'lab_profile' : 'medical_services'}
-                            </span>
+                            <MuiIcon name={isExamen ? 'lab_profile' : 'medical_services'} sx={{ fontSize: '1.125rem' }} />
                             {isExamen ? 'Información del Examen' : 'Información Médica'}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -114,7 +121,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                     {/* Seccion Horario */}
                     <div className="bg-purple-50/50 dark:bg-purple-900/10 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
                         <h3 className="text-purple-700 dark:text-purple-400 font-bold text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">schedule</span>
+                            <ScheduleRoundedIcon sx={{ fontSize: "1.125rem" }} />
                             Fecha y Horario
                         </h3>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -141,7 +148,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                     {status === 'Atendida' && historialObj && (
                         <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-gray-800">
                              <h3 className="text-primary dark:text-blue-400 font-bold text-sm uppercase tracking-wider mb-2 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-lg">clinical_notes</span>
+                                <MedicalServicesRoundedIcon sx={{ fontSize: "1.125rem" }} />
                                 Resultados de la Consulta
                             </h3>
                             {[
@@ -152,7 +159,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                             ].map(({ label, icon, value }) => value ? (
                                 <div key={label} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-100 dark:border-gray-700/50">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">{icon}</span> {label}
+                                        <MuiIcon name={icon} sx={{ fontSize: '0.875rem' }} /> {label}
                                     </h3>
                                     <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{value}</p>
                                 </div>
@@ -161,7 +168,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                             {historialObj.signos_vitales && Object.keys(historialObj.signos_vitales).length > 0 && (
                                 <div className="bg-blue-50/30 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100/50 dark:border-blue-900/30">
                                     <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">monitor_heart</span> Signos Vitales
+                                        <MonitorHeartRoundedIcon sx={{ fontSize: "0.875rem" }} /> Signos Vitales
                                     </h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         {Object.entries(historialObj.signos_vitales).map(([k, v]) => (
@@ -181,7 +188,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                             {historialObj.enfermedades?.length > 0 && (
                                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">vaccines</span> Enfermedades CIE-11
+                                        <VaccinesRoundedIcon sx={{ fontSize: "0.875rem" }} /> Enfermedades CIE-11
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {historialObj.enfermedades.map(enf => (
@@ -196,7 +203,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                             {historialObj.receta && (
                                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">medication</span> Receta Médica
+                                        <MedicationRoundedIcon sx={{ fontSize: "0.875rem" }} /> Receta Médica
                                     </h3>
                                     <div className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700">
                                         {(historialObj.receta.recetaDetalles || historialObj.receta.receta_detalles)?.length > 0 ? (
@@ -221,7 +228,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                     {isExamen && cita.resultado_pdf && (
                         <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
                              <h3 className="text-primary dark:text-blue-400 font-bold text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                <PictureAsPdfRoundedIcon sx={{ fontSize: "1.125rem" }} />
                                 Resultados del Examen
                             </h3>
                             <a 
@@ -231,7 +238,7 @@ export default function ViewCitaModal({ isOpen, onClose, cita }) {
                                 className="flex items-center gap-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/30 rounded-2xl hover:bg-indigo-100 transition-colors group"
                             >
                                 <div className="size-10 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                                    <span className="material-symbols-outlined">download</span>
+                                    <DownloadRoundedIcon />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-indigo-900 dark:text-indigo-200 group-hover:underline">Descargar Resultados (PDF)</p>

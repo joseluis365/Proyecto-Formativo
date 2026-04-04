@@ -1,8 +1,9 @@
+﻿import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 export default function State({state}) {
     return (
         <div>
           <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-gray-500 dark:text-gray-400">task_alt</span>
+            <TaskAltRoundedIcon className="text-gray-500 dark:text-gray-400" />
             <h3 className="text-gray-800 dark:text-gray-200 text-sm font-bold uppercase tracking-wider">Estado de la orden
             </h3>
           </div>

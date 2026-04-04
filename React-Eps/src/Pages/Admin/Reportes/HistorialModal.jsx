@@ -5,6 +5,9 @@ import ModalBody from "@/components/Modals/ModalBody";
 import ModalFooter from "@/components/Modals/ModalFooter";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded';
 
 export default function HistorialModal({ isOpen, onClose, report }) {
     if (!report || !isOpen) return null;
@@ -23,7 +26,7 @@ export default function HistorialModal({ isOpen, onClose, report }) {
                         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                             <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold block mb-1">Generado por</span>
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-blue-500">account_circle</span>
+                                <AccountCircleRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-blue-500" />
                                 <p className="font-semibold text-gray-800 dark:text-gray-200">
                                     {report.usuario ? `${report.usuario.primer_nombre} ${report.usuario.primer_apellido}` : "Usuario Desconocido"}
                                 </p>
@@ -36,7 +39,7 @@ export default function HistorialModal({ isOpen, onClose, report }) {
                         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                             <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold block mb-1">Fecha y Hora</span>
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-primary">calendar_clock</span>
+                                <CalendarMonthRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                                 <p className="font-semibold text-gray-800 dark:text-gray-200">
                                     {dayjs(report.created_at).locale("es").format("D [de] MMMM [de] YYYY")}
                                 </p>
@@ -59,7 +62,7 @@ export default function HistorialModal({ isOpen, onClose, report }) {
 
                     <div className="mt-2">
                         <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-blue-500 text-xl">fact_check</span>
+                            <FactCheckRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-blue-500" />
                             Vista Previa de los Datos (Un Registro)
                         </h4>
                         

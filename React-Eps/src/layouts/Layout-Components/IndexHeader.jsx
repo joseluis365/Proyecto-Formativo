@@ -1,6 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTheme } from "../../hooks/useTheme";
+import MuiIcon from "../../components/UI/MuiIcon";
 
 export default function IndexHeader() {
     const [open, setOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function IndexHeader() {
                         {user ? (
                             <Link to={user.id_rol === 1 ? "/SuperAdmin-Dashboard" : user.id_rol === 6 ? "/farmacia/dashboard" : "/dashboard"}>
                                 <button className="cursor-pointer bg-primary text-white rounded-lg px-5 py-2 text-sm font-bold flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-sm">dashboard</span>
+                                    <MuiIcon name="dashboard" sx={{ fontSize: '1rem' }} />
                                     Dashboard
                                 </button>
                             </Link>
@@ -75,9 +76,7 @@ export default function IndexHeader() {
                             className="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-colors focus:outline-none flex items-center justify-center"
                             title={isDarkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
                         >
-                            <span className="material-symbols-outlined text-[20px]">
-                                {isDarkMode ? 'dark_mode' : 'light_mode'}
-                            </span>
+                            <MuiIcon name={isDarkMode ? 'dark_mode' : 'light_mode'} sx={{ fontSize: '20px' }} />
                         </button>
                     </div>
                 </div>
@@ -127,9 +126,7 @@ export default function IndexHeader() {
                             onClick={toggleDarkMode}
                             className="flex items-center gap-3 w-full p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-800 transition-colors focus:outline-none"
                         >
-                            <span className="material-symbols-outlined text-[20px]">
-                                {isDarkMode ? 'dark_mode' : 'light_mode'}
-                            </span>
+                            <MuiIcon name={isDarkMode ? 'dark_mode' : 'light_mode'} sx={{ fontSize: '20px' }} />
                             <span className="font-semibold">{isDarkMode ? 'Modo Oscuro' : 'Modo Claro'}</span>
                         </button>
                     </div>
@@ -138,7 +135,7 @@ export default function IndexHeader() {
                     {user ? (
                         <Link to={user.id_rol === 1 ? "/SuperAdmin-Dashboard" : user.id_rol === 6 ? "/farmacia/dashboard" : "/dashboard"} onClick={closeMenu}>
                             <button className="cursor-pointer w-full bg-primary text-white rounded-lg px-5 py-2 font-bold flex items-center justify-center gap-2">
-                                <span className="material-symbols-outlined">dashboard</span>
+                                <MuiIcon name="dashboard" sx={{ fontSize: '1.25rem' }} />
                                 Dashboard
                             </button>
                         </Link>

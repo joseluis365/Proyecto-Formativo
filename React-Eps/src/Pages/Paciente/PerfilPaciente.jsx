@@ -10,6 +10,12 @@ import BlueButton from "../../components/UI/BlueButton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updatePerfilPacienteSchema } from "@/schemas/usuarioSchemas";
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import LoginRoundedIcon from '@mui/icons-material/LoginRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 
 /* ——————————————————————————————————————————————
    ActivityItem — ítem del panel de actividad
@@ -17,7 +23,7 @@ import { updatePerfilPacienteSchema } from "@/schemas/usuarioSchemas";
 function ActivityItem({ icon, label, value }) {
     return (
         <div className="flex items-start gap-3 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
-            <span className="material-symbols-outlined text-gray-400 text-lg mt-0.5">{icon}</span>
+            <div className="text-gray-400 mt-0.5">{icon}</div>
             <div className="flex flex-col">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{label}</span>
                 <span className="text-sm font-semibold text-gray-800 dark:text-white">{value}</span>
@@ -166,7 +172,7 @@ export default function PerfilPaciente() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* ══ Columna Izquierda (2/3) ══ */}
                 <div className="lg:col-span-2 space-y-8">
-                    <PrincipalText icon="account_circle" text="Información Personal" />
+                    <PrincipalText icon={<AccountCircleRoundedIcon />} text="Información Personal" />
 
                     <form
                         onSubmit={handleSubmit(onSubmit)}
@@ -278,7 +284,7 @@ export default function PerfilPaciente() {
                                 onClick={handleLogout}
                                 className="flex items-center gap-2 text-red-500 hover:text-red-600 font-black text-[10px] uppercase tracking-widest transition-all"
                             >
-                                <span className="material-symbols-outlined text-lg">logout</span>
+                                <LogoutRoundedIcon sx={{ fontSize: '1.25rem' }} />
                                 Cerrar Sesión
                             </button>
 
@@ -299,7 +305,7 @@ export default function PerfilPaciente() {
                     {/* Panel Actividad / Sesión */}
                     <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-xl border border-neutral-gray-border/5">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-primary">history</span>
+                            <HistoryRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter">
                                 Actividad
                             </h2>
@@ -314,13 +320,13 @@ export default function PerfilPaciente() {
                             </div>
                         </div>
 
-                        <ActivityItem icon="login" label="Última Sesión" value={formatNow()} />
+                        <ActivityItem icon={<LoginRoundedIcon sx={{ fontSize: '1.25rem' }} />} label="Última Sesión" value={formatNow()} />
                     </div>
 
                     {/* Panel Preferencias */}
                     <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-xl border border-neutral-gray-border/5">
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="material-symbols-outlined text-primary">settings</span>
+                            <SettingsRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
                             <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter">
                                 Preferencias
                             </h2>
@@ -329,7 +335,7 @@ export default function PerfilPaciente() {
                         <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-gray-800 transition-all border border-transparent hover:border-primary/20">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-primary">dark_mode</span>
+                                    <DarkModeRoundedIcon sx={{ fontSize: '1.25rem' }} className="text-primary" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-gray-900 dark:text-white">Modo Oscuro</p>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
-
+import MuiIcon from "./MuiIcon";
 
 /**
  * IconInput Component
@@ -119,7 +119,7 @@ export default function IconInput({
                 {icon && !isCheckboxType && (
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a] flex items-center justify-center">
                         {typeof icon === 'string' ? (
-                            <span className="material-symbols-outlined text-xl">{icon}</span>
+                            <MuiIcon name={icon} sx={{ fontSize: '1.25rem' }} />
                         ) : (
                             React.cloneElement(icon, { sx: { fontSize: '1.25rem', ...icon.props?.sx } })
                         )}

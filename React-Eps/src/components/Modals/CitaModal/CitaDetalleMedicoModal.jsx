@@ -1,8 +1,17 @@
+import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
+import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import LocalHospitalRoundedIcon from '@mui/icons-material/LocalHospitalRounded';
+import MedicalServicesRoundedIcon from '@mui/icons-material/MedicalServicesRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
+import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
 import { useState, useMemo } from "react";
 import api from "@/Api/axios";
 import BaseModal from "@/components/Modals/BaseModal";
 import ModalHeader from "@/components/Modals/ModalHeader";
 import ModalBody from "@/components/Modals/ModalBody";
+import MuiIcon from "@/components/UI/MuiIcon";
 
 /**
  * CitaDetalleMedicoModal
@@ -80,7 +89,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                         <div className="bg-primary/5 dark:bg-primary/10 rounded-xl p-4 border border-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <span className="material-symbols-outlined text-xl">history</span>
+                                    <HistoryRoundedIcon sx={{ fontSize: "1.25rem" }} />
                                 </div>
                                 <div className="space-y-0.5">
                                     <p className="text-[10px] font-black text-primary/60 uppercase tracking-widest">Atención Derivada de</p>
@@ -105,7 +114,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                             ].map(({ label, icon, value }) => value ? (
                                 <div key={label} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">{icon}</span> {label}
+                                        <MuiIcon name={icon} sx={{ fontSize: '0.875rem' }} /> {label}
                                     </h3>
                                     <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{value}</p>
                                 </div>
@@ -115,7 +124,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                             {detalle.signos_vitales && Object.keys(detalle.signos_vitales).length > 0 && (
                                 <div className="bg-blue-50/50 dark:bg-blue-900/10 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
                                     <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">monitor_heart</span> Signos Vitales
+                                        <MonitorHeartRoundedIcon sx={{ fontSize: "0.875rem" }} /> Signos Vitales
                                     </h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                         {Object.entries(detalle.signos_vitales).map(([k, v]) => (
@@ -136,7 +145,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                             {detalle.enfermedades?.length > 0 && (
                                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">vaccines</span> Diagnósticos CIE-11
+                                        <VaccinesRoundedIcon sx={{ fontSize: "0.875rem" }} /> Diagnósticos CIE-11
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {detalle.enfermedades.map(enf => (
@@ -152,7 +161,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                             {detalle.remisiones?.length > 0 && (
                                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">outpatient</span> Remisiones ({detalle.remisiones.length})
+                                        <LocalHospitalRoundedIcon sx={{ fontSize: "0.875rem" }} /> Remisiones ({detalle.remisiones.length})
                                     </h3>
                                     <div className="space-y-3">
                                         {detalle.remisiones.map((r, i) => (
@@ -169,7 +178,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                                                     </p>
                                                     {(r.cita?.fecha || r.examen?.fecha) && (
                                                         <p className="text-[10px] font-bold text-primary mt-0.5 flex items-center gap-1">
-                                                            <span className="material-symbols-outlined text-xs">calendar_month</span>
+                                                            <CalendarMonthRoundedIcon sx={{ fontSize: "0.75rem" }} />
                                                             {r.cita?.fecha || r.examen?.fecha} — {(r.cita?.hora_inicio || r.examen?.hora_inicio)?.slice(0, 5)}
                                                         </p>
                                                     )}
@@ -178,7 +187,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                                                     onClick={(e) => { e.stopPropagation(); onViewRemision?.(r); }}
                                                     className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20"
                                                 >
-                                                    <span className="material-symbols-outlined text-sm">assignment_turned_in</span> Ver Resultado
+                                                    <AssignmentTurnedInRoundedIcon sx={{ fontSize: "0.875rem" }} /> Ver Resultado
                                                 </button>
                                             </div>
                                         ))}
@@ -190,7 +199,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                             {detalle.receta && (
                                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                                     <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">medication</span> Receta Médica
+                                        <MedicationRoundedIcon sx={{ fontSize: "0.875rem" }} /> Receta Médica
                                     </h3>
                                     <div className="bg-white dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-700 flex items-start justify-between gap-4 shadow-sm">
                                         <div className="w-full">
@@ -217,7 +226,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                                             onClick={(e) => { e.stopPropagation(); onViewReceta?.(detalle.receta); }}
                                             className="flex items-center gap-1 text-primary hover:bg-primary/5 px-2 py-1.5 rounded-lg transition-colors text-xs font-bold shrink-0 border border-primary/20 mt-1"
                                         >
-                                            <span className="material-symbols-outlined text-sm">clinical_notes</span> Ver Atención
+                                            <MedicalServicesRoundedIcon sx={{ fontSize: "0.875rem" }} /> Ver Atención
                                         </button>
                                     </div>
                                 </div>
@@ -225,7 +234,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                         </div>
                     ) : (
                         <div className="text-center py-10 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2">history_toggle_off</span>
+                            <HistoryRoundedIcon sx={{ fontSize: "2.25rem" }} className="text-gray-300 mb-2" />
                             <p className="text-sm text-gray-400 italic">Sin detalles clínicos registrados para esta cita aún.</p>
                         </div>
                     )}
@@ -239,9 +248,7 @@ export default function CitaDetalleMedicoModal({ cita, citaOrigen, onClose, onVi
                     className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all ${downloading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5"
                         }`}
                 >
-                    <span className={`material-symbols-outlined text-base ${downloading ? "animate-spin" : ""}`}>
-                        {downloading ? "refresh" : "description"}
-                    </span>
+                    <MuiIcon name={downloading ? "refresh" : "description"} sx={{ fontSize: '1.25rem' }} className={downloading ? "animate-spin" : ""} />
                     {downloading ? "Generando..." : "Descargar PDF"}
                 </button>
             </div>

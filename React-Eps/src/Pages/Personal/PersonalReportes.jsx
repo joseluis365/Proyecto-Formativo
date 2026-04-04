@@ -10,6 +10,11 @@ import SearchableSelect from "../../components/UI/SearchableSelect";
 import { AnimatePresence, motion } from "framer-motion";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
+import MuiIcon from "../../components/UI/MuiIcon";
 
 const entityOptions = [
     { value: "pacientes", label: "Pacientes" },
@@ -289,7 +294,7 @@ export default function PersonalReportes() {
                     </div>
                     <div className="flex-1 flex justify-end gap-3 flex-wrap">
                         <button onClick={handleExportPDF} className="bg-red-500 hover:bg-red-600 dark:bg-red-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
-                            <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
+                            <PictureAsPdfRoundedIcon sx={{ fontSize: '1.125rem' }} />
                             <span className="hidden sm:inline">Exportar PDF</span>
                         </button>
                         <Filter value={idEstado} onChange={(v) => { setIdEstado(v); setPage(1); }} options={entity === 'pacientes' ? estadosPacientes : entity === 'citas' ? estadosCitas : estadosPQRS} placeholder="Estado" />
@@ -372,7 +377,7 @@ export default function PersonalReportes() {
                         <DataTable columns={columns} data={data} />
                         {data.length === 0 && !loading && (
                             <div className="text-center py-20 bg-gray-50 dark:bg-gray-900/30">
-                                <span className="material-symbols-outlined text-6xl text-gray-300 mb-4 block">query_stats</span>
+                                <QueryStatsRoundedIcon sx={{ fontSize: '3.75rem' }} className="text-gray-300 mb-4 block mx-auto" />
                                 <p className="text-gray-500">No hay resultados con estos filtros.</p>
                             </div>
                         )}
@@ -384,11 +389,11 @@ export default function PersonalReportes() {
             {lastPage > 1 && !isFirstLoad && (
                 <div className="flex justify-center items-center gap-2 mt-6">
                     <button disabled={page === 1} onClick={() => setPage(p => p - 1)} className="p-2 rounded-lg border bg-white dark:bg-gray-800 disabled:opacity-30">
-                        <span className="material-symbols-outlined">chevron_left</span>
+                        <ChevronLeftRoundedIcon />
                     </button>
                     <span className="text-sm font-bold dark:text-white">{page} / {lastPage}</span>
                     <button disabled={page === lastPage} onClick={() => setPage(p => p + 1)} className="p-2 rounded-lg border bg-white dark:bg-gray-800 disabled:opacity-30">
-                        <span className="material-symbols-outlined">chevron_right</span>
+                        <ChevronRightRoundedIcon />
                     </button>
                 </div>
             )}

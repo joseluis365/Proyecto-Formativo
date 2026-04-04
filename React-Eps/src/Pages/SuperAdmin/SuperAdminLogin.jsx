@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { superAdminLoginSchema } from "../../schemas/authSchemas";
+import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded';
 
 
 export default function SuperAdminLogin() {
@@ -133,9 +134,7 @@ export default function SuperAdminLogin() {
 
         {/* Info */}
         <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 flex items-start gap-3">
-          <span className="material-symbols-outlined text-blue-600 text-2xl">
-            security
-          </span>
+          <SecurityRoundedIcon className="text-blue-600" sx={{ fontSize: '1.5rem' }} />
           <div className="flex flex-col gap-1">
             <p className="text-gray-800 dark:text-white font-semibold text-sm">
               Acceso restringido

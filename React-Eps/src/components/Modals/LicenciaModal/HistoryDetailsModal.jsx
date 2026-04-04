@@ -1,3 +1,5 @@
+﻿import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 import { motion } from "framer-motion";
 
 export default function HistoryDetailsModal({ history, onClose }) {
@@ -29,7 +31,7 @@ export default function HistoryDetailsModal({ history, onClose }) {
                         onClick={onClose}
                         className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
                     >
-                        <span className="material-symbols-outlined text-2xl">close</span>
+                        <CloseRoundedIcon sx={{ fontSize: "1.5rem" }} />
                     </button>
 
                     <div className="flex items-center gap-4">
@@ -109,14 +111,14 @@ export default function HistoryDetailsModal({ history, onClose }) {
                         <div className="space-y-1">
                             <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">Fecha Inicio</label>
                             <div className="flex items-center gap-2 text-gray-800 dark:text-white font-semibold">
-                                <span className="material-symbols-outlined text-sm text-primary">calendar_today</span>
+                                <CalendarTodayRoundedIcon sx={{ fontSize: "0.875rem" }} className="text-primary" />
                                 {new Date(fecha_inicio).toLocaleDateString()}
                             </div>
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs text-gray-500 uppercase font-bold tracking-wider">Fecha Fin</label>
                             <div className="flex items-center gap-2 text-gray-800 dark:text-white font-semibold">
-                                <span className="material-symbols-outlined text-sm text-primary">event_busy</span>
+                                <EventBusyRoundedIcon sx={{ fontSize: "0.875rem" }} className="text-primary" />
                                 {new Date(fecha_fin).toLocaleDateString()}
                             </div>
                         </div>
