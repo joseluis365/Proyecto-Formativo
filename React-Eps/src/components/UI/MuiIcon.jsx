@@ -1,5 +1,6 @@
 import React from 'react';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
@@ -106,6 +107,7 @@ const iconMapping = {
   today: CalendarTodayRoundedIcon,
   event_busy: EventBusyRoundedIcon,
   arrow_back: ArrowBackRoundedIcon,
+  arrow_forward: ArrowForwardRoundedIcon,
   security: SecurityRoundedIcon,
   description: DescriptionRoundedIcon,
   domain: DomainRoundedIcon,
