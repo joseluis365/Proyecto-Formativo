@@ -233,8 +233,8 @@ export default function AgendaMedico() {
                         )}
                     </div>
 
-                    {/* Tabla de citas con animación */}
-                    <div className="p-6">
+                    {/* Tabla de citas con animación y scroll responsivo */}
+                    <div className="p-0 sm:p-6 overflow-hidden">
                         <AnimatePresence mode="wait">
                             {loading ? (
                                 <motion.div
@@ -243,6 +243,7 @@ export default function AgendaMedico() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.15 }}
+                                    className="p-6"
                                 >
                                     <TableSkeleton rows={5} columns={5} />
                                 </motion.div>
@@ -253,7 +254,7 @@ export default function AgendaMedico() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className="text-center py-16 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800"
+                                    className="text-center py-16 mx-6 my-6 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800"
                                 >
                                     <EventBusyRoundedIcon sx={{ fontSize: '4rem' }} className="text-gray-300 dark:text-gray-600 mb-4 block mx-auto" />
                                     <p className="text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider text-sm">
@@ -271,13 +272,16 @@ export default function AgendaMedico() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.2 }}
+                                    className="w-full overflow-x-auto"
                                 >
-                                    <ScheduleTable
-                                        appointments={filteredCitas}
-                                        onView={(cita) => setViewingCita(cita)}
-                                        onAtender={(cita) => navigate(`/medico/consulta/${cita.id_cita}`)}
-                                        onNoAsistio={handleNoAsistio}
-                                    />
+                                    <div className="min-w-full inline-block align-middle">
+                                        <ScheduleTable
+                                            appointments={filteredCitas}
+                                            onView={(cita) => setViewingCita(cita)}
+                                            onAtender={(cita) => navigate(`/medico/consulta/${cita.id_cita}`)}
+                                            onNoAsistio={handleNoAsistio}
+                                        />
+                                    </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>

@@ -84,6 +84,10 @@ import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 
 
+import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
+import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
+
+
 const iconMapping = {
   home: HomeRoundedIcon,
   person: PersonRoundedIcon,
@@ -96,6 +100,7 @@ const iconMapping = {
   refresh: AutorenewRoundedIcon,
   close: CloseRoundedIcon,
   add: AddRoundedIcon,
+  add_circle: AddCircleRoundedIcon,
   search: SearchRoundedIcon,
   chevron_right: ChevronRightRoundedIcon,
   expand_more: ExpandMoreRoundedIcon,
@@ -147,6 +152,7 @@ const iconMapping = {
   sync: SyncRoundedIcon,
   event_repeat: EventRepeatRoundedIcon,
   outpatient: LocalHospitalRoundedIcon,
+  vaccines: VaccinesRoundedIcon,
   assignment_turned_in: AssignmentTurnedInRoundedIcon,
   health_and_safety: HealthAndSafetyRoundedIcon,
   person_off: PersonOffRoundedIcon,
@@ -177,12 +183,18 @@ const iconMapping = {
 /**
  * MuiIcon Component
  * Maps Material Symbols string names to MUI Rounded Icons.
+ * If name is an object (React Element), it renders it directly.
  * 
- * @param {string} name - The original material symbol name
+ * @param {string|object} name - The original material symbol name or a React element
  * @param {object} sx - Custom MUI styles
  * @param {string} className - Additional CSS classes
  */
 const MuiIcon = ({ name, sx = {}, className = "", ...props }) => {
+  // Si ya es un objeto (ej: <Icon />), lo renderizamos directamente
+  if (name && typeof name === 'object') {
+    return React.cloneElement(name, { sx: { ...sx, ...name.props.sx }, className: `${className} ${name.props.className || ""}`.trim(), ...props });
+  }
+
   const IconComponent = iconMapping[name] || HelpRoundedIcon;
   
   return <IconComponent sx={sx} className={className} {...props} />;
