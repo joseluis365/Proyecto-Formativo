@@ -82,7 +82,7 @@ class PersonalReporteController extends Controller
 
             $logoBase64 = '';
             try {
-                if (file_exists(public_path('icono.png'))) {
+                if (extension_loaded('gd') && file_exists(public_path('icono.png'))) {
                     $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
                 }
             } catch (\Exception $e) {

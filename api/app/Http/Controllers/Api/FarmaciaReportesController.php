@@ -51,11 +51,12 @@ class FarmaciaReportesController extends Controller
 
         $logoBase64 = '';
         try {
-            if (file_exists(public_path('icono.png'))) {
+            // Solo procesar logo si la extensión GD está instalada (requerida por DomPDF para imágenes)
+            if (extension_loaded('gd') && file_exists(public_path('icono.png'))) {
                 $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
             }
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error("Error encoding logo for PDF: " . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Error encoding logo for PDF (Farmacia): " . $e->getMessage());
         }
 
         // Render PDF
