@@ -32,6 +32,7 @@ import MonitorHeartRoundedIcon from '@mui/icons-material/MonitorHeartRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import MedicalInformationRoundedIcon from '@mui/icons-material/MedicalInformationRounded';
 import MedicationRoundedIcon from '@mui/icons-material/MedicationRounded';
+import TaskAltRoundedIcon from '@mui/icons-material/TaskAltRounded';
 
 const vitalSignSchema = (min, max, minMsg, maxMsg) => 
     z.string({ required_error: "Campo obligatorio" })

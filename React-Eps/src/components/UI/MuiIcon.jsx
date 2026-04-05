@@ -1,6 +1,12 @@
 import React from 'react';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
+import ForumRoundedIcon from '@mui/icons-material/ForumRounded';
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
+import ScienceRoundedIcon from '@mui/icons-material/ScienceRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
@@ -97,6 +103,12 @@ const iconMapping = {
   warning: WarningAmberRoundedIcon,
   info: InfoRoundedIcon,
   check_circle: CheckCircleRoundedIcon,
+  group: GroupRoundedIcon,
+  forum: ForumRoundedIcon,
+  bar_chart: BarChartRoundedIcon,
+  science: ScienceRoundedIcon,
+  settings: SettingsRoundedIcon,
+  swap_horiz: SwapHorizRoundedIcon,
   published_with_changes: PublishedWithChangesRoundedIcon,
   location_city: LocationCityRoundedIcon,
   calendar_month: CalendarMonthRoundedIcon,
