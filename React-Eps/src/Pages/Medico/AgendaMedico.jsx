@@ -211,15 +211,17 @@ export default function AgendaMedico() {
 
                     {/* Header del panel */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 border-b border-gray-100 dark:border-gray-800">
-                        <PrincipalText
-                            icon={isToday ? <TodayRoundedIcon /> : <CalendarTodayRoundedIcon />}
-                            text={
-                                isToday
-                                    ? `Hoy — ${formatDateLabel(selectedDate)}`
-                                    : formatDateLabel(selectedDate)
-                            }
-                            number={filteredCitas.length}
-                        />
+                        <div className="scale-90 sm:scale-100 origin-left">
+                            <PrincipalText
+                                icon={isToday ? <TodayRoundedIcon /> : <CalendarTodayRoundedIcon />}
+                                text={
+                                    isToday
+                                        ? `Hoy — ${formatDateLabel(selectedDate)}`
+                                        : formatDateLabel(selectedDate)
+                                }
+                                number={filteredCitas.length}
+                            />
+                        </div>
 
                         {/* Botón regresar a hoy */}
                         {!isToday && (
@@ -234,7 +236,7 @@ export default function AgendaMedico() {
                     </div>
 
                     {/* Tabla de citas con animación y scroll responsivo */}
-                    <div className="p-0 sm:p-6 overflow-hidden">
+                    <div className="p-0 sm:p-6 overflow-hidden w-full max-w-full">
                         <AnimatePresence mode="wait">
                             {loading ? (
                                 <motion.div

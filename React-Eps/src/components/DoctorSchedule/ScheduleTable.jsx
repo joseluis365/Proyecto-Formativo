@@ -9,7 +9,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
       key: "hora_inicio",
       header: "HORA",
       render: (d) => (
-        <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
+        <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap text-[11px] sm:text-sm">
           {d.hora_inicio?.slice(0, 5) || "--:--"}
         </span>
       ),
@@ -18,7 +18,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
       key: "paciente",
       header: "PACIENTE",
       render: (d) => (
-        <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
+        <span className="font-medium text-gray-900 dark:text-white text-[11px] sm:text-sm leading-tight">
           {d.paciente ? `${d.paciente.primer_nombre} ${d.paciente.primer_apellido}` : "Paciente no encontrado"}
         </span>
       ),
@@ -26,11 +26,15 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
     {
       key: "motivo",
       header: "MOTIVO CONSULTA",
-      render: (d) => {
-        const reasonObj = d.motivoConsulta || d.motivo_consulta;
-        if (reasonObj && d.motivo) return `${reasonObj.motivo} - ${d.motivo}`;
-        return reasonObj?.motivo || d.motivo || "No especificado";
-      },
+      render: (d) => (
+        <p className="text-[11px] sm:text-sm leading-tight text-gray-600 dark:text-gray-400">
+          {(() => {
+            const reasonObj = d.motivoConsulta || d.motivo_consulta;
+            if (reasonObj && d.motivo) return `${reasonObj.motivo} - ${d.motivo}`;
+            return reasonObj?.motivo || d.motivo || "No especificado";
+          })()}
+        </p>
+      ),
     },
     {
       key: "id_estado",
@@ -39,7 +43,7 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
         const statusName = d.estado?.nombre_estado || "Pendiente";
         return (
           <span
-            className={`px-2.5 py-1 text-xs font-semibold leading-none rounded-full ${statusName === "Atendida"
+            className={`px-2 py-0.5 text-[10px] sm:text-xs font-semibold leading-none rounded-full ${statusName === "Atendida"
               ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
               : statusName === "Cancelada" || statusName === "Inasistencia"
                 ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300"
@@ -68,39 +72,39 @@ export default function ScheduleTable({ appointments, onView, onAtender, onNoAsi
         };
 
         return (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
             <button
               onClick={() => onView(d)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors cursor-pointer"
+              className="p-1.5 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors cursor-pointer"
               title="Ver detalles"
             >
-              <VisibilityRoundedIcon sx={{ fontSize: '1rem' }} />
+              <VisibilityRoundedIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />
             </button>
 
             {isActionable && onAtender && onNoAsistio && (
               <>
                     <button
                       onClick={() => onAtender(d)}
-                      className="p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-full hover:bg-primary/10 text-primary hover:text-primary-dark transition-all flex items-center justify-center cursor-pointer"
                       title="Atender Paciente"
                     >
-                      <MedicalInformationRoundedIcon sx={{ fontSize: '1rem' }} />
+                      <MedicalInformationRoundedIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />
                     </button>
                 {isWithinAttendanceWindow(d.fecha, d.hora_inicio) ? (
                     <button
                       onClick={() => onNoAsistio(d)}
-                      className="p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
+                      className="p-1.5 sm:p-2 rounded-full hover:bg-red-50 dark:hover:hover:bg-red-900/20 text-red-500 hover:text-red-600 transition-all flex items-center justify-center cursor-pointer"
                       title="Marcar Inasistencia"
                     >
-                      <PersonOffRoundedIcon sx={{ fontSize: '1rem' }} />
+                      <PersonOffRoundedIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />
                     </button>
                 ) : (
                     <button
                       disabled
-                      className="p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
+                      className="p-1.5 sm:p-2 rounded-full text-gray-300 dark:text-gray-600 cursor-not-allowed flex items-center justify-center"
                       title="Fuera de horario para inasistencia"
                     >
-                      <PersonOffRoundedIcon sx={{ fontSize: '1rem' }} />
+                      <PersonOffRoundedIcon sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }} />
                     </button>
                 )}
               </>
