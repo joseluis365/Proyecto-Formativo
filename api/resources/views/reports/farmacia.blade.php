@@ -182,7 +182,7 @@
     </table>
 
     <div class="footer">
-        Saluvanta EPS - Sistema de Gestión Farmacéutica (Sanitec) - Página <script type="text/php">echo $PAGE_NUM . " de " . $PAGE_COUNT;</script>
+        Saluvanta EPS - Sistema de Gestión Farmacéutica (Sanitec)
     </div>
 </body>
 

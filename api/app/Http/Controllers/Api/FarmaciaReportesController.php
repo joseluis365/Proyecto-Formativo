@@ -73,7 +73,7 @@ class FarmaciaReportesController extends Controller
             'logoBase64' => $logoBase64
         ]);
 
-            return $pdf->download("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
+            return $pdf->stream("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Error crítico exportando PDF Farmacia ({$entity}): " . $e->getMessage() . "\n" . $e->getTraceAsString());
             return response()->json([
@@ -328,7 +328,7 @@ class FarmaciaReportesController extends Controller
 
         // Apply Export Limit or Manual Pagination
         if ($isExport) {
-            $data = collect($data)->take(2000); // hard limit for PDFs
+            $data = collect($data)->take(500); // hard limit for PDFs (Fase 6: Reducido de 2000 a 500 para estabilidad)
         } else {
             $perPage = 15;
             $page = $request->input('page', 1);

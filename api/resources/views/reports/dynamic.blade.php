@@ -180,7 +180,7 @@
     </table>
 
     <div class="footer">
-        Saluvanta EPS - Reporte Interno Digital - Página <script type="text/php">echo $PAGE_NUM . " de " . $PAGE_COUNT;</script>
+        Saluvanta EPS - Reporte Interno Digital
     </div>
 </body>
 
