@@ -182,91 +182,95 @@ export default function LoginSection() {
             </div>
 
             {/* Modal: Política de Privacidad */}
-            <BaseModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)}>
-                <ModalHeader 
-                    title="Política de Privacidad" 
-                    subtitle="Protección de Datos Personales"
-                    icon={<VerifiedUserRoundedIcon />}
-                    onClose={() => setShowPrivacy(false)}
-                />
-                <div className="p-6 overflow-y-auto max-h-[60vh] flex flex-col gap-6 custom-scrollbar text-sm">
-                    <section className="flex flex-col gap-2 border-b border-gray-100 dark:border-white/5 pb-4">
-                        <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            <InfoRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" />
-                            Tratamiento de Datos Médicos
-                        </h3>
-                        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            En cumplimiento de la <strong>Ley 1581 de 2012</strong>, Saluvanta EPS informa que sus datos personales y de salud serán tratados con la más estricta confidencialidad. Estos datos son utilizados exclusivamente para la gestión de su historial clínico, agendamiento de citas y servicios administrativos de salud.
-                        </p>
-                    </section>
+            {showPrivacy && (
+                <BaseModal onClose={() => setShowPrivacy(false)}>
+                    <ModalHeader 
+                        title="Política de Privacidad" 
+                        subtitle="Protección de Datos Personales"
+                        icon={<VerifiedUserRoundedIcon />}
+                        onClose={() => setShowPrivacy(false)}
+                    />
+                    <div className="p-6 overflow-y-auto max-h-[60vh] flex flex-col gap-6 custom-scrollbar text-sm">
+                        <section className="flex flex-col gap-2 border-b border-gray-100 dark:border-white/5 pb-4">
+                            <h3 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                                <InfoRoundedIcon sx={{ fontSize: '1rem' }} className="text-primary" />
+                                Tratamiento de Datos Médicos
+                            </h3>
+                            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+                                En cumplimiento de la <strong>Ley 1581 de 2012</strong>, Saluvanta EPS informa que sus datos personales y de salud serán tratados con la más estricta confidencialidad. Estos datos son utilizados exclusivamente para la gestión de su historial clínico, agendamiento de citas y servicios administrativos de salud.
+                            </p>
+                        </section>
 
-                    <section className="flex flex-col gap-2 border-b border-gray-100 dark:border-white/5 pb-4">
-                        <h3 className="font-bold text-gray-800 dark:text-white">Sus Derechos como Usuario</h3>
-                        <ul className="list-disc pl-5 text-gray-500 dark:text-gray-400 space-y-2">
-                            <li>Conocer, actualizar y rectificar sus datos personales.</li>
-                            <li>Solicitar prueba de la autorización otorgada.</li>
-                            <li>Ser informado sobre el uso que se le ha dado a sus datos.</li>
-                            <li>Revocar la autorización o solicitar la supresión del dato cuando no se respeten los principios constitucionales.</li>
-                        </ul>
-                    </section>
+                        <section className="flex flex-col gap-2 border-b border-gray-100 dark:border-white/5 pb-4">
+                            <h3 className="font-bold text-gray-800 dark:text-white">Sus Derechos como Usuario</h3>
+                            <ul className="list-disc pl-5 text-gray-500 dark:text-gray-400 space-y-2">
+                                <li>Conocer, actualizar y rectificar sus datos personales.</li>
+                                <li>Solicitar prueba de la autorización otorgada.</li>
+                                <li>Ser informado sobre el uso que se le ha dado a sus datos.</li>
+                                <li>Revocar la autorización o solicitar la supresión del dato cuando no se respeten los principios constitucionales.</li>
+                            </ul>
+                        </section>
 
-                    <section className="flex flex-col gap-2 pb-4">
-                        <h3 className="font-bold text-gray-800 dark:text-white">Seguridad de la Información</h3>
-                        <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Implementamos medidas técnicas y administrativas de seguridad para evitar el acceso no autorizado, alteración o pérdida de su información sensible. El acceso a los registros médicos está restringido únicamente a personal de salud autorizado.
-                        </p>
-                    </section>
-                </div>
-            </BaseModal>
+                        <section className="flex flex-col gap-2 pb-4">
+                            <h3 className="font-bold text-gray-800 dark:text-white">Seguridad de la Información</h3>
+                            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Implementamos medidas técnicas y administrativas de seguridad para evitar el acceso no autorizado, alteración o pérdida de su información sensible. El acceso a los registros médicos está restringido únicamente a personal de salud autorizado.
+                            </p>
+                        </section>
+                    </div>
+                </BaseModal>
+            )}
 
             {/* Modal: Ayuda */}
-            <BaseModal isOpen={showHelp} onClose={() => setShowHelp(false)}>
-                <ModalHeader 
-                    title="Centro de Ayuda" 
-                    subtitle="Asistencia al Usuario"
-                    icon={<HelpCenterRoundedIcon />}
-                    onClose={() => setShowHelp(false)}
-                />
-                <div className="p-6 overflow-y-auto max-h-[60vh] flex flex-col gap-6 custom-scrollbar text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex flex-col gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
-                        <h3 className="font-bold text-primary flex items-center gap-2">
-                            <LocalPhoneRoundedIcon sx={{ fontSize: '1.25rem' }} />
-                            Línea de Atención al Usuario
-                        </h3>
-                        <p className="text-gray-700 dark:text-gray-300">
-                            Si presenta dificultades técnicas o requiere asistencia inmediata, comuníquese con nosotros:
-                        </p>
-                        <div className="flex flex-col gap-1">
-                            <p className="font-bold text-lg text-primary">01-8000-123-456</p>
-                            <p className="text-[10px] uppercase font-bold text-gray-400">Horario: Lunes a Viernes 7:00 AM - 7:00 PM</p>
+            {showHelp && (
+                <BaseModal onClose={() => setShowHelp(false)}>
+                    <ModalHeader 
+                        title="Centro de Ayuda" 
+                        subtitle="Asistencia al Usuario"
+                        icon={<HelpCenterRoundedIcon />}
+                        onClose={() => setShowHelp(false)}
+                    />
+                    <div className="p-6 overflow-y-auto max-h-[60vh] flex flex-col gap-6 custom-scrollbar text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex flex-col gap-4 bg-primary/5 p-4 rounded-xl border border-primary/10">
+                            <h3 className="font-bold text-primary flex items-center gap-2">
+                                <LocalPhoneRoundedIcon sx={{ fontSize: '1.25rem' }} />
+                                Línea de Atención al Usuario
+                            </h3>
+                            <p className="text-gray-700 dark:text-gray-300">
+                                Si presenta dificultades técnicas o requiere asistencia inmediata, comuníquese con nosotros:
+                            </p>
+                            <div className="flex flex-col gap-1">
+                                <p className="font-bold text-lg text-primary">01-8000-123-456</p>
+                                <p className="text-[10px] uppercase font-bold text-gray-400">Horario: Lunes a Viernes 7:00 AM - 7:00 PM</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3">
+                            <h4 className="font-bold text-gray-800 dark:text-white uppercase text-[10px] tracking-widest">Preguntas Frecuentes</h4>
+                            
+                            <details className="group border-b border-gray-100 dark:border-white/5 pb-2 cursor-pointer">
+                                <summary className="font-semibold text-gray-700 dark:text-gray-200 list-none flex justify-between items-center group-open:text-primary transition-colors">
+                                    ¿Cómo inicio sesión por primera vez?
+                                    <span className="transition-transform group-open:rotate-180">↓</span>
+                                </summary>
+                                <p className="mt-2 text-xs leading-relaxed">
+                                    Debe utilizar el correo electrónico registrado en su EPS y la contraseña temporal enviada a su e-mail al momento de la afiliación.
+                                </p>
+                            </details>
+
+                            <details className="group border-b border-gray-100 dark:border-white/5 pb-2 cursor-pointer">
+                                <summary className="font-semibold text-gray-700 dark:text-gray-200 list-none flex justify-between items-center group-open:text-primary transition-colors">
+                                    Olvidé mi contraseña o no es válida
+                                    <span className="transition-transform group-open:rotate-180">↓</span>
+                                </summary>
+                                <p className="mt-2 text-xs leading-relaxed">
+                                    Use el enlace "¿Olvidaste tu contraseña?". Recibirá un <strong>código de seguridad (2FA)</strong> en su correo para validar su identidad y establecer una nueva contraseña de forma segura.
+                                </p>
+                            </details>
                         </div>
                     </div>
-
-                    <div className="flex flex-col gap-3">
-                        <h4 className="font-bold text-gray-800 dark:text-white uppercase text-[10px] tracking-widest">Preguntas Frecuentes</h4>
-                        
-                        <details className="group border-b border-gray-100 dark:border-white/5 pb-2 cursor-pointer">
-                            <summary className="font-semibold text-gray-700 dark:text-gray-200 list-none flex justify-between items-center group-open:text-primary transition-colors">
-                                ¿Cómo inicio sesión por primera vez?
-                                <span className="transition-transform group-open:rotate-180">↓</span>
-                            </summary>
-                            <p className="mt-2 text-xs leading-relaxed">
-                                Debe utilizar el correo electrónico registrado en su EPS y la contraseña temporal enviada a su e-mail al momento de la afiliación.
-                            </p>
-                        </details>
-
-                        <details className="group border-b border-gray-100 dark:border-white/5 pb-2 cursor-pointer">
-                            <summary className="font-semibold text-gray-700 dark:text-gray-200 list-none flex justify-between items-center group-open:text-primary transition-colors">
-                                Olvidé mi contraseña o no es válida
-                                <span className="transition-transform group-open:rotate-180">↓</span>
-                            </summary>
-                            <p className="mt-2 text-xs leading-relaxed">
-                                Use el enlace "¿Olvidaste tu contraseña?". Recibirá un <strong>código de seguridad (2FA)</strong> en su correo para validar su identidad y establecer una nueva contraseña de forma segura.
-                            </p>
-                        </details>
-                    </div>
-                </div>
-            </BaseModal>
+                </BaseModal>
+            )}
         </Layout>
     )
 }
