@@ -29,6 +29,9 @@ class ExamenReporteController extends Controller
     public function export(Request $request, $entity)
     {
         try {
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+
             $payload = $this->getQueryData($request, $entity, false);
             $data = $payload['data'];
 

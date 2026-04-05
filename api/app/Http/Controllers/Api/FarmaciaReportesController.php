@@ -27,8 +27,13 @@ class FarmaciaReportesController extends Controller
      */
     public function export(Request $request, $entity)
     {
-        $user = $request->user();
-        $payload = $this->getReportData($request, $entity, true);
+        try {
+            // Aumentar límites para generación de PDF grande
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+
+            $user = $request->user();
+            $payload = $this->getReportData($request, $entity, true);
 
         // Guardar historial
         try {
@@ -67,7 +72,15 @@ class FarmaciaReportesController extends Controller
             'logoBase64' => $logoBase64
         ]);
 
-        return $pdf->download("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
+            return $pdf->download("reporte_farmacia_{$entity}_" . now()->format('Ymd_His') . ".pdf");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error crítico exportando PDF Farmacia ({$entity}): " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return response()->json([
+                'error' => 'No se pudo generar el reporte en PDF debido a un error interno.',
+                'message' => $e->getMessage(),
+                'debug' => config('app.debug') ? $e->getTraceAsString() : null
+            ], 500);
+        }
     }
 
     private function getReportData(Request $request, $entity, $isExport)

@@ -44,6 +44,9 @@ class ReportController extends Controller
     public function export(Request $request, string $entity)
     {
         try {
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+
             \Illuminate\Support\Facades\Log::info("Iniciando exportación para entidad: {$entity}");
             $pdf = $this->reportService->export($entity, $request->all(), 'pdf');
             \Illuminate\Support\Facades\Log::info("PDF generado correctamente por el servicio");

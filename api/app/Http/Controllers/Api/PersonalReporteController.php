@@ -31,6 +31,9 @@ class PersonalReporteController extends Controller
     public function export(Request $request, $entity)
     {
         try {
+            ini_set('memory_limit', '512M');
+            set_time_limit(300);
+            
             $data = $this->getQueryData($request, $entity, false);
 
             // Guardar en historial_reportes con manejo de errores para evitar romper el flujo del PDF
