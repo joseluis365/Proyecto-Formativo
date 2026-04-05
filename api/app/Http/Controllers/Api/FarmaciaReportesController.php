@@ -134,16 +134,21 @@ class FarmaciaReportesController extends Controller
 
             $hoy = Carbon::today();
 
-            // Mapear datos con stock total del medicamento para contexto
-            $mapped = $lotes->map(function ($lote) use ($hoy, $nitFarmaciaReal) {
+            // OPTIMIZACIÓN: Obtener stocks totales de una sola vez para evitar N+1
+            $idPresentaciones = $lotes->pluck('id_presentacion')->unique();
+            $stocksTotales = LoteMedicamento::where('nit_farmacia', $nitFarmaciaReal)
+                ->whereIn('id_presentacion', $idPresentaciones)
+                ->where('fecha_vencimiento', '>=', $hoy->toDateString())
+                ->groupBy('id_presentacion')
+                ->selectRaw('id_presentacion, sum(stock_actual) as total')
+                ->pluck('total', 'id_presentacion');
+
+            // Mapear datos
+            $mapped = $lotes->map(function ($lote) use ($hoy, $stocksTotales) {
                 $p = $lote->presentacion;
                 $idPresentacion = $lote->id_presentacion;
 
-                // Calcular stock total disponible (suma de lotes no vencidos)
-                $stockTotal = LoteMedicamento::where('nit_farmacia', $nitFarmaciaReal)
-                    ->where('id_presentacion', $idPresentacion)
-                    ->where('fecha_vencimiento', '>=', $hoy->toDateString())
-                    ->sum('stock_actual');
+                $stockTotal = $stocksTotales[$idPresentacion] ?? 0;
 
                 $diasVencimiento = $hoy->diffInDays(Carbon::parse($lote->fecha_vencimiento), false);
                 $estadoStock = 'Normal';
