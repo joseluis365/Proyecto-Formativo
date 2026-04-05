@@ -28,11 +28,13 @@ class DepartamentoController extends Controller
             $query->where('id_estado', 1);
         }
 
-        $departamentos = $query
-            ->orderBy('nombre', 'asc')
-            ->paginate(10);
+        $departamentos = $request->boolean('all') 
+            ? $query->orderBy('nombre', 'asc')->get()
+            : $query->orderBy('nombre', 'asc')->paginate(10);
 
-        return DepartamentoResource::collection($departamentos);
+        return $departamentos instanceof \Illuminate\Pagination\LengthAwarePaginator
+            ? DepartamentoResource::collection($departamentos)
+            : DepartamentoResource::collection($departamentos);
     }
 
     /**

@@ -85,7 +85,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
     const fetchDepartamentos = async () => {
         setLoadingDeps(true);
         try {
-            const response = await superAdminApi.get("/configuracion/departamentos"); // USAR superAdminApi
+            const response = await superAdminApi.get("/configuracion/departamentos?all=true"); // USAR superAdminApi
             const data = response.data || response || [];
             setDepartamentos(data);
         } catch (error) {
