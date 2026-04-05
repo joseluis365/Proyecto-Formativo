@@ -60,6 +60,15 @@ class ExamenReporteController extends Controller
                 \Log::error("Error en HistorialReporte (Exámenes): " . $e->getMessage());
             }
 
+            $logoBase64 = '';
+            try {
+                if (file_exists(public_path('icono.png'))) {
+                    $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error encoding logo for PDF (Exámenes): " . $e->getMessage());
+            }
+
             // Preparar PDF
             $pdf = Pdf::loadView('reports.personal.reporte_dinamico', [
                 'entity'   => $entity,
@@ -67,7 +76,8 @@ class ExamenReporteController extends Controller
                 'columns'  => $payload['meta']['columns'],
                 'filters'  => $request->all(),
                 'generado' => $usuario ? ($usuario->primer_nombre . ' ' . $usuario->primer_apellido) : 'Sistema Sanitec',
-                'fecha'    => Carbon::now()->format('d/m/Y H:iA'),
+                'fecha'    => Carbon::now()->format('d/m/Y h:i A'),
+                'logoBase64' => $logoBase64
             ])->setPaper('a4', 'landscape');
 
             return $pdf->download("reporte_examenes_" . time() . ".pdf");

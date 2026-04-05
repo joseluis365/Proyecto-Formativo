@@ -35,8 +35,8 @@ class PersonalReporteController extends Controller
 
             // Guardar en historial_reportes con manejo de errores para evitar romper el flujo del PDF
             $usuario = Auth::guard('sanctum')->user();
-            if ($usuario && $usuario->id_rol === 4) {
-                $usuario->load('especialidad');
+            if ($usuario instanceof \App\Models\Usuario && $usuario->id_rol === 4) {
+                $usuario->load(['especialidad']);
             }
 
             try {
@@ -77,6 +77,15 @@ class PersonalReporteController extends Controller
                 $orientation = 'landscape';
             }
 
+            $logoBase64 = '';
+            try {
+                if (file_exists(public_path('icono.png'))) {
+                    $logoBase64 = base64_encode(file_get_contents(public_path('icono.png')));
+                }
+            } catch (\Exception $e) {
+                \Log::error("Error encoding logo for PDF (Personal): " . $e->getMessage());
+            }
+
             // Preparar vista
             $pdf = Pdf::loadView($view, [
                 'entity'   => $entity,
@@ -84,7 +93,8 @@ class PersonalReporteController extends Controller
                 'filters'  => $request->all(),
                 'generado' => $usuario ? ($usuario->primer_nombre . ' ' . $usuario->primer_apellido) : 'Sistema Sanitec',
                 'especialidad' => ($usuario && $usuario->id_rol === 4) ? ($usuario->especialidad->especialidad ?? 'Médico General') : null,
-                'fecha'    => Carbon::now()->format('d/m/Y H:iA'),
+                'fecha'    => Carbon::now()->format('d/m/Y h:i A'),
+                'logoBase64' => $logoBase64
             ])->setPaper('a4', $orientation);
 
             return $pdf->download("reporte_{$entity}_" . time() . ".pdf");

@@ -21,6 +21,16 @@ class SuperadminSeeder extends Seeder
                 'id_rol'     => 1,
                 'created_at' => '2026-02-11 21:11:20',
                 'updated_at' => '2026-03-06 17:53:29',
+            ],
+            [
+                'documento'  => 11000111,
+                'nombre'     => 'Cesar',
+                'usuario'    => 'Superadmin Cesar',
+                'email'      => 'esquivel7809@gmail.com',
+                'contrasena' => Hash::make('Qwerty22026%&2'),
+                'id_rol'     => 1,
+                'created_at' => '2026-02-11 21:11:20',
+                'updated_at' => '2026-03-06 17:53:29',
             ]
         ];
 

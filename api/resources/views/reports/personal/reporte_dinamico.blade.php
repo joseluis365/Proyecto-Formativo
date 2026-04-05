@@ -122,7 +122,9 @@
 
 <body>
     <div class="header">
-        @if(file_exists(public_path('icono.png')))
+        @if(!empty($logoBase64))
+        <img src="data:image/png;base64,{{ $logoBase64 }}" class="logo">
+        @elseif(file_exists(public_path('icono.png')))
         <img src="{{ public_path('icono.png') }}" class="logo">
         @endif
         <h1>Saluvanta EPS</h1>

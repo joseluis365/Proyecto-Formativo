@@ -134,13 +134,15 @@
 <body>
     <div class="header">
         @php
-        $logoPath = public_path('icono.png');
-        $logoBase64 = '';
-        if(file_exists($logoPath)){
-        $logoBase64 = base64_encode(file_get_contents($logoPath));
+        if(!isset($logoBase64) || empty($logoBase64)) {
+            $logoPath = public_path('icono.png');
+            $logoBase64 = '';
+            if(file_exists($logoPath)){
+                $logoBase64 = base64_encode(file_get_contents($logoPath));
+            }
         }
         @endphp
-        @if($logoBase64)
+        @if(!empty($logoBase64))
         <img src="data:image/png;base64,{{ $logoBase64 }}" class="logo">
         @endif
         <h1>Saluvanta EPS</h1>
