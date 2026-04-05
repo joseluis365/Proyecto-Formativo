@@ -115,9 +115,9 @@ export default function UserHeader() {
                 <div className="md:hidden flex justify-start items-center ml-2">
                     <button
                         onClick={() => setOpen(true)}
-                        className="text-2xl cursor-pointer"
+                        className="text-2xl cursor-pointer p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        ☰
+                        <MuiIcon name="menu" sx={{ fontSize: '1.75rem' }} className="dark:text-white" />
                     </button>
                 </div>
             </header>

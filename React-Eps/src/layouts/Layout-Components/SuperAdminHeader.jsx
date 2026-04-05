@@ -133,9 +133,9 @@ export default function SuperAdminHeader() {
                 <div className="md:hidden flex justify-start items-center">
                     <button
                         onClick={() => setOpen(true)}
-                        className="md:hidden text-2xl cursor-pointer"
+                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                     >
-                        ☰
+                        <MuiIcon name="menu" sx={{ fontSize: '1.75rem' }} className="dark:text-white" />
                     </button>
                 </div>
             </header>

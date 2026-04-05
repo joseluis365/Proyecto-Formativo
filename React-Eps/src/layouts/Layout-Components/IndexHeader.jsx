@@ -84,9 +84,9 @@ export default function IndexHeader() {
                 {/* BOTÓN HAMBURGUESA */}
                 <button
                     onClick={() => setOpen(true)}
-                    className="md:hidden text-2xl text-slate-900 dark:text-white"
+                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-slate-900 dark:text-white"
                 >
-                    ☰
+                    <MuiIcon name="menu" sx={{ fontSize: '1.75rem' }} />
                 </button>
             </header>
 

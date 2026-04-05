@@ -88,6 +88,10 @@ import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 
 
+import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
+import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
+
+
 const iconMapping = {
   home: HomeRoundedIcon,
   person: PersonRoundedIcon,
@@ -171,6 +175,10 @@ const iconMapping = {
   category: CategoryRoundedIcon,
   priority_high: PriorityHighRoundedIcon,
   event: EventRoundedIcon,
+  help: HelpRoundedIcon,
+  menu: MenuRoundedIcon,
+  dashboard: GridViewRoundedIcon,
+  event_available: EventAvailableRoundedIcon,
   mark_email_unread: MarkEmailUnreadRoundedIcon,
   key: KeyRoundedIcon,
   folder: FolderRoundedIcon,
