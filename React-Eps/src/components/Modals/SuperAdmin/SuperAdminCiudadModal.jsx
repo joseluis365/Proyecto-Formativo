@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import BaseModal from "@/components/Modals/BaseModal";
@@ -11,6 +11,7 @@ import { handleApiErrors } from "@/utils/formHandlers";
 import superAdminApi from "@/Api/superadminAxios"; // USAR superAdminApi
 import Swal from "sweetalert2";
 import MuiIcon from "../../UI/MuiIcon";
+import SearchableSelect from "../../UI/SearchableSelect";
 
 export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, editData = null }) {
     const isEdit = !!editData;
@@ -23,6 +24,7 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
         setError,
         reset,
         setValue,
+        watch,
         formState: { errors, isSubmitting }
     } = useForm({
         resolver: zodResolver(ciudadSchema),
@@ -37,11 +39,21 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
         }
     });
 
+    const selectedDeptoId = watch("id_departamento");
+
     useEffect(() => {
         if (isOpen) {
             fetchDepartamentos();
         }
     }, [isOpen]);
+
+    // Transformar departamentos para SearchableSelect
+    const deptoOptions = useMemo(() => {
+        return departamentos.map(dep => ({
+            value: String(dep.codigo_DANE),
+            label: dep.nombre
+        }));
+    }, [departamentos]);
 
     // Sincronizar el valor del select cuando los departamentos terminan de cargar
     useEffect(() => {
@@ -133,22 +145,15 @@ export default function SuperAdminCiudadModal({ isOpen, onClose, onSuccess, edit
                     {field.label}
                 </label>
                 <div className="relative">
-                    <MuiIcon name={field.icon} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#4c669a]" sx={{ fontSize: '1.25rem' }} />
-                    <select
-                        {...register(field.name)}
-                        id={field.name}
-                        disabled={loadingDeps}
-                        className={`form-input flex w-full rounded-lg text-[#0d121b] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border ${error ? "border-red-500 bg-red-50/50" : "border-[#cfd7e7] dark:border-white/30"
-                            } bg-white dark:bg-gray-800/50 h-12 pl-12 pr-10 appearance-none text-base font-normal transition-all`}
-                    >
-                        <option value="">Seleccione un departamento</option>
-                        {departamentos.map(dep => (
-                            <option key={dep.codigo_DANE} value={dep.codigo_DANE}>
-                                {dep.nombre}
-                            </option>
-                        ))}
-                    </select>
-                    <MuiIcon name="expand_more" className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#4c669a]" sx={{ fontSize: '1.25rem' }} />
+                    <SearchableSelect
+                        options={deptoOptions}
+                        value={selectedDeptoId}
+                        onChange={(val) => setValue(field.name, val, { shouldValidate: true })}
+                        placeholder="Seleccione un departamento"
+                        loading={loadingDeps}
+                        error={!!error}
+                        required={field.required}
+                    />
                 </div>
                 {error && <span className="text-red-500 text-xs mt-1">{error.message}</span>}
             </div>
