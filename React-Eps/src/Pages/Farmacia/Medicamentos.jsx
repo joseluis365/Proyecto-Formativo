@@ -69,6 +69,9 @@ export default function Medicamentos() {
     const [concentraciones, setConcentraciones] = useState([]);
     const [formas, setFormas] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [showViewModal, setShowViewModal] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [selectedMedication, setSelectedMedication] = useState(null);
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState({
         nombre: "", descripcion: "", id_categoria: "",
@@ -113,14 +116,46 @@ export default function Medicamentos() {
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
+    const handleAddClick = () => {
+        setIsEditMode(false);
+        setSelectedMedication(null);
+        setForm({ nombre: "", descripcion: "", id_categoria: "", id_concentracion: "", id_forma_farmaceutica: "" });
+        setShowModal(true);
+    };
+
+    const handleEditClick = (row) => {
+        setIsEditMode(true);
+        setSelectedMedication(row);
+        setForm({
+            nombre: row.nombre || "",
+            descripcion: row.descripcion || "",
+            id_categoria: row.id_categoria || "",
+            id_concentracion: row.id_concentracion || "",
+            id_forma_farmaceutica: row.id_forma_farmaceutica || ""
+        });
+        setShowModal(true);
+    };
+
+    const handleViewClick = (row) => {
+        setSelectedMedication(row);
+        setShowViewModal(true);
+    };
+
     const handleSave = async (e) => {
         e.preventDefault();
         setSaving(true);
         try {
-            await api.post("/farmacia/medicamento", form);
-            Swal.fire({ icon: "success", title: "Medicamento creado", timer: 1500, showConfirmButton: false });
+            if (isEditMode && selectedMedication) {
+                await api.put(`/farmacia/medicamento/${selectedMedication.id_presentacion}`, form);
+                Swal.fire({ icon: "success", title: "Medicamento actualizado", timer: 1500, showConfirmButton: false });
+            } else {
+                await api.post("/farmacia/medicamento", form);
+                Swal.fire({ icon: "success", title: "Medicamento creado", timer: 1500, showConfirmButton: false });
+            }
             setShowModal(false);
             setForm({ nombre: "", descripcion: "", id_categoria: "", id_concentracion: "", id_forma_farmaceutica: "" });
+            setIsEditMode(false);
+            setSelectedMedication(null);
             fetchData();
         } catch (error) {
             Swal.fire({ icon: "error", title: "Error al guardar", text: error.response?.data?.message || "Ocurrió un error" });
@@ -162,12 +197,14 @@ export default function Medicamentos() {
             render: (row) => (
                 <div className="flex justify-center gap-2">
                     <button
+                        onClick={() => handleViewClick(row)}
                         className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         title="Ver detalles"
                     >
                         <VisibilityRoundedIcon sx={{ fontSize: '1.125rem' }} />
                     </button>
                     <button
+                        onClick={() => handleEditClick(row)}
                         className="p-2 text-gray-400 hover:text-primary transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
                         title="Editar medicamento"
                     >
@@ -184,7 +221,7 @@ export default function Medicamentos() {
             <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <PrincipalText icon={<MedicationRoundedIcon sx={{ fontSize: '2.5rem' }} />} text="Medicamentos Registrados" number={total} />
                 <button
-                    onClick={() => setShowModal(true)}
+                    onClick={handleAddClick}
                     className="bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-3 font-bold text-sm transition-all flex items-center gap-2 group shadow-lg shadow-primary/20"
                 >
                     Registrar Nuevo
@@ -274,13 +311,13 @@ export default function Medicamentos() {
 
         </div>
 
-            {/* Modal nuevo medicamento */}
+            {/* Modal medicamento */}
             {showModal && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-8">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                             <MedicationRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
-                            Nuevo Medicamento
+                            {isEditMode ? "Editar Medicamento" : "Nuevo Medicamento"}
                         </h3>
                         <form onSubmit={handleSave} className="space-y-4">
                             <div>
@@ -332,6 +369,54 @@ export default function Medicamentos() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Detalles de Medicamento */}
+            {showViewModal && selectedMedication && (
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
+                        <button
+                            onClick={() => setShowViewModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-2xl font-bold cursor-pointer"
+                        >
+                            &times;
+                        </button>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-4">
+                            <VisibilityRoundedIcon sx={{ fontSize: '1.5rem' }} className="text-primary" />
+                            Detalles del Medicamento
+                        </h3>
+                        <div className="space-y-4 text-sm">
+                            <div className="flex flex-col">
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Nombre</span>
+                                <span className="font-semibold text-gray-900 dark:text-white">{selectedMedication.nombre}</span>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Categoría</span>
+                                <span className="text-gray-700 dark:text-gray-300">{selectedMedication.categoria}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 border-y border-gray-100 dark:border-gray-800 py-3">
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Concentración</span>
+                                    <span className="text-gray-700 dark:text-gray-300">{selectedMedication.concentracion}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Formato</span>
+                                    <span className="text-gray-700 dark:text-gray-300">{selectedMedication.forma}</span>
+                                </div>
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Estado</span>
+                                <span className={`w-max px-2 py-1 rounded text-xs font-bold ${selectedMedication.id_estado === 1 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                                    {selectedMedication.estado}
+                                </span>
+                            </div>
+                            <div className="flex flex-col bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-100 dark:border-gray-800">
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1">Descripción</span>
+                                <span className="text-gray-700 dark:text-gray-300 italic">{selectedMedication.descripcion || "Sin descripción registrada."}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

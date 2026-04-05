@@ -476,6 +476,7 @@ Route::middleware(['auth:sanctum', 'licencia.activa'])->group(function () {
         // Catálogo de medicamentos (presentaciones)
         Route::get('/medicamentos', [MedicamentoController::class, 'index']);
         Route::post('/medicamento', [MedicamentoController::class, 'store']);
+        Route::put('/medicamento/{id_presentacion}', [MedicamentoController::class, 'update']);
         Route::post('/medicamento/{id_medicamento}/presentacion', [MedicamentoController::class, 'storePresentacion']);
         Route::put('/medicamento/{id}/estado', [MedicamentoController::class, 'toggleEstado']);
         Route::get('/medicamentos/disponibilidad', [MedicamentoController::class, 'disponibilidad']);

@@ -62,15 +62,18 @@ class MedicamentoController extends Controller
         return response()->json([
             'data' => $presentaciones->map(function ($p) {
                 return [
-                    'id_presentacion'   => $p->id_presentacion,
-                    'id_medicamento'    => $p->id_medicamento,
-                    'nombre'            => $p->medicamento->nombre ?? 'N/A',
-                    'concentracion'     => $p->concentracion->concentracion ?? 'N/A',
-                    'forma'             => $p->formaFarmaceutica->forma_farmaceutica ?? 'N/A',
-                    'categoria'         => $p->medicamento->categoriaMedicamento->categoria ?? 'N/A',
-                    'id_estado'         => $p->medicamento->id_estado ?? null,
-                    'estado'            => $p->medicamento->estado->nombre_estado ?? 'N/A',
-                    'descripcion'       => $p->medicamento->descripcion ?? null,
+                    'id_presentacion'         => $p->id_presentacion,
+                    'id_medicamento'          => $p->id_medicamento,
+                    'nombre'                  => $p->medicamento->nombre ?? 'N/A',
+                    'concentracion'           => $p->concentracion->concentracion ?? 'N/A',
+                    'forma'                   => $p->formaFarmaceutica->forma_farmaceutica ?? 'N/A',
+                    'categoria'               => $p->medicamento->categoriaMedicamento->categoria ?? 'N/A',
+                    'id_estado'               => $p->medicamento->id_estado ?? null,
+                    'estado'                  => $p->medicamento->estado->nombre_estado ?? 'N/A',
+                    'descripcion'             => $p->medicamento->descripcion ?? null,
+                    'id_categoria'            => $p->medicamento->id_categoria ?? null,
+                    'id_concentracion'        => $p->id_concentracion,
+                    'id_forma_farmaceutica'   => $p->id_forma_farmaceutica,
                 ];
             }),
             'total'        => $presentaciones->total(),
@@ -148,6 +151,40 @@ class MedicamentoController extends Controller
             'medicamento'  => $medicamento,
             'presentacion' => $presentacion,
         ], 201);
+    }
+
+    /**
+     * Actualiza un medicamento y su presentación específica.
+     */
+    public function update(Request $request, $id_presentacion)
+    {
+        $request->validate([
+            'nombre'               => 'required|string|max:150',
+            'descripcion'          => 'nullable|string',
+            'id_categoria'         => 'required|integer|exists:categoria_medicamento,id_categoria',
+            'id_concentracion'     => 'required|integer|exists:concentracion,id_concentracion',
+            'id_forma_farmaceutica'=> 'required|integer|exists:forma_farmaceutica,id_forma',
+        ]);
+
+        $presentacion = Presentacion::findOrFail($id_presentacion);
+        
+        $presentacion->update([
+            'id_concentracion'      => $request->id_concentracion,
+            'id_forma_farmaceutica' => $request->id_forma_farmaceutica,
+        ]);
+
+        $medicamento = Medicamento::findOrFail($presentacion->id_medicamento);
+        $medicamento->update([
+            'nombre'       => $request->nombre,
+            'descripcion'  => $request->descripcion,
+            'id_categoria' => $request->id_categoria,
+        ]);
+
+        return response()->json([
+            'message'      => 'Medicamento actualizado correctamente',
+            'medicamento'  => $medicamento,
+            'presentacion' => $presentacion,
+        ]);
     }
 
     /**
