@@ -1,6 +1,7 @@
-﻿import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
+import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import EventBusyRoundedIcon from '@mui/icons-material/EventBusyRounded';
 import { motion } from "framer-motion";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function HistoryDetailsModal({ history, onClose }) {
     const { empresa, admin_user, tipo_licencia, fecha_inicio, fecha_fin, id_estado, created_at } = history;
@@ -13,7 +14,6 @@ export default function HistoryDetailsModal({ history, onClose }) {
         5: { text: "Vencida", classes: "bg-orange-100 text-orange-700" },
         6: { text: "Pendiente", classes: "bg-blue-100 text-blue-700" },
     };
-    console.log(history);
 
     const statusInfo = STATUS_MAP[id_estado] || { text: "Desconocido", classes: "bg-gray-100 text-gray-500" };
 

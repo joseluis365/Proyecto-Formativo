@@ -1,7 +1,8 @@
-﻿import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import LabelRoundedIcon from '@mui/icons-material/LabelRounded';
 import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
 import { motion, AnimatePresence } from "framer-motion";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 export default function EnfermedadInfoModal({ isOpen, onClose, enfermedad }) {
     if (!isOpen || !enfermedad) return null;

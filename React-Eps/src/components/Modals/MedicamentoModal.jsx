@@ -1,7 +1,9 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import api from "@/Api/axios";
 import Swal from "sweetalert2";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded';
 
 export default function MedicamentoModal({ isOpen, onClose, onSuccess, editData }) {
     const [formData, setFormData] = useState({

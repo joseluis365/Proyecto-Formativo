@@ -4,6 +4,7 @@ import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded';
 import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import GavelRoundedIcon from '@mui/icons-material/GavelRounded';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import EditEmpresaModal from "./EditEmpresaModal";

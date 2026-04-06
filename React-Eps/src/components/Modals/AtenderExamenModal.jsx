@@ -1,7 +1,8 @@
-﻿import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
+import CloudUploadRoundedIcon from '@mui/icons-material/CloudUploadRounded';
 import SyncRoundedIcon from '@mui/icons-material/SyncRounded';
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../Api/axios';
