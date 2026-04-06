@@ -31,9 +31,9 @@ export default function PieChartOrdenes({ data }) {
             data={pieData}
             dataKey="value"
             cx="50%"
-            cy="45%"
-            innerRadius={70}
-            outerRadius={95}
+            cy="50%"
+            innerRadius={55}
+            outerRadius={75}
             paddingAngle={5}
             stroke="none"
           >
