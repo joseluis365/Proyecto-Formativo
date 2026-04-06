@@ -10,11 +10,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userRecoveryEmailSchema } from "../../schemas/authSchemas";
 import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+import PrivacyPolicyModal from "../Modals/PrivacyPolicyModal";
 
 
 export default function EmailSection() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const [showPrivacy, setShowPrivacy] = useState(false);
 
     const {
         register,
@@ -92,10 +94,18 @@ export default function EmailSection() {
                         <p className="text-[#4c669a] text-[11px] leading-relaxed">
                             La información médica es privada y confidencial bajo la Ley de Protección de Datos Personales.
                         </p>
-                        <Link className="text-primary text-[11px] font-bold hover:underline mt-0.5" to="/privacy-policy">Política de Privacidad</Link>
+                        <button 
+                            type="button"
+                            onClick={() => setShowPrivacy(true)}
+                            className="text-primary text-[11px] font-bold hover:underline mt-0.5 text-left w-fit border-none bg-transparent p-0 cursor-pointer"
+                        >
+                            Política de Privacidad
+                        </button>
                     </div>
                 </div>
             </div>
+            
+            <PrivacyPolicyModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} />
         </Layout>
     )
 }
