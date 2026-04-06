@@ -20,12 +20,12 @@ export default function LeftSection() {
                     <div className="size-10">
                         <img src="/icono_dark.png" alt="Saluvanta EPS Logo" className="w-full h-full object-contain" />
                     </div>
-                    <span className="text-2xl font-bold tracking-tight">Saluvanta EPS</span>
+                    <span className="text-2xl font-bold tracking-tight">Sanitec</span>
                 </div>
                 <div className="flex flex-col gap-4 max-w-lg">
                     <h1 className="text-white text-5xl font-black leading-tight tracking-tight">
                         
-                        Acceso al portal de Saluvanta EPS
+                        Acceso al portal de Sanitec
                     </h1>
                     <p className="text-lg font-medium text-white/80 leading-relaxed">
                         Plataforma institucional para el acceso seguro a servicios de salud. Autorizado solo para personal y afiliados vinculados.
@@ -38,7 +38,7 @@ export default function LeftSection() {
                 </div>
             </div>
             <div className="absolute bottom-10 left-12 xl:left-24">
-                <p className="text-white/40 text-xs font-medium">© 2024 Saluvanta EPS. Todos los derechos reservados.</p>
+                <p className="text-white/40 text-xs font-medium">© 2024 Sanitec. Todos los derechos reservados.</p>
             </div>
         </div>
     )

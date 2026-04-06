@@ -13,9 +13,9 @@ export default function Layout({title, description, children}) {
                         <span className="text-sm font-bold uppercase tracking-widest hidden sm:inline">Volver</span>
                     </Link>
                     <div className="flex items-center gap-3">
-                        <img src="/icono.png" alt="Saluvanta EPS" className="size-8 rounded-full object-cover block dark:hidden" />
-                        <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-8 rounded-full object-cover hidden dark:block" />
-                        <span className="text-lg font-bold text-[#0d121b] dark:text-white uppercase tracking-tight">Saluvanta EPS</span>
+                        <img src="/icono.png" alt="Sanitec" className="size-8 rounded-full object-cover block dark:hidden" />
+                        <img src="/icono_dark.png" alt="Sanitec" className="size-8 rounded-full object-cover hidden dark:block" />
+                        <span className="text-lg font-bold text-[#0d121b] dark:text-white uppercase tracking-tight">Sanitec</span>
                     </div>
                 </div>
 
