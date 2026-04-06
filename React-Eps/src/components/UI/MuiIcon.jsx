@@ -23,6 +23,7 @@ import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import PublishedWithChangesRoundedIcon from '@mui/icons-material/PublishedWithChangesRounded';
 import LocationCityRoundedIcon from '@mui/icons-material/LocationCityRounded';
@@ -99,6 +100,10 @@ import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRound
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import EmojiPeopleRoundedIcon from '@mui/icons-material/EmojiPeopleRounded';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
+import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
+import NoFoodRoundedIcon from '@mui/icons-material/NoFoodRounded';
+import BiotechRoundedIcon from '@mui/icons-material/BiotechRounded';
+import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
 
 
 const iconMapping = {
@@ -115,6 +120,7 @@ const iconMapping = {
   add: AddRoundedIcon,
   add_circle: AddCircleRoundedIcon,
   search: SearchRoundedIcon,
+  chevron_left: ChevronLeftRoundedIcon,
   chevron_right: ChevronRightRoundedIcon,
   expand_more: ExpandMoreRoundedIcon,
   expand_less: ExpandLessRoundedIcon,
@@ -207,6 +213,11 @@ const iconMapping = {
   wc: WcRoundedIcon,
   person_raised_hand: EmojiPeopleRoundedIcon,
   notes: NotesRoundedIcon,
+  lab_research: ScienceRoundedIcon,
+  biotech: BiotechRoundedIcon,
+  analytics: AnalyticsRoundedIcon,
+  restaurant: RestaurantRoundedIcon,
+  no_food: NoFoodRoundedIcon,
 };
 
 /**

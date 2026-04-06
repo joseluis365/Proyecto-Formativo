@@ -42,7 +42,7 @@ export default function IndexHeader() {
                     <img src="/icono.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover block dark:hidden" />
                     <img src="/icono_dark.png" alt="Saluvanta EPS" className="size-8 rounded-lg object-cover hidden dark:block" />
                     <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
-                        Saluvanta EPS
+                        Sanitec
                     </h2>
                 </div>
 

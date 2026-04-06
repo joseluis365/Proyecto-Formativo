@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLayout } from "../../LayoutContext";
 import BlueButton from "../../components/UI/BlueButton";
+import PrincipalText from "../../components/Users/PrincipalText";
 import api from "../../Api/axios";
 import Swal from "sweetalert2";
 import DataTable from "../../components/UI/DataTable";
@@ -202,7 +203,8 @@ export default function GestorCategorias() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-end">
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+                <PrincipalText icon="biotech" text="Tipos de Exámenes" number={categorias.length} />
                 <button 
                     onClick={() => handleOpenModal()} 
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm hover:shadow-indigo-500/20"
