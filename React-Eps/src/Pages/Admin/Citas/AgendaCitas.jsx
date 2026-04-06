@@ -206,6 +206,7 @@ export default function AgendaCitas() {
                             <Input
                                 type="time"
                                 placeholder="Hora Inicio"
+                                icon="schedule"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
                             />

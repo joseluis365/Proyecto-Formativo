@@ -1,4 +1,5 @@
-﻿import PersonalInfoItem from "./PersonalInfoItem";
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import PersonalInfoItem from "./PersonalInfoItem";
 
 export default function PersonalInfo({Info}) {
     return (

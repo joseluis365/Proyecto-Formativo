@@ -82,6 +82,10 @@ import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
+import HomePinRoundedIcon from '@mui/icons-material/HomePinRounded';
+import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
+import ContactMailRoundedIcon from '@mui/icons-material/ContactMailRounded';
+import WcRoundedIcon from '@mui/icons-material/WcRounded';
 
 
 import VaccinesRoundedIcon from '@mui/icons-material/VaccinesRounded';
@@ -91,6 +95,11 @@ import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import EventAvailableRoundedIcon from '@mui/icons-material/EventAvailableRounded';
+import FirstPageRoundedIcon from '@mui/icons-material/FirstPageRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import EmojiPeopleRoundedIcon from '@mui/icons-material/EmojiPeopleRounded';
+import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 
 
 const iconMapping = {
@@ -127,6 +136,7 @@ const iconMapping = {
   download: DownloadRoundedIcon,
   clinical_notes: MedicalServicesRoundedIcon,
   today: CalendarTodayRoundedIcon,
+  calendar_today: CalendarTodayRoundedIcon,
   event_busy: EventBusyRoundedIcon,
   arrow_back: ArrowBackRoundedIcon,
   arrow_forward: ArrowForwardRoundedIcon,
@@ -189,6 +199,15 @@ const iconMapping = {
   inventory_2: Inventory2RoundedIcon,
   dark_mode: DarkModeRoundedIcon,
   light_mode: LightModeRoundedIcon,
+  first_page: FirstPageRoundedIcon,
+  keyboard_arrow_up: KeyboardArrowUpRoundedIcon,
+  keyboard_arrow_down: KeyboardArrowDownRoundedIcon,
+  home_pin: HomePinRoundedIcon,
+  phone_iphone: PhoneIphoneRoundedIcon,
+  contact_mail: ContactMailRoundedIcon,
+  wc: WcRoundedIcon,
+  person_raised_hand: EmojiPeopleRoundedIcon,
+  notes: NotesRoundedIcon,
 };
 
 /**
