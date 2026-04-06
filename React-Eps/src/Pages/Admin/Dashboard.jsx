@@ -97,10 +97,12 @@ export default function Dashboard() {
 
   return (
     <>
-      <StatsPanel stats={stats} />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 flex flex-col gap-8">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div className="mb-10">
+        <StatsPanel stats={stats} />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 flex flex-col gap-10">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <BarChartCitas data={citasData} />
             <PieChartOrdenes data={ordenesData} />
           </div>

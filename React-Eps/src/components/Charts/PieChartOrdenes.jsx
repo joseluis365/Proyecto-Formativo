@@ -11,16 +11,16 @@ export default function PieChartOrdenes({ data }) {
   const sign = isPositive ? "+" : "";
 
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-neutral-gray-border/20 dark:border-gray-800 p-6 bg-white dark:bg-gray-800 shadow-sm h-[360px]">
-      <p className="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
-        Resultados Medicos Registrados ({mes})
+    <div className="flex flex-col gap-4 rounded-xl border border-neutral-gray-border/20 dark:border-gray-800 p-6 sm:p-8 bg-white dark:bg-gray-800 shadow-sm transition-all hover:shadow-md h-[400px]">
+      <p className="text-gray-800 dark:text-gray-200 text-lg font-semibold leading-normal">
+        Resultados Médicos ({mes})
       </p>
       <div className="flex items-baseline gap-2">
-        <p className="text-gray-900 dark:text-white tracking-tight text-3xl font-bold leading-tight truncate">
+        <p className="text-gray-900 dark:text-white tracking-tight text-4xl font-bold leading-tight truncate">
           {total}
         </p>
-        <p className={`${colorClass} text-sm font-medium leading-normal`}>
-          {sign}{diferencia}%
+        <p className={`${colorClass} text-sm font-semibold border-l pl-2 border-neutral-gray-border/20`}>
+          {sign}{diferencia}% vs mes anterior
         </p>
       </div>
       <div className="flex-1 min-h-0">
@@ -31,9 +31,9 @@ export default function PieChartOrdenes({ data }) {
             data={pieData}
             dataKey="value"
             cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
+            cy="45%"
+            innerRadius={70}
+            outerRadius={95}
             paddingAngle={5}
             stroke="none"
           >
@@ -47,7 +47,8 @@ export default function PieChartOrdenes({ data }) {
               border: 'none', 
               boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(4px)'
+              backdropFilter: 'blur(4px)',
+              padding: '12px'
             }}
           />
           <Legend 
@@ -55,8 +56,8 @@ export default function PieChartOrdenes({ data }) {
             align="center"
             iconType="circle"
             wrapperStyle={{ 
-              paddingTop: '20px',
-              fontSize: '12px',
+              paddingTop: '30px',
+              fontSize: '13px',
               color: '#6B7280',
               fontWeight: 500
             }}
