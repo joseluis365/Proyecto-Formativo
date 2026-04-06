@@ -82,7 +82,6 @@ import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import HomePinRoundedIcon from '@mui/icons-material/HomePinRounded';
 import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
 import ContactMailRoundedIcon from '@mui/icons-material/ContactMailRounded';
 import WcRoundedIcon from '@mui/icons-material/WcRounded';
@@ -202,7 +201,7 @@ const iconMapping = {
   first_page: FirstPageRoundedIcon,
   keyboard_arrow_up: KeyboardArrowUpRoundedIcon,
   keyboard_arrow_down: KeyboardArrowDownRoundedIcon,
-  home_pin: HomePinRoundedIcon,
+  home_pin: PinDropRoundedIcon,
   phone_iphone: PhoneIphoneRoundedIcon,
   contact_mail: ContactMailRoundedIcon,
   wc: WcRoundedIcon,
