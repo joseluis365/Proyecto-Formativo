@@ -21,7 +21,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }) {
                         Tratamiento de Datos Médicos
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
-                        En cumplimiento de la <strong>Ley 1581 de 2012</strong>, Saluvanta EPS informa que sus datos personales y de salud serán tratados con la más estricta confidencialidad. Estos datos son utilizados exclusivamente para la gestión de su historial clínico, agendamiento de citas y servicios administrativos de salud.
+                        En cumplimiento de la <strong>Ley 1581 de 2012</strong>, Sanitec informa que sus datos personales y de salud serán tratados con la más estricta confidencialidad. Estos datos son utilizados exclusivamente para la gestión de su historial clínico, agendamiento de citas y servicios administrativos de salud.
                     </p>
                 </section>
 
