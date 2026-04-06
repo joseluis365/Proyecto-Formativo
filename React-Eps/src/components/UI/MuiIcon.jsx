@@ -104,6 +104,11 @@ import RestaurantRoundedIcon from '@mui/icons-material/RestaurantRounded';
 import NoFoodRoundedIcon from '@mui/icons-material/NoFoodRounded';
 import BiotechRoundedIcon from '@mui/icons-material/BiotechRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import CallRoundedIcon from '@mui/icons-material/CallRounded';
+import BloodtypeRoundedIcon from '@mui/icons-material/BloodtypeRounded';
+import LockResetRoundedIcon from '@mui/icons-material/LockResetRounded';
+import ToggleOnRoundedIcon from '@mui/icons-material/ToggleOnRounded';
+import MeetingRoomRoundedIcon from '@mui/icons-material/MeetingRoomRounded';
 
 
 const iconMapping = {
@@ -218,6 +223,11 @@ const iconMapping = {
   analytics: AnalyticsRoundedIcon,
   restaurant: RestaurantRoundedIcon,
   no_food: NoFoodRoundedIcon,
+  call: CallRoundedIcon,
+  bloodtype: BloodtypeRoundedIcon,
+  lock_reset: LockResetRoundedIcon,
+  toggle_on: ToggleOnRoundedIcon,
+  meeting_room: MeetingRoomRoundedIcon,
 };
 
 /**
